@@ -325,8 +325,13 @@ export class BackgroundRenderer {
       return;
     }
     // Bez downscale do Canvas 1x: @3x jest próbkowane dopiero przez drawImage.
+    // Warstwa nie może wyjść poniżej świata (640) — tam pas poza światem maluje przedłużenie drogi.
+    const y = LAYER_Y[layer];
+    const visible = Math.min(height, WORLD.height - y);
+    if (visible <= 0) return;
+    const srcH = (visible / height) * image.height;
     for (let x = -layerOffset(distancePx, PARALLAX[layer], width); x < WORLD.width; x += width) {
-      ctx.drawImage(image, x, LAYER_Y[layer], width, height);
+      ctx.drawImage(image, 0, 0, image.width, srcH, x, y, width, visible);
     }
   }
 

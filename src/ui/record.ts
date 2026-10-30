@@ -191,6 +191,8 @@ export function createRecordControl(opts: RecordControlOptions): RecordControl {
   function render(): void {
     if (disposed) return;
     const phase = state.phase;
+    // Gra czyta fazę, żeby chować przycisk w trakcie lotu, ale nie licznik nagrywania.
+    root.setAttribute('data-phase', phase);
     startButton.hidden = editorial || phase !== 'idle';
     editorialHint.hidden = !editorial || phase !== 'idle';
     live.hidden = phase !== 'recording';

@@ -134,12 +134,16 @@ describe('renderer warstw: docelowe współrzędne i pasy', () => {
       waypoints: [], timeSec: 0,
     };
     renderer.drawBackground(c as unknown as CanvasRenderingContext2D, state);
-    for (const layer of ['sky', 'clouds', 'far', 'near', 'road'] as const) {
+    expect(c.drawImage.mock.calls.some((args) =>
+      args[0] === layers.sky && args.length === 5 && args[2] === LAYER_Y.sky)).toBe(true);
+    for (const layer of ['clouds', 'far', 'near', 'road'] as const) {
+      // Warstwy są przycinane do dolnej krawędzi świata (640), żeby nie zasłaniały pasa pod drogą.
+      const visible = Math.min(ASSET_SIZES[layer].height, WORLD.height - LAYER_Y[layer]);
       expect(c.drawImage.mock.calls.some((args) =>
-        args[0] === layers[layer] && args.length === 5 &&
-        args[2] === LAYER_Y[layer] &&
-        args[3] === ASSET_SIZES[layer].width &&
-        args[4] === ASSET_SIZES[layer].height)).toBe(true);
+        args[0] === layers[layer] && args.length === 9 &&
+        args[6] === LAYER_Y[layer] &&
+        args[7] === ASSET_SIZES[layer].width &&
+        args[8] === visible)).toBe(true);
     }
   });
 

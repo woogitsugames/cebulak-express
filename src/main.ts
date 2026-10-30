@@ -9,7 +9,10 @@ import {
 import { randomNickChoices } from './content/nicks';
 import { portalLink } from './content/portals';
 import { Renderer } from './render/renderer';
-import { preloadSprites } from './render/sprites';
+import { normalizeHeroSkin, preloadSprites, setHeroSkin } from './render/sprites';
+import { mountGarage } from './ui/garage';
+import { createRecordControl } from './ui/record';
+import { saveRecordedVideo } from './record/recorder';
 import { createSfx, sfxForGameEvent, type SfxPlayer } from './audio/sfx';
 import { createHaptics, hapticForGameEvent } from './audio/haptics';
 import { createMusic, type MusicPlayer } from './audio/music';
@@ -29,6 +32,7 @@ interface Settings {
   to: string;
   mode: Mode;
   nickId?: string;
+  skin?: string;
 }
 
 const DEFAULTS: Settings = { home: 'BE', from: 'antwerpia', to: 'rzeszow', mode: 'ranked' };
@@ -65,6 +69,7 @@ const ui = {
   menu: $('menu'),
   over: $('over'),
   league: $('league'),
+  garage: $('garage'),
   leagueBody: $('league-body'),
   selHome: $<HTMLSelectElement>('sel-home'),
   selFrom: $<HTMLSelectElement>('sel-from'),
@@ -101,6 +106,7 @@ let lastMilestone = 0;
 let cardImage: Promise<Blob> | null = null;
 let pendingReload: (() => void) | null = null;
 let closeLeague: (() => void) | null = null;
+let closeGarage: (() => void) | null = null;
 
 function safeRoute(s: Settings): Route {
   try {
@@ -113,6 +119,8 @@ function safeRoute(s: Settings): Route {
 
 // --- Dźwięk: jeden AudioContext i wspólny miks, tworzone przy pierwszym geście ---
 let audioCtx: AudioContext | undefined;
+/** Wspólny miks efektów i muzyki — także źródło dźwięku nagrywanej rolki. */
+let audioMix: GainNode | undefined;
 let sfx: SfxPlayer = createSfx();
 let music: MusicPlayer | undefined;
 const haptics = createHaptics({ vibrate: (pattern) => platform.vibrate(pattern) });
@@ -128,6 +136,7 @@ function unlockAudio(): void {
   }
   const mix = audioCtx.createGain();
   mix.connect(audioCtx.destination);
+  audioMix = mix;
   sfx = createSfx(audioCtx, mix);
   music = createMusic(audioCtx, { destination: mix, volume: 0.5 });
   void sfx.unlock();
@@ -203,6 +212,21 @@ $('btn-league').addEventListener('click', () => {
   track('league_open');
 });
 $('btn-league-close').addEventListener('click', () => showMenu());
+$('btn-garage').addEventListener('click', () => {
+  ui.menu.hidden = true;
+  ui.garage.hidden = false;
+  closeGarage = mountGarage(ui.garage, {
+    home: settings.home,
+    skin: normalizeHeroSkin(settings.skin),
+    nickId: settings.nickId,
+    onChange: (sel) => {
+      settings = { ...settings, skin: sel.skin, nickId: sel.nickId };
+      save('ce.settings', settings);
+      setHeroSkin(sel.skin);
+    },
+    onClose: () => showMenu(),
+  });
+});
 $('btn-again').addEventListener('click', () => void newRun());
 $('btn-menu').addEventListener('click', () => showMenu());
 $('btn-share').addEventListener('click', () => void share());
@@ -214,9 +238,12 @@ function showMenu(): void {
   music?.stop();
   closeLeague?.();
   closeLeague = null;
+  closeGarage?.();
+  closeGarage = null;
   ui.over.hidden = true;
   ui.hud.hidden = true;
   ui.league.hidden = true;
+  ui.garage.hidden = true;
   ui.menu.hidden = false;
   fillMenu();
 }
@@ -280,14 +307,14 @@ function tap(): void {
 
 $('stage').addEventListener('pointerdown', (e) => {
   unlockAudio();
-  if ((e.target as HTMLElement).closest('.panel')) return;
+  if ((e.target as HTMLElement).closest('.panel, .ce-record-control')) return;
   e.preventDefault();
   tap();
 });
 window.addEventListener('keydown', (e) => {
   if (e.code === 'Space' || e.code === 'ArrowUp') {
     e.preventDefault();
-    if (!ui.menu.hidden || !ui.league.hidden) return;
+    if (!ui.menu.hidden || !ui.league.hidden || !ui.garage.hidden) return;
     tap();
   }
 });
@@ -464,7 +491,25 @@ function resize(): void {
 }
 window.addEventListener('resize', resize);
 resize();
+setHeroSkin(normalizeHeroSkin(settings.skin));
 preloadSprites();
+
+// Nagrywanie rolki 15 s (przycisk widoczny poza samym lotem; ?redakcja=1 — tryb redakcji).
+const recordControl = createRecordControl({
+  canvas,
+  getAudio: () => (audioCtx && audioMix ? { context: audioCtx, source: audioMix } : undefined),
+  overlay: () => ({ km: game?.km ?? 0, route: `${(game?.route ?? route).from.name} → ${(game?.route ?? route).to.name}` }),
+  portalUrl: () => portalLink(settings.home, 'video'),
+  shareVideo: (file, text, url) => platform.share(file, text, url),
+  saveVideo: (video) => saveRecordedVideo(video),
+});
+$('stage').appendChild(recordControl.element);
+function syncRecordVisibility(): void {
+  const playing = game?.phase === 'playing';
+  const recording = recordControl.element.getAttribute('data-phase') === 'recording';
+  recordControl.element.hidden = (playing && !recording) || !ui.garage.hidden || !ui.league.hidden;
+}
+setInterval(syncRecordVisibility, 250);
 fillMenu();
 requestAnimationFrame(frame);
 void platform.initialize();
