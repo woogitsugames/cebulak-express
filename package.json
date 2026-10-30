@@ -7,7 +7,7 @@
     "dev": "vite --host",
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview --host",
-    "test": "vitest run",
+    "test": "vitest run && node --test tools/licenses.test.mjs",
     "typecheck": "tsc --noEmit",
     "build:artifact": "npm run build && node scripts/build-artifact.mjs",
     "android:sync": "npm run build && cap sync android",
@@ -15,7 +15,8 @@
     "test:firebase": "npm --prefix functions run test",
     "ios:sync": "npm run build && cap sync ios",
     "balance": "tsc --noEmit -p tools/balance/tsconfig.json && node tools/balance/run.mjs",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "prebuild": "node tools/licenses.mjs"
   },
   "devDependencies": {
     "@capacitor/cli": "^8.5.3",
