@@ -1,0 +1,237 @@
+/* Samodzielny ekran; wszystkie reguły ograniczone do .ce-garage. */
+.ce-garage {
+  --garage-ink: #293724;
+  --garage-green: #256843;
+  width: 100%;
+  max-width: 460px;
+  max-height: min(90dvh, 780px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  border: 3px solid #4b4d2b;
+  border-radius: 23px;
+  background: #fff7df;
+  color: var(--garage-ink);
+  box-shadow: 0 14px 36px #1c2b1e60, inset 0 0 0 3px #fff3c5;
+  font: 500 14px/1.4 system-ui, -apple-system, 'Segoe UI', sans-serif;
+  text-align: left;
+}
+.ce-garage *, .ce-garage *::before, .ce-garage *::after { box-sizing: border-box; }
+.ce-garage [hidden] { display: none !important; }
+.ce-garage button { font: inherit; cursor: pointer; touch-action: manipulation; }
+.ce-garage button:focus-visible { outline: 3px solid #ffbd30; outline-offset: 3px; }
+.ce-garage__header {
+  min-height: 90px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 15px 18px 13px;
+  border-bottom: 3px solid #38643f;
+  background: linear-gradient(135deg, #297b4b 0%, #45a769 100%);
+  color: #fffbe8;
+}
+.ce-garage__heading h2 {
+  margin: 0;
+  font-weight: 950;
+  font-size: clamp(26px, 7.5vw, 35px);
+  line-height: 1.05;
+  letter-spacing: -.045em;
+  text-shadow: 2px 3px 0 #1c5336;
+}
+.ce-garage__eyebrow {
+  margin: 0 0 4px;
+  color: #ffdf80;
+  font-size: 11px;
+  font-weight: 850;
+  text-transform: uppercase;
+  letter-spacing: .11em;
+}
+.ce-garage__close {
+  flex: 0 0 39px;
+  height: 39px;
+  padding: 0;
+  border: 2px solid #fff5d7;
+  border-radius: 11px;
+  background: #205739;
+  color: white;
+  font-size: 29px !important;
+  font-weight: 800 !important;
+  line-height: 1;
+}
+.ce-garage__stage {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  padding: 9px 12px 14px;
+  background: linear-gradient(#b4e4e9 0%, #d7f0db 67%, #f1d88e 68%, #edc270 100%);
+  border-bottom: 3px solid #e9c16f;
+  text-align: center;
+}
+.ce-garage__sky {
+  position: absolute;
+  z-index: -1;
+  width: 94px;
+  height: 94px;
+  top: 6px;
+  left: -23px;
+  border-radius: 50%;
+  background: #ffe68d;
+  box-shadow: 0 0 0 10px #fff8b366, 0 0 0 22px #fff5af33;
+}
+.ce-garage__showroom { display: flex; gap: 4px; justify-content: center; align-items: center; }
+.ce-garage__arrow {
+  z-index: 1;
+  flex: 0 0 38px;
+  width: 38px;
+  height: 50px;
+  padding: 0 0 5px;
+  border: 2px solid #315d41;
+  border-radius: 14px;
+  background: #fff9e5;
+  color: var(--garage-green);
+  font-size: 39px !important;
+  font-weight: 900 !important;
+  line-height: 1;
+  box-shadow: 0 4px 0 #8c9a73;
+}
+.ce-garage__arrow:active { transform: translateY(3px); box-shadow: 0 1px 0 #8c9a73; }
+.ce-garage__portrait {
+  position: relative;
+  display: grid;
+  flex: 1 1 auto;
+  place-items: center;
+  min-width: 0;
+  max-width: 270px;
+  height: clamp(120px, 36vw, 175px);
+  margin: 2px 0 0;
+}
+.ce-garage__portrait::after {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  bottom: 4px;
+  width: 70%;
+  height: 14px;
+  border-radius: 100%;
+  background: #54613857;
+  filter: blur(6px);
+}
+.ce-garage__image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(3px 6px 1px #5b713744);
+}
+.ce-garage__image--default { width: 115%; max-width: none; image-rendering: auto; }
+.ce-garage__placeholder { font-size: 80px; filter: drop-shadow(3px 6px 0 #728f60); }
+.ce-garage__skin-name {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 950;
+  line-height: 1.2;
+  letter-spacing: -.03em;
+  color: #224830;
+  text-shadow: 1px 2px #fbf3d2;
+}
+.ce-garage__counter {
+  margin: 1px 0 8px;
+  font-size: 11px;
+  color: #466854;
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+}
+.ce-garage__picks { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 5px; }
+.ce-garage__pick {
+  min-width: 0;
+  min-height: 45px;
+  padding: 7px 3px;
+  border: 2px solid #8caf92;
+  border-radius: 10px;
+  background: #fffbec;
+  color: #45684e;
+  font-size: 11px !important;
+  font-weight: 800 !important;
+  line-height: 1.15;
+}
+.ce-garage__pick[aria-pressed='true'] {
+  border-color: #1c6d45;
+  background: #2a8152;
+  color: #fffce8;
+  box-shadow: 0 3px 0 #195033;
+}
+.ce-garage__nick-section { padding: 16px 14px 19px; }
+.ce-garage__label {
+  margin: 0 0 9px;
+  color: #2d5132;
+  font-size: 19px;
+  line-height: 1.2;
+  font-weight: 900;
+  letter-spacing: -.025em;
+}
+.ce-garage__gender { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; }
+.ce-garage__gender-button {
+  min-width: 0;
+  min-height: 43px;
+  padding: 9px 6px;
+  border: 2px solid #d1c7a4;
+  border-radius: 12px;
+  background: #fffdf6;
+  color: #635d46;
+  font-size: 13px !important;
+  font-weight: 800 !important;
+}
+.ce-garage__gender-button[aria-pressed='true'] {
+  border-color: #2d8056;
+  background: #ddf0d9;
+  color: #245a39;
+}
+.ce-garage__hint { color: #766b4e; font-size: 11px; margin: 9px 1px 11px; }
+.ce-garage__nicks { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 7px; }
+.ce-garage__nick {
+  min-width: 0;
+  min-height: 54px;
+  padding: 8px 10px;
+  border: 2px solid #d5caac;
+  border-radius: 12px;
+  background: #fffdf7;
+  color: #384e37;
+  font-size: 12px !important;
+  font-weight: 760 !important;
+  line-height: 1.18;
+  text-align: left;
+  overflow-wrap: anywhere;
+}
+.ce-garage__nick[aria-pressed='true'] {
+  border-color: #2c875b;
+  background: #e1f1d9;
+  box-shadow: inset 0 0 0 1px #5ea674;
+  color: #195135;
+}
+.ce-garage__nick[aria-pressed='true']::before { content: '✓ '; font-weight: 950; }
+.ce-garage__shuffle {
+  display: block;
+  width: 100%;
+  min-height: 43px;
+  margin-top: 12px;
+  padding: 9px 12px;
+  border: 2px solid #9c521e;
+  border-radius: 12px;
+  background: linear-gradient(#f8c45d, #ef9d3b);
+  box-shadow: 0 4px 0 #a66e2c;
+  color: #53341c;
+  font-size: 14px !important;
+  font-weight: 950 !important;
+}
+.ce-garage__shuffle:active { transform: translateY(3px); box-shadow: 0 1px 0 #a66e2c; }
+@media (max-width: 360px) {
+  .ce-garage { border-width: 2px; border-radius: 16px; }
+  .ce-garage__header { padding: 13px 14px 10px; min-height: 80px; }
+  .ce-garage__pick { font-size: 10px !important; }
+  .ce-garage__nick-section { padding: 12px 10px 14px; }
+  .ce-garage__nicks { gap: 5px; }
+  .ce-garage__nick { padding: 7px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ce-garage__arrow:active, .ce-garage__shuffle:active { transform: none; }
+}
