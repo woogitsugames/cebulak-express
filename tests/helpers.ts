@@ -2,7 +2,7 @@ import { OBSTACLE, PLAYER } from '../src/core/config';
 import { Game, type Mode } from '../src/core/game';
 import { makeRoute } from '../src/core/route';
 
-export const ROUTE = makeRoute('BE', 'antwerpia', 'rzeszow');
+export const ROUTE = makeRoute('BE', 'bruksela', 'rzeszow');
 
 export function newGame(seed = 1, mode: Mode = 'ranked'): Game {
   return new Game({ seed, mode, route: ROUTE });

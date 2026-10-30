@@ -83,7 +83,8 @@ function fillMenu(): void {
   ui.selHome.value = settings.home;
   ui.selFrom.replaceChildren(...START_CITIES[settings.home].map((c) => option(c.id, c.name)));
   ui.selFrom.value = settings.from;
-  ui.selTo.replaceChildren(...PL_CITIES.map((c) => option(c.id, c.name)));
+  const sorted = [...PL_CITIES].sort((a, b) => a.name.localeCompare(b.name, 'pl'));
+  ui.selTo.replaceChildren(...sorted.map((c) => option(c.id, c.name)));
   ui.selTo.value = settings.to;
   for (const b of document.querySelectorAll<HTMLButtonElement>('.mode')) {
     b.setAttribute('aria-checked', String(b.dataset.mode === settings.mode));
@@ -184,6 +185,7 @@ function handleEvents(g: Game): void {
   for (const e of g.drainEvents()) {
     if (e.type === 'pickup') toast(fill(PICKUP_TOAST[e.kind], { km: e.bonusKm }));
     else if (e.type === 'border') toast(fill(UI.welcome, { where: COUNTRY_LOCATIVE[e.country] }));
+    else if (e.type === 'waypoint') toast(e.waypoint.text);
     else if (e.type === 'over' || e.type === 'arrived') showOver(g);
   }
 }

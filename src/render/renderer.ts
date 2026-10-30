@@ -1,4 +1,5 @@
-import { OBSTACLE, PICKUPS, PLAYER, WORLD } from '../core/config';
+import { KM_PER_PX, OBSTACLE, PICKUPS, PLAYER, WORLD } from '../core/config';
+import type { Waypoint } from '../content/waypoints';
 import type { Game } from '../core/game';
 import type { BottomKind, Obstacle, Pickup, TopKind } from '../core/obstacles';
 import { PALETTES } from './palette';
@@ -78,7 +79,27 @@ export class Renderer {
     }
 
     this.hills(worldX * 0.25, 470, 40, 0.012, pal.hillsFar);
+    this.drawWaypoints(game, 'far');
     this.hills(worldX * 0.5, 520, 30, 0.02, pal.hillsNear);
+    this.drawWaypoints(game, 'near');
+  }
+
+  /**
+   * Punkty trasy w tle (grafika zastępcza do czasu ilustracji ze zleceń 05–09).
+   * Punkt jest na środku ekranu dokładnie wtedy, gdy gracz go mija.
+   */
+  private drawWaypoints(game: Game, layer: 'far' | 'near'): void {
+    const parallax = layer === 'far' ? 0.25 : 0.5;
+    for (const w of game.route.waypoints) {
+      const onNear = w.kind === 'rest' || w.kind === 'border';
+      if (onNear !== (layer === 'near')) continue;
+      const x = WORLD.width / 2 + ((w.km - game.km) / KM_PER_PX) * parallax;
+      if (x < -200 || x > WORLD.width + 200) continue;
+      if (w.kind === 'rest') drawStation(this.ctx, x, WORLD.groundY);
+      else if (w.kind === 'border') drawBorderSign(this.ctx, x, WORLD.groundY);
+      else if (w.kind === 'crossing') drawFerry(this.ctx, x, 470);
+      else drawSkyline(this.ctx, w, x, 470);
+    }
   }
 
   private hills(shift: number, baseY: number, amp: number, freq: number, color: string): void {
@@ -197,6 +218,103 @@ export class Renderer {
     }
     ctx.restore();
   }
+}
+
+function hash(text: string): number {
+  let h = 2166136261;
+  for (let i = 0; i < text.length; i++) h = Math.imul(h ^ text.charCodeAt(i), 16777619);
+  return h >>> 0;
+}
+
+/** Zastępcza sylwetka miasta: bloki i wieże o kształcie zależnym od id punktu. */
+function drawSkyline(ctx: CanvasRenderingContext2D, w: Waypoint, cx: number, baseY: number): void {
+  let h = hash(w.id);
+  const next = () => ((h = Math.imul(h ^ (h >>> 13), 1274126177) >>> 0) % 1000) / 1000;
+  ctx.fillStyle = 'rgba(70, 90, 110, 0.55)';
+  const width = 150;
+  for (let x = cx - width / 2; x < cx + width / 2; ) {
+    const bw = 10 + next() * 16;
+    const bh = 20 + next() * 50;
+    ctx.fillRect(x, baseY - bh, bw - 2, bh + 30);
+    if (next() > 0.75) {
+      ctx.beginPath();
+      ctx.moveTo(x, baseY - bh);
+      ctx.lineTo(x + (bw - 2) / 2, baseY - bh - 18 - next() * 30);
+      ctx.lineTo(x + bw - 2, baseY - bh);
+      ctx.fill();
+    }
+    x += bw;
+  }
+  // Wieża dominująca (katedra, wieża TV, ratusz)
+  ctx.fillRect(cx - 4, baseY - 110, 8, 110);
+  ctx.beginPath();
+  ctx.arc(cx, baseY - 95, 7, 0, Math.PI * 2);
+  ctx.fill();
+}
+
+/** Biało-czerwona stacja paliw z hot dogami (generyczna, bez nazwy i logo). */
+function drawStation(ctx: CanvasRenderingContext2D, cx: number, groundY: number): void {
+  const top = groundY - 92;
+  ctx.fillStyle = '#6b7378';
+  ctx.fillRect(cx - 62, top + 14, 6, 78);
+  ctx.fillRect(cx + 56, top + 14, 6, 78);
+  ctx.fillStyle = '#ffffff';
+  ctx.fillRect(cx - 74, top, 148, 18);
+  ctx.fillStyle = '#d6202a';
+  ctx.fillRect(cx - 74, top + 9, 148, 9);
+  ctx.fillStyle = '#e9e4da';
+  ctx.fillRect(cx - 40, groundY - 40, 80, 40);
+  ctx.fillStyle = '#d6202a';
+  ctx.fillRect(cx - 40, groundY - 44, 80, 6);
+  ctx.fillStyle = '#9fd0ea';
+  ctx.fillRect(cx - 32, groundY - 32, 28, 20);
+  // Hot dog na szyldzie
+  ctx.fillStyle = '#e8b45a';
+  roundRect(ctx, cx + 4, groundY - 30, 28, 12, 6);
+  ctx.fill();
+  ctx.fillStyle = '#b5452c';
+  roundRect(ctx, cx + 7, groundY - 27, 22, 6, 3);
+  ctx.fill();
+  // Dystrybutory
+  for (const dx of [-58, 44]) {
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(cx + dx, groundY - 26, 12, 26);
+    ctx.fillStyle = '#d6202a';
+    ctx.fillRect(cx + dx, groundY - 26, 12, 6);
+  }
+}
+
+/** Niebieski znak „Rzeczpospolita Polska” i biało-czerwony słupek. */
+function drawBorderSign(ctx: CanvasRenderingContext2D, cx: number, groundY: number): void {
+  ctx.fillStyle = '#6b7378';
+  ctx.fillRect(cx - 2, groundY - 70, 4, 70);
+  ctx.fillStyle = '#1d4fa3';
+  roundRect(ctx, cx - 40, groundY - 96, 80, 34, 4);
+  ctx.fill();
+  ctx.fillStyle = '#ffffff';
+  ctx.font = 'bold 9px system-ui, sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText('RZECZPOSPOLITA', cx, groundY - 81);
+  ctx.fillText('POLSKA', cx, groundY - 69);
+  for (let i = 0; i < 6; i++) {
+    ctx.fillStyle = i % 2 ? '#d6202a' : '#ffffff';
+    ctx.fillRect(cx + 52, groundY - 60 + i * 10, 8, 10);
+  }
+}
+
+function drawFerry(ctx: CanvasRenderingContext2D, cx: number, baseY: number): void {
+  ctx.fillStyle = 'rgba(40, 90, 140, 0.5)';
+  ctx.fillRect(cx - 120, baseY - 6, 240, 40);
+  ctx.fillStyle = '#f4f4f4';
+  ctx.beginPath();
+  ctx.moveTo(cx - 70, baseY - 6);
+  ctx.lineTo(cx + 80, baseY - 6);
+  ctx.lineTo(cx + 64, baseY + 12);
+  ctx.lineTo(cx - 60, baseY + 12);
+  ctx.fill();
+  ctx.fillRect(cx - 40, baseY - 30, 80, 24);
+  ctx.fillStyle = '#2f5d8a';
+  ctx.fillRect(cx - 40, baseY - 22, 80, 4);
 }
 
 /** Jak daleko ponad świat rysujemy górne przeszkody (wysokie ekrany). */
