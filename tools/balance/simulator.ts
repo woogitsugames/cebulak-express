@@ -1,5 +1,6 @@
-import { DIFFICULTY, KM_PER_PX, OBSTACLE, PICKUPS, PLAYER, TICK } from '../../src/core/config';
+import { DIFFICULTY, KM_PER_PX, OBSTACLE, PICKUPS, PLAYER, POWERUPS, TICK } from '../../src/core/config';
 import { Game } from '../../src/core/game';
+import { effectiveGapH } from '../../src/core/obstacles';
 import { makeRoute, type Route } from '../../src/core/route';
 import { Rng } from '../../src/core/rng';
 
@@ -58,14 +59,18 @@ function chooseTarget(game: Game): { obstacleId: number; targetY: number } {
   }
   if (!first) return { obstacleId: -1, targetY: 300 };
   if (first.x - worldX < right && second) {
-    const lo = first.gapY - first.gapH / 2 + 95;
-    const hi = first.gapY + first.gapH / 2 - 12;
+    const h = effectiveGapH(first, game.weight);
+    const lo = first.gate
+      ? first.gapY - h / 2 + PLAYER.hitH / 2 + 12
+      : first.gapY - h / 2 + 95;
+    const hi = first.gapY + h / 2 - 12;
     return {
       obstacleId: first.id,
       targetY: second.gapY > first.gapY ? hi : Math.min(hi, Math.max(lo, second.gapY)),
     };
   }
-  return { obstacleId: first.id, targetY: first.gapY + first.gapH * 0.2 };
+  const gapH = effectiveGapH(first, game.weight);
+  return { obstacleId: first.id, targetY: first.gapY + gapH * (first.gate ? 0.12 : 0.2) };
 }
 
 export function simulateRun(
@@ -103,10 +108,11 @@ export function simulateRun(
     } else if (scheduledTap === null) {
       // Predykcja z wyprzedzeniem, ale faktyczny tap trafia dopiero po czasie reakcji.
       const reactionSeconds = profile.reactionMs / 1000;
-      const predictionTime = 0.06 + reactionSeconds;
+      const timeScale = game.activePowerup === 'mamcall' ? POWERUPS.mamcallTimeScale : 1;
+      const predictionTime = (0.06 + reactionSeconds) * timeScale;
       const gravity = PLAYER.gravity * (1 + game.weight * PICKUPS.gravityPerWeight);
       const predictedY = game.y + game.vy * predictionTime + 0.5 * gravity * predictionTime * predictionTime;
-      if (game.vy + gravity * reactionSeconds >= 0 && predictedY > targetY + targetNoise) {
+      if (game.vy + gravity * reactionSeconds * timeScale >= 0 && predictedY > targetY + targetNoise) {
         scheduledTap = game.ticks + delayTicks;
       }
     }
