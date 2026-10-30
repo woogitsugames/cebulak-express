@@ -1,0 +1,53 @@
+name: Bootstrap raportu Ligi 60
+
+on:
+  push:
+    branches:
+      - zlecenie/60-raport-ligi
+
+permissions:
+  contents: write
+
+jobs:
+  prepare:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Rozpakuj źródła zlecenia 60
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat tools/league-report/.source-0{1,2,3,4,5}.part | base64 --decode > /tmp/league60-source.tar.xz
+          echo '2610373ec8d2c4061dd767326973c739196560b6288e3dd007f6863e1b9da827  /tmp/league60-source.tar.xz' | sha256sum --check
+          tar -xJf /tmp/league60-source.tar.xz
+          rm tools/league-report/.source-0{1,2,3,4,5}.part .github/workflows/_bootstrap-60.yml
+      - name: Zainstaluj zależności
+        run: npm ci
+      - name: Uruchom testy i build
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm run test:league-report
+          npm run typecheck
+          npm test
+          npm run build
+      - name: Zainstaluj Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Wygeneruj oryginalne podglądy z zasobami repo
+        run: npm run report:league -- --week=2026-W50 --mock --out-dir=docs/art/podglady
+      - name: Zatwierdź gotowe zmiany w gałęzi
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add .github/workflows/league-report.yml .github/workflows/_bootstrap-60.yml .gitignore package.json tools/league-report docs/art/podglady/ASSETS.md docs/art/podglady/liga-2026-W50-post.png docs/art/podglady/liga-2026-W50-rolka.png docs/art/podglady/liga-2026-W50-teksty.md
+          git commit -m '[60] Generator tygodniowych raportów Ligi Polonii'
+          git push origin HEAD:zlecenie/60-raport-ligi
