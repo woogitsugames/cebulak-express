@@ -2,6 +2,7 @@ import { HOME_COUNTRIES, makeRoute, type HomeCountry } from '../core/route';
 import { replay } from '../core/game';
 import { TICK } from '../core/config';
 import { seedFromString } from '../core/rng';
+import { isValidNickId, randomNickChoices } from '../content/nicks';
 import { warsawDateKey, warsawWeekKey } from './week';
 
 export type RankingMode = 'ranked' | 'daily';
@@ -54,43 +55,18 @@ export interface RankingApi {
   getDaily(date: string): Promise<DailyData>;
 }
 
-// Oficjalny modułowy Firebase SDK, ładowany dopiero po podaniu konfiguracji.
-// CDN ogranicza wpływ na bundle gry i nie wymaga zmian package-lock.
-const FIREBASE_CDN = 'https://www.gstatic.com/firebasejs/12.19.0';
-type FirebaseObject = object;
-interface AuthHandle { currentUser: { uid: string } | null; authStateReady(): Promise<void> }
-interface DocSnapshot { exists(): boolean; data(): unknown }
-interface QuerySnapshot { docs: Array<{ id: string; data(): unknown }> }
-interface FirebaseSdk {
-  app: { initializeApp(config: Record<string, string>): FirebaseObject };
-  auth: {
-    getAuth(app: FirebaseObject): AuthHandle;
-    signInAnonymously(auth: AuthHandle): Promise<unknown>;
-  };
-  functions: {
-    getFunctions(app: FirebaseObject, region: string): FirebaseObject;
-    httpsCallable<Request, Response>(functions: FirebaseObject, name: string): (request: Request) => Promise<{ data: Response }>;
-  };
-  firestore: {
-    getFirestore(app: FirebaseObject): FirebaseObject;
-    doc(db: FirebaseObject, ...path: string[]): FirebaseObject;
-    collection(db: FirebaseObject, ...path: string[]): FirebaseObject;
-    orderBy(field: string, direction: 'desc'): FirebaseObject;
-    limit(count: number): FirebaseObject;
-    query(ref: FirebaseObject, ...constraints: FirebaseObject[]): FirebaseObject;
-    getDoc(ref: FirebaseObject): Promise<DocSnapshot>;
-    getDocs(ref: FirebaseObject): Promise<QuerySnapshot>;
-  };
+// Import typów nie ładuje SDK w runtime. Chunk Firebase pobiera się dopiero po konfiguracji.
+type FirebaseSdk = typeof import('./firebase-client')['sdk'];
+interface FirebaseConnection {
+  sdk: FirebaseSdk;
+  app: ReturnType<FirebaseSdk['app']['initializeApp']>;
+  functions: ReturnType<FirebaseSdk['functions']['getFunctions']>;
+  db: ReturnType<FirebaseSdk['firestore']['getFirestore']>;
 }
 let sdkPromise: Promise<FirebaseSdk> | undefined;
 function loadSdk(): Promise<FirebaseSdk> {
   if (!sdkPromise) {
-    sdkPromise = Promise.all([
-      import(/* @vite-ignore */ `${FIREBASE_CDN}/firebase-app.js`),
-      import(/* @vite-ignore */ `${FIREBASE_CDN}/firebase-auth.js`),
-      import(/* @vite-ignore */ `${FIREBASE_CDN}/firebase-functions.js`),
-      import(/* @vite-ignore */ `${FIREBASE_CDN}/firebase-firestore-lite.js`),
-    ]).then(([app, auth, functions, firestore]) => ({ app, auth, functions, firestore }) as FirebaseSdk)
+    sdkPromise = import('./firebase-client').then(({ sdk }) => sdk)
       .catch((error: unknown) => { sdkPromise = undefined; throw error; });
   }
   return sdkPromise;
@@ -107,7 +83,7 @@ function homeCountry(value: unknown): value is HomeCountry {
   return typeof value === 'string' && HOME_COUNTRIES.includes(value as HomeCountry);
 }
 function nickId(value: unknown): value is string {
-  return typeof value === 'string' && /^[a-z0-9-]{3,40}$/.test(value);
+  return typeof value === 'string' && isValidNickId(value);
 }
 function checkedLimit(value: number): number {
   return Number.isFinite(value) ? Math.max(1, Math.min(100, Math.floor(value))) : 30;
@@ -124,14 +100,14 @@ export interface FirebaseWebConfig {
 
 export class FirebaseRankingApi implements RankingApi {
   readonly kind = 'firebase' as const;
-  private connection?: Promise<{ sdk: FirebaseSdk; app: FirebaseObject; functions: FirebaseObject; db: FirebaseObject }>;
+  private connection?: Promise<FirebaseConnection>;
   constructor(private readonly config: FirebaseWebConfig) {}
 
-  private connected(): Promise<{ sdk: FirebaseSdk; app: FirebaseObject; functions: FirebaseObject; db: FirebaseObject }> {
+  private connected(): Promise<FirebaseConnection> {
     if (!this.connection) {
       this.connection = (async () => {
         const sdk = await loadSdk();
-        const app = sdk.app.initializeApp(this.config as unknown as Record<string, string>);
+        const app = sdk.app.initializeApp(this.config);
         const auth = sdk.auth.getAuth(app);
         await auth.authStateReady();
         if (!auth.currentUser) await sdk.auth.signInAnonymously(auth);
@@ -225,14 +201,14 @@ export class MockRankingApi implements RankingApi {
     });
     this.leagues.set(week, { week, countries });
     this.leaders.set(week, new Map<string, PlayerEntry>([
-      ['demo-1', { uid: 'demo-1', nickId: 'bocian-z-gandawy', home: 'BE', bestKm: 1540 }],
-      ['demo-2', { uid: 'demo-2', nickId: 'sloik-z-holandii', home: 'NL', bestKm: 1380 }],
-      ['demo-3', { uid: 'demo-3', nickId: 'kombi-z-berlina', home: 'DE', bestKm: 1210 }],
+      ['demo-1', { uid: 'demo-1', nickId: randomNickChoices(() => 0.12, 1, 'BE')[0], home: 'BE', bestKm: 1540 }],
+      ['demo-2', { uid: 'demo-2', nickId: randomNickChoices(() => 0.12, 1, 'NL')[0], home: 'NL', bestKm: 1380 }],
+      ['demo-3', { uid: 'demo-3', nickId: randomNickChoices(() => 0.12, 1, 'DE')[0], home: 'DE', bestKm: 1210 }],
     ]));
     const date = warsawDateKey(new Date(this.now()));
     this.dailies.set(date, new Map<string, DailyEntry>([
-      ['demo-1', { uid: 'demo-1', nickId: 'bocian-z-gandawy', home: 'BE', km: 840 }],
-      ['demo-2', { uid: 'demo-2', nickId: 'sloik-z-holandii', home: 'NL', km: 710 }],
+      ['demo-1', { uid: 'demo-1', nickId: randomNickChoices(() => 0.12, 1, 'BE')[0], home: 'BE', km: 840 }],
+      ['demo-2', { uid: 'demo-2', nickId: randomNickChoices(() => 0.12, 1, 'NL')[0], home: 'NL', km: 710 }],
     ]));
   }
 
