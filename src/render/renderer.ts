@@ -27,6 +27,11 @@ export class Renderer {
   /** Tablice z zabawnymi nazwami (zlecenia 70–71) i żart do dymka w HUD. */
   private signs: SignsRenderer | null = null;
   signJoke: string | null = null;
+  /**
+   * Duch znajomego (zlecenie 59): półprzezroczyste kombi rysowane pod bohaterem.
+   * Ustawiany przez main.ts na czas przejazdu wyzwania; błąd rysowania wyłącza ducha.
+   */
+  ghost: { draw(ctx: CanvasRenderingContext2D, timeSec: number): void } | null = null;
 
   constructor(private canvas: HTMLCanvasElement) {
     const ctx = canvas.getContext('2d');
@@ -95,6 +100,15 @@ export class Renderer {
     ctx.restore();
     this.background.drawRoad(this.ctx, bg);
     if (viewLeft < 0) this.drawSideVeil(viewLeft, viewRight, viewTop);
+    if (this.ghost) {
+      ctx.save();
+      try {
+        this.ghost.draw(ctx, timeSec);
+      } catch {
+        this.ghost = null;
+      }
+      ctx.restore();
+    }
     if (!drawHeroSprite(this.ctx, game, timeSec)) this.drawPlayer(game, timeSec);
     if (this.winter) {
       this.snow.update(Math.min(0.1, Math.max(0, timeSec - this.lastSnowT)));

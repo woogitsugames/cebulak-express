@@ -560,6 +560,25 @@ export const UI = {
   garageShuffle: 'Losuj inne',
 } as const;
 
+/**
+ * Wyzwanie z linku — „Duch znajomego” (zlecenie 59). Formy bezosobowe lub w 2. osobie
+ * bez rodzaju gramatycznego, żeby pasowały każdemu graczowi.
+ */
+export const GHOST_TEXTS = {
+  /** Etykieta nad duchem, gdy link nie ma nicku z zamkniętej listy. */
+  label: 'Duch znajomego',
+  /** Info w menu po otwarciu linku z wyzwaniem. */
+  menuInfo: 'Wyzwanie znajomego: {from} → {to}. Do pobicia: {km} km',
+  menuInfoNick: 'Wyzwanie od: {nick}. {from} → {to}, do pobicia: {km} km',
+  win: 'Duch zostaje w tyle o {km} km!',
+  lose: 'Duch był szybszy o {km} km.',
+  tie: 'Remis z duchem!',
+  /** Dopisek, gdy link zawierał tylko początek przejazdu (limit długości URL). */
+  truncated: 'Liczy się pierwsze {sec} s przejazdu.',
+  challengeButton: 'Wyzwij znajomego',
+  shareText: 'Rzucam wyzwanie: {km} km na trasie {from} → {to}. Dogonisz mojego ducha?',
+} as const;
+
 export function fill(template: string, vars: Record<string, string | number>): string {
   return template.replace(/\{(\w+)\}/g, (_, k: string) => String(vars[k] ?? ''));
 }
