@@ -1,4 +1,4 @@
-import { test, expect, tapCanvas, screenshot } from './support';
+import { test, expect, tapCanvas, screenshot, waitForMenuReady } from './support';
 
 const CASES = [
   { lang: 'pl', tagline: 'Przygoda na jeden palec', over: 'Koniec trasy!' },
@@ -12,6 +12,7 @@ for (const { lang, tagline, over } of CASES) {
   test(`menu i ekran końca w języku ${lang}`, async ({ page }, testInfo) => {
     await page.goto(`/?lang=${lang}&test=1&seed=20261030`);
     await expect(page.locator('#menu')).toBeVisible();
+    await waitForMenuReady(page);
     await expect(page.locator('#ce-language')).toHaveValue(lang);
     await expect(page.locator('#menu .menu-subtitle')).toHaveText(tagline);
     await screenshot(page, testInfo, `58-menu-${lang}`);
@@ -27,14 +28,17 @@ for (const { lang, tagline, over } of CASES) {
 
 test('wybrany język przeżywa restart, a ?lang=pl wymusza polski', async ({ page }) => {
   await page.goto('/?lang=pl&test=1&seed=20261030');
+  await waitForMenuReady(page);
   await page.locator('#ce-language').selectOption('nl');
   await expect(page.locator('#menu .menu-subtitle')).toHaveText('Bestemming Polen');
 
   await page.goto('/?test=1&seed=20261030');
+  await waitForMenuReady(page);
   await expect(page.locator('#ce-language')).toHaveValue('nl');
   await expect(page.locator('#menu .menu-subtitle')).toHaveText('Bestemming Polen');
 
   await page.goto('/?lang=pl&test=1&seed=20261030');
+  await waitForMenuReady(page);
   await expect(page.locator('#ce-language')).toHaveValue('pl');
   await expect(page.locator('#menu .menu-subtitle')).toHaveText('Przygoda na jeden palec');
 });
