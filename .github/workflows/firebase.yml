@@ -1,0 +1,30 @@
+name: Firebase (osobny emulator)
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  emulator:
+    name: Weryfikacja backendu i reguł
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+      # Zależności backendu są przypięte do konkretnych wersji w functions/package.json.
+      - name: Zainstaluj zależności Firebase
+        run: npm install --prefix functions --package-lock=false --no-audit --no-fund
+      - name: Testy typów i logiki
+        run: |
+          npm --prefix functions run typecheck
+          npm --prefix functions run test:unit
+      - name: Emulator Auth, Firestore, Functions i reguły
+        run: npm run test:firebase

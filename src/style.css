@@ -89,4 +89,6 @@ canvas { display: block; position: absolute; top: 0; left: 0; }
 .cause { font-weight: 800; margin: 12px 0 0; }
 .joke { font-style: italic; color: var(--muted); margin: 4px 0 0; }
 .best { font-weight: 800; color: #1f6f43; }
+.portal { display: block; margin-top: 12px; font-weight: 800; color: #2f5d8a; }
+#league { max-height: 86vh; }
 [hidden] { display: none !important; }
