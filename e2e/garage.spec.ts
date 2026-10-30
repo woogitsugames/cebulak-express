@@ -39,18 +39,20 @@ test('garaż na telefonie: skórki, nicki i zrzut ekranu', async ({ page }, test
   await page.addScriptTag({ content: script });
   await page.evaluate(() => {
     type GarageModule = { mountGarage: (element: HTMLElement, opts: {
-      home: 'BE'; onChange: (value: {skin: string;nickId: string}) => void; onClose: () => void;
+      home: 'BE'; totalKm?: number; onChange: (value: {skin: string;nickId: string}) => void; onClose: () => void;
     }) => () => void };
     const global = window as unknown as { GaragePreview: GarageModule; garageChanges: Array<{skin: string;nickId: string}> };
     global.garageChanges = [];
     global.GaragePreview.mountGarage(document.getElementById('garage-preview')!, {
       home: 'BE',
+      totalKm: 1_180,
       onChange: (value) => global.garageChanges.push(value),
       onClose: () => {},
     });
   });
 
-  await expect(page.locator('.ce-garage__pick')).toHaveCount(4);
+  await expect(page.locator('.ce-garage__pick')).toHaveCount(11);
+  await expect(page.locator('.ce-garage__pick:disabled')).toHaveCount(6);
   await expect(page.locator('.ce-garage__nick')).toHaveCount(6);
   await page.getByRole('button', { name: 'Pan Cebulek' }).click();
   await expect(page.locator('.ce-garage__skin-name')).toHaveText('Pan Cebulek');
@@ -59,6 +61,28 @@ test('garaż na telefonie: skórki, nicki i zrzut ekranu', async ({ page }, test
     return Boolean(image && !image.hidden && image.complete && image.naturalWidth > 0);
   });
   await screenshot(page, testInfo, '36-garaz-pixel7-pan-cebulek');
+
+  // Po 1 180 km Mała Japonka jest wybieralna, a kompakt wymaga jeszcze 320 km.
+  await page.getByRole('button', { name: 'Mała Japonka' }).click();
+  const changeCount = await page.evaluate(() => (window as unknown as {
+    garageChanges: Array<{skin:string;nickId:string}>
+  }).garageChanges.length);
+  await page.locator('.ce-garage__arrow').nth(1).click();
+  await expect(page.locator('.ce-garage__skin-name')).toHaveText('Kompakt od szwagra');
+  await expect(page.locator('.ce-garage__lock-hint'))
+    .toHaveText('Odblokujesz po 1 500 km łącznie (brakuje 320 km)');
+  await expect(page.locator('.ce-garage__portrait')).toHaveClass(/ce-garage__portrait--locked/);
+  await expect(page.locator('.ce-garage__lock')).toBeVisible();
+  await expect(page.getByRole('button', { name: /Kompakt od szwagra/ })).toBeDisabled();
+  await expect(page.getByRole('button', { name: 'Mała Japonka' })).toHaveAttribute('aria-pressed', 'true');
+  await expect.poll(() => page.evaluate(() => (window as unknown as {
+    garageChanges: Array<{skin:string;nickId:string}>
+  }).garageChanges.length)).toBe(changeCount);
+  await page.waitForFunction(() => {
+    const image = document.querySelector<HTMLImageElement>('.ce-garage__image');
+    return Boolean(image && !image.hidden && image.complete && image.naturalWidth > 0);
+  });
+  await screenshot(page, testInfo, '72-garaz-kompakt-z-klodka');
 
   await page.getByRole('button', { name: 'Kierowczyni' }).click();
   await expect(page.locator('.ce-garage__gender-button').nth(1)).toHaveAttribute('aria-pressed', 'true');
