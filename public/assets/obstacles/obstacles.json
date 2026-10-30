@@ -16,49 +16,133 @@
     "viaduct": {
       "position": "top",
       "offsetX": -24,
-      "end": { "file": "viaduct-end.png", "width": 240, "height": 192, "attachY": 0, "gapEdgeY": 192 },
-      "tile": { "file": "viaduct-tile.png", "width": 240, "height": 96, "attachY": 96 },
-      "collisionCoreX": [24,216],
+      "end": {
+        "file": "viaduct-end.png",
+        "width": 240,
+        "height": 192,
+        "attachY": 0,
+        "gapEdgeY": 192
+      },
+      "tile": {
+        "file": "viaduct-tile.png",
+        "width": 240,
+        "height": 96,
+        "attachY": 96
+      },
+      "collisionCoreX": [
+        24,
+        216
+      ],
       "repeat": "vertical, no scaling of individual segments"
     },
     "sign": {
       "position": "top",
       "offsetX": -24,
-      "end": { "file": "sign-end.png", "width": 240, "height": 192, "attachY": 0, "gapEdgeY": 192 },
-      "tile": { "file": "sign-tile.png", "width": 240, "height": 96, "attachY": 96 },
-      "collisionCoreX": [24,216],
+      "end": {
+        "file": "sign-end.png",
+        "width": 240,
+        "height": 192,
+        "attachY": 0,
+        "gapEdgeY": 192
+      },
+      "tile": {
+        "file": "sign-tile.png",
+        "width": 240,
+        "height": 96,
+        "attachY": 96
+      },
+      "collisionCoreX": [
+        24,
+        216
+      ],
       "repeat": "vertical, no scaling of individual segments"
     },
     "crane": {
       "position": "top",
       "offsetX": -24,
-      "end": { "file": "crane-end.png", "width": 240, "height": 192, "attachY": 0, "gapEdgeY": 192 },
-      "tile": { "file": "crane-tile.png", "width": 240, "height": 96, "attachY": 96 },
-      "collisionCoreX": [24,216],
+      "end": {
+        "file": "crane-end.png",
+        "width": 240,
+        "height": 192,
+        "attachY": 0,
+        "gapEdgeY": 192
+      },
+      "tile": {
+        "file": "crane-tile.png",
+        "width": 240,
+        "height": 96,
+        "attachY": 96
+      },
+      "collisionCoreX": [
+        24,
+        216
+      ],
       "repeat": "vertical, no scaling of individual segments"
     },
     "roadworks": {
       "position": "bottom",
       "offsetX": -24,
-      "end": { "file": "roadworks-end.png", "width": 240, "height": 192, "attachY": 192, "gapEdgeY": 0 },
-      "tile": { "file": "roadworks-tile.png", "width": 240, "height": 96, "attachY": 0 },
-      "collisionCoreX": [24,216],
+      "end": {
+        "file": "roadworks-end.png",
+        "width": 240,
+        "height": 192,
+        "attachY": 192,
+        "gapEdgeY": 0
+      },
+      "tile": {
+        "file": "roadworks-tile.png",
+        "width": 240,
+        "height": 96,
+        "attachY": 0
+      },
+      "collisionCoreX": [
+        24,
+        216
+      ],
       "repeat": "vertical, no scaling of individual segments"
     },
     "barrier": {
       "position": "bottom",
       "offsetX": -24,
-      "end": { "file": "barrier-end.png", "width": 240, "height": 192, "attachY": 192, "gapEdgeY": 0 },
-      "tile": { "file": "barrier-tile.png", "width": 240, "height": 96, "attachY": 0 },
-      "collisionCoreX": [24,216],
+      "end": {
+        "file": "barrier-end.png",
+        "width": 240,
+        "height": 192,
+        "attachY": 192,
+        "gapEdgeY": 0
+      },
+      "tile": {
+        "file": "barrier-tile.png",
+        "width": 240,
+        "height": 96,
+        "attachY": 0
+      },
+      "collisionCoreX": [
+        24,
+        216
+      ],
       "repeat": "vertical, no scaling of individual segments"
     },
     "truck": {
       "position": "bottom",
       "offsetX": -24,
-      "end": { "file": "truck-end.png", "width": 240, "height": 192, "attachY": 192, "gapEdgeY": 0 },
-      "tile": { "file": "truck-tile.png", "width": 240, "height": 96, "attachY": 0 },
-      "collisionCoreX": [24,216],
+      "end": {
+        "file": "truck-end.png",
+        "width": 240,
+        "height": 192,
+        "attachY": 192,
+        "gapEdgeY": 0
+      },
+      "tile": {
+        "file": "truck-tile.png",
+        "width": 240,
+        "height": 96,
+        "attachY": 0
+      },
+      "collisionCoreX": [
+        24,
+        216
+      ],
       "repeat": "vertical, no scaling of individual segments"
     }
   }
