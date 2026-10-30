@@ -116,4 +116,16 @@ const updated = original.slice(0, startIndex + START.length) +
   '\n\n' + section + '\n\n' + original.slice(endIndex);
 writeFileSync(path, updated);
 writeFileSync('tools/balance/raport.json', JSON.stringify(report, null, 2) + '\n');
+console.log('BALANCE-52_STATS=' + JSON.stringify({
+  results: report.results.map(({routeId, profileId, stats}) => ({
+    routeId, profileId,
+    p10Sec: stats.p10Sec, p50Sec: stats.medianSec, p90Sec: stats.p90Sec,
+    p10Km: stats.p10Km, p50Km: stats.medianKm, p90Km: stats.p90Km,
+    arrivedPct: stats.arrivalPct,
+  })),
+  scenarios: report.scenarios.map(({scenario, stats}) => ({
+    scenario, p50Sec: stats.medianSec, meanKm: stats.meanKm,
+    arrivedPct: stats.arrivalPct, meanBonusKm: stats.meanBonusKm,
+  })),
+}));
 console.log('Zapisano ' + path + ' oraz tools/balance/raport.json');
