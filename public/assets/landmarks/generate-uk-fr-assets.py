@@ -12,6 +12,7 @@ import hashlib
 from PIL import ImageChops
 from pathlib import Path
 from PIL import Image, ImageDraw, ImageFont
+from PIL.PngImagePlugin import PngInfo
 import cairosvg
 
 OUT = Path(sys.argv[1]) if len(sys.argv) > 1 else Path(__file__).parent / 'output'
@@ -19,6 +20,12 @@ EDGE = '#293B50'
 LIGHT = '#FFF8DC'
 UK = {'sky0':'#75BDD5', 'sky1':'#FBE5B8', 'hill1':'#9FBF8A', 'hill2':'#71A46C', 'hill3':'#4D8558', 'grass':'#3D7959', 'accent':'#BC6554'}
 FR = {'sky0':'#6DB9E2', 'sky1':'#FFE6AB', 'hill1':'#C7BE8B', 'hill2':'#99AD6D', 'hill3':'#788D50', 'grass':'#6E955A', 'accent':'#E8C457'}
+
+
+def srgb_info():
+    info=PngInfo()
+    info.add(b'sRGB',bytes([0]))
+    return info
 
 
 def fmt(v):
@@ -58,7 +65,7 @@ def save(a, path):
     # Match both texture edges with a narrow feather, guaranteeing a seamless repeat.
     if path.name.endswith(('-clouds.png','-far.png','-near.png','-road.png')):
         periodize(im)
-    im.save(path,format='PNG',optimize=True,compress_level=9)
+    im.save(path,format='PNG',optimize=True,compress_level=9,pnginfo=srgb_info())
 
 
 def periodize(im, margin=75):
@@ -606,7 +613,7 @@ def preview_country(cc,land):
         y+=max(strip.height,64)+42
     d.text((44,2640),'Vector artwork | original | transparent layers | no brands, no embedded game text',font=font(18),fill='#647585')
     file=OUT/f'countries/{cc}/preview.png'
-    out.save(file,optimize=True,compress_level=9)
+    out.save(file,optimize=True,compress_level=9,pnginfo=srgb_info())
 
 
 def preview_landmarks():
@@ -621,7 +628,7 @@ def preview_landmarks():
         base.paste(tn,(0,0),mask=tn.getchannel('A'))
         out.paste(base,(x,y))
         d.text((x+14,y+cell_h-38),name,font=font(22),fill='#34485A')
-    out.save(OUT/'landmarks/preview.png',optimize=True,compress_level=9)
+    out.save(OUT/'landmarks/preview.png',optimize=True,compress_level=9,pnginfo=srgb_info())
 
 
 def docs():
