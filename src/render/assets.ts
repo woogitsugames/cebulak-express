@@ -51,8 +51,9 @@ const landmarkPathCache = new Map<string, readonly string[]>();
 const BORDER_NEAR_PATH = 'assets/countries/pl/pl-border-near.png';
 const DEFAULT_HERO_PATHS: readonly string[] = ['assets/hero/kombi-body.png'];
 
-function hasWinterVariant(country: CountryCode, layer: BackgroundLayer): boolean {
-  return country === 'PL' && (layer === 'sky' || layer === 'far' || layer === 'near');
+/** Zimowe niebo i plany mają wszystkie kraje z tłami; brak pliku = fallback do lata. */
+function hasWinterVariant(_country: CountryCode, layer: BackgroundLayer): boolean {
+  return layer === 'sky' || layer === 'far' || layer === 'near';
 }
 
 /** Ścieżki tworzone tylko raz — getCountryLayer jest wywoływane co klatkę. */

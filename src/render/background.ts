@@ -43,7 +43,7 @@ export interface BackgroundState {
   timeSec: number;
   /** false: drogę narysuj osobno PO przeszkodach. */
   includeRoad?: boolean;
-  /** Grudzień: PL zima z fallbackiem do wariantu letniego. */
+  /** Grudzień: zimowe tła wszystkich krajów z fallbackiem do wariantu letniego. */
   season?: Season;
   onWaypoint?: (event: BackgroundWaypointEvent) => void;
 }

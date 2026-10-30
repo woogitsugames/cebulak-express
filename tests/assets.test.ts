@@ -30,7 +30,7 @@ describe('assets: HiDPI, preload i warianty', () => {
     expect(countryLayerPath('PL', 'far', 'winter')).toBe('assets/countries/pl/pl-far-zima.png');
     expect(countryLayerPath('PL', 'near', 'winter')).toBe('assets/countries/pl/pl-near-zima.png');
     expect(countryLayerPath('PL', 'road', 'winter')).toBe('assets/countries/pl/pl-road.png');
-    expect(countryLayerPath('DE', 'sky', 'winter')).toBe('assets/countries/de/de-sky.png');
+    expect(countryLayerPath('DE', 'sky', 'winter')).toBe('assets/countries/de/de-sky-zima.png');
     expect(BACKGROUND_LAYERS).toEqual(['sky', 'clouds', 'far', 'near', 'road']);
     expect(ASSET_SIZES.sky).toEqual({ width: 360, height: 640 });
     const city = { id: 'leuven', kind: 'city' as const };
