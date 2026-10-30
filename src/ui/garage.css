@@ -4,7 +4,7 @@
   --garage-green: #256843;
   width: 100%;
   max-width: 460px;
-  max-height: min(90dvh, 780px);
+  max-height: min(calc(100dvh - 24px), 780px);
   overflow-y: auto;
   overscroll-behavior: contain;
   border: 3px solid #4b4d2b;
