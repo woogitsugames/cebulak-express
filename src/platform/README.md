@@ -26,7 +26,7 @@ const unsubscribe = platform.onBack(() => {
 
 **Pasek stanu/immersive:** Capacitor 8 `SystemBars` (w `@capacitor/core`) z konfiguracją `hidden: true` ukrywa status i pasek nawigacji po starcie Android/iOS. `@capacitor/status-bar` obsługuje styl i kolor tam, gdzie Android pozwala; API 36 ignoruje zmianę koloru. Kolor tła `#1b2733` jest w splashu i konfiguracji aplikacji. System może chwilowo pokazać paski przy gestach systemowych; wcięcia urządzenia nadal wymagają CSS safe-area. iOS wymaga późniejszego dodania projektu `ios/` i `UIViewControllerBasedStatusBarAppearance` w Info.plist.
 
-**Splash:** `public/assets/brand/splash-2732.png` to tymczasowy oryginalny placeholder 2732×2732. Android korzysta z przezroczystej ikony `@drawable/ce_splash_icon` na ciemnym tle zgodnie z Android 12 SplashScreen API. Końcowe zasoby marki zlecenia 10 powinny zastąpić oba pliki. Pozostawiono `launchAutoHide: true`, aby brak integracji nie zablokował startu gry.
+**Splash:** `public/assets/brand/splash-2732.png` to tymczasowe jednolite tło 2732×2732. Android korzysta z przezroczystej ikony `@drawable/ce_splash_icon` na ciemnym tle zgodnie z Android 12 SplashScreen API. Końcowe zasoby marki zlecenia 10 powinny zastąpić oba pliki. Pozostawiono `launchAutoHide: true`, aby brak integracji nie zablokował startu gry.
 
 ## Testy manualne na urządzeniu
 
