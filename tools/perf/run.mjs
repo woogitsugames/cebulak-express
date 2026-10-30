@@ -21,10 +21,12 @@ function optionsFromCli(argv) {
   const durationSec = Number(values.duration ?? 30);
   const cpuRates = (values.cpu ?? '4,6').split(',').map(Number);
   const port = Number(values.port ?? 4173);
+  const memoryGiB = Number(values.memory ?? 2);
   if (!(durationSec > 0 && durationSec <= 300) ||
       !(port > 0 && port <= 65535) ||
+      !(memoryGiB > 0 && memoryGiB <= 32) ||
       cpuRates.some((rate) => ![4, 6].includes(rate))) {
-    throw new Error('Dozwolone: --duration=1..300 --cpu=4,6 --port=4173');
+    throw new Error('Dozwolone: --duration=1..300 --cpu=4,6 --memory=2 --port=4173');
   }
   return {
     app: resolve(values.app ?? '.'),
@@ -34,6 +36,7 @@ function optionsFromCli(argv) {
     port,
     durationSec,
     cpuRates,
+    memoryGiB,
   };
 }
 
@@ -45,6 +48,7 @@ async function startPreview(opts) {
   const command = ['run', 'preview', '--', '--host', '127.0.0.1', '--port', String(opts.port), '--strictPort'];
   const child = spawn(processName, command, {
     cwd: opts.app, stdio: ['ignore', 'pipe', 'pipe'],
+    detached: process.platform !== 'win32',
   });
   let log = '';
   for (const stream of [child.stdout, child.stderr]) {
@@ -52,6 +56,11 @@ async function startPreview(opts) {
     stream.on('data', (chunk) => { log = (log + chunk).slice(-4000); });
   }
   const url = 'http://127.0.0.1:' + opts.port;
+  const stop = async () => {
+    if (child.exitCode !== null) return;
+    if (process.platform === 'win32') child.kill('SIGTERM');
+    else { try { process.kill(-child.pid, 'SIGTERM'); } catch { child.kill('SIGTERM'); } }
+  };
   try {
     let ready = false;
     for (let i = 0; i < 120; i++) {
@@ -63,11 +72,9 @@ async function startPreview(opts) {
       await sleep(250);
     }
     if (!ready) throw new Error('Vite preview nie wystartował: ' + log);
-    return { url, stop: async () => {
-      if (child.exitCode === null) child.kill('SIGTERM');
-    } };
+    return { url, stop };
   } catch (error) {
-    if (child.exitCode === null) child.kill('SIGTERM');
+    await stop();
     throw error;
   }
 }
@@ -228,6 +235,13 @@ async function measure(opts, cpuRate, url) {
       if (message.type() === 'error') errors.push(message.text());
     });
     await page.addInitScript(installPageProbe);
+    // Hint RAM dla taniego Androida; NIE ogranicza rzeczywistej pamięci runnera.
+    await page.addInitScript((memoryGiB) => {
+      Object.defineProperty(navigator, 'deviceMemory', {
+        configurable: true,
+        get: () => memoryGiB,
+      });
+    }, opts.memoryGiB);
     const cdp = await context.newCDPSession(page);
     await cdp.send('Emulation.setCPUThrottlingRate', { rate: cpuRate });
     await page.goto(url + '/?test=1&seed=7', { waitUntil: 'domcontentloaded', timeout: 30_000 });
@@ -268,10 +282,12 @@ async function main() {
       urlParams: '?test=1&seed=7',
       scenario: 'Tryb łagodny, tap co 550 ms, restart po kolizji',
       durationSec: opts.durationSec,
+      emulatedDeviceMemoryGiB: opts.memoryGiB,
       results,
       notes: [
         'FPS i długie klatki mierzone requestAnimationFrame, nie licznikiem pętli gry.',
         'performance.memory mierzy wyłącznie stertę JS, nie całkowitą pamięć GPU/WebView.',
+        'navigator.deviceMemory jest nadpisany, ale rzeczywisty limit RAM procesu nie jest emulowany.',
         'Liczba obrazów to dostępne przez WeakRef zdekodowane HTMLImageElement/ImageBitmap; zależy od GC.',
       ],
     };
