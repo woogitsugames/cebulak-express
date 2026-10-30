@@ -7,15 +7,16 @@ type Flake = [number, number, number];
 function capture(effect: SnowEffect): { flakes: Flake[]; fills: string[] } {
   const flakes: Flake[] = [];
   const fills: string[] = [];
-  const ctx = {
+  const mocked = {
     fillStyle: '',
     save() {},
     restore() {},
     beginPath() {},
     moveTo() {},
     arc(x: number, y: number, radius: number) { flakes.push([x, y, radius]); },
-    fill() { fills.push(this.fillStyle); },
-  } as unknown as CanvasRenderingContext2D;
+    fill() { fills.push(mocked.fillStyle); },
+  };
+  const ctx = mocked as unknown as CanvasRenderingContext2D;
   effect.draw(ctx);
   return { flakes, fills };
 }
