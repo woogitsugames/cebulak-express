@@ -553,3 +553,85 @@ Wszystkie powyższe pliki: **PNG RGBA, 1620 × 900 px, profil ICC sRGB, tło prz
 - W Lyonie **celowo nie pokazano Tour Part-Dieu**: to rozpoznawalny budynek autorstwa architektów współczesnych, a francuski wyjątek panoramy (CPI art. L122-5, pkt 11) wyłącza wykorzystanie komercyjne. Zamiast tego zachowano historyczną metalową wieżę Fourvière (1894).
 - W Genewie katedra i masyw alpejski są celowo umowne. Jeśli dokładność jej architektury i położenia Mont Blanc jest kluczowa, przygotować korektę ręczną przed publikacją.
 - Materiał źródłowy: własne generacje GPT Image. Żadna fotografia odniesienia nie została skopiowana piksel w piksel; nie umieszczono logotypów ani nocnej iluminacji Wieży Eiffla.
+
+# Zlecenie 75 — Panoramy A+ BE/NL
+
+**Data:** 30.10.2026  
+**Narzędzie generujące:** wbudowany generator obrazów ChatGPT (GPT Image); kadrowanie, kompozycja i skalowanie: Pillow.  
+**Format:** PNG, RGBA (kanał alfa), 1620 × 900 px, osadzony profil sRGB.  
+**Licencja/użycie:** grafiki wygenerowane na potrzeby projektu i przekazane właścicielowi do użycia w grze i materiałach projektu, zgodnie z obowiązującymi warunkami usługi. Nie użyto zewnętrznych stocków ani kopiowania fotografii 1:1. Sam fakt wygenerowania AI nie gwarantuje wyłącznej ustawowej ochrony autorskiej.  
+**Paleta i styl:** płaska ilustracja 2D z granatowym konturem, ciepłe kolory, najważniejsze bryły miasta, bez zewnętrznego nieba i napisów.  
+
+| Plik (id) | Miasto | Budynki/sylwetki | Punkt widzenia | Źródło / narzędzie | Licencja |
+|---|---|---|---|---|---|
+| `bruksela.png` | Bruksela | Ratusz na Grand-Place (gotycka wieża), zabytkowe domy cechowe wokół placu | poziom placu Grand-Place; spojrzenie w stronę fasady Ratusza, historyczne pierzeje po bokach | ChatGPT GPT Image → Pillow | wygenerowane dla projektu |
+| `antwerpia.png` | Antwerpia | katedra Najświętszej Marii Panny, średniowieczny zamek Het Steen, zabytkowa zabudowa nabrzeża | z Linkeroever, zachodniego brzegu Skaldy, na zabytkowe centrum Antwerpii (uproszczona perspektywa) | ChatGPT GPT Image → Pillow | wygenerowane dla projektu |
+| `gandawa.png` | Gandawa | kościół św. Mikołaja, beffroi Gandawy, katedra św. Bawona; kamienice nad kanałem | okolice mostu św. Michała, widok na historyczne trzy wieże w kierunku centrum (uproszczona panorama) | ChatGPT GPT Image → Pillow | wygenerowane dla projektu |
+| `amsterdam.png` | Amsterdam | wąskie XVII-wieczne kamienice kanałowe o różnych szczytach, łukowy most i barierki z rowerami | z przeciwległego brzegu kanału, panorama typu Brouwersgracht / kanały Grachtengordel (nie konkretna fasada ani numer domu) | ChatGPT GPT Image → Pillow | wygenerowane dla projektu |
+| `rotterdam.png` | Rotterdam | biały most Erasmusa, wieża widokowa Euromast i współczesna zabudowa nad Mozą | południowy brzeg Nieuwe Maas w stronę północnego nabrzeża, sylwetki od zachodu ku wschodowi (perspektywa stylizowana) | ChatGPT GPT Image → Pillow | wygenerowane dla projektu |
+
+## Prompty i opis korekt
+
+### `bruksela.png` — Bruksela
+
+**Prompt roboczy / specyfikacja dla generowania:**
+
+> Samodzielna panorama Brukseli, gotycki ratusz i sąsiednie domy cechowe Grand-Place; styl A+ 2D, ciepłe płaskie kolory, granatowy gruby kontur, bez nieba, bez Atomium i tekstu, przezroczysty PNG.
+
+**Korekta:** Odrębna grafika wygenerowana bezpośrednio dla Brukseli; dopasowanie wymiarów i marginesów.
+
+### `antwerpia.png` — Antwerpia
+
+**Prompt roboczy / specyfikacja dla generowania:**
+
+> Samodzielna panorama Antwerpii znad Skaldy: wieża katedry NMP, Het Steen i niskie kamienice; bez MAS i innych współczesnych budowli; styl A+ 2D, gruby granatowy kontur, płaskie barwy, bez nieba, przezroczysty PNG.
+
+**Korekta:** Wycięto indywidualny fragment z wygenerowanego przez ChatGPT arkusza pięciu sylwetek, dostosowano kadr i rozmiar; odrzucono inne miasta i obiekty poza wybranym widokiem. Usunięto z kadru muzeum MAS — z uwagi na niepewność dotyczącą komercyjnej eksploatacji jego chronionego wizerunku.
+
+### `gandawa.png` — Gandawa
+
+**Prompt roboczy / specyfikacja dla generowania:**
+
+> Panorama Gandawy z trzema historycznymi wieżami we właściwej kolejności: św. Mikołaj, beffroi, św. Bawon; kamienice, mały most i kanał; bez Gravensteen; styl A+ 2D, gruby kontur, płaskie kolory, przezroczysty PNG.
+
+**Korekta:** Wycięto indywidualny fragment z wygenerowanego przez ChatGPT arkusza pięciu sylwetek, dostosowano kadr i rozmiar; odrzucono inne miasta i obiekty poza wybranym widokiem. Usunięto z kadru Gravensteen, aby zachować rozpoznawalną sekwencję trzech wież.
+
+### `amsterdam.png` — Amsterdam
+
+**Prompt roboczy / specyfikacja dla generowania:**
+
+> Panorama amsterdamskiego kanału z ciasnymi historycznymi kamienicami i mostem łukowym; bez dworca Centraal, bez tłumu, styl A+ 2D, grube granatowe kontury, płaskie kolory, bez nieba, przezroczysty PNG.
+
+**Korekta:** Wycięto indywidualny fragment z wygenerowanego przez ChatGPT arkusza pięciu sylwetek, dostosowano kadr i rozmiar; odrzucono inne miasta i obiekty poza wybranym widokiem. Usunięto z kadru dworzec Centraal, niemożliwy do jednoczesnego ujęcia z tym fragmentem kanału.
+
+### `rotterdam.png` — Rotterdam
+
+**Prompt roboczy / specyfikacja dla generowania:**
+
+> Panorama Rotterdamu: Euromast na zachód od Erasmusbrug, most i miejskie wieżowce nad Nieuwe Maas; bez domów kubicznych poza prawdziwą osią widoku, styl A+ 2D, gruby granatowy kontur, płaskie kolory, przezroczysty PNG.
+
+**Korekta:** Wycięto indywidualny fragment z wygenerowanego przez ChatGPT arkusza pięciu sylwetek, dostosowano kadr i rozmiar; odrzucono inne miasta i obiekty poza wybranym widokiem. Wykonano odbicie poziome, aby Euromast znalazła się na zachód od mostu Erasmusa.
+
+## Zgodność, geografia i ryzyka
+
+- Zabytkowe sylwetki są ilustracjami generatywnymi, nie ścisłymi rekonstrukcjami perspektywicznymi ani dokumentacją architektoniczną. Przed wdrożeniem należy ocenić na ekranie gry rozpoznawalność oraz lokalną zgodność szczegółów.
+- **Atomium** celowo pominięto: zarządca deklaruje konieczność uzyskania zgody na wykorzystanie wizerunku. **MAS** pominięto jako dodatkowe ograniczenie ryzyka komercyjnego w Belgii.
+- W holenderskiej ustawie Auteurswet art. 18 istnieje wolność panoramy dla architektury znajdującej się na stałe w miejscach publicznych, przedstawianej w kontekście miejsca; nie jest to indywidualna porada prawna.
+- Nie ma znaków towarowych, czytelnych szyldów, herbu państwowego, ludzi na pierwszym planie, flag państwowych ani znaków firmowych.
+- Granatowy kontur i uproszczone fasady podlegają końcowej ocenie wizualnej koordynatora przy zmniejszeniu ok. 5× w grze. Ujęcia są syntetycznymi kompozycjami, nie fotografiami jednego obiektywu.
+
+## Weryfikacja
+
+- [x] 5 osobnych przezroczystych plików PNG 1620×900, sRGB
+- [x] Arkusz `docs/art/podglady/panoramy-75.png` na jasnoniebieskim tle z podpisami
+- [x] Bez Atomium i MAS, bez napisów na sprite’ach
+- [x] Identyfikatory plików zgodne ze zleceniem
+- [ ] Subiektywny test rozpoznawalności w kadrze Canvas 360×640 (koordynator)
+- [ ] Testy aplikacji npm (brak checkoutu repo; brak dostępu GitHub z powłoki)
+
+## Źródła orientacji oraz prawne
+
+- Zabytki i układ panoram: przegląd zdjęć referencyjnych i opisów topograficznych; nie wykorzystano fotografii jako warstw obrazów.
+- Atomium, informacje o prawach: https://atomium.be/copyright?lang=en
+- Belgia: https://www.deauteurs.be/nieuws/panorama-uitzondering/
+- Holandia, Auteurswet art. 18: https://www.wetten-overheid.nl/wet/BWBR0001886/artikel/18
