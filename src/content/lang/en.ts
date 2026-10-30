@@ -490,7 +490,7 @@ export default {
     "toLabel": "Flying to",
     "modeLabel": "Game mode",
     "start": "Let's go!",
-    "garageButton": "Garage: character & nickname",
+    "garageButton": "Garage",
     "backToMenu": "Change route",
     "gameLabel": "Cebulak Express game"
   }

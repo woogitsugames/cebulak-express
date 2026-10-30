@@ -490,7 +490,7 @@ export default {
     "toLabel": "Je vais à",
     "modeLabel": "Mode de jeu",
     "start": "C'est parti !",
-    "garageButton": "Garage : personnage et pseudo",
+    "garageButton": "Garage",
     "backToMenu": "Changer de trajet",
     "gameLabel": "Jeu Cebulak Express"
   }

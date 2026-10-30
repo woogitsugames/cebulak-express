@@ -3,6 +3,7 @@ import type { Game } from '../core/game';
 import { effectiveGapH, isPowerupKind, type BottomKind, type Obstacle, type Pickup, type TopKind } from '../core/obstacles';
 import { POWERUP_NAME } from '../content/pl';
 import { BackgroundRenderer, type BackgroundState } from './background';
+import { createSnow } from './snow';
 import { PALETTES } from './palette';
 import { drawBottomSprite, drawGateSprite, drawHeroSprite, drawPowerupAura, drawPowerupSprite, drawTopSprite } from './sprites';
 
@@ -18,6 +19,10 @@ export class Renderer {
 
   /** Tła krajów i punkty trasy (zlecenie 30); bez plików rysuje grafikę zastępczą. */
   readonly background = new BackgroundRenderer();
+  /** Grudzień (zlecenie 47): zimowe tła i padający śnieg — tylko oprawa, bez wpływu na grę. */
+  winter = false;
+  private readonly snow = createSnow(2026);
+  private lastSnowT = 0;
 
   constructor(private canvas: HTMLCanvasElement) {
     const ctx = canvas.getContext('2d');
@@ -69,6 +74,7 @@ export class Renderer {
       waypoints: game.route.waypoints,
       timeSec,
       includeRoad: false,
+      season: this.winter ? 'winter' : 'summer',
     };
     // Tło i droga idą na całą szerokość ekranu (rozłożony składak, tablet, poziom),
     // ale przeszkody i bonusy tylko w kolumnie 360 — szerszy ekran nie daje przewagi w rankingu.
@@ -83,6 +89,11 @@ export class Renderer {
     this.background.drawRoad(this.ctx, bg);
     if (viewLeft < 0) this.drawSideVeil(viewLeft, viewRight, viewTop);
     if (!drawHeroSprite(this.ctx, game, timeSec)) this.drawPlayer(game, timeSec);
+    if (this.winter) {
+      this.snow.update(Math.min(0.1, Math.max(0, timeSec - this.lastSnowT)));
+      this.lastSnowT = timeSec;
+      this.snow.draw(ctx);
+    }
     drawPowerupAura(this.ctx, game, timeSec);
     this.drawPowerupHud(game);
   }

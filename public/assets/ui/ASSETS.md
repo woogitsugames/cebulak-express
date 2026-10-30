@@ -59,3 +59,6 @@ Grafiki mają przezroczyste marginesy; kolizja odbywa się na dotychczasowym pro
 | Plik | Źródło / narzędzie | Licencja | Autor / uwagi |
 |---|---|---|---|
 | `hand-tap.png` | ChatGPT GPT Image (koncepcja), ręczny redrawing SVG oraz Python/CairoSVG (finalny PNG) | własne opracowanie, do użycia w projekcie | 192×192 px, kanał alpha, sRGB; prosta dłoń z ciemnogranatowym konturem i łukami tapnięcia; bez napisów i obcych logotypów. |
+
+## Flagi nowych krajów (IE, ES, IT, AT, FI, LU)
+`flag-ie.png`, `flag-es.png`, `flag-it.png`, `flag-at.png`, `flag-fi.png`, `flag-lu.png` — przekolorowane z `flag-se.png` (ta sama ramka i rozmiar 96×64) skryptem koordynatora, 30.10.2026. Tylko barwy, bez herbów i godeł (flaga Hiszpanii w wersji cywilnej). Licencja jak `flag-se.png` (własne opracowanie projektu).

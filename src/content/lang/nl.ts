@@ -490,7 +490,7 @@ export default {
     "toLabel": "Ik vlieg naar",
     "modeLabel": "Spelmodus",
     "start": "Daar gaan we!",
-    "garageButton": "Garage: personage en bijnaam",
+    "garageButton": "Garage",
     "backToMenu": "Route wijzigen",
     "gameLabel": "Spel Cebulak Express"
   }

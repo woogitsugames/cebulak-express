@@ -8,7 +8,7 @@ export const PL_MENU = {
   toLabel: 'Lecę do',
   modeLabel: 'Tryb gry',
   start: 'Lecimy!',
-  garageButton: 'Garaż: postać i nick',
+  garageButton: 'Garaż',
   backToMenu: 'Zmień trasę',
   gameLabel: 'Gra Cebulak Express',
 } as const;

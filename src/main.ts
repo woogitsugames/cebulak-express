@@ -1,11 +1,17 @@
 import { TICK } from './core/config';
 import { dailyKey, dailyRoute, dailySeed, dailyTitle } from './core/daily';
 import { Game, type GameEvent, type Mode } from './core/game';
-import { HOME_COUNTRIES, PL_CITIES, START_CITIES, makeRoute, type HomeCountry, type Route } from './core/route';
+import { HOME_COUNTRIES, PL_CITIES, START_CITIES, makeRoute, reverseRoute, type HomeCountry, type Route } from './core/route';
+import { seasonAt } from './core/season';
+import { applyRun, loadProgress, saveProgress, summarizeRun, type Progress } from './meta/progress';
+import { medalToast, mountCollection, postcardToast } from './ui/collection';
+import { ONBOARDING_STORAGE_KEY, mountOnboarding, shouldShowOnboarding } from './ui/onboarding';
+import { COUNTRY_CUE_CODES, type CountryCueCode } from './audio/country-cues';
 import {
   ARRIVAL_TEXTS, BORDER_TEXTS, COUNTRY_LOCATIVE, COUNTRY_NAME, FAIL_JOKES, MILESTONE_TEXTS,
   OBSTACLE_NAME, PICKUP_TEXTS, UI, WIGILIA_TEXTS, fill,
 } from './content/i18n';
+import { RETURN_ARRIVAL_TEXTS, RETURN_CITY_LOCATIVE, RETURN_DEPARTURE_TEXTS } from './content/pl';
 import { randomNickChoices } from './content/nicks';
 import { portalLink } from './content/portals';
 import { Renderer } from './render/renderer';
@@ -91,9 +97,13 @@ const ui = {
   overJoke: $('over-joke'),
   overBest: $('over-best'),
   overPortal: $<HTMLAnchorElement>('over-portal'),
+  btnReturnFlight: $<HTMLButtonElement>('btn-return-flight'),
+  album: $('album'),
 };
 
 const params = new URLSearchParams(location.search);
+/** Gracz, który już kiedyś grał, nie dostaje ekranu pierwszego uruchomienia. */
+const returningPlayer = (() => { try { return localStorage.getItem('ce.settings') !== null; } catch { return false; } })();
 let settings = load<Settings>('ce.settings', DEFAULTS);
 // Link z karty wyniku lub osadzenia w portalu ustawia kraj i miasto startu.
 const prefill = parseGameParams(params);
@@ -116,6 +126,14 @@ let pendingReload: (() => void) | null = null;
 let closeLeague: (() => void) | null = null;
 let closeGarage: (() => void) | null = null;
 let overLeagueRequest = 0;
+/** Lot powrotny: auto cięższe od startu (słoiki od mamy); bez rankingu, dopóki serwer nie zna tych zasad. */
+const RETURN_WEIGHT = 0.25;
+let returnTrip = false;
+let progress: Progress | null = null;
+let closeCollection: (() => void) | null = null;
+const winter = seasonAt(new Date(), location.search) === 'winter';
+renderer.winter = winter;
+void loadProgress().then((p) => { progress = p; });
 
 function safeRoute(s: Settings): Route {
   try {
@@ -248,7 +266,17 @@ $('btn-garage').addEventListener('click', () => {
     onClose: () => showMenu(),
   });
 });
-$('btn-again').addEventListener('click', () => void newRun());
+$('btn-album').addEventListener('click', () => {
+  ui.menu.hidden = true;
+  ui.album.hidden = false;
+  void loadProgress().then((p) => {
+    progress = p;
+    if (ui.album.hidden) return;
+    closeCollection = mountCollection(ui.album, p, () => showMenu());
+  });
+});
+$('btn-again').addEventListener('click', () => void newRun(returnTrip));
+$('btn-return-flight').addEventListener('click', () => void newRun(true));
 $('btn-menu').addEventListener('click', () => showMenu());
 $('btn-share').addEventListener('click', () => void share());
 ui.overPortal.addEventListener('click', () => track('portal_click', { placement: 'result', home: settings.home as AnalyticsHome }));
@@ -262,6 +290,9 @@ function showMenu(): void {
   closeLeague = null;
   closeGarage?.();
   closeGarage = null;
+  closeCollection?.();
+  closeCollection = null;
+  ui.album.hidden = true;
   ui.over.hidden = true;
   ui.hud.hidden = true;
   ui.league.hidden = true;
@@ -276,9 +307,10 @@ function currentMode(): Mode {
   return daily ? 'ranked' : settings.mode;
 }
 
-async function newRun(): Promise<void> {
-  const runRoute = daily ? dailyRoute(daily) : route;
-  const mode = currentMode();
+async function newRun(reverse = false): Promise<void> {
+  returnTrip = reverse && !daily;
+  const runRoute = returnTrip ? reverseRoute(route) : daily ? dailyRoute(daily) : route;
+  const mode = returnTrip ? 'cozy' : currentMode();
   let seed = (Math.random() * 2 ** 32) >>> 0;
   if (daily) seed = dailySeed(daily);
   // Hak testowy dla E2E: stałe ziarno tylko z ?test=1.
@@ -298,17 +330,18 @@ async function newRun(): Promise<void> {
     }
   }
 
-  game = new Game({ seed, mode, route: runRoute });
+  game = new Game({ seed, mode, route: runRoute, ...(returnTrip ? { baseWeight: RETURN_WEIGHT } : {}) });
   lastMilestone = 0;
   cardImage = null;
-  music?.setSeason(daily && dailyTitle(daily) === 'Na Wigilię!' ? 'holiday' : 'regular');
+  music?.setSeason(winter || (daily && dailyTitle(daily) === 'Na Wigilię!') ? 'holiday' : 'regular');
   ui.menu.hidden = true;
   ui.over.hidden = true;
   ui.league.hidden = true;
   ui.garage.hidden = true;
+  ui.album.hidden = true;
   ui.hud.hidden = false;
   ui.hint.hidden = false;
-  ui.hint.textContent = daily ? dailyTitle(daily) : UI.tapToStart;
+  ui.hint.textContent = returnTrip ? pick(RETURN_DEPARTURE_TEXTS) : daily ? dailyTitle(daily) : UI.tapToStart;
   ui.toast.hidden = true;
   updateHud();
 }
@@ -318,7 +351,7 @@ function tap(): void {
   unlockAudio();
   if (!game) return;
   if (game.phase === 'over' || game.phase === 'arrived') {
-    if (performance.now() - overAt > 600) void newRun();
+    if (performance.now() - overAt > 600) void newRun(returnTrip);
     return;
   }
   if (game.phase === 'ready') {
@@ -338,7 +371,7 @@ $('stage').addEventListener('pointerdown', (e) => {
 window.addEventListener('keydown', (e) => {
   if (e.code !== 'Space' && e.code !== 'ArrowUp') return;
   // Spacja musi nadal aktywować przyciski, pola formularza i rozwijanie trasy.
-  if (!ui.menu.hidden || !ui.league.hidden || !ui.garage.hidden) return;
+  if (!ui.menu.hidden || !ui.league.hidden || !ui.garage.hidden || !ui.album.hidden) return;
   if ((e.target as HTMLElement)?.closest('button, select, input, textarea, a, summary, [role="radio"]')) return;
   e.preventDefault();
   tap();
@@ -397,6 +430,7 @@ function feedback(e: GameEvent): void {
   if (sound) sfx.play(sound);
   const haptic = hapticForGameEvent(e);
   if (haptic) haptics.play(haptic);
+  if (e.type === 'border' && (COUNTRY_CUE_CODES as readonly string[]).includes(e.country)) music?.playCountryCue(e.country as CountryCueCode);
   if (e.type === 'arrived') music?.playFinishJingle();
   else if (e.type === 'over') music?.stop();
 }
@@ -437,7 +471,9 @@ function showOver(g: Game): void {
   ui.overCauseIcon.alt = '';
   let joke: string;
   if (arrived) {
-    joke = pick(ARRIVAL_TEXTS);
+    joke = g.baseWeight > 0
+      ? fill(pick(RETURN_ARRIVAL_TEXTS), { city: RETURN_CITY_LOCATIVE[g.route.to.id] ?? g.route.to.name })
+      : pick(ARRIVAL_TEXTS);
     ui.overCause.textContent = joke;
     ui.overJoke.textContent = seconds + ' s';
   } else {
@@ -455,6 +491,22 @@ function showOver(g: Game): void {
   }
   ui.hud.hidden = true;
   ui.over.hidden = false;
+  // Lot powrotny: po dojechaniu do Polski (nie po samym powrocie) można od razu ruszyć z powrotem.
+  const canReturn = arrived && g.baseWeight === 0 && !daily;
+  ui.btnReturnFlight.hidden = !canReturn;
+  if (canReturn) save('ce.returnUnlocked', true);
+
+  // Medale i pocztówki: liczą się wszystkie przejazdy (także łagodne i powrotne).
+  if (progress) {
+    // Powrót za granicę to nie „dojazd do domu” — medale za dojazd liczymy tylko w stronę Polski.
+    const homeward = g.baseWeight === 0;
+    const change = applyRun(progress, summarizeRun({ route: g.route, km: g.km, jars: g.jars, parcels: g.parcels,
+      phase: homeward ? g.phase : 'over' }, winter && arrived && homeward));
+    progress = change.progress;
+    void saveProgress(progress);
+    const news = [...change.newMedals.map(medalToast), ...change.newPostcards.map(postcardToast)];
+    news.slice(0, 3).forEach((text, i) => window.setTimeout(() => toast(text), 700 + i * 1800));
+  }
 
   // Po pierwszym przejeździe dociągamy w tle grafiki wszystkich krajów (tryb offline).
   void prefetchPwaAssetsAfterRun();
@@ -574,11 +626,29 @@ $('stage').appendChild(recordControl.element);
 function syncRecordVisibility(): void {
   const playing = game?.phase === 'playing';
   const recording = recordControl.element.getAttribute('data-phase') === 'recording';
-  recordControl.element.hidden = (playing && !recording) || !ui.garage.hidden || !ui.league.hidden;
+  recordControl.element.hidden = (playing && !recording) || !ui.garage.hidden || !ui.league.hidden || !ui.album.hidden;
 }
 setInterval(syncRecordVisibility, 250);
 fillMenu();
 requestAnimationFrame(frame);
+
+// Pierwsze uruchomienie: wybór kraju i miasta. Kto już grał (ma zapisane ustawienia), nie widzi go wcześniej.
+void shouldShowOnboarding(params).then((show) => {
+  if (!show) return;
+  if (returningPlayer) {
+    void platform.storage.set(ONBOARDING_STORAGE_KEY, '1');
+    return;
+  }
+  const close = mountOnboarding($('stage'), {
+    onDone(home, from, to) {
+      close();
+      settings = { ...settings, home, from, to };
+      save('ce.settings', settings);
+      route = safeRoute(settings);
+      fillMenu();
+    },
+  });
+}).catch(() => undefined);
 void platform.initialize();
 // Aktualizacja PWA przeładowuje grę dopiero przy powrocie do menu.
 void registerPwa((reload) => {

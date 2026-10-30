@@ -252,7 +252,6 @@ button:focus-visible, select:focus-visible, summary:focus-visible, a:focus-visib
   margin-top: 8px;
 }
 .menu-action-grid .btn { min-height: 56px; font-size: clamp(13px, 3.5vw, 16px); }
-#btn-garage { grid-column: 1 / -1; }
 .daily-info {
   margin: 7px 5px 8px;
   min-height: 1.3em;
