@@ -46,7 +46,7 @@ canvas { display: block; position: absolute; top: 0; left: 0; }
 .toast {
   position: absolute; top: 22%; left: 50%; transform: translateX(-50%);
   background: rgba(255, 250, 240, 0.95); color: var(--ink);
-  font-weight: 800; padding: 10px 16px; border-radius: 12px; white-space: nowrap;
+  font-weight: 800; padding: 10px 16px; border-radius: 12px; width: max-content; max-width: 88%; text-align: center;
   box-shadow: 0 4px 14px rgba(0,0,0,.25);
 }
 .hint {

@@ -163,6 +163,22 @@ describe('dystans i punktacja', () => {
     }
     expect(borders).toEqual(['DE', 'PL']);
   });
+
+  it('mijane punkty trasy generują zdarzenia po kolei', () => {
+    const g = newGame(4, 'cozy');
+    g.lives = 999;
+    g.flap();
+    const passed: string[] = [];
+    while (g.phase === 'playing') {
+      botStep(g);
+      g.tick();
+      for (const e of g.drainEvents()) if (e.type === 'waypoint') passed.push(e.waypoint.id);
+    }
+    expect(passed).toContain('kolonia');
+    expect(passed).toContain('berlin');
+    expect(passed).toContain('stacja-swiecko');
+    expect(passed.indexOf('kolonia')).toBeLessThan(passed.indexOf('berlin'));
+  });
 });
 
 describe('przelotność (gwarancja generatora)', () => {

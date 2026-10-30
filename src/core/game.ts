@@ -1,6 +1,7 @@
 import { COZY, DIFFICULTY, KM_PER_PX, OBSTACLE, PICKUPS, PLAYER, TICK, WORLD, difficultyAt, lerp } from './config';
 import { rectCircleOverlap, rectsOverlap, type Rect } from './collision';
 import { ObstacleField, type ObstacleKind, type PickupKind } from './obstacles';
+import type { Waypoint } from '../content/waypoints';
 import { countryAt, type CountryCode, type Route } from './route';
 
 export type Mode = 'ranked' | 'cozy';
@@ -11,6 +12,7 @@ export type GameEvent =
   | { type: 'pickup'; kind: PickupKind; bonusKm: number }
   | { type: 'hit'; kind: ObstacleKind; livesLeft: number }
   | { type: 'border'; country: CountryCode }
+  | { type: 'waypoint'; waypoint: Waypoint }
   | { type: 'over'; cause: ObstacleKind }
   | { type: 'arrived' };
 
@@ -49,6 +51,8 @@ export class Game {
   /** Numery ticków, w których był tap — zapis do weryfikacji wyniku. */
   readonly flapTicks: number[] = [];
 
+  /** Indeks następnego punktu trasy do minięcia. */
+  nextWaypoint = 1;
   private pendingFlap = false;
   private events: GameEvent[] = [];
 
@@ -134,6 +138,12 @@ export class Game {
     this.collectPickups(worldX);
     this.checkCollisions(worldX);
     if (this.phase !== 'playing') return;
+
+    const wps = this.route.waypoints;
+    while (this.nextWaypoint < wps.length - 1 && this.km >= wps[this.nextWaypoint].km) {
+      this.events.push({ type: 'waypoint', waypoint: wps[this.nextWaypoint] });
+      this.nextWaypoint++;
+    }
 
     const country = countryAt(this.route, this.km);
     if (country !== this.country) {
