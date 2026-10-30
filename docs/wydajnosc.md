@@ -28,7 +28,7 @@ To **obliczenia rozmiaru bitmap**, nie pomiary całego procesu ani obietnica red
 
 Raport powstaje z pomiarów **tego samego scenariusza** na wersji bazowej i zmodyfikowanej:
 
-- Chromium z emulacją Pixel 7, CPU throttling 4× oraz 6×.
+- Chromium z emulacją Pixel 7, CPU throttling 4× oraz 6× oraz nadpisaną wskazówką `navigator.deviceMemory=2` GiB (bez sztucznego limitu pamięci procesu).
 - `?test=1&seed=7`, tryb łagodny, tap autopilota co 550 ms i restart po kolizji.
 - 30 s rzeczywistego czasu gry na każdy profil CPU.
 - Średni FPS i długie klatki >33 ms z `requestAnimationFrame`; pamięć sterty JS z `performance.memory`; liczba aktywnych dekodowanych grafik z sondy `Image` / `createImageBitmap` wykorzystującej `WeakRef`.
@@ -46,7 +46,7 @@ Raport powstaje z pomiarów **tego samego scenariusza** na wersji bazowej i zmod
 npm ci
 npx playwright install chromium
 npm run typecheck && npm test && npm run build && npm run test:e2e
-node tools/perf/run.mjs --app=. --label=po --out=perf-after.json
+node tools/perf/run.mjs --app=. --memory=2 --label=po --out=perf-after.json
 # Zbuduj bazowe main w osobnym katalogu, używając źródeł z tego samego SHA:
 node tools/perf/run.mjs --app=/tmp/cebulak-main --label=przed --out=perf-before.json
 node tools/perf/compare.mjs perf-before.json perf-after.json --out=docs/wydajnosc-pomiary.md
