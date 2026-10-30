@@ -1,6 +1,7 @@
 import { TICK } from './core/config';
 import { dailyKey, dailyRoute, dailySeed, dailyTitle } from './core/daily';
 import { Game, type GameEvent, type Mode } from './core/game';
+import { RULES_VERSION, rankedGameOptions } from './core/rules';
 import { HOME_COUNTRIES, PL_CITIES, START_CITIES, makeRoute, reverseRoute, type HomeCountry, type Route } from './core/route';
 import { seasonAt } from './core/season';
 import type { Progress } from './meta/progress';
@@ -340,7 +341,7 @@ async function newRun(reverse = false): Promise<void> {
       const { api } = await net;
       const start = await api.startRun({
         mode: daily ? 'daily' : 'ranked', home: runRoute.home, from: runRoute.from.id, to: runRoute.to.id,
-        ...(daily ? { daily } : {}),
+        ...(daily ? { daily } : {}), rulesVersion: RULES_VERSION,
       });
       runId = start.runId;
       seed = start.seed;
@@ -349,7 +350,10 @@ async function newRun(reverse = false): Promise<void> {
     }
   }
 
-  game = new Game({ seed, mode, route: runRoute, ...(returnTrip ? { baseWeight: RETURN_WEIGHT } : {}) });
+  // Ranking: dokładnie te same opcje co replay na serwerze (bez baseWeight).
+  game = new Game(mode === 'ranked'
+    ? rankedGameOptions(seed, runRoute)
+    : { seed, mode, route: runRoute, ...(returnTrip ? { baseWeight: RETURN_WEIGHT } : {}) });
   lastMilestone = 0;
   cardImage = null;
   music?.setSeason(winter || (daily && dailyTitle(daily) === 'Na Wigilię!') ? 'holiday' : 'regular');
@@ -585,7 +589,9 @@ function showOver(g: Game): void {
     km: g.km, seconds, cause: arrived ? 'arrived' : g.cause ?? 'ground', mode: g.mode, home: g.route.home as AnalyticsHome,
   });
   if (runId && settings.nickId) {
-    const run = { runId, flapTicks: [...g.flapTicks], ticks: g.ticks, km: g.km, nickId: settings.nickId };
+    const run = {
+      runId, flapTicks: [...g.flapTicks], ticks: g.ticks, km: g.km, nickId: settings.nickId, rulesVersion: RULES_VERSION,
+    };
     void net.then(({ api, queue, submitOrQueue }) => submitOrQueue(api, queue, run));
     runId = null;
   }

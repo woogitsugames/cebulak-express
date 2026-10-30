@@ -1,5 +1,6 @@
 import { replay } from '../../src/core/game';
-import { makeRoute, type HomeCountry } from '../../src/core/route';
+import { HOME_COUNTRIES, makeRoute, PL_CITIES, START_CITIES, type HomeCountry, type Route } from '../../src/core/route';
+import { isCurrentRulesVersion, rankedGameOptions } from '../../src/core/rules';
 
 /** Limit symulacji chroni funkcję przed kosztownymi, wielogodzinnymi odtworzeniami. */
 export const MAX_RUN_TICKS = 120 * 60 * 10;
@@ -41,6 +42,25 @@ export interface RunReplayData {
   home: HomeCountry;
   from: string;
   to: string;
+  /** Wersja zasad zapisana przy startRun; brak = przejazd sprzed wersjonowania. */
+  rulesVersion?: number;
+}
+
+/**
+ * Walidacja trasy wyłącznie na wspólnych danych z src/core/route.ts
+ * (15 krajów domowych, ich miasta startowe i cele w Polsce).
+ * Zwraca gotową trasę albo null — bez własnych list po stronie serwera.
+ */
+export function parseRoute(home: unknown, from: unknown, to: unknown): Route | null {
+  if (typeof home !== 'string' || typeof from !== 'string' || typeof to !== 'string') return null;
+  const country = HOME_COUNTRIES.find((c) => c === home);
+  if (!country) return null;
+  if (!START_CITIES[country].some((c) => c.id === from) || !PL_CITIES.some((c) => c.id === to)) return null;
+  try {
+    return makeRoute(country, from, to);
+  } catch {
+    return null;
+  }
 }
 
 export function verifyReplay(
@@ -59,10 +79,15 @@ export function verifyReplay(
     previous = tick;
   }
 
+  // Przejazd rozpoczęty na innych zasadach nie może trafić do bieżącego sezonu.
+  if (!isCurrentRulesVersion(run.rulesVersion)) return false;
+  const route = parseRoute(run.home, run.from, run.to);
+  if (!route) return false;
+
   try {
-    const route = makeRoute(run.home, run.from, run.to);
     if ((km as number) > route.totalKm) return false;
-    const result = replay({ seed: run.seed, mode: 'ranked', route }, flapTicks as number[], ticks as number);
+    // Te same opcje co klient (rankedGameOptions): bez baseWeight lotu powrotnego.
+    const result = replay(rankedGameOptions(run.seed, route), flapTicks as number[], ticks as number);
     // Sam limit replay() nie może być traktowany jak legalne zakończenie.
     return (result.phase === 'over' || result.phase === 'arrived')
       && result.km === km

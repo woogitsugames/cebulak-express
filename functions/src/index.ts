@@ -8,9 +8,10 @@ import { HttpsError, onCall } from 'firebase-functions/v2/https';
 import { onSchedule } from 'firebase-functions/v2/scheduler';
 import { TICK } from '../../src/core/config';
 import { seedFromString } from '../../src/core/rng';
-import { HOME_COUNTRIES, makeRoute, type HomeCountry } from '../../src/core/route';
+import { type HomeCountry } from '../../src/core/route';
+import { isCurrentRulesVersion, RULES_VERSION, seasonKey } from '../../src/core/rules';
 import {
-  isCalendarDay, RETENTION_MS, RUN_EXPIRES_MS,
+  isCalendarDay, parseRoute, RETENTION_MS, RUN_EXPIRES_MS,
   verifyReplay, warsawDay, warsawWeek,
 } from './validation';
 
@@ -24,7 +25,7 @@ const SUBMIT_GAP_MS = 3_000;
 const LIMIT_RETENTION_MS = 2 * 24 * 60 * 60 * 1000;
 
 type GameMode = 'ranked' | 'daily';
-type RejectReason = 'replay_mismatch' | 'too_fast' | 'expired' | 'rate_limited' | 'bad_nick' | 'duplicate';
+type RejectReason = 'replay_mismatch' | 'too_fast' | 'expired' | 'rate_limited' | 'bad_nick' | 'duplicate' | 'old_rules';
 
 interface RunDoc {
   uid: string;
@@ -33,6 +34,8 @@ interface RunDoc {
   home: HomeCountry;
   from: string;
   to: string;
+  /** Wersja zasad (= sezon rankingu) z src/core/rules.ts; brak w przejazdach sprzed wersjonowania. */
+  rulesVersion?: number;
   issuedAt: number;
   expiresAt: number;
   status: 'issued' | 'accepted' | 'rejected';
@@ -48,6 +51,7 @@ interface SubmitResponse {
   km: number;
   reason?: RejectReason;
   week: string;
+  rulesVersion: number;
   countryRankKm?: number;
   playerBestKm?: number;
 }
@@ -91,21 +95,20 @@ export const startRun = onCall(
     }
 
     const data = objectData(request.data);
+    // Stary klient (inne zasady gry) gra lokalnie, bez rankingu bieżącego sezonu.
+    if (!isCurrentRulesVersion(data.rulesVersion)) {
+      throw new HttpsError('failed-precondition', 'Nieaktualna wersja zasad gry. Zaktualizuj grę.',
+        { rulesVersion: RULES_VERSION });
+    }
     const mode = data.mode;
-    const home = data.home;
-    const from = data.from;
-    const to = data.to;
-    if ((mode !== 'ranked' && mode !== 'daily')
-      || !HOME_COUNTRIES.some((c) => c === home)
-      || typeof from !== 'string' || typeof to !== 'string') {
+    if (mode !== 'ranked' && mode !== 'daily') {
       throw new HttpsError('invalid-argument', 'Niepoprawny tryb, kraj lub miasto.');
     }
-    const country = home as HomeCountry;
-    try {
-      makeRoute(country, from, to);
-    } catch {
-      throw new HttpsError('invalid-argument', 'Nieznana lub niezgodna trasa.');
-    }
+    const route = parseRoute(data.home, data.from, data.to);
+    if (!route) throw new HttpsError('invalid-argument', 'Nieznana lub niezgodna trasa.');
+    const country = route.home;
+    const from = route.from.id;
+    const to = route.to.id;
 
     const now = Date.now();
     let daily: string | undefined;
@@ -122,7 +125,7 @@ export const startRun = onCall(
     const seed = mode === 'daily' ? seedFromString('daily:' + daily) : randomInt(0, 0x100000000);
     const ref = db.collection('runs').doc();
     const run: RunDoc = {
-      uid, seed, mode, home: country, from, to,
+      uid, seed, mode, home: country, from, to, rulesVersion: RULES_VERSION,
       issuedAt: now, expiresAt: now + RETENTION_MS,
       status: 'issued', km: 0, ticks: 0,
       ...(daily === undefined ? {} : { daily }),
@@ -134,7 +137,7 @@ export const startRun = onCall(
       tx.set(startLimitRef, limit.next);
       tx.create(ref, run);
     });
-    return { runId: ref.id, seed, issuedAt: now };
+    return { runId: ref.id, seed, issuedAt: now, rulesVersion: RULES_VERSION };
   },
 );
 
@@ -160,7 +163,7 @@ export const submitRun = onCall(
     // Tanie odrzucenia przed drogim odtworzeniem (do 72 000 ticków symulacji),
     // żeby spam zgłoszeń nie kosztował CPU. Transakcja niżej sprawdza je ponownie.
     if (initial.status !== 'issued') {
-      return { accepted: false, km: 0, reason: 'duplicate', week: warsawWeek(initial.issuedAt) };
+      return { accepted: false, km: 0, reason: 'duplicate', week: warsawWeek(initial.issuedAt), rulesVersion: RULES_VERSION };
     }
     const nowPre = Date.now();
     const ticksPre = data.ticks;
@@ -187,17 +190,22 @@ export const submitRun = onCall(
       if (!run) throw new HttpsError('not-found', 'Przejazd nie istnieje.');
       if (run.uid !== uid) throw new HttpsError('permission-denied', 'Przejazd należy do innego gracza.');
       const week = warsawWeek(run.issuedAt);
-      if (run.status !== 'issued') return { accepted: false, km: 0, reason: 'duplicate', week };
+      if (run.status !== 'issued') return { accepted: false, km: 0, reason: 'duplicate', week, rulesVersion: RULES_VERSION };
 
       const now = Date.now();
       const limit = rateState(limitSnap, now, SUBMIT_GAP_MS, 500);
-      if (limit.blocked) return { accepted: false, km: 0, reason: 'rate_limited', week };
+      if (limit.blocked) return { accepted: false, km: 0, reason: 'rate_limited', week, rulesVersion: RULES_VERSION };
       const reject = (reason: RejectReason): SubmitResponse => {
         tx.update(runRef, { status: 'rejected', reason, submittedAt: now });
         tx.set(limiterRef, limit.next);
-        return { accepted: false, km: 0, reason, week };
+        return { accepted: false, km: 0, reason, week, rulesVersion: RULES_VERSION };
       };
 
+      // Wynik musi pochodzić z bieżących zasad: zarówno przejazd (zapisany przy startRun),
+      // jak i zgłoszenie klienta. Inaczej km nie są porównywalne w sezonie.
+      if (!isCurrentRulesVersion(run.rulesVersion) || !isCurrentRulesVersion(data.rulesVersion)) {
+        return reject('old_rules');
+      }
       if (now - run.issuedAt > RUN_EXPIRES_MS) return reject('expired');
       if (typeof data.nickId !== 'string' || !isValidNickId(data.nickId)) return reject('bad_nick');
       if (!Number.isSafeInteger(data.ticks) || (data.ticks as number) <= 0) return reject('replay_mismatch');
@@ -209,15 +217,17 @@ export const submitRun = onCall(
       const nickId = data.nickId;
       const playerRef = db.collection('players').doc(uid);
       const playerSnap = await tx.get(playerRef);
-      const previousBest = playerSnap.exists && typeof playerSnap.get('bestKm') === 'number'
+      // Rekord i seria dotarć liczą się tylko w bieżącym sezonie (wersji zasad).
+      const sameSeason = playerSnap.exists && playerSnap.get('rulesVersion') === RULES_VERSION;
+      const previousBest = sameSeason && typeof playerSnap.get('bestKm') === 'number'
         ? playerSnap.get('bestKm') as number : 0;
       const playerBestKm = Math.max(previousBest, km);
       // Nie ufamy licznikowi w kliencie. Długa seria dotarć do celu
       // lub niemal identyczny rytm tapnięć to wyłącznie sygnały do przeglądu.
-      const previousStreakValue: unknown = playerSnap.get('perfectStreak');
+      const previousStreakValue: unknown = sameSeason ? playerSnap.get('perfectStreak') : 0;
       const previousStreak = Number.isSafeInteger(previousStreakValue) && (previousStreakValue as number) >= 0
         ? previousStreakValue as number : 0;
-      const perfect = km === makeRoute(run.home, run.from, run.to).totalKm;
+      const perfect = km === parseRoute(run.home, run.from, run.to)?.totalKm;
       const perfectStreak = perfect ? Math.min(previousStreak + 1, 1_000) : 0;
       const flagReasons: string[] = [];
       if (regularRhythm) flagReasons.push('regular_taps');
@@ -225,8 +235,9 @@ export const submitRun = onCall(
 
       let countryRankKm: number | undefined;
       if (run.mode === 'ranked') {
-        const leagueRef = db.collection('league').doc(week);
-        const entryRef = db.collection('leaderboard').doc(week).collection('entries').doc(uid);
+        // Dokumenty sezonu: league/r{wersja}_{tydzień}, leaderboard/r{wersja}_{tydzień}/entries.
+        const leagueRef = db.collection('league').doc(seasonKey(week));
+        const entryRef = db.collection('leaderboard').doc(seasonKey(week)).collection('entries').doc(uid);
         const memberRef = leagueRef.collection('_members').doc(run.home + '_' + uid);
         const [leagueSnap, entrySnap, memberSnap] = await Promise.all([
           tx.get(leagueRef), tx.get(entryRef), tx.get(memberRef),
@@ -240,28 +251,30 @@ export const submitRun = onCall(
             runs: FieldValue.increment(1),
             players: FieldValue.increment(memberSnap.exists ? 0 : 1),
           } },
-          updatedAt: now,
+          week, rulesVersion: RULES_VERSION, updatedAt: now,
         }, { merge: true });
         if (!memberSnap.exists) tx.create(memberRef, { uid, home: run.home, joinedAt: now });
 
         const oldWeekBest = entrySnap.exists && typeof entrySnap.get('bestKm') === 'number'
           ? entrySnap.get('bestKm') as number : -1;
-        if (km > oldWeekBest) tx.set(entryRef, { nickId, home: run.home, bestKm: km, at: now });
+        if (km > oldWeekBest) tx.set(entryRef, { nickId, home: run.home, bestKm: km, at: now, rulesVersion: RULES_VERSION });
       } else {
         // Wyzwanie dnia nie zwiększa sumy kraju ani tygodniowego rankingu.
-        const dayRef = db.collection('daily').doc(run.daily!);
+        const dayRef = db.collection('daily').doc(seasonKey(run.daily!));
         const entryRef = dayRef.collection('entries').doc(uid);
         const entrySnap = await tx.get(entryRef);
         const oldBest = entrySnap.exists && typeof entrySnap.get('km') === 'number'
           ? entrySnap.get('km') as number : -1;
-        if (km > oldBest) tx.set(entryRef, { nickId, home: run.home, km });
+        if (km > oldBest) tx.set(entryRef, { nickId, home: run.home, km, rulesVersion: RULES_VERSION });
       }
 
-      tx.set(playerRef, { nickId, home: run.home, bestKm: playerBestKm, perfectStreak, updatedAt: now });
+      tx.set(playerRef, {
+        nickId, home: run.home, bestKm: playerBestKm, perfectStreak, rulesVersion: RULES_VERSION, updatedAt: now,
+      });
       tx.update(runRef, { status: 'accepted', km, ticks, submittedAt: now,
         flagged: flagReasons.length > 0, flagReasons });
       tx.set(limiterRef, limit.next);
-      return { accepted: true, km, week, ...(countryRankKm === undefined ? {} : { countryRankKm }), playerBestKm };
+      return { accepted: true, km, week, rulesVersion: RULES_VERSION, ...(countryRankKm === undefined ? {} : { countryRankKm }), playerBestKm };
     });
   },
 );

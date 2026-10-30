@@ -1,12 +1,13 @@
 import { HOME_COUNTRIES, makeRoute, type HomeCountry } from '../core/route';
 import { replay } from '../core/game';
+import { RULES_VERSION, rankedGameOptions, seasonKey } from '../core/rules';
 import { TICK } from '../core/config';
 import { seedFromString } from '../core/rng';
 import { isValidNickId, randomNickChoices } from '../content/nicks';
 import { warsawDateKey, warsawWeekKey } from './week';
 
 export type RankingMode = 'ranked' | 'daily';
-export type RejectionReason = 'replay_mismatch' | 'too_fast' | 'expired' | 'rate_limited' | 'bad_nick' | 'duplicate';
+export type RejectionReason = 'replay_mismatch' | 'too_fast' | 'expired' | 'rate_limited' | 'bad_nick' | 'duplicate' | 'old_rules';
 
 export interface StartRunRequest {
   mode: RankingMode;
@@ -14,14 +15,25 @@ export interface StartRunRequest {
   from: string;
   to: string;
   daily?: string;
+  /** Wersja zasad (sezon rankingu); domyślnie RULES_VERSION z src/core/rules.ts. */
+  rulesVersion?: number;
 }
-export interface StartRunResponse { runId: string; seed: number; issuedAt: number }
-export interface SubmitRunRequest { runId: string; flapTicks: number[]; ticks: number; km: number; nickId: string }
+export interface StartRunResponse { runId: string; seed: number; issuedAt: number; rulesVersion?: number }
+export interface SubmitRunRequest {
+  runId: string;
+  flapTicks: number[];
+  ticks: number;
+  km: number;
+  nickId: string;
+  /** Wersja zasad, na których rozegrano przejazd (ważne dla kolejki offline). */
+  rulesVersion?: number;
+}
 export interface SubmitRunResponse {
   accepted: boolean;
   km: number;
   reason?: RejectionReason;
   week: string;
+  rulesVersion?: number;
   countryRankKm?: number;
   playerBestKm?: number;
 }
@@ -168,19 +180,23 @@ export class FirebaseRankingApi implements RankingApi {
 
   async startRun(request: StartRunRequest): Promise<StartRunResponse> {
     const { sdk, functions } = await this.connected();
-    const response = await sdk.functions.httpsCallable<StartRunRequest, StartRunResponse>(functions, 'startRun')(request);
+    const response = await sdk.functions.httpsCallable<StartRunRequest, StartRunResponse>(functions, 'startRun')(
+      { rulesVersion: RULES_VERSION, ...request });
+    if (response.data.rulesVersion !== RULES_VERSION) throw new Error('Inna wersja zasad na serwerze');
     return response.data;
   }
   async submitRun(request: SubmitRunRequest): Promise<SubmitRunResponse> {
     const { sdk, functions } = await this.connected();
-    const response = await sdk.functions.httpsCallable<SubmitRunRequest, SubmitRunResponse>(functions, 'submitRun')(request);
+    const response = await sdk.functions.httpsCallable<SubmitRunRequest, SubmitRunResponse>(functions, 'submitRun')(
+      { rulesVersion: RULES_VERSION, ...request });
     if (response.data.accepted) this.leagueCache.invalidate(response.data.week);
     return response.data;
   }
   async getLeague(week: string): Promise<LeagueData> {
     return this.leagueCache.get(week, async () => {
       const { sdk, db } = await this.connected();
-      const snapshot = await sdk.firestore.getDoc(sdk.firestore.doc(db, 'league', week));
+      // Tylko bieżący sezon (wersja zasad): league/r{wersja}_{tydzień}.
+      const snapshot = await sdk.firestore.getDoc(sdk.firestore.doc(db, 'league', seasonKey(week)));
       const data = snapshot.exists() ? record(snapshot.data()) : null;
       const countries = record(data?.countries);
       const result: LeagueData = { week, countries: {}, updatedAt: data?.updatedAt };
@@ -195,7 +211,7 @@ export class FirebaseRankingApi implements RankingApi {
   }
   async getLeaderboard(week: string, limit: number): Promise<PlayerEntry[]> {
     const { sdk, db } = await this.connected();
-    const q = sdk.firestore.query(sdk.firestore.collection(db, 'leaderboard', week, 'entries'),
+    const q = sdk.firestore.query(sdk.firestore.collection(db, 'leaderboard', seasonKey(week), 'entries'),
       sdk.firestore.orderBy('bestKm', 'desc'), sdk.firestore.limit(checkedLimit(limit)));
     const entries = await sdk.firestore.getDocs(q);
     return entries.docs.flatMap((snapshot): PlayerEntry[] => {
@@ -207,7 +223,7 @@ export class FirebaseRankingApi implements RankingApi {
   }
   async getDaily(date: string): Promise<DailyData> {
     const { sdk, db } = await this.connected();
-    const q = sdk.firestore.query(sdk.firestore.collection(db, 'daily', date, 'entries'),
+    const q = sdk.firestore.query(sdk.firestore.collection(db, 'daily', seasonKey(date), 'entries'),
       sdk.firestore.orderBy('km', 'desc'), sdk.firestore.limit(50));
     const entries = await sdk.firestore.getDocs(q);
     return { date, entries: entries.docs.flatMap((snapshot): DailyEntry[] => {
@@ -261,6 +277,7 @@ export class MockRankingApi implements RankingApi {
   }
 
   async startRun(request: StartRunRequest): Promise<StartRunResponse> {
+    if ((request.rulesVersion ?? RULES_VERSION) !== RULES_VERSION) throw new Error('Nieaktualna wersja zasad');
     if (!HOME_COUNTRIES.includes(request.home)) throw new Error('Nieznany kraj');
     makeRoute(request.home, request.from, request.to);
     if (request.mode === 'daily' && !/^\d{4}-\d{2}-\d{2}$/.test(request.daily ?? '')) {
@@ -270,7 +287,7 @@ export class MockRankingApi implements RankingApi {
     const seed = request.mode === 'daily' ? seedFromString(`daily:${request.daily}`) : this.randomSeed() >>> 0;
     const runId = `mock-${++this.seq}`;
     this.runs.set(runId, { request: { ...request }, seed, issuedAt, submitted: false });
-    return { runId, seed, issuedAt };
+    return { runId, seed, issuedAt, rulesVersion: RULES_VERSION };
   }
 
   async submitRun(request: SubmitRunRequest): Promise<SubmitRunResponse> {
@@ -279,6 +296,7 @@ export class MockRankingApi implements RankingApi {
     const run = this.runs.get(request.runId);
     if (!run) return fail('expired');
     if (run.submitted) return fail('duplicate');
+    if ((request.rulesVersion ?? RULES_VERSION) !== RULES_VERSION) return fail('old_rules');
     if (this.now() - run.issuedAt > 30 * 60_000) return fail('expired');
     if (!nickId(request.nickId)) return fail('bad_nick');
     if (!Number.isSafeInteger(request.ticks) || request.ticks <= 0 || request.ticks > 120 * 60 * 10 ||
@@ -289,9 +307,8 @@ export class MockRankingApi implements RankingApi {
       return fail('replay_mismatch');
     }
     if (this.now() - run.issuedAt < request.ticks * TICK * 1000 * 0.9) return fail('too_fast');
-    const g = replay({
-      seed: run.seed, mode: 'ranked', route: makeRoute(run.request.home, run.request.from, run.request.to),
-    }, request.flapTicks, request.ticks);
+    const g = replay(rankedGameOptions(run.seed, makeRoute(run.request.home, run.request.from, run.request.to)),
+      request.flapTicks, request.ticks);
     if (g.ticks !== request.ticks || g.km !== request.km || (g.phase !== 'over' && g.phase !== 'arrived')) {
       return fail('replay_mismatch');
     }

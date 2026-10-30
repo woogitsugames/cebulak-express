@@ -1,11 +1,29 @@
 import { describe, expect, it } from 'vitest';
-import { replay } from '../../src/core/game';
+import { Game, replay } from '../../src/core/game';
 import { ANALYTICS_RATE_LIMIT, analyticsRateLimited, originPermitted, regularTapRhythm } from '../src/abuse';
+import { countEvents, validateEvent } from '../src/analytics-events';
 import { isValidNickId, randomNickChoices } from '../../src/content/nicks';
-import { makeRoute } from '../../src/core/route';
-import { isCalendarDay, verifyReplay, warsawDay, warsawWeek } from '../src/validation';
+import { botStep } from '../../tests/helpers';
+import { HOME_COUNTRIES, makeRoute, PL_CITIES, START_CITIES, type HomeCountry } from '../../src/core/route';
+import { RULES_VERSION, rankedGameOptions, seasonKey } from '../../src/core/rules';
+import { isCalendarDay, parseRoute, verifyReplay, warsawDay, warsawWeek } from '../src/validation';
 
-const run = { seed: 77, home: 'BE' as const, from: 'bruksela', to: 'rzeszow' };
+const run = { seed: 77, home: 'BE' as const, from: 'bruksela', to: 'rzeszow', rulesVersion: RULES_VERSION };
+
+/**
+ * Ścieżka klienta: tak jak pętla w src/main.ts — gra z rankedGameOptions,
+ * wejście (tu autopilot z testów rdzenia) przed krokiem symulacji, aż do końca przejazdu.
+ */
+function clientRun(seed: number, home: HomeCountry, from: string, to: string, baseWeight?: number) {
+  const options = rankedGameOptions(seed, makeRoute(home, from, to));
+  const game = new Game(baseWeight === undefined ? options : { ...options, baseWeight });
+  game.flap();
+  while (game.phase === 'playing' && game.ticks < 120 * 60 * 10) {
+    botStep(game);
+    game.tick();
+  }
+  return { flapTicks: [...game.flapTicks], ticks: game.ticks, km: game.km, phase: game.phase };
+}
 
 describe('weryfikator symulacji', () => {
   it('akceptuje rzeczywiście zakończony przejazd', () => {
@@ -22,6 +40,98 @@ describe('weryfikator symulacji', () => {
     expect(verifyReplay(run, [0], result.ticks, result.km + 1)).toBe(false);
     expect(verifyReplay(run, [0], 72001, result.km)).toBe(false);
     expect(verifyReplay(run, [], result.ticks, result.km)).toBe(false);
+  });
+});
+
+describe('wersja zasad (sezon rankingu) i wspólne opcje gry', () => {
+  it('ten sam seed i te same tapnięcia dają te same km po stronie klienta i serwera', () => {
+    const cases: Array<[HomeCountry, string, string]> = [
+      ['BE', 'bruksela', 'rzeszow'], ['IE', 'dublin', 'warszawa'], ['FI', 'helsinki', 'gdansk'], ['LU', 'luksemburg', 'krakow'],
+    ];
+    for (const [home, from, to] of cases) {
+      for (const seed of [1, 77, 0xdeadbeef]) {
+        const client = clientRun(seed, home, from, to);
+        expect(client.phase === 'over' || client.phase === 'arrived').toBe(true);
+        expect(client.km).toBeGreaterThan(100);
+        const server = replay(rankedGameOptions(seed, makeRoute(home, from, to)), client.flapTicks, client.ticks);
+        expect(server.km).toBe(client.km);
+        expect(server.ticks).toBe(client.ticks);
+        expect(verifyReplay({ seed, home, from, to, rulesVersion: RULES_VERSION },
+          client.flapTicks, client.ticks, client.km)).toBe(true);
+      }
+    }
+  });
+
+  it('opcje rankingu nie zawierają baseWeight lotu powrotnego', () => {
+    const options = rankedGameOptions(5, makeRoute('BE', 'bruksela', 'rzeszow'));
+    expect(options).toEqual({ seed: 5, mode: 'ranked', route: options.route });
+    expect(new Game(options).baseWeight).toBe(0);
+    // Przejazd z bagażem powrotnym nie przechodzi weryfikacji rankingowej.
+    let rejected = 0;
+    for (const seed of [3, 4, 5, 6, 7]) {
+      const heavy = clientRun(seed, 'BE', 'bruksela', 'rzeszow', 0.4);
+      if (!verifyReplay({ ...run, seed }, heavy.flapTicks, heavy.ticks, heavy.km)) rejected++;
+    }
+    expect(rejected).toBeGreaterThan(0);
+  });
+
+  it('odrzuca przejazd ze starszą lub brakującą wersją zasad', () => {
+    const result = replay(rankedGameOptions(run.seed, makeRoute(run.home, run.from, run.to)), [0]);
+    expect(verifyReplay(run, [0], result.ticks, result.km)).toBe(true);
+    expect(verifyReplay({ ...run, rulesVersion: RULES_VERSION - 1 }, [0], result.ticks, result.km)).toBe(false);
+    expect(verifyReplay({ ...run, rulesVersion: undefined }, [0], result.ticks, result.km)).toBe(false);
+    expect(verifyReplay({ ...run, rulesVersion: RULES_VERSION + 1 }, [0], result.ticks, result.km)).toBe(false);
+  });
+
+  it('akceptuje wszystkie 15 krajów domowych, ich miasta i cele ze wspólnych danych', () => {
+    expect(HOME_COUNTRIES).toHaveLength(15);
+    for (const home of HOME_COUNTRIES) {
+      for (const from of START_CITIES[home]) {
+        for (const to of PL_CITIES) {
+          expect(parseRoute(home, from.id, to.id)?.home).toBe(home);
+        }
+      }
+    }
+    const ie = replay(rankedGameOptions(42, makeRoute('IE', 'cork', 'wroclaw')), [0]);
+    expect(verifyReplay({ seed: 42, home: 'IE', from: 'cork', to: 'wroclaw', rulesVersion: RULES_VERSION },
+      [0], ie.ticks, ie.km)).toBe(true);
+  });
+
+  it('odrzuca nieznany kraj i miasto spoza kraju domowego', () => {
+    expect(parseRoute('PL', 'warszawa', 'krakow')).toBeNull();
+    expect(parseRoute('__proto__', 'bruksela', 'krakow')).toBeNull();
+    expect(parseRoute('IE', 'bruksela', 'krakow')).toBeNull();
+    expect(parseRoute('IE', 'dublin', 'dublin')).toBeNull();
+    expect(parseRoute('IE', 'dublin', 42)).toBeNull();
+    expect(verifyReplay({ ...run, home: 'IE', from: 'bruksela' }, [0], 100, 1)).toBe(false);
+  });
+
+  it('klucz sezonu oddziela tygodnie i dni różnych wersji zasad', () => {
+    expect(seasonKey('2026-W44')).toBe('r' + RULES_VERSION + '_2026-W44');
+    expect(seasonKey('2026-10-30', 1)).toBe('r1_2026-10-30');
+    expect(seasonKey('2026-W44', 1)).not.toBe(seasonKey('2026-W44'));
+  });
+});
+
+describe('allowlista analityki', () => {
+  it('przyjmuje nowe kraje, bramkę bagażową i bonusy', () => {
+    for (const home of ['IE', 'ES', 'IT', 'AT', 'SE', 'FI', 'LU']) {
+      expect(validateEvent({ event: 'run_start', props: { mode: 'ranked', home } })).toBe(true);
+      expect(validateEvent({ event: 'portal_click', props: { placement: 'menu', home } })).toBe(true);
+    }
+    expect(validateEvent({ event: 'run_end', props: {
+      km: 120, seconds: 30, cause: 'baggage-gate', mode: 'cozy', home: 'SE' } })).toBe(true);
+    for (const kind of ['parcel', 'jar', 'boarding', 'tailwind', 'mamcall']) {
+      expect(validateEvent({ event: 'pickup', props: { kind, mode: 'ranked' } })).toBe(true);
+    }
+    expect(countEvents([{ event: 'pickup', props: { kind: 'mamcall', mode: 'cozy' } }]))
+      .toMatchObject({ 'events.pickup': 1, 'pickups.byKind.mamcall': 1, 'pickups.byMode.cozy': 1 });
+  });
+
+  it('nadal odrzuca nieznane wartości i dodatkowe pola', () => {
+    expect(validateEvent({ event: 'run_start', props: { mode: 'ranked', home: 'PL' } })).toBe(false);
+    expect(validateEvent({ event: 'pickup', props: { kind: 'rocket', mode: 'ranked' } })).toBe(false);
+    expect(validateEvent({ event: 'pickup', props: { kind: 'jar', mode: 'ranked', uid: 'x' } })).toBe(false);
   });
 });
 
