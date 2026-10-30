@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { TICK } from '../src/core/config';
 import { randomNickChoices } from '../src/content/nicks';
-import { Game } from '../src/core/game';
+import { Game, replay } from '../src/core/game';
+import { RULES_VERSION, rankedGameOptions } from '../src/core/rules';
 import { makeRoute } from '../src/core/route';
 import { seedFromString } from '../src/core/rng';
 import { LeagueReadCache, MockRankingApi, createRankingApi, type SubmitRunRequest } from '../src/net/api';
@@ -71,6 +72,21 @@ describe('MockRankingApi', () => {
     expect((await api.submitRun({ ...run, nickId: 'dowolne imię gracza' })).reason).toBe('bad_nick');
     expect((await api.submitRun({ ...run, km: run.km + 500 } satisfies SubmitRunRequest)).reason).toBe('replay_mismatch');
     expect((await api.submitRun(run)).accepted).toBe(true);
+  });
+  it('trzyma się wersji zasad: odrzuca starszą wersję i przyjmuje nowy kraj', async () => {
+    let now = Date.parse('2026-10-30T12:00:00Z');
+    const api = new MockRankingApi({ demo: false, now: () => now, seed: () => 42 });
+    await expect(api.startRun({ mode: 'ranked', home: 'BE', from: 'antwerpia', to: 'rzeszow', rulesVersion: RULES_VERSION - 1 }))
+      .rejects.toThrow();
+    const start = await api.startRun({ mode: 'ranked', home: 'FI', from: 'helsinki', to: 'rzeszow', rulesVersion: RULES_VERSION });
+    expect(start.rulesVersion).toBe(RULES_VERSION);
+    const game = replay(rankedGameOptions(start.seed, makeRoute('FI', 'helsinki', 'rzeszow')), [0]);
+    const run = { runId: start.runId, flapTicks: [0], ticks: game.ticks, km: game.km, nickId: validNickId };
+    now += Math.ceil(run.ticks * TICK * 1000) + 1500;
+    expect((await api.submitRun({ ...run, rulesVersion: RULES_VERSION - 1 })).reason).toBe('old_rules');
+    const accepted = await api.submitRun({ ...run, rulesVersion: RULES_VERSION });
+    expect(accepted.accepted).toBe(true);
+    expect((await api.getLeague(accepted.week)).countries.FI?.runs).toBe(1);
   });
 });
 

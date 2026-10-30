@@ -73,7 +73,8 @@ export class OfflineRunQueue {
         catch { break; }
         if (response.accepted || response.reason === 'duplicate') {
           sent++;
-        } else if (response.reason === 'expired' || response.reason === 'replay_mismatch' || response.reason === 'bad_nick') {
+        } else if (response.reason === 'expired' || response.reason === 'replay_mismatch' || response.reason === 'bad_nick'
+          || response.reason === 'old_rules') {
           discarded++;
         } else {
           break;

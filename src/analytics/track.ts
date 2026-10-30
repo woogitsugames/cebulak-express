@@ -4,6 +4,7 @@
  */
 
 import { HOME_COUNTRIES, type HomeCountry } from '../core/route';
+import { POWERUP_KINDS, type PickupKind } from '../core/obstacles';
 
 export type AnalyticsHome = HomeCountry;
 export type AnalyticsMode = 'ranked' | 'cozy';
@@ -19,6 +20,7 @@ export interface EventProps {
   portal_click: { placement: PortalPlacement; home: AnalyticsHome };
   league_open: undefined;
   install_prompt: undefined;
+  pickup: { kind: PickupKind; mode: AnalyticsMode };
 }
 
 export type EventName = keyof EventProps;
@@ -61,6 +63,7 @@ const CAUSES: readonly RunEndCause[] = [
 ];
 const FORMATS: readonly ShareFormat[] = ['native', 'clipboard', 'image', 'link'];
 const PLACEMENTS: readonly PortalPlacement[] = ['menu', 'result', 'league', 'footer'];
+const PICKUP_KINDS: readonly PickupKind[] = ['parcel', 'jar', ...POWERUP_KINDS];
 
 function member<T extends string>(values: readonly T[], value: unknown): value is T {
   return typeof value === 'string' && values.some((item) => item === value);
@@ -97,6 +100,9 @@ function sanitize(event: EventName, value: unknown): WireEvent | null {
     case 'portal_click':
       if (!member(PLACEMENTS, p.placement) || !member(HOMES, p.home)) return null;
       return { event, props: { placement: p.placement, home: p.home } };
+    case 'pickup':
+      if (!member(PICKUP_KINDS, p.kind) || !member(MODES, p.mode)) return null;
+      return { event, props: { kind: p.kind, mode: p.mode } };
     default:
       return null;
   }

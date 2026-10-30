@@ -3,6 +3,11 @@ import {
   assertFails, assertSucceeds, initializeTestEnvironment, type RulesTestEnvironment,
 } from '@firebase/rules-unit-testing';
 import { collection, doc, getDoc, getDocs, limit, query, setDoc } from 'firebase/firestore';
+import { seasonKey } from '../../src/core/rules';
+
+// Publiczne zestawienia są kluczowane sezonem (wersją zasad), np. r2_2026-W50.
+const WEEK = seasonKey('2026-W50');
+const DAY = seasonKey('2026-12-01');
 
 const projectId = 'demo-cebulak-express';
 let env: RulesTestEnvironment;
@@ -24,8 +29,8 @@ afterAll(async () => {
 describe('reguły Firestore', () => {
   it('blokują każdy zapis klienta do league i leaderboard', async () => {
     const db = env.authenticatedContext('alice').firestore();
-    await assertFails(setDoc(doc(db, 'league', '2026-W50'), { countries: {} }));
-    await assertFails(setDoc(doc(db, 'leaderboard', '2026-W50', 'entries', 'alice'), { bestKm: 99999 }));
+    await assertFails(setDoc(doc(db, 'league', WEEK), { countries: {} }));
+    await assertFails(setDoc(doc(db, 'leaderboard', WEEK, 'entries', 'alice'), { bestKm: 99999 }));
   });
 
   it('pozwalają przeczytać własny dokument gracza, ale nie cudzy', async () => {
@@ -37,18 +42,18 @@ describe('reguły Firestore', () => {
 
   it('pozwalają czytać publiczne wyniki (także daily), lecz nie runs', async () => {
     const db = env.unauthenticatedContext().firestore();
-    await assertSucceeds(getDoc(doc(db, 'league', '2026-W50')));
-    await assertSucceeds(getDoc(doc(db, 'leaderboard', '2026-W50', 'entries', 'alice')));
+    await assertSucceeds(getDoc(doc(db, 'league', WEEK)));
+    await assertSucceeds(getDoc(doc(db, 'leaderboard', WEEK, 'entries', 'alice')));
     await assertFails(getDoc(doc(db, 'runs', 'run-123')));
-    await assertSucceeds(getDoc(doc(db, 'daily', '2026-12-01', 'entries', 'alice')));
+    await assertSucceeds(getDoc(doc(db, 'daily', DAY, 'entries', 'alice')));
   });
 
   it('odrzucają nieograniczone i zbyt duże listy, ale pozwalają na limit 100', async () => {
     const db = env.unauthenticatedContext().firestore();
     for (const ref of [
       collection(db, 'league'),
-      collection(db, 'leaderboard', '2026-W50', 'entries'),
-      collection(db, 'daily', '2026-12-01', 'entries'),
+      collection(db, 'leaderboard', WEEK, 'entries'),
+      collection(db, 'daily', DAY, 'entries'),
     ]) {
       await assertFails(getDocs(ref));
       await assertFails(getDocs(query(ref, limit(101))));

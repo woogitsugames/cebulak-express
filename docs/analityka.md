@@ -2,7 +2,7 @@
 
 ## Zakres i model danych
 
-Moduł `src/analytics/track.ts` obsługuje zdarzenia: `app_open`, `run_start`, `run_end`, `share_click`, `portal_click`, `league_open`, `install_prompt`. Wysyłane są tylko pola wymienione w typach zdarzeń (enumy kraju, trybu, przyczyny, formatu i miejsca kliknięcia oraz liczby kilometrów i sekund). **Nie wysyłamy identyfikatorów instalacji, dziennych hashy, nicków, lokalizacji GPS, adresów URL, e-maili, ciasteczek ani identyfikatorów reklamowych.** Nie rejestrujemy czasu pojedynczego zdarzenia. Cloud Function zapisuje jedynie **dobowe zagregowane liczniki** do `stats/YYYY-MM-DD` w Firestore (dzień UTC), nie przechowuje surowych zdarzeń.
+Moduł `src/analytics/track.ts` obsługuje zdarzenia: `app_open`, `run_start`, `run_end`, `share_click`, `portal_click`, `league_open`, `install_prompt` oraz przygotowane (jeszcze niewysyłane z gry) `pickup` z polami `kind` (`parcel`, `jar`, `boarding`, `tailwind`, `mamcall`) i `mode`. Listy krajów (15 krajów domowych), przyczyn końca (w tym `baggage-gate`) i bonusów serwer bierze ze wspólnego rdzenia `src/core/` (`functions/src/analytics-events.ts`). Wysyłane są tylko pola wymienione w typach zdarzeń (enumy kraju, trybu, przyczyny, formatu i miejsca kliknięcia oraz liczby kilometrów i sekund). **Nie wysyłamy identyfikatorów instalacji, dziennych hashy, nicków, lokalizacji GPS, adresów URL, e-maili, ciasteczek ani identyfikatorów reklamowych.** Nie rejestrujemy czasu pojedynczego zdarzenia. Cloud Function zapisuje jedynie **dobowe zagregowane liczniki** do `stats/YYYY-MM-DD` w Firestore (dzień UTC), nie przechowuje surowych zdarzeń.
 
 Struktura dokumentu Firestore:
 
