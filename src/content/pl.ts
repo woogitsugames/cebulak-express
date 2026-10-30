@@ -313,6 +313,23 @@ export const UI = {
   close: 'Zamknij',
   portal: 'Co słychać u Polonii {where}?',
   updateReady: 'Nowa wersja gry gotowa — wczyta się w menu.',
+  garage: 'Garaż',
+  garageClose: 'Zamknij garaż',
+  garageEyebrow: 'Wybierz ekipę na trasę',
+  garageSkin: 'Wybór pojazdu',
+  garageDefaultSkin: 'Kierowca w kombi',
+  garagePanCebulek: 'Pan Cebulek',
+  garagePaniCebulka: 'Pani Cebulka',
+  garageBusKurierski: 'Bus kurierski',
+  garagePrevious: 'Poprzednia skórka',
+  garageNext: 'Następna skórka',
+  garageNick: 'Twój nick w rankingu',
+  garageGender: 'Forma gramatyczna nicku',
+  garageMale: 'Kierowca',
+  garageFemale: 'Kierowczyni',
+  garageNickHint: 'Wybierz jedną z gotowych propozycji. Bez wpisywania danych.',
+  garageNickChoices: 'Propozycje nicków',
+  garageShuffle: 'Losuj inne',
 } as const;
 
 export function fill(template: string, vars: Record<string, string | number>): string {

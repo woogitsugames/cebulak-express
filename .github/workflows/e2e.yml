@@ -1,4 +1,4 @@
-name: E2E i budzet wydajnosci
+name: E2E i budżet wydajności
 
 on:
   pull_request:
@@ -10,26 +10,32 @@ concurrency:
 
 jobs:
   playwright:
-    name: Playwright - mobile, desktop, Slow 4G
+    name: Playwright - 3 przebiegi i Slow 4G
     runs-on: ubuntu-24.04
-    timeout-minutes: 25
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
-      - name: Instalacja zaleznosci
+      - name: Instalacja zależności
         run: npm ci
-      - name: Kontrola typow, testy i build
-        run: |
-          npm run typecheck
-          npm test
-          npm run build
-      - name: Instalacja przegladarek Playwright i bibliotek systemowych
+      - name: Kontrola typów E2E
+        run: npm run typecheck:e2e
+      - name: Build web
+        run: npm run build
+      - name: Instalacja przeglądarek i bibliotek systemowych
         run: npx playwright install --with-deps
-      - name: Testy E2E i budzet wydajnosci
-        run: npx playwright test
+      - name: Trzy kolejne przebiegi E2E (bez retry)
+        shell: bash
+        run: |
+          set -euo pipefail
+          for run in 1 2 3; do
+            echo "::group::Playwright przebieg ${run}/3"
+            E2E_RUN="$run" npm run test:e2e
+            echo "::endgroup::"
+          done
       - name: Raporty, zrzuty, trace i wideo
         if: always()
         uses: actions/upload-artifact@v4

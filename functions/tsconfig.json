@@ -20,6 +20,7 @@
     "src/**/*.ts",
     "tests/**/*.ts",
     "../src/core/**/*.ts",
-    "../src/content/waypoints.ts"
+    "../src/content/waypoints.ts",
+    "../src/content/nicks.ts"
   ]
 }
