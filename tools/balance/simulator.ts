@@ -60,9 +60,9 @@ function chooseTarget(game: Game): { obstacleId: number; targetY: number } {
   if (!first) return { obstacleId: -1, targetY: 300 };
   if (first.x - worldX < right && second) {
     const h = effectiveGapH(first, game.weight);
-    const lo = first.gate
-      ? first.gapY - h / 2 + PLAYER.hitH / 2 + 12
-      : first.gapY - h / 2 + 95;
+    // Ten sam bezpieczny korytarz przez bramkę co w tests/helpers.ts.
+    // Wcześniejsze celowanie w górny skraj sztucznie zabijało dobrego bota.
+    const lo = first.gapY - h / 2 + (first.gate ? h * 0.72 : 95);
     const hi = first.gapY + h / 2 - 12;
     return {
       obstacleId: first.id,
@@ -70,7 +70,7 @@ function chooseTarget(game: Game): { obstacleId: number; targetY: number } {
     };
   }
   const gapH = effectiveGapH(first, game.weight);
-  return { obstacleId: first.id, targetY: first.gapY + gapH * (first.gate ? 0.12 : 0.2) };
+  return { obstacleId: first.id, targetY: first.gapY + gapH * 0.2 };
 }
 
 export function simulateRun(
