@@ -86,7 +86,9 @@ describe('weryfikacja przebiegu trasy (zlecenie 40)', () => {
     { home: 'UK', from: 'londyn', to: 'warszawa', referenceKm: 1636, source: 'https://autotrasa.pl/trasy/warszawa-londyn/' },
     { home: 'FR', from: 'paryz', to: 'rzeszow', referenceKm: 1664.1, source: 'https://www.rome2rio.com/s/Paris/Rzesz%C3%B3w' },
     { home: 'FR', from: 'paryz', to: 'wroclaw', referenceKm: 1280.6, source: 'https://www.rome2rio.com/s/Paris/Wroc%C5%82aw' },
-    { home: 'CH', from: 'zurych', to: 'wroclaw', referenceKm: 920.7, source: 'https://www.rome2rio.com/s/Zurich/Wroc%C5%82aw' },
+    // Gra prowadzi trasę przez Niemcy (A81/A9/A4/A4 PL), a nie przez Czechy jak Rome2rio (920,7 km):
+    // Zurych–Jena ok. 590 km (docs/trasy-weryfikacja.md) + Jena–Drezno ok. 180 + Drezno–Wrocław ok. 265.
+    { home: 'CH', from: 'zurych', to: 'wroclaw', referenceKm: 1035, source: 'suma odcinków trasy przez Niemcy, docs/trasy-weryfikacja.md' },
     // Złożona trasa Oslo–Ystad (612,6) + prom (171,2) + Świnoujście–Gdańsk (348).
     { home: 'NO', from: 'oslo', to: 'gdansk', referenceKm: 1131.8, source: 'https://www.rome2rio.com/s/Norway/Ystad' },
     // Kopenhaga–Warszawa przez mosty: inna przeprawa niż wzorzec przez Rødby.
