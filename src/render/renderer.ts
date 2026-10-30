@@ -4,6 +4,7 @@ import { effectiveGapH, isPowerupKind, type BottomKind, type Obstacle, type Pick
 import { POWERUP_NAME } from '../content/pl';
 import { BackgroundRenderer, type BackgroundState } from './background';
 import { createSnow } from './snow';
+import { SignsRenderer } from './signs';
 import { PALETTES } from './palette';
 import { drawBottomSprite, drawGateSprite, drawHeroSprite, drawPowerupAura, drawPowerupSprite, drawTopSprite } from './sprites';
 
@@ -23,6 +24,9 @@ export class Renderer {
   winter = false;
   private readonly snow = createSnow(2026);
   private lastSnowT = 0;
+  /** Tablice z zabawnymi nazwami (zlecenia 70–71) i żart do dymka w HUD. */
+  private readonly signs = new SignsRenderer();
+  signJoke: string | null = null;
 
   constructor(private canvas: HTMLCanvasElement) {
     const ctx = canvas.getContext('2d');
@@ -79,6 +83,7 @@ export class Renderer {
     // Tło i droga idą na całą szerokość ekranu (rozłożony składak, tablet, poziom),
     // ale przeszkody i bonusy tylko w kolumnie 360 — szerszy ekran nie daje przewagi w rankingu.
     this.background.drawBackground(this.ctx, bg);
+    this.signJoke = this.signs.draw(ctx, { progressKm: game.km, timeSec, waypoints: game.route.waypoints }).joke;
     ctx.save();
     ctx.beginPath();
     ctx.rect(0, viewTop, WORLD.width, viewHeight);

@@ -13,6 +13,8 @@ import { RETURN_ARRIVAL_TEXTS, RETURN_CITY_LOCATIVE, RETURN_DEPARTURE_TEXTS } fr
 import { randomNickChoices } from './content/nicks';
 import { portalLink } from './content/portals';
 import { Renderer } from './render/renderer';
+import { mountSignJoke } from './render/signs';
+import { installStoreShotHooks } from './test-hooks';
 import { normalizeHeroSkin, preloadSprites, setHeroSkin } from './render/sprites';
 import { createSfx, sfxForGameEvent, type SfxPlayer } from './audio/sfx';
 import { createHaptics, hapticForGameEvent } from './audio/haptics';
@@ -613,11 +615,16 @@ function frame(now: number): void {
     handleEvents(game);
     if (game.phase === 'playing') updateHud();
     renderer.draw(game, now / 1000);
+    signJoke.show(game.phase === 'playing' ? renderer.signJoke : null);
   } else {
     renderer.draw(previewGame, now / 1000);
   }
   requestAnimationFrame(frame);
 }
+
+const signJoke = mountSignJoke(ui.hud);
+// Haki tylko dla ?test=1 (zrzuty do sklepu, e2e) — w zwykłej sesji nic nie robią.
+installStoreShotHooks(() => game, api);
 
 /** Gra w tle menu (stoi w miejscu). */
 const previewGame = new Game({ seed: 1, mode: 'ranked', route });

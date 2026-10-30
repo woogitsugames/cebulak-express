@@ -6,6 +6,9 @@ import type { CountryCode } from '../core/route';
  * pozycje, których `near` występuje w bieżącym `route.waypoints`.
  * Przesunięcie `offsetKm` liczone jest od kilometra danego waypointu.
  */
+/** Rodzaj tablicy przy drodze. */
+export type FunnyPlaceKind = 'exit' | 'district' | 'town';
+
 export interface FunnyPlace {
   id: string;
   name: string;
@@ -14,7 +17,7 @@ export interface FunnyPlace {
   joke: string;
   near: string;
   offsetKm: number;
-  sign: 'exit' | 'district' | 'town';
+  sign: FunnyPlaceKind;
   source: string;
 }
 
