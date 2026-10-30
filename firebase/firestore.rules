@@ -1,0 +1,21 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Publiczne zestawienia nie zawierają danych kontaktowych ani tekstu użytkownika.
+    match /league/{week} {
+      allow get, list: if true;
+    }
+    match /leaderboard/{week}/entries/{uid} {
+      allow get, list: if true;
+    }
+    match /players/{uid} {
+      allow get: if request.auth != null && request.auth.uid == uid;
+      allow list: if false;
+    }
+    // runs, daily, limity i wewnętrzne kolekcje nigdy nie są dostępne klientowi.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

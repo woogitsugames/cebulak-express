@@ -11,7 +11,8 @@
     "typecheck": "tsc --noEmit",
     "build:artifact": "npm run build && node scripts/build-artifact.mjs",
     "android:sync": "npm run build && cap sync android",
-    "android:apk": "npm run android:sync && cd android && ./gradlew assembleDebug"
+    "android:apk": "npm run android:sync && cd android && ./gradlew assembleDebug",
+    "test:firebase": "npm --prefix firebase run test"
   },
   "devDependencies": {
     "@capacitor/cli": "^8.5.3",

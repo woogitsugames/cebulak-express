@@ -1,0 +1,29 @@
+{
+  "name": "cebulak-express-firebase",
+  "version": "0.1.0",
+  "private": true,
+  "main": "index.js",
+  "engines": {
+    "node": "22"
+  },
+  "scripts": {
+    "build": "npm run typecheck && esbuild src/index.ts --bundle --platform=node --target=node22 --format=cjs --outfile=lib/index.js --packages=external && node -e \"const f=require('./index.js'); console.log('CommonJS exports:', Object.keys(f)); Promise.resolve(import('./index.js')).then(m=>{ console.log('ES module exports:', Object.keys(m)); if (!m.startRun?.__endpoint || !m.submitRun?.__endpoint || !m.cleanupExpiredRuns?.__endpoint) process.exit(1) }).catch(e=>{console.error(e);process.exit(1)})\" && node -e \"require('./node_modules/firebase-functions/lib/runtime/loader.js').loadStack(process.cwd()).then(x=>{ console.log('Direct SDK manifest:',Object.keys(x.endpoints)); if (!x.endpoints.startRun || !x.endpoints.submitRun || !x.endpoints.cleanupExpiredRuns) process.exit(1) }).catch(e=>{console.error(e);process.exit(1)})\"",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test:unit": "vitest run --config vitest.config.ts tests/unit.test.ts",
+    "test:emulator": "vitest run --config vitest.config.ts tests/emulator.test.ts tests/rules.test.ts --maxWorkers=1 --no-file-parallelism",
+    "test": "npm run build && cd .. && ./firebase/node_modules/.bin/firebase --debug emulators:exec --config firebase.json --project demo-cebulak-express --only auth,firestore,functions \"npm --prefix firebase run test:emulator\""
+  },
+  "dependencies": {
+    "firebase-admin": "13.4.0",
+    "firebase-functions": "6.4.0"
+  },
+  "devDependencies": {
+    "@firebase/rules-unit-testing": "4.0.1",
+    "@types/node": "22.16.0",
+    "esbuild": "0.25.5",
+    "firebase": "11.10.0",
+    "firebase-tools": "14.12.0",
+    "typescript": "5.9.3",
+    "vitest": "3.2.7"
+  }
+}
