@@ -1,0 +1,262 @@
+/* Album jest samodzielnym ekranem; style nie wyciekają do menu ani gry. */
+.ce-collection {
+  --album-ink: #273d38;
+  --album-green: #236450;
+  --album-cream: #fff8e7;
+  width: 100%;
+  max-width: 660px;
+  max-height: min(91dvh, 830px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  border: 3px solid #31584b;
+  border-radius: 22px;
+  background: var(--album-cream);
+  color: var(--album-ink);
+  box-shadow: 0 15px 40px #112d2b88, inset 0 0 0 3px #fff0c9;
+  font: 500 14px/1.4 system-ui, -apple-system, 'Segoe UI', sans-serif;
+  text-align: left;
+}
+.ce-collection *, .ce-collection *::before, .ce-collection *::after { box-sizing: border-box; }
+.ce-collection button { font: inherit; cursor: pointer; touch-action: manipulation; }
+.ce-collection button:focus-visible { outline: 3px solid #ffb32d; outline-offset: 3px; }
+.ce-collection__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+  padding: 18px 20px 16px;
+  background: linear-gradient(135deg, #286c54, #429b70);
+  color: #fffbea;
+  border-bottom: 3px solid #255540;
+}
+.ce-collection__heading h2 {
+  margin: 0;
+  font-size: clamp(25px, 5vw, 37px);
+  letter-spacing: -.05em;
+  line-height: 1.05;
+  font-weight: 950;
+  text-shadow: 2px 3px #21563f;
+}
+.ce-collection__eyebrow {
+  margin: 0 0 5px;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: #ffe29a;
+}
+.ce-collection__close {
+  display: grid;
+  place-items: center;
+  flex: 0 0 41px;
+  width: 41px;
+  height: 41px;
+  padding: 0 0 3px;
+  border: 2px solid #f8eccb;
+  border-radius: 11px;
+  background: #194e3d;
+  color: white;
+  font-size: 29px !important;
+  line-height: 1;
+  font-weight: 800 !important;
+}
+.ce-collection__subtitle {
+  margin: 0;
+  padding: 13px 20px 4px;
+  color: #4c6157;
+  line-height: 1.5;
+}
+.ce-collection__stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 9px;
+  padding: 13px 18px 5px;
+}
+.ce-collection__stat {
+  min-width: 0;
+  padding: 11px 8px;
+  border-radius: 13px;
+  border: 2px solid #d4ba80;
+  background: #ffefc2;
+  text-align: center;
+}
+.ce-collection__stat span, .ce-collection__stat strong { display: block; }
+.ce-collection__stat span { font-size: 11px; font-weight: 750; color: #6a6657; }
+.ce-collection__stat strong { margin-top: 3px; font-size: clamp(15px, 3.7vw, 21px); font-weight: 950; }
+.ce-collection__section { padding: 16px 18px 6px; }
+.ce-collection__section--medals { padding-bottom: 22px; }
+.ce-collection__section-heading {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  padding-bottom: 7px;
+  border-bottom: 2px dashed #c3b68e;
+}
+.ce-collection__section-heading h3 {
+  margin: 0;
+  color: #28614b;
+  font-size: 19px;
+  line-height: 1.2;
+  font-weight: 950;
+}
+.ce-collection__count {
+  flex: 0 0 auto;
+  padding: 4px 9px;
+  border: 2px solid #d3c39c;
+  border-radius: 999px;
+  background: #fff0cd;
+  color: #4b5349;
+  font-weight: 850;
+  font-variant-numeric: tabular-nums;
+}
+.ce-collection__postcards {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+.ce-collection__postcard {
+  min-width: 0;
+  margin: 0;
+  padding: 6px;
+  border: 2px solid #d3b986;
+  border-radius: 9px;
+  background: #fffef5;
+  box-shadow: 2px 3px 0 #9b84583b;
+  transform: rotate(-.45deg);
+}
+.ce-collection__postcard:nth-child(3n+2) { transform: rotate(.65deg); }
+.ce-collection__postcard--locked { background: #f0eee6; border-color: #c6c2b3; box-shadow: none; }
+.ce-collection__photo {
+  display: grid;
+  place-items: center;
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 4 / 3;
+  border: 1px solid #c5d9cb;
+  border-radius: 4px;
+  background: linear-gradient(155deg, #a1dce7 0 52%, #90bc83 53% 70%, #538d6d 71%);
+}
+.ce-collection__photo::before {
+  content: '';
+  position: absolute;
+  z-index: 0;
+  top: 12%;
+  left: 15%;
+  width: 29%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: #fff0a8;
+  box-shadow: 0 0 0 10px #ffe99d30;
+}
+.ce-collection__photo::after {
+  content: '';
+  position: absolute;
+  inset: auto -10% -20%;
+  height: 45%;
+  border-radius: 50% 50% 0 0;
+  background: #49926c;
+}
+.ce-collection__image {
+  position: relative;
+  z-index: 1;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.ce-collection__stamp {
+  position: absolute;
+  z-index: 3;
+  top: 6px;
+  right: 6px;
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border: 2px dashed #9b6b30;
+  border-radius: 50%;
+  background: #ffefc8;
+  color: #8c5b23;
+  font-size: 16px;
+  font-weight: 950;
+  transform: rotate(13deg);
+}
+.ce-collection__postcard--locked .ce-collection__photo {
+  background: repeating-linear-gradient(-45deg, #dbded6 0 11px, #e8e9e2 11px 22px);
+  border-color: #c3c8be;
+}
+.ce-collection__postcard--locked .ce-collection__photo::before,
+.ce-collection__postcard--locked .ce-collection__photo::after { display: none; }
+.ce-collection__postcard--locked .ce-collection__stamp { border-color: #8f968c; background: #e8ebe3; color: #657268; }
+.ce-collection__unknown {
+  color: #a0aa9e;
+  font-size: 60px;
+  line-height: 1;
+  font-weight: 950;
+  transform: rotate(-9deg);
+}
+.ce-collection__postcard-caption { min-width: 0; padding: 8px 4px 4px; }
+.ce-collection__postcard-caption strong,
+.ce-collection__postcard-caption span,
+.ce-collection__postcard-caption small { display: block; overflow-wrap: anywhere; }
+.ce-collection__postcard-caption strong { font-size: 13px; font-weight: 950; }
+.ce-collection__postcard-caption span { margin-top: 1px; color: #607266; font-size: 11px; }
+.ce-collection__postcard-caption small { margin-top: 4px; color: #89744f; font-size: 10px; font-weight: 700; }
+.ce-collection__postcard--locked .ce-collection__postcard-caption small { color: #81847b; }
+.ce-collection__medals {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+.ce-collection__medal {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  min-width: 0;
+  padding: 11px;
+  border: 2px solid #dbbc77;
+  border-radius: 13px;
+  background: linear-gradient(150deg, #fff2cc, #ffe6ab);
+  box-shadow: inset 0 0 0 2px #fff6dd;
+}
+.ce-collection__emblem {
+  display: grid;
+  place-items: center;
+  flex: 0 0 55px;
+  height: 55px;
+  border: 3px solid #c08334;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 25%, #fff0a3, #e4a53c 75%);
+  box-shadow: inset 0 0 0 3px #f8ca6d, 1px 3px 0 #8f6c3b44;
+  color: #7c4c16;
+  font-size: 28px;
+  font-weight: 950;
+}
+.ce-collection__medal-info { min-width: 0; }
+.ce-collection__medal-info strong,
+.ce-collection__medal-info span,
+.ce-collection__medal-info small { display: block; }
+.ce-collection__medal-info strong { font-size: 13px; font-weight: 950; line-height: 1.25; }
+.ce-collection__medal-info span { margin-top: 3px; font-size: 11px; line-height: 1.3; }
+.ce-collection__medal-info small { margin-top: 5px; font-size: 10px; font-weight: 800; color: #916625; }
+.ce-collection__medal--locked { border-color: #d3d3c8; background: #e9e9e2; box-shadow: none; color: #67716a; }
+.ce-collection__medal--locked .ce-collection__emblem {
+  filter: grayscale(1);
+  opacity: .62;
+  box-shadow: none;
+}
+.ce-collection__medal--locked .ce-collection__medal-info small { color: #7c817a; }
+@media (max-width: 420px) {
+  .ce-collection__postcards { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 9px; }
+  .ce-collection__medals { grid-template-columns: 1fr; }
+  .ce-collection__section { padding-left: 12px; padding-right: 12px; }
+  .ce-collection__stats { padding-left: 12px; padding-right: 12px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ce-collection__postcard { transform: none !important; }
+}
