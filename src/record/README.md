@@ -86,3 +86,7 @@ Założone bitrate: 4,8 Mb/s wideo i 96 kb/s audio; oczekiwany plik ma ok. 9,2 M
 ## Testy
 
 `tests/recorder.test.ts` obejmuje stałe czasu/obrazu, wybór MIME, kadr 9:16, tryb redakcyjny, dzielenie linków, start→CTA→stop, anulowanie, sprzątanie ścieżek i adapter galerii. Testy nie stanowią dowodu, że wybrany telefon poprawnie koduje film. Polecenia projektu: `npm ci && npm run typecheck && npm test && npm run build`.
+
+## Ujednolicenie T44 (runda 3)
+
+Ten moduł jest jedynym silnikiem nagrywania; `src/ui/record-runtime.ts` zachowuje API T37 jako adapter. Opcja `outroHeadline` umożliwia planszę „Więcej wiadomości:” z adresem portalu, bez zmiany domyślnej planszy T23 „Zagraj:”. Opcja `durationMs` służy do 3-sekundowych testów integracyjnych (maksymalnie 15 s, co najmniej 1,5 s planszy). Teksty komunikatów znajdują się w `src/content/pl.ts`. Test integracyjny: `npx playwright test e2e/recording.spec.ts --project="Desktop 1280x800 (Chromium)"`.
