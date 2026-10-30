@@ -37,7 +37,7 @@ istotnych fragmentów przeszkód poza obszarem pobocza.
 - Punkty `border` i `rest` należą do warstwy **near**, również gdy posiadają
   obraz w `public/assets/landmarks/`. Wyświetlamy je jako **180×100** logiczne,
   z dolną krawędzią na **y=580** (przy drodze).
-- Wybieramy **jeden punkt najbliższy kilometrowi środka ekranu**; podczas zmiany
+- Wybieramy **jeden punkt najbliższy środkowi ekranu według przesunięcia X (z uwzględnieniem paralaksy)**; podczas zmiany
   przez **0,4 s** przenikają wyłącznie stary i nowy punkt. Przy jednakowej
   odległości pierwszeństwo ma wcześniejszy punkt w tablicy trasy. Dla
   przygranicznych `border` i `rest` oddalonych o 8 km oznacza to, że
