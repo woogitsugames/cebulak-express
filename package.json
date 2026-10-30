@@ -8,7 +8,6 @@
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview --host",
     "test": "vitest run",
-    "pretest": "npm run balance",
     "typecheck": "tsc --noEmit",
     "build:artifact": "npm run build && node scripts/build-artifact.mjs",
     "android:sync": "npm run build && cap sync android",
