@@ -21,9 +21,8 @@ import { createHaptics, hapticForGameEvent } from './audio/haptics';
 import type { MusicPlayer } from './audio/music';
 import type { CardData } from './share/card';
 import { parseGameParams } from './net/params';
-import { MockRankingApi, createRankingApi } from './net/api';
+import type { RankingApi } from './net/api';
 import { warsawWeekKey } from './net/week';
-import { OfflineRunQueue, submitOrQueue, watchQueueOnline } from './net/queue';
 import { configureAnalytics, track, type AnalyticsHome } from './analytics/track';
 import { registerPwa } from './pwa/register';
 import { prefetchPwaAssetsAfterRun } from './pwa/offline';
@@ -178,9 +177,13 @@ function unlockAudio(): void {
 }
 
 // --- Ranking (bez konfiguracji Firebase działa na mocku) ---
-const api = createRankingApi();
-const queue = new OfflineRunQueue();
-watchQueueOnline(queue, api);
+// Ranking i kolejka offline ładują się osobno — nie są potrzebne do pierwszej klatki.
+const net = Promise.all([import('./net/api'), import('./net/queue')]).then(([apiMod, queueMod]) => {
+  const api: RankingApi = apiMod.createRankingApi();
+  const queue = new queueMod.OfflineRunQueue();
+  queueMod.watchQueueOnline(queue, api);
+  return { api, queue, isMock: api instanceof apiMod.MockRankingApi, submitOrQueue: queueMod.submitOrQueue };
+});
 
 // --- Analityka (wyłączona, gdy brak adresu) ---
 configureAnalytics({ endpoint: String(import.meta.env.VITE_ANALYTICS_ENDPOINT ?? '') });
@@ -255,7 +258,7 @@ $('btn-league').addEventListener('click', () => {
   ui.menu.hidden = true;
   ui.league.hidden = false;
   void import('./ui/league').then(({ mountLeague }) => {
-    if (!ui.league.hidden) closeLeague = mountLeague(ui.leagueBody, api, settings.home);
+    return net.then(({ api }) => { if (!ui.league.hidden) closeLeague = mountLeague(ui.leagueBody, api, settings.home); });
   });
   track('league_open');
 });
@@ -334,6 +337,7 @@ async function newRun(reverse = false): Promise<void> {
   runId = null;
   if (mode === 'ranked') {
     try {
+      const { api } = await net;
       const start = await api.startRun({
         mode: daily ? 'daily' : 'ranked', home: runRoute.home, from: runRoute.from.id, to: runRoute.to.id,
         ...(daily ? { daily } : {}),
@@ -542,7 +546,7 @@ function showOver(g: Game): void {
   ui.overMiniLeague.hidden = true;
   ui.overLeagueList.replaceChildren();
   // Bez skonfigurowanego Firebase ranking to atrapa z przykładowymi liczbami — nie pokazujemy jej graczom.
-  if (!(api instanceof MockRankingApi) || params.get('test') === '1') void api.getLeague(warsawWeekKey()).then((data) => {
+  void net.then(({ api, isMock }) => (!isMock || params.get('test') === '1') ? api.getLeague(warsawWeekKey()) : Promise.reject(new Error('mock'))).then((data) => {
     if (leagueRequest !== overLeagueRequest || ui.over.hidden) return;
     const top = HOME_COUNTRIES
       .map((home) => ({ home, km: data.countries[home]?.km ?? 0 }))
@@ -581,7 +585,8 @@ function showOver(g: Game): void {
     km: g.km, seconds, cause: arrived ? 'arrived' : g.cause ?? 'ground', mode: g.mode, home: g.route.home as AnalyticsHome,
   });
   if (runId && settings.nickId) {
-    void submitOrQueue(api, queue, { runId, flapTicks: [...g.flapTicks], ticks: g.ticks, km: g.km, nickId: settings.nickId });
+    const run = { runId, flapTicks: [...g.flapTicks], ticks: g.ticks, km: g.km, nickId: settings.nickId };
+    void net.then(({ api, queue, submitOrQueue }) => submitOrQueue(api, queue, run));
     runId = null;
   }
 }
@@ -640,7 +645,7 @@ function frame(now: number): void {
 let signJoke: SignJokeBubble | null = null;
 void import('./render/signs').then(({ mountSignJoke }) => { signJoke = mountSignJoke(ui.hud); });
 // Haki tylko dla ?test=1 (zrzuty do sklepu, e2e) — w zwykłej sesji nic nie robią.
-installStoreShotHooks(() => game, api);
+void net.then(({ api }) => installStoreShotHooks(() => game, api));
 
 /** Gra w tle menu (stoi w miejscu). */
 const previewGame = new Game({ seed: 1, mode: 'ranked', route });
