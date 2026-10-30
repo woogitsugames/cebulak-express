@@ -72,6 +72,7 @@ test('po końcu można zmienić kraj, miasto startu i cel', async ({ page }, tes
 test('spacja uruchamia przejazd i nalicza kilometry', async ({ page }, testInfo) => {
   await openMenu(page);
   await startRun(page);
+  // Spacja po kliknięciu „Start” (fokus mógł zostać na ukrytym przycisku) ma sterować autem.
   await page.keyboard.press('Space');
   await expect(page.locator('#hint')).toBeHidden();
   await expect.poll(async () => {
@@ -93,8 +94,14 @@ test('piętnaście krajów ma dostępne miasta startu i poprawne podsumowanie tr
 
   for (const country of countries) {
     await home.selectOption(country);
+    await expect(home).toHaveValue(country);
     await expect(page.locator('#sel-from option').first()).toBeAttached();
     await expect(page.locator('#sel-from')).not.toHaveValue('');
+    // Czekamy na podsumowanie TEJ trasy (miasto startu wybranego kraju), a nie na
+    // dowolny tekst z „km” — ten był spełniony jeszcze przez trasę poprzedniego kraju.
+    const fromName = (await page.locator('#sel-from option:checked').textContent())?.trim() ?? '';
+    expect(fromName).not.toBe('');
+    await expect(page.locator('#route-info')).toContainText(`${fromName} → `);
     await expect(page.locator('#route-info')).toContainText('km');
   }
   await screenshot(page, testInfo, 'lista-krajow-i-miast');
