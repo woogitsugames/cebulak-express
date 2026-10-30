@@ -10,6 +10,21 @@ Oznaczenia: **✅ zweryfikowane** = sprawdzone w sieci 30.10.2026, ze źródłem
 
 ---
 
+## Decyzje właściciela (30.10.2026) — obowiązują ponad resztą dokumentu
+
+| # | Decyzja | Konsekwencje |
+|---|---|---|
+| D1 | **Nazwa: „Cebulak Express”** | Zasada tonu nr 5 zmieniona: „cebulak” wolno w **tytule i marce** jako autoironiczna nazwa; **nigdy** w komunikatach skierowanych do gracza („Przegrałeś, cebulaku” — zakazane). Przed startem: wyszukiwanie w EUIPO/UPRP i domena. |
+| D2 | **Bohater: przeładowane kombi z neutralnym, sympatycznym kierowcą** | Cebulek (Pan Cebulek) jako skórka do wyboru gracza. Kombi generyczne (nie Fiat 125p ani Łada), bez godła. |
+| D3 | **Kraje w MVP: BE, NL, DE, UK, FR, CH, NO, DK** (8) **z pełnymi tłami** | UK: przeprawa promem lub tunelem jako etap. NO/DK: przeprawa promem przez Bałtyk albo trasa lądowa przez Szwecję. Kraj zmienia oprawę, nie trudność. |
+| D4 | **Pełny ranking od razu** | Liga Polonii (suma km krajów) + ranking graczy z nickami z generowanej listy + weryfikacja przejazdów na serwerze (odtworzenie ziarna i wejść) od startu. |
+| D5 | **Grafika: ładna, memiczna, sprzedawalna, wiralowa; limit 1 MB nie obowiązuje** | Bogaty, ilustracyjny styl w duchu makiet (nie musi być płaski wektor). Szybki start mimo to: ekran startu i pierwszy przejazd ładują się najpierw, tła pozostałych krajów doładowujemy w tle. Kluczowe postacie dopracowane ręcznie (obrazy z AI nie dają pewnej ochrony autorskiej); każdy plik w `ASSETS.md`. |
+| D6 | **Termin: start ok. 10–15.12.2026** zamiast 1.12 | Wynika z D3 i D4 (decyzja: „8 krajów i pełne tła”). Sezon „Na Wigilię!” nadal się mieści; zapowiedzi w rolkach można zacząć 1.12. |
+
+Wpływ na §5: limit „< 1 MB” zniesiony, ale **czysty Canvas + TypeScript** zostaje — głównym powodem jest testowalna logika `src/core/` współdzielona z serwerem do weryfikacji rankingu, nie sama waga.
+
+---
+
 ## 0. TL;DR — co proponuję
 
 | Obszar | Rekomendacja | Skąd |
@@ -22,7 +37,7 @@ Oznaczenia: **✅ zweryfikowane** = sprawdzone w sieci 30.10.2026, ze źródłem
 | Technologia | **Czysty Canvas 2D + TypeScript + Vite**, PWA, osadzanie przez `<iframe>`. Logika gry jako czysty, testowalny moduł bez DOM | zmiana względem obu (uzasadnienie w §5) |
 | Grafika | **Płaski wektor** z grubym konturem (SVG → atlas). Makiety GPT traktujemy jako kierunek klimatu, nie jako styl do odtworzenia | C |
 | Platformy | Faza 1: web/PWA. Faza 2: Facebook Instant Games (Zero Permissions, własny backend rankingu). Faza 3: Google Play przez TWA | C, zweryfikowane |
-| Termin 1.12 | **Realny dla okrojonego MVP** (§7). Ranking z backendem to największe ryzyko terminu | — |
+| Termin | Patrz decyzja D6: start ok. 10–15.12 | — |
 
 Otwarte decyzje (nazwa, bohater, „cebulak” w tytule, ranking, styl) są w §8.
 
