@@ -27,7 +27,13 @@ export function localizeStaticScreens(root: ParentNode = document): void {
     if (prefix) prefix.textContent = value + ' ';
   };
 
-  text('#menu .tagline', t('menu.tagline'));
+  // Logo ma polski napis „Kierunek Polska”; w innych językach tłumaczymy go w podtytule.
+  const subtitle = root.querySelector<HTMLElement>('#menu .menu-subtitle');
+  if (subtitle) {
+    subtitle.dataset.pl ??= subtitle.textContent ?? '';
+    subtitle.textContent = getLanguage() === 'pl' ? subtitle.dataset.pl : t('menu.tagline');
+  }
+  root.querySelector('#menu .menu-logo img')?.setAttribute('alt', t('menu.gameLabel'));
   label('#sel-home', t('menu.homeLabel'));
   label('#sel-from', t('menu.fromLabel'));
   label('#sel-to', t('menu.toLabel'));

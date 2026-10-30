@@ -15,6 +15,7 @@ test('menu: 15 krajów, 7 nowych krajów i miasta; zrzut ekranu', async ({ page 
   const homes = await page.locator('#sel-home option').evaluateAll((list) =>
     list.map((option) => (option as HTMLOptionElement).value));
   expect(homes).toHaveLength(15);
+  await page.locator('#route-toggle').click();
   for (const [home, starts] of Object.entries(NEW_COUNTRIES)) {
     await page.locator('#sel-home').selectOption(home);
     await expect(page.locator('#sel-home')).toHaveValue(home);

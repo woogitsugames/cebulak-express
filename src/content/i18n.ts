@@ -53,13 +53,11 @@ function queryLanguage(): Language | undefined {
   }
 }
 
+/**
+ * Domyślnie zawsze polski: gra jest dla Polonii, a wielu graczy ma telefon
+ * po angielsku, niderlandzku czy niemiecku. Inny język tylko z wyboru w menu lub ?lang=.
+ */
 function browserLanguage(): Language {
-  if (typeof navigator === 'undefined') return 'pl';
-  const preferences = navigator.languages?.length ? navigator.languages : [navigator.language];
-  for (const preference of preferences) {
-    const language = parseLanguage(preference);
-    if (language) return language;
-  }
   return 'pl';
 }
 

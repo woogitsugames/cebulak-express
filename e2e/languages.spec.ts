@@ -1,7 +1,7 @@
 import { test, expect, tapCanvas, screenshot } from './support';
 
 const CASES = [
-  { lang: 'pl', tagline: 'Kierunek Polska', over: 'Koniec trasy!' },
+  { lang: 'pl', tagline: 'Przygoda na jeden palec', over: 'Koniec trasy!' },
   { lang: 'en', tagline: 'Destination: Poland', over: 'End of the road!' },
   { lang: 'nl', tagline: 'Bestemming Polen', over: 'Einde van de rit!' },
   { lang: 'de', tagline: 'Ziel: Polen', over: 'Ende der Fahrt!' },
@@ -13,7 +13,7 @@ for (const { lang, tagline, over } of CASES) {
     await page.goto(`/?lang=${lang}&test=1&seed=20261030`);
     await expect(page.locator('#menu')).toBeVisible();
     await expect(page.locator('#ce-language')).toHaveValue(lang);
-    await expect(page.locator('#menu .tagline')).toHaveText(tagline);
+    await expect(page.locator('#menu .menu-subtitle')).toHaveText(tagline);
     await screenshot(page, testInfo, `58-menu-${lang}`);
 
     await page.locator('#btn-start').click();
@@ -28,13 +28,13 @@ for (const { lang, tagline, over } of CASES) {
 test('wybrany język przeżywa restart, a ?lang=pl wymusza polski', async ({ page }) => {
   await page.goto('/?lang=pl&test=1&seed=20261030');
   await page.locator('#ce-language').selectOption('nl');
-  await expect(page.locator('#menu .tagline')).toHaveText('Bestemming Polen');
+  await expect(page.locator('#menu .menu-subtitle')).toHaveText('Bestemming Polen');
 
   await page.goto('/?test=1&seed=20261030');
   await expect(page.locator('#ce-language')).toHaveValue('nl');
-  await expect(page.locator('#menu .tagline')).toHaveText('Bestemming Polen');
+  await expect(page.locator('#menu .menu-subtitle')).toHaveText('Bestemming Polen');
 
   await page.goto('/?lang=pl&test=1&seed=20261030');
   await expect(page.locator('#ce-language')).toHaveValue('pl');
-  await expect(page.locator('#menu .tagline')).toHaveText('Kierunek Polska');
+  await expect(page.locator('#menu .menu-subtitle')).toHaveText('Przygoda na jeden palec');
 });
