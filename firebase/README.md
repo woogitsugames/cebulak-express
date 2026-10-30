@@ -1,76 +1,91 @@
-# Backend Ligi Polonii — Firebase
+# Firebase — produkcja, emulator i integracja gry
 
-Folder zawiera Cloud Functions (2. generacja, TypeScript, Node 22), zabezpieczony Firestore i testy emulatorów. Funkcje używają dokładnie tego samego kodu symulacji, co klient: importy z ../../src/core/game.ts, ../../src/core/route.ts oraz ../../src/core/rng.ts są bundlowane przez esbuild. Nie należy kopiować ani niezależnie modyfikować logiki rdzenia w backendzie.
+Backend Ligi Polonii używa Cloud Functions 2. generacji (**Node 22, region `europe-west1`**), Firestore, Anonymous Authentication i emulatorów. Symulacja przejazdu jest kompilowana z tego samego `src/core/` co klient (przez esbuild), więc nie wolno utrzymywać drugiej kopii logiki gry.
 
-## Uruchomienie projektu
+## 1. Projekt Firebase i limity kosztów
 
-1. Utwórz projekt w konsoli Firebase, wybierz europejską lokalizację bazy Firestore, np. europe-west1. Włącz rozliczanie Blaze (wymagane do wdrażania Cloud Functions 2. generacji i zadania harmonogramu); skonfiguruj alerty budżetowe.
-2. W Authentication → Sign-in method włącz Anonymous. Nie włączaj kont email/hasło w miejsce logowania anonimowego.
-3. Skopiuj .firebaserc.example do .firebaserc i wpisz ID projektu Firebase. Plik .firebaserc pozostaje lokalny.
-4. Uruchom poniższe komendy w katalogu głównym repozytorium:
+1. Zaloguj się na [Firebase Console](https://console.firebase.google.com/) i utwórz **nowy projekt** (np. `cebulak-express-prod`); ID projektu jest niezmienne.
+2. W projekcie wybierz **Build → Firestore Database → Create database**. Wybierz lokalizację `europe-west1` (Belgia); po utworzeniu nie można swobodnie zmieniać regionu bazy. Reguły z repo wdrożymy poniżej.
+3. W **Authentication → Sign-in method** włącz **Anonymous** i zapisz. Klient nie ma kont imiennych.
+4. W **Usage and billing → Modify plan** przełącz projekt na **Blaze (pay as you go)**. Funkcje 2. generacji i harmonogram wymagają rozliczania. W Google Cloud Billing utwórz budżet, np. 10–20 EUR/mies., i alerty na 50%, 90% i 100% (kwota jest decyzją właściciela).
+5. **Ważne:** budżet Google Cloud to *powiadomienia*, a **nie twarda blokada wydatków**. Monitoruj billing, ustaw limity/kwoty usług i ograniczenia liczby instancji funkcji przed kampanią; reaguj na alerty. Nie aktywuj projektu produkcyjnego bez własnych progów bezpieczeństwa.
+6. Dodaj aplikację **Web** w ustawieniach projektu (ikona `</>`), zapisz wyświetloną konfigurację Firebase Web SDK. Nie dodawaj konta usługi ani klucza prywatnego do przeglądarki.
 
-~~~bash
+## 2. Lokalna konfiguracja CLI i wdrożenie
+
+W katalogu głównym repo:
+
+```bash
 npm ci
 npm install --prefix firebase --package-lock=false --no-audit --no-fund
+cp .firebaserc.example .firebaserc
+# Edytuj .firebaserc i zastąp YOUR_FIREBASE_PROJECT_ID prawdziwym ID.
+npx --prefix firebase firebase login
+npm --prefix firebase run build
+npm --prefix firebase run test:unit
+npm run test:firebase
+```
+
+`firebase/.env.example` można skopiować do `firebase/.env` i ustawić:
+
+```dotenv
+REQUIRE_APP_CHECK=false
+ANALYTICS_ALLOWED_ORIGINS=https://twoj-portal.example,capacitor://localhost,https://localhost
+```
+
+- Zastąp `https://twoj-portal.example` **każdą prawdziwą domeną** hostującą grę lub analitykę, oddzielając wartości przecinkami, bez końcowego `/`.
+- `capacitor://localhost` to źródło iOS Capacitor, `https://localhost` to typowe źródło Android Capacitor; oba muszą pozostać dopuszczone, jeżeli aplikacja ma wysyłać analitykę.
+- W środowisku developerskim możesz dodać `http://localhost:5173`, ale usuń je z produkcyjnej listy, jeśli nie jest potrzebne.
+- `REQUIRE_APP_CHECK=true` włącz **dopiero po** przygotowaniu App Check na web/Android/iOS; w przeciwnym razie callable functions będą odrzucać legalnych graczy.
+- Allowlista dotyczy żądań z nagłówkiem `Origin`; **CORS nie jest autoryzacją**. Puste `ANALYTICS_ALLOWED_ORIGINS` powoduje obecnie szerokie dopuszczenie originów, więc nie zostawiaj jej pustej w produkcji.
+
+Po zaliczeniu testów:
+
+```bash
+./firebase/node_modules/.bin/firebase --config firebase.json deploy --only firestore:rules,firestore:indexes,functions --project YOUR_FIREBASE_PROJECT_ID
+```
+
+`firebase.json` wykonuje predeploy budujący funkcje. Dla funkcji użyto `firebase/package.json` z `main: "index.js"`; `firebase/index.js` eksportuje `startRun`, `submitRun`, `cleanupExpiredRuns` i `collectEvents` z `lib/index.js`. Plik główny `firebase.js` zapobiega kolizji rozwiązywania ścieżek Node z `firebase.json`, dzięki czemu loader Functions wykrywa wszystkie cztery funkcje. Nie usuwaj go.
+
+## 3. Zmienne środowiskowe Vite (web, Android, iOS)
+
+Skopiuj plik `.env.example` do lokalnego `.env` **w katalogu głównym** i wpisz wartości z **Project settings → Your apps → Web app → SDK setup and configuration**:
+
+```dotenv
+VITE_FIREBASE_API_KEY=twoje-web-api-key
+VITE_FIREBASE_AUTH_DOMAIN=twoj-projekt.firebaseapp.com
+VITE_FIREBASE_PROJECT_ID=twoj-projekt
+VITE_FIREBASE_APP_ID=1:000000000000:web:xxxxxxxxxxxxxxxx
+VITE_FIREBASE_MESSAGING_SENDER_ID=000000000000
+VITE_FIREBASE_STORAGE_BUCKET=twoj-projekt.firebasestorage.app
+```
+
+Wymagane do przełączenia mocka na prawdziwy backend: `VITE_FIREBASE_API_KEY`, `VITE_FIREBASE_AUTH_DOMAIN`, `VITE_FIREBASE_PROJECT_ID`, `VITE_FIREBASE_APP_ID`. Pozostałe dwa pola są opcjonalne i powinny pochodzić z tej samej aplikacji Firebase. Zmienne `VITE_*` są **publiczne** — są wbudowane w bundle przeglądarkowy, więc **nigdy nie umieszczaj w nich sekretów, tokenów serwera ani kluczy kont usługowych**.
+
+Po konfiguracji wykonaj `npm run build` oraz w razie budowy natywnej `npx cap sync android`/`npx cap sync ios`. Dla niezależnej dystrybucji wersja z konfiguracją musi zostać zbudowana na każdą platformę. Bez kompletu czterech podstawowych zmiennych `createRankingApi()` wybiera lokalny mock, a kod SDK Firebase nie jest dynamicznie importowany.
+
+## 4. Testy i CI
+
+```bash
+npm ci
 npm run typecheck
 npm test
 npm run build
+npm --prefix firebase run build
+npm --prefix firebase run test:unit
 npm run test:firebase
-~~~
+```
 
-Testy emulatora wymagają Java 21 i Node 22. Uruchamiają serwisy Auth (9099), Firestore (8080) i Functions (5001) w odrębnym zadaniu, aby zwykłe testy webowe nie potrzebowały Javy. Jednostkowe testy backendu: npm --prefix firebase run test:unit.
+Test emulatorów wymaga **Node 22 i Java 21**, testuje callable Functions i reguły Firestore (w tym **publiczny odczyt `daily/{date}/entries`**). `.github/workflows/firebase.yml` konfiguruje te wersje, używa cache emulatorów i uruchamia pełny zestaw na każdym PR. Projekt `demo-cebulak-express` to emulator, bez żadnego produkcyjnego zapisu.
 
-## Wdrożenie
+## 5. Kontrakt rankingu i model prywatności
 
-~~~bash
-npm install -g firebase-tools@14.12.0
-firebase login
-firebase deploy --only firestore,functions
-~~~
+- `startRun({ mode: 'ranked' | 'daily', home, from, to, daily? })` zwraca `runId, seed, issuedAt` i wymaga anonimowego Firebase Auth.
+- `submitRun({ runId, flapTicks, ticks, km, nickId })` odtwarza grę, odrzuca duplikaty, sprawdza czas i ziarno. `nickId` musi pochodzić z generatora `src/content/nicks.ts`, nie z wpisywanego przez użytkownika tekstu.
+- Publiczne odczyty: `league/{week}`, `leaderboard/{week}/entries`, `daily/{day}/entries`. Wszelkie zapisy klientów są zablokowane; własny dokument `players/{uid}` można tylko odczytać.
+- Zbiory `runs`, `_runStarts`, `_submissionLimits` oraz członkostwo krajów są prywatne. Retencja i dodatkowe ograniczenia dostępu opisane są w `PRIVACY.md`.
+- Region callable Functions: `europe-west1`. `daily` ma ten sam deterministyczny seed dla wyzwania dnia. Wyniki dzienne nie zwiększają rankingu tygodniowego.
 
-W firebase.json jest predeploy budujący backend z src/index.ts do firebase/lib/index.js. Jawny punkt wejścia firebase/index.js eksportuje funkcje z bundla dla mechanizmu wykrywania Firebase (CommonJS i import ESM). Użyto esbuild z opcją --packages=external, która pakuje lokalny src/core oraz src/content/waypoints, lecz pozostawia zależności firebase-admin i firebase-functions do instalacji przez środowisko Functions. Firebase deploy uruchom z katalogu głównego repozytorium.
+## 6. Kontrola produkcyjna
 
-## Kontrakt dla klienta (zlecenie 12)
-
-Klient inicjalizuje publiczną konfigurację aplikacji Firebase (apiKey, authDomain, projectId, appId; opcjonalnie messagingSenderId), loguje się przez signInAnonymously, wybiera region europe-west1 i korzysta z dwóch callable functions:
-
-~~~ts
-startRun({ mode: 'ranked' | 'daily', home, from, to, daily?: 'YYYY-MM-DD' })
-// -> { runId: string, seed: number, issuedAt: number }
-
-submitRun({ runId, flapTicks: number[], ticks: number, km: number, nickId: string })
-// -> { accepted: boolean, km: number, reason?: string, week: string,
-//      countryRankKm?: number, playerBestKm?: number }
-~~~
-
-- Serwer losuje seed dla ranked; dla daily używa seedFromString('daily:' + date). Data daily musi być aktualną datą w Europe/Warsaw (można pominąć).
-- Klient uruchamia zwykły Game({ seed, mode: 'ranked', route: makeRoute(home, from, to) }) także dla daily. Musi przekazać dokładne game.flapTicks, game.ticks i game.km.
-- Pierwszy flap ma tick 0. Przejazd można zgłosić tylko raz, do 30 minut od wydania seeda. Symulacja ma limit 10 minut (72 000 ticków), a liczba tapnięć nie przekracza ticks / 6.
-- Serwer porównuje wynik, ticki, zakończoną fazę oraz odtworzoną sekwencję tapnięć. Wymaga, aby realny czas od startu stanowił co najmniej 90% czasu gry.
-- Minimalna przerwa między zgłoszeniami to 3 sekundy, maksymalnie 500 zgłoszeń na UID na dobę UTC. Nowe przejazdy: minimum 1 sekunda odstępu, maksymalnie 600 na dobę UTC. Rejected submission zużywa próbę, duplicate nie; rate_limited nie zużywa runId.
-- Tydzień obliczany jest wg daty rozpoczęcia przejazdu w Europe/Warsaw (poniedziałek 00:00, ISO week). Daily nie zwiększa Ligi i nie aktualizuje tygodniowego rankingu.
-- NickId jest tymczasowo sprawdzany regexem [a-z0-9-]{3,40}. Po włączeniu src/content/nicks.ts zlecenia 13 należy podłączyć kontrolę członkostwa w słowniku.
-- Dla pojedynczego wyniku rejected zwracane są reason: replay_mismatch, too_fast, expired, rate_limited, bad_nick lub duplicate. Niepoprawna struktura wywołania, cudzy runId lub brak Auth dają kod błędu HTTPS callable.
-
-## Odczyty Firestore i indeksy
-
-- league/{week}: dokument z countries.{BE,NL,DE,UK,FR,CH,NO,DK}.{km,runs,players} oraz updatedAt. Pole players oznacza unikalną liczbę UID w danym kraju w tygodniu (pomocnicza kolekcja _members); powrót tego samego UID nie zwiększa tej liczby. Przejazdy z różnych wybranych krajów są liczone oddzielnie.
-- leaderboard/{week}/entries/{uid}: nickId, home, bestKm, at. Zapytanie orderBy('bestKm', 'desc') używa automatycznego indeksu jednopolowego Firestore. Definicja indeksu złożonego w firestore.indexes.json wspiera dodatkowo where('home', '==', ...).
-- players/{uid}: własny profil gracza, rekord globalny z zaakceptowanych przejazdów i ostatnio użyty kraj/nick.
-- daily/{day}/entries/{uid}: najwyższy zaakceptowany wynik danego dnia, niedostępny bezpośrednio klientom (przyszły widok dzienny wymaga zmiany reguł lub osobnego API).
-- runs/{runId}, _runStarts, _submissionLimits oraz league/{week}/_members są niedostępne bezpośrednio dla klientów.
-
-Reguły zezwalają na publiczny odczyt league i leaderboard/entries, odczyt tylko własnego players/{uid}, a wszystkie zapisy blokują. Zmiany stanu gry wykonują wyłącznie funkcje Admin SDK. Liczniki kraju aktualizowane są transakcją (jeden dokument tygodniowy); przy dużym ruchu może to powodować contention — przejście na sharded counters i agregację należy rozważyć przed kampanią o znacznym natężeniu.
-
-## App Check, bezpieczeństwo i sekrety
-
-App Check jest opcjonalny: skopiuj firebase/.env.example do firebase/.env i ustaw REQUIRE_APP_CHECK=true dopiero po skonfigurowaniu App Check dla web/Android iOS. Wymaga to ponownego wdrożenia funkcji. W emulatorze domyślnie false. Anonymous Auth nie dowodzi, że gracz jest człowiekiem; replay dowodzi zgodności wejść z symulacją, lecz nie zapobiega botom samodzielnie grającym poprawne przejazdy. Dodatkowo warto monitorować liczbę nowych anonimowych użytkowników, koszty i nadużycia App Check.
-
-Konfiguracja webowa Firebase jest publiczna i trafia do klienta. NIE commituj kluczy kont usługowych, plików .env z prawdziwymi danymi, .firebaserc, tokenów CLI, plików Android google-services.json/keystore ani jakichkolwiek poświadczeń. Nie zapisujemy IP ani identyfikatorów urządzeń w Firestore. Patrz PRIVACY.md.
-
-## Ograniczenia i integracja
-
-- Nie ma tu SDK frontendowego ani zmiany src/main.ts — koordynator scala wywołania z modułem zlecenia 12.
-- Listę nicków z zadania 13 trzeba dodać do walidacji po scaleniu.
-- Wynik z daily wpływa na osobisty globalny bestKm, ale nie na tygodniową Ligę ani leaderboard.
-- Na emulatorze App Check jest wyłączony; działanie wymuszonego App Check i obciążenia produkcyjnego wymaga oddzielnej weryfikacji.
+Przed udostępnieniem graczom sprawdź test Anonymous Auth i oba callable na docelowym projekcie, odczyt rankingu z niezalogowanej przeglądarki, odczyt daily, ochronę zapisów regułami, analitykę z domen portali i z aplikacji Capacitor, koszty oraz App Check. Zwróć uwagę na opóźnienia cold start i limity transakcji Firestore przy dużej liczbie graczy. **Żadne realne wdrożenie nie jest częścią testów CI.**
