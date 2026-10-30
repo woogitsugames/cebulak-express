@@ -314,7 +314,7 @@ export class AssetLoader {
     if (asset) {
       this.cachedPixels -= drawableWidth(asset) * drawableHeight(asset);
       if ('close' in asset) asset.close();
-      else asset.removeAttribute('src');
+      else if ('removeAttribute' in asset) asset.removeAttribute('src');
     }
     this.records.delete(record.path);
   }
