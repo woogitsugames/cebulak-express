@@ -311,7 +311,7 @@ export default {
   },
   "MENU": {
     "tagline": "Bestemming Polen",
-    "homeLabel": "Ik woon in",
+    "homeLabel": "Woonland",
     "fromLabel": "Ik vertrek uit",
     "toLabel": "Ik vlieg naar",
     "modeLabel": "Spelmodus",

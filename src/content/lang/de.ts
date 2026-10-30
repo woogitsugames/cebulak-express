@@ -275,7 +275,7 @@ export default {
     "over": "Ende der Fahrt!",
     "arrived": "Du bist zu Hause!",
     "arrivedSub": "Mama deckt schon den Tisch.",
-    "stoppedBy": "Gestoppt von: {what}",
+    "stoppedBy": "Hindernis: {what}",
     "distance": "{km} km",
     "best": "Rekord: {km} km",
     "newBest": "Neuer Rekord!",
@@ -311,7 +311,7 @@ export default {
   },
   "MENU": {
     "tagline": "Ziel: Polen",
-    "homeLabel": "Ich wohne in",
+    "homeLabel": "Wohnsitzland",
     "fromLabel": "Start in",
     "toLabel": "Flug nach",
     "modeLabel": "Spielmodus",

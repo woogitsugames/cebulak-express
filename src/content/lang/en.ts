@@ -271,7 +271,7 @@ export default {
     "tapToStart": "Tap to start",
     "tapToFly": "Tap to hop",
     "remaining": "home in {km} km",
-    "welcome": "Welcome {where}!",
+    "welcome": "Welcome! You're {where}!",
     "over": "End of the road!",
     "arrived": "You're home!",
     "arrivedSub": "Mum is setting the table.",
@@ -311,7 +311,7 @@ export default {
   },
   "MENU": {
     "tagline": "Destination: Poland",
-    "homeLabel": "I live in",
+    "homeLabel": "Country of residence",
     "fromLabel": "Departing from",
     "toLabel": "Flying to",
     "modeLabel": "Game mode",

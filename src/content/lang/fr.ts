@@ -311,8 +311,8 @@ export default {
   },
   "MENU": {
     "tagline": "Direction la Pologne",
-    "homeLabel": "J'habite en",
-    "fromLabel": "Je pars de",
+    "homeLabel": "Pays de résidence",
+    "fromLabel": "Ville de départ",
     "toLabel": "Je vais à",
     "modeLabel": "Mode de jeu",
     "start": "C'est parti !",
