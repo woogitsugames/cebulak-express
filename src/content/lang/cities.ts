@@ -23,6 +23,17 @@ const CITY_NAMES: Record<string, Partial<Record<Language, string>>> = {
   wroclaw: { de: 'Breslau' },
   gdansk: { de: 'Danzig' },
   szczecin: { de: 'Stettin' },
+  barcelona: { fr: 'Barcelone' },
+  madryt: { en: 'Madrid', nl: 'Madrid', de: 'Madrid', fr: 'Madrid' },
+  walencja: { en: 'Valencia', nl: 'Valencia', de: 'Valencia', fr: 'Valence' },
+  mediolan: { en: 'Milan', nl: 'Milaan', de: 'Mailand', fr: 'Milan' },
+  rzym: { en: 'Rome', nl: 'Rome', de: 'Rom', fr: 'Rome' },
+  bolonia: { en: 'Bologna', nl: 'Bologna', de: 'Bologna', fr: 'Bologne' },
+  wieden: { en: 'Vienna', nl: 'Wenen', de: 'Wien', fr: 'Vienne' },
+  sztokholm: { en: 'Stockholm', nl: 'Stockholm', de: 'Stockholm', fr: 'Stockholm' },
+  goteborg: { en: 'Gothenburg', nl: 'Göteborg', de: 'Göteborg', fr: 'Göteborg' },
+  luksemburg: { en: 'Luxembourg', nl: 'Luxemburg', de: 'Luxemburg', fr: 'Luxembourg' },
+  differdange: { nl: 'Differdingen', de: 'Differdingen' },
 };
 
 /** Nazwy niewymienione w tabeli zachowują polską/lokalną postać z City.name. */

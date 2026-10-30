@@ -2,17 +2,143 @@ import type { GameLocale } from './schema';
 
 /** Teksty gry: niderlandzki. */
 export default {
-  "COUNTRY_NAME": {
-    "BE": "België",
-    "NL": "Nederland",
-    "DE": "Duitsland",
-    "UK": "Verenigd Koninkrijk",
-    "FR": "Frankrijk",
-    "CH": "Zwitserland",
-    "NO": "Noorwegen",
-    "DK": "Denemarken",
-    "SE": "Zweden",
-    "PL": "Polen"
+  "ARRIVAL_TEXTS": [
+    "Je bent thuis! Mama dekt de tafel al.",
+    "Rit voorbij. Tijd voor een tweede portie.",
+    "De koffers staan nog in de auto, het eten is klaar.",
+    "Mama vraagt: 'Honger?' Dat is geen echte vraag.",
+    "Pierogi op tafel, de halve inboedel in de kofferbak.",
+    "Aangekomen! De thee koelt af, iedereen wacht.",
+    "De auto rust. Het familiediner begint pas.",
+    "Aankomst! Eerst knuffels, dan nog een portie.",
+    "Rit geslaagd. Mama haalt een extra bord.",
+    "Onderweg telden we kilometers. Nu pierogi.",
+    "Mama pakt al potten in voor de terugweg.",
+    "Nog niet uitgepakt, de retourpotten staan al klaar.",
+    "Je bent er. Het huis ruikt naar eten.",
+    "Sleutels weg. Aanschuiven aan tafel."
+  ],
+  "BORDER_TEXTS": {
+    "BE": [
+      "Welkom in België! De koffers zien er goed uit.",
+      "België! Koffie mee en verder.",
+      "Je rijdt België binnen. De bagage ook.",
+      "België op de route! Nog een eind te gaan."
+    ],
+    "NL": [
+      "Welkom in Nederland! Fietsen langs de grachten.",
+      "Nederland! Even genieten van de grachten.",
+      "Je rijdt Nederland binnen. Het dak zit nog vol.",
+      "Nederland op de kaart. De koffie is nog warm."
+    ],
+    "DE": [
+      "Welkom in Duitsland! De reis gaat door.",
+      "Duitsland! Weer een kilometer dichter bij huis.",
+      "Je rijdt Duitsland binnen. Alle potten zijn mee.",
+      "Duitsland op de route. Koffers vol goede moed."
+    ],
+    "UK": [
+      "Welkom in het VK! De bagage klaagt niet.",
+      "Het VK! Nog een koffie en we vertrekken.",
+      "Je rijdt het VK binnen. Let op de rijstroken.",
+      "Het VK op de route. Richting thuis."
+    ],
+    "FR": [
+      "Welkom in Frankrijk! De potten zijn mee.",
+      "Frankrijk! Tijd voor een korte koffiepauze.",
+      "Je rijdt Frankrijk binnen. Alles goed vast.",
+      "Frankrijk op de route. Geniet van het uitzicht."
+    ],
+    "CH": [
+      "Welkom in Zwitserland! Bergzicht inbegrepen.",
+      "Zwitserland! Ook de koffers kijken naar de bergen.",
+      "Je rijdt Zwitserland binnen. Houd koers.",
+      "Zwitserland op de route. Dak nog bezet."
+    ],
+    "NO": [
+      "Welkom in Noorwegen! Fjorden in het zicht.",
+      "Noorwegen! Auto en uitzicht in één beeld.",
+      "Je rijdt Noorwegen binnen. Koffie is welkom.",
+      "Noorwegen op de route. Alle tassen mee."
+    ],
+    "DK": [
+      "Welkom in Denemarken! Volg de kaart.",
+      "Denemarken! Brug na brug, dichter bij huis.",
+      "Je rijdt Denemarken binnen. Koffers op het dak.",
+      "Denemarken op de route. Koffie nog warm."
+    ],
+    "SE": [
+      "Welkom in Zweden! Boswegen voor de boeg.",
+      "Zweden! De potten reizen met uitzicht.",
+      "Je rijdt Zweden binnen. De bruggen wachten.",
+      "Zweden op de route. De teller loopt door."
+    ],
+    "IE": [
+      "Welkom in Ierland! Koffers aan boord.",
+      "Ierland! We vertrekken richting huis.",
+      "Ierland op de route. Koffie en verder.",
+      "Je rijdt Ierland binnen. Het dak zit nog vol."
+    ],
+    "ES": [
+      "Welkom in Spanje! Een lange route voor de boeg.",
+      "Spanje! De koffers staan klaar voor vertrek.",
+      "Je rijdt Spanje binnen. De potten zijn er klaar voor.",
+      "Spanje op de route. De kaart ligt uitgevouwen."
+    ],
+    "IT": [
+      "Welkom in Italië! Het dak zit nog vol.",
+      "Italië! De bagage is klaar voor bergzichten.",
+      "Je rijdt Italië binnen. De stationwagen houdt koers.",
+      "Italië op de route. Thuis wacht aan het eind."
+    ],
+    "AT": [
+      "Welkom in Oostenrijk! Bergen langs het raam.",
+      "Oostenrijk! De thermos is nog vol.",
+      "Je rijdt Oostenrijk binnen. De bagage is compleet.",
+      "Oostenrijk op de route. De potten zijn veilig."
+    ],
+    "FI": [
+      "Welkom in Finland! We checken de veerbootdienst.",
+      "Finland! De koffie staat klaar voor de overtocht.",
+      "Je rijdt Finland binnen. De koffers wachten.",
+      "Finland op de route. Een veerboot voor de boeg."
+    ],
+    "LU": [
+      "Welkom in Luxemburg! Op naar huis.",
+      "Luxemburg! De kaart hebben we, de bagage ook.",
+      "Je rijdt Luxemburg binnen. Het dak zit propvol.",
+      "Luxemburg op de route. Weer een kilometer erbij."
+    ],
+    "CZ": [
+      "Welkom in Tsjechië! Thuis komt dichterbij.",
+      "Tsjechië! De route loopt naar het noorden.",
+      "Je rijdt Tsjechië binnen. De potten zijn compleet.",
+      "Tsjechië op de route. De koffie is nog warm."
+    ],
+    "EE": [
+      "Welkom in Estland! De veerboot ligt achter ons.",
+      "Estland! Nog een paar grenzen naar huis.",
+      "Je rijdt Estland binnen. De koffers staan op hun plek.",
+      "Estland op de route. Tijd om verder te gaan."
+    ],
+    "LV": [
+      "Welkom in Letland! We tellen de kilometers.",
+      "Letland! Weer een stop achter de rug.",
+      "Je rijdt Letland binnen. Het dak zit nog vol.",
+      "Letland op de route. Tijd voor een slok koffie."
+    ],
+    "LT": [
+      "Welkom in Litouwen! Polen komt dichterbij.",
+      "Litouwen! Check even of de potten heel zijn.",
+      "Je rijdt Litouwen binnen. De finish is dichtbij.",
+      "Litouwen op de route. De kaart is bijna thuis."
+    ],
+    "PL": [
+      "Polen! Bijna thuis.",
+      "Welkom in Polen! Mama wacht vast al.",
+      "Je rijdt Polen binnen. De potten zijn bijna thuis.",
+      "Polen op de route! De pierogi komen dichterbij."
+    ]
   },
   "COUNTRY_LOCATIVE": {
     "BE": "in België",
@@ -24,16 +150,39 @@ export default {
     "NO": "in Noorwegen",
     "DK": "in Denemarken",
     "SE": "in Zweden",
+    "IE": "in Ierland",
+    "ES": "in Spanje",
+    "IT": "in Italië",
+    "AT": "in Oostenrijk",
+    "FI": "in Finland",
+    "LU": "in Luxemburg",
+    "CZ": "in Tsjechië",
+    "EE": "in Estland",
+    "LV": "in Letland",
+    "LT": "in Litouwen",
     "PL": "in Polen"
   },
-  "OBSTACLE_NAME": {
-    "viaduct": "Laag viaduct",
-    "sign": "Enorm verkeersbord",
-    "crane": "Bouwkraan",
-    "roadworks": "Wegenwerken",
-    "barrier": "Slagboom",
-    "truck": "Vrachtwagen",
-    "ground": "Asfalt"
+  "COUNTRY_NAME": {
+    "BE": "België",
+    "NL": "Nederland",
+    "DE": "Duitsland",
+    "UK": "Verenigd Koninkrijk",
+    "FR": "Frankrijk",
+    "CH": "Zwitserland",
+    "NO": "Noorwegen",
+    "DK": "Denemarken",
+    "SE": "Zweden",
+    "IE": "Ierland",
+    "ES": "Spanje",
+    "IT": "Italië",
+    "AT": "Oostenrijk",
+    "FI": "Finland",
+    "LU": "Luxemburg",
+    "CZ": "Tsjechië",
+    "EE": "Estland",
+    "LV": "Letland",
+    "LT": "Litouwen",
+    "PL": "Polen"
   },
   "FAIL_JOKES": {
     "viaduct": [
@@ -96,6 +245,16 @@ export default {
       "Plaats op de weg, maar niet voor die manoeuvre.",
       "De koffers zwaaiden nog even gedag."
     ],
+    "baggage-gate": [
+      "De poort telde de koffers. Er ontbrak een centimeter.",
+      "Te veel bagage? De schuifmaat liegt niet.",
+      "De koffers hadden een ticket, maar er was geen plek.",
+      "Handbagage. Maar in welke hand?",
+      "De stationwagen verwachtte geen maatcontrole.",
+      "Eén pot minder en het had perfect gepast.",
+      "De poort was smaller dan onze plannen.",
+      "Volgende keer vragen we iets meer doorrijhoogte."
+    ],
     "ground": [
       "De zwaartekracht houdt van volle auto's.",
       "Een zachte landing? Alleen in de planning.",
@@ -105,124 +264,6 @@ export default {
       "Nog één sprongetje en het was gelukt.",
       "De bagage is klaar voor poging twee.",
       "Terug op aarde. Letterlijk."
-    ]
-  },
-  "PICKUP_TOAST": {
-    "parcel": "Pakket van mama! +{km} km",
-    "jar": "Pot augurken! +{km} km"
-  },
-  "BORDER_TEXTS": {
-    "BE": [
-      "Welkom in België! De koffers zien er goed uit.",
-      "België! Koffie mee en verder.",
-      "Je rijdt België binnen. De bagage ook.",
-      "België op de route! Nog een eind te gaan."
-    ],
-    "NL": [
-      "Welkom in Nederland! Fietsen langs de grachten.",
-      "Nederland! Even genieten van de grachten.",
-      "Je rijdt Nederland binnen. Het dak zit nog vol.",
-      "Nederland op de kaart. De koffie is nog warm."
-    ],
-    "DE": [
-      "Welkom in Duitsland! De reis gaat door.",
-      "Duitsland! Weer een kilometer dichter bij huis.",
-      "Je rijdt Duitsland binnen. Alle potten zijn mee.",
-      "Duitsland op de route. Koffers vol goede moed."
-    ],
-    "UK": [
-      "Welkom in het VK! De bagage klaagt niet.",
-      "Het VK! Nog een koffie en we vertrekken.",
-      "Je rijdt het VK binnen. Let op de rijstroken.",
-      "Het VK op de route. Richting thuis."
-    ],
-    "FR": [
-      "Welkom in Frankrijk! De potten zijn mee.",
-      "Frankrijk! Tijd voor een korte koffiepauze.",
-      "Je rijdt Frankrijk binnen. Alles goed vast.",
-      "Frankrijk op de route. Geniet van het uitzicht."
-    ],
-    "CH": [
-      "Welkom in Zwitserland! Bergzicht inbegrepen.",
-      "Zwitserland! Ook de koffers kijken naar de bergen.",
-      "Je rijdt Zwitserland binnen. Houd koers.",
-      "Zwitserland op de route. Dak nog bezet."
-    ],
-    "NO": [
-      "Welkom in Noorwegen! Fjorden in het zicht.",
-      "Noorwegen! Auto en uitzicht in één beeld.",
-      "Je rijdt Noorwegen binnen. Koffie is welkom.",
-      "Noorwegen op de route. Alle tassen mee."
-    ],
-    "DK": [
-      "Welkom in Denemarken! Volg de kaart.",
-      "Denemarken! Brug na brug, dichter bij huis.",
-      "Je rijdt Denemarken binnen. Koffers op het dak.",
-      "Denemarken op de route. Koffie nog warm."
-    ],
-    "SE": [
-      "Welkom in Zweden! Boswegen voor de boeg.",
-      "Zweden! De potten reizen met uitzicht.",
-      "Je rijdt Zweden binnen. De bruggen wachten.",
-      "Zweden op de route. De teller loopt door."
-    ],
-    "PL": [
-      "Polen! Bijna thuis.",
-      "Welkom in Polen! Mama wacht vast al.",
-      "Je rijdt Polen binnen. De potten zijn bijna thuis.",
-      "Polen op de route! De pierogi komen dichterbij."
-    ]
-  },
-  "ARRIVAL_TEXTS": [
-    "Je bent thuis! Mama dekt de tafel al.",
-    "Rit voorbij. Tijd voor een tweede portie.",
-    "De koffers staan nog in de auto, het eten is klaar.",
-    "Mama vraagt: 'Honger?' Dat is geen echte vraag.",
-    "Pierogi op tafel, de halve inboedel in de kofferbak.",
-    "Aangekomen! De thee koelt af, iedereen wacht.",
-    "De auto rust. Het familiediner begint pas.",
-    "Aankomst! Eerst knuffels, dan nog een portie.",
-    "Rit geslaagd. Mama haalt een extra bord.",
-    "Onderweg telden we kilometers. Nu pierogi.",
-    "Mama pakt al potten in voor de terugweg.",
-    "Nog niet uitgepakt, de retourpotten staan al klaar.",
-    "Je bent er. Het huis ruikt naar eten.",
-    "Sleutels weg. Aanschuiven aan tafel."
-  ],
-  "NEAR_MISS_TEXTS": [
-    "Op een haar na! Zelfs de spiegel bleef stil.",
-    "Een centimeter over. Telt als succes.",
-    "Nipt! De potten hielden hun adem in.",
-    "Op een haar na! Het dak zit er nog op.",
-    "Oef! De koffers hebben niets gemerkt.",
-    "Nog even en het was een omweg... naar het menu.",
-    "Bijna! De auto ging op zijn tenen voorbij.",
-    "Nipt! De koffie bleef in de beker.",
-    "Het paste. Vraag niet hoe.",
-    "Dat was geen manoeuvre. Dat was precisie.",
-    "Nipt! Zelfs de kaart zweeg.",
-    "Net gemist! Volgende bocht rustig aan."
-  ],
-  "PICKUP_TEXTS": {
-    "parcel": [
-      "Pakket van mama! +{km} km",
-      "Pakket op het dak! +{km} km",
-      "Nog een pakket? +{km} km",
-      "Pakket mee. Het dak houdt stand! +{km} km",
-      "Pakket van thuis? Graag! +{km} km",
-      "Nieuwe bagage, nieuw record? +{km} km",
-      "De koffers maakten plaats. +{km} km",
-      "Verrassingspakket! +{km} km"
-    ],
-    "jar": [
-      "Pot augurken! +{km} km",
-      "Pot gevangen! +{km} km",
-      "Nog een pot! +{km} km",
-      "Het deksel houdt. +{km} km",
-      "Eentje voor de verzameling! +{km} km",
-      "Meer voorraad van thuis! +{km} km",
-      "Voorzichtig, glas! +{km} km",
-      "Geen krasje te zien. +{km} km"
     ]
   },
   "MILESTONE_TEXTS": [
@@ -247,6 +288,181 @@ export default {
     "{km} km! Nog tijd voor een meezinger.",
     "{km} km! Thuis komt in zicht."
   ],
+  "NEAR_MISS_TEXTS": [
+    "Op een haar na! Zelfs de spiegel bleef stil.",
+    "Een centimeter over. Telt als succes.",
+    "Nipt! De potten hielden hun adem in.",
+    "Op een haar na! Het dak zit er nog op.",
+    "Oef! De koffers hebben niets gemerkt.",
+    "Nog even en het was een omweg... naar het menu.",
+    "Bijna! De auto ging op zijn tenen voorbij.",
+    "Nipt! De koffie bleef in de beker.",
+    "Het paste. Vraag niet hoe.",
+    "Dat was geen manoeuvre. Dat was precisie.",
+    "Nipt! Zelfs de kaart zweeg.",
+    "Net gemist! Volgende bocht rustig aan."
+  ],
+  "OBSTACLE_NAME": {
+    "viaduct": "Laag viaduct",
+    "sign": "Enorm verkeersbord",
+    "crane": "Bouwkraan",
+    "roadworks": "Wegenwerken",
+    "barrier": "Slagboom",
+    "truck": "Vrachtwagen",
+    "baggage-gate": "Bagagepoort",
+    "ground": "Asfalt"
+  },
+  "PICKUP_TEXTS": {
+    "parcel": [
+      "Pakket van mama! +{km} km",
+      "Pakket op het dak! +{km} km",
+      "Nog een pakket? +{km} km",
+      "Pakket mee. Het dak houdt stand! +{km} km",
+      "Pakket van thuis? Graag! +{km} km",
+      "Nieuwe bagage, nieuw record? +{km} km",
+      "De koffers maakten plaats. +{km} km",
+      "Verrassingspakket! +{km} km"
+    ],
+    "jar": [
+      "Pot augurken! +{km} km",
+      "Pot gevangen! +{km} km",
+      "Nog een pot! +{km} km",
+      "Het deksel houdt. +{km} km",
+      "Eentje voor de verzameling! +{km} km",
+      "Meer voorraad van thuis! +{km} km",
+      "Voorzichtig, glas! +{km} km",
+      "Geen krasje te zien. +{km} km"
+    ],
+    "boarding": [
+      "Priority Boarding! 3 seconden bescherming!",
+      "Voorrangsbaan! 3 seconden veilig onderweg.",
+      "Voorrangsticket! Nu houdt niets ons tegen.",
+      "Bagage vastgezet? Even zijn we beschermd!",
+      "Gouden doorgang! Drie seconden zonder zorgen.",
+      "Vrije baan! Drie seconden bescherming."
+    ],
+    "tailwind": [
+      "Wind mee! 2 seconden extra snelheid!",
+      "De wind helpt! Twee seconden sneller onderweg.",
+      "Een windstoot recht naar huis! Obstakels overgeslagen.",
+      "De stationwagen kreeg vleugels. Snelle vlucht!",
+      "Een extra zetje van het weer! Twee seconden vooruit.",
+      "We razen met de wind mee! Heel even vrije baan."
+    ],
+    "mamcall": [
+      "Mama belt: Pas goed op jezelf!",
+      "Mama belt: Pas goed op jezelf!",
+      "Pas goed op jezelf! Mama wacht thuis op je.",
+      "Een telefoontje van thuis. Pas goed op jezelf!",
+      "Rustig aan, geen haast. Pas goed op jezelf!",
+      "Mama herinnert je eraan: Pas goed op jezelf!"
+    ]
+  },
+  "PICKUP_TOAST": {
+    "parcel": "Pakket van mama! +{km} km",
+    "jar": "Pot augurken! +{km} km",
+    "boarding": "Priority Boarding! 3 seconden bescherming!",
+    "tailwind": "Wind mee! 2 seconden extra snelheid!",
+    "mamcall": "Mama belt: Pas goed op jezelf!"
+  },
+  "UI": {
+    "tapToStart": "Tik om te starten",
+    "tapToFly": "Tik om te springen",
+    "remaining": "nog {km} km tot thuis",
+    "welcome": "Welkom {where}!",
+    "over": "Einde van de rit!",
+    "arrived": "Je bent thuis!",
+    "arrivedSub": "Mama dekt de tafel al.",
+    "returnFlight": "Terugvlucht",
+    "returnFlightHint": "Beschikbaar na je eerste aankomst in Polen",
+    "returnDeparture": "Mama heeft de potten ingepakt. Tijd om terug te gaan!",
+    "returnArrived": "Welkom terug!",
+    "returnArrivedSub": "De potten zijn heel aangekomen.",
+    "returnRemaining": "naar {city}: {km} km",
+    "returnAgain": "Nog een keer vanuit Polen",
+    "stoppedBy": "Gestopt door: {what}",
+    "distance": "{km} km",
+    "best": "Record: {km} km",
+    "newBest": "Nieuw record!",
+    "again": "Nog een keer",
+    "share": "Delen",
+    "modeRanked": "Ranglijst",
+    "modeCozy": "Rustig",
+    "shareText": "Ik vloog {km} km van {from} naar {to}! Kom jij verder?",
+    "shareArrivedText": "Ik ging van {from} naar {to} in {sec} s! En jij?",
+    "daily": "Daguitdaging",
+    "dailyHint": "Dezelfde route voor iedereen: {title}",
+    "league": "Poolse gemeenschapsliga",
+    "close": "Sluiten",
+    "portal": "Wat speelt er bij de Poolse gemeenschap {where}?",
+    "settingsTitle": "Instellingen",
+    "settingsSound": "Geluidseffecten",
+    "settingsMusic": "Muziek",
+    "settingsMusicVolume": "Muziekvolume",
+    "settingsVibrations": "Trillingen",
+    "settingsLessMotion": "Minder animaties",
+    "settingsMotionHint": "Standaard volgens je apparaat. Jouw keuze gaat voor.",
+    "settingsMotionSystem": "Apparaatinstellingen gebruiken",
+    "settingsLinks": "Juridische informatie",
+    "settingsPrivacy": "Privacybeleid",
+    "settingsLicenses": "Licenties van afbeeldingen",
+    "updateReady": "Nieuwe spelversie klaar — wordt in het menu geladen.",
+    "recordControlLabel": "Reel opnemen",
+    "recordStart": "Reel opnemen",
+    "recordEditorialHint": "Tik op het spel om de opname te starten",
+    "recordCancel": "Annuleren",
+    "recordPreviewTitle": "Reel klaar",
+    "recordPreviewLabel": "Voorbeeld van de opgenomen video",
+    "recordSave": "Opslaan",
+    "recordShare": "Delen",
+    "recordNew": "Nieuwe reel",
+    "recordCountdown": "Opnemen · nog {seconds} s",
+    "recordReady": "Klaar: {size} MB · {format}",
+    "recordSaved": "Videobestand opgeslagen",
+    "recordSavedGallery": "Video opgeslagen in je galerij",
+    "recordDownloadStarted": "Download van de video gestart",
+    "recordSaveError": "Opslaan van de video mislukt",
+    "recordError": "De reel kon niet worden opgenomen",
+    "recordStartError": "Opname kon niet starten",
+    "recordHidden": "Opname gestopt nadat de app op de achtergrond ging",
+    "recordShareFallback": "Bestanden delen is niet beschikbaar. Download gestart.",
+    "recordShared": "Deelvenster geopend",
+    "recordCopied": "Link gekopieerd. Sla het videobestand apart op.",
+    "recordShareCancelled": "Delen geannuleerd",
+    "recordShareError": "Delen mislukt",
+    "recordShareText": "Een reel van de reis naar Polen",
+    "recordAlreadyRecording": "Er wordt al opgenomen",
+    "recordCanvasSizeInvalid": "Het bronscanvas heeft ongeldige afmetingen",
+    "recordDurationInvalid": "Ongeldige opnameduur",
+    "recordUnsupported": "MediaRecorder is niet beschikbaar in deze browser",
+    "recordCanvasUnsupported": "Deze browser ondersteunt canvas.captureStream niet",
+    "recordCanvasContextMissing": "Canvas 2D is niet beschikbaar",
+    "recordAudioContextMismatch": "De audiobron hoort bij een andere AudioContext",
+    "recordTooLarge": "De video is groter dan de limiet van 15 MB",
+    "recordEncodingError": "Fout bij het coderen van de video (MediaRecorder)",
+    "recordCancelled": "Opname geannuleerd",
+    "recordEmpty": "De opname heeft geen videogegevens opgeleverd",
+    "recordOutroPlay": "Speel:",
+    "recordOutroMore": "Meer nieuws:",
+    "recordOutroMissing": "Bestemming: Polen!",
+    "garage": "Garage",
+    "garageClose": "Garage sluiten",
+    "garageEyebrow": "Kies je reisgezelschap",
+    "garageSkin": "Kies je voertuig",
+    "garageDefaultSkin": "Bestuurder in stationwagen",
+    "garagePanCebulek": "Meneer Cebulek",
+    "garagePaniCebulka": "Mevrouw Cebulka",
+    "garageBusKurierski": "Koeriersbusje",
+    "garagePrevious": "Vorige skin",
+    "garageNext": "Volgende skin",
+    "garageNick": "Je bijnaam in de ranglijst",
+    "garageGender": "Grammaticale vorm van je bijnaam",
+    "garageMale": "Bestuurder",
+    "garageFemale": "Bestuurster",
+    "garageNickHint": "Kies een voorgestelde bijnaam. Geen eigen gegevens.",
+    "garageNickChoices": "Bijnaamvoorstellen",
+    "garageShuffle": "Andere voorstellen"
+  },
   "WIGILIA_TEXTS": [
     "Thuis voor kerstavond! De soep wacht.",
     "Pierogi wachten. De potten reizen mee.",
@@ -267,48 +483,6 @@ export default {
     "Sneeuw buiten, pierogi in gedachten.",
     "Kerstavond! Zonder omleiding was het te makkelijk."
   ],
-  "UI": {
-    "tapToStart": "Tik om te starten",
-    "tapToFly": "Tik om te springen",
-    "remaining": "nog {km} km tot thuis",
-    "welcome": "Welkom {where}!",
-    "over": "Einde van de rit!",
-    "arrived": "Je bent thuis!",
-    "arrivedSub": "Mama dekt de tafel al.",
-    "stoppedBy": "Gestopt door: {what}",
-    "distance": "{km} km",
-    "best": "Record: {km} km",
-    "newBest": "Nieuw record!",
-    "again": "Nog een keer",
-    "share": "Delen",
-    "modeRanked": "Ranglijst",
-    "modeCozy": "Rustig",
-    "shareText": "Ik vloog {km} km van {from} naar {to}! Kom jij verder?",
-    "shareArrivedText": "Ik ging van {from} naar {to} in {sec} s! En jij?",
-    "daily": "Daguitdaging",
-    "dailyHint": "Dezelfde route voor iedereen: {title}",
-    "league": "Poolse gemeenschapsliga",
-    "close": "Sluiten",
-    "portal": "Wat speelt er bij de Poolse gemeenschap {where}?",
-    "updateReady": "Nieuwe spelversie klaar — wordt in het menu geladen.",
-    "garage": "Garage",
-    "garageClose": "Garage sluiten",
-    "garageEyebrow": "Kies je reisgezelschap",
-    "garageSkin": "Kies je voertuig",
-    "garageDefaultSkin": "Bestuurder in stationwagen",
-    "garagePanCebulek": "Meneer Cebulek",
-    "garagePaniCebulka": "Mevrouw Cebulka",
-    "garageBusKurierski": "Koeriersbusje",
-    "garagePrevious": "Vorige skin",
-    "garageNext": "Volgende skin",
-    "garageNick": "Je bijnaam in de ranglijst",
-    "garageGender": "Grammaticale vorm van je bijnaam",
-    "garageMale": "Bestuurder",
-    "garageFemale": "Bestuurster",
-    "garageNickHint": "Kies een voorgestelde bijnaam. Geen eigen gegevens.",
-    "garageNickChoices": "Bijnaamvoorstellen",
-    "garageShuffle": "Andere voorstellen"
-  },
   "MENU": {
     "tagline": "Bestemming Polen",
     "homeLabel": "Woonland",

@@ -23,7 +23,7 @@ describe('Wersje językowe 58', () => {
 
       expect(Object.values(dict.FAIL_JOKES).every((pool) => pool.length >= 8)).toBe(true);
       expect(Object.values(dict.BORDER_TEXTS).every((pool) => pool.length >= 4)).toBe(true);
-      expect(Object.values(dict.PICKUP_TEXTS).flat().every((text) => text.includes('{km}'))).toBe(true);
+      expect([...dict.PICKUP_TEXTS.parcel, ...dict.PICKUP_TEXTS.jar].every((text) => text.includes('{km}'))).toBe(true);
       expect(dict.MILESTONE_TEXTS.every((text) => text.includes('{km}'))).toBe(true);
       expect(t('best', { km: 123 })).toContain('123');
       expect(t('menu.start').length).toBeGreaterThan(0);
@@ -33,7 +33,7 @@ describe('Wersje językowe 58', () => {
 
       for (const toast of [
         ...Object.values(dict.BORDER_TEXTS).flat(), ...dict.NEAR_MISS_TEXTS,
-        ...Object.values(dict.PICKUP_TEXTS).flat(), ...dict.MILESTONE_TEXTS,
+        ...[...dict.PICKUP_TEXTS.parcel, ...dict.PICKUP_TEXTS.jar], ...dict.MILESTONE_TEXTS,
         ...dict.WIGILIA_TEXTS,
       ]) {
         expect(Array.from(toast.replaceAll('{km}', '999999')).length, toast).toBeLessThanOrEqual(60);

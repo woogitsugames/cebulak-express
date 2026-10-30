@@ -38,7 +38,7 @@ const PROHIBITED = [
   ['prawdziwa marka', /(?:^|[^\p{L}\p{N}])(?:ryanair|wizz\s?air|easyjet|lidl|biedronk\p{L}*|żabk\p{L}*|orlen|shell|circle\s?k|mcdonald'?s?|coca[\s-]?cola|pepsi|fiat|polonez|mercedes|bmw|audi|volkswagen|toyota|ford|carrefour|ikea|netflix|facebook|messenger|whatsapp|instagram|tiktok|atomium)(?=$|[^\p{L}\p{N}])/giu],
   ['alkohol', /(?:^|[^\p{L}\p{N}])(?:alkohol\p{L}*|piw(?:o|a|em|ie)|wódk\p{L}*|wodk\p{L}*|win(?:o|a|em|ie)|whisk\p{L}*|bimber|szampan\p{L}*|prosecco|beer|vodka)(?=$|[^\p{L}\p{N}])/giu],
   ['wulgaryzm', /(?:^|[^\p{L}\p{N}])(?:kurw\p{L}*|chuj\p{L}*|jeba\p{L}*|pierdoli\p{L}*|dup(?:a|y|ie|ą)|cholera)(?=$|[^\p{L}\p{N}])/giu],
-  ['polityka', /(?:^|[^\p{L}\p{N}])(?:polityk\p{L}*|prezydent\p{L}*|sejm|senat|parlament\p{L}*|wybor(?:y|ów|ach|czy|cza|cze|czego)|rząd\p{L}*|partyjn\p{L}*|premier\p{L}*)(?=$|[^\p{L}\p{N}])/giu],
+  ['polityka', /(?:^|[^\p{L}\p{N}])(?:polityk\p{L}*(?!\s+prywatno)|prezydent\p{L}*|sejm|senat|parlament\p{L}*|wybor(?:y|ów|ach|czy|cza|cze|czego)|rząd\p{L}*|partyjn\p{L}*|premier\p{L}*)(?=$|[^\p{L}\p{N}])/giu],
   ['religia', /(?:^|[^\p{L}\p{N}])(?:msza|ksiądz\p{L}*|papież\p{L}*|modlitw\p{L}*|kościół|kościele|bogiem)(?=$|[^\p{L}\p{N}])/giu],
 ];
 

@@ -2,17 +2,143 @@ import type { GameLocale } from './schema';
 
 /** Teksty gry: francuski. */
 export default {
-  "COUNTRY_NAME": {
-    "BE": "Belgique",
-    "NL": "Pays-Bas",
-    "DE": "Allemagne",
-    "UK": "Royaume-Uni",
-    "FR": "France",
-    "CH": "Suisse",
-    "NO": "Norvège",
-    "DK": "Danemark",
-    "SE": "Suède",
-    "PL": "Pologne"
+  "ARRIVAL_TEXTS": [
+    "Tu es à la maison ! Maman met déjà la table.",
+    "Fin du trajet. Début du deuxième service.",
+    "Les valises sont dans la voiture, le repas est prêt.",
+    "Maman demande : « Tu as faim ? » Ce n'est pas une question.",
+    "Des pierogi sur la table, la moitié de la maison dans le coffre.",
+    "Arrivé ! Le thé refroidit, tout le monde attend.",
+    "Le break se repose. Le repas de famille commence.",
+    "Arrivée ! D'abord les câlins, ensuite le rab.",
+    "Trajet réussi. Maman sort une assiette de plus.",
+    "On comptait les kilomètres. Maintenant, les pierogi.",
+    "Maman prépare déjà les bocaux pour le retour.",
+    "Pas encore déballé, les bocaux du retour sont prêts.",
+    "Te voilà chez toi. Ça sent bon le repas.",
+    "Clés posées. Il est temps de passer à table."
+  ],
+  "BORDER_TEXTS": {
+    "BE": [
+      "Bienvenue en Belgique ! Les valises sont impeccables.",
+      "Belgique ! Un café à emporter et on repart.",
+      "Entrée en Belgique. Les bagages suivent.",
+      "Belgique sur le trajet ! Encore de la route."
+    ],
+    "NL": [
+      "Bienvenue aux Pays-Bas ! Vélos au bord des canaux.",
+      "Pays-Bas ! Admirons les canaux un instant.",
+      "Entrée aux Pays-Bas. Le toit est toujours plein.",
+      "Pays-Bas en vue. Le café est encore chaud."
+    ],
+    "DE": [
+      "Bienvenue en Allemagne ! Le voyage continue.",
+      "Allemagne ! Un kilomètre de plus vers la maison.",
+      "Entrée en Allemagne. Tous les bocaux sont là.",
+      "Allemagne sur la route. Valises pleines d'espoir."
+    ],
+    "UK": [
+      "Bienvenue au Royaume-Uni ! Les valises suivent.",
+      "Royaume-Uni ! Un café et on repart.",
+      "Entrée au Royaume-Uni. Attention aux voies.",
+      "Royaume-Uni sur le trajet. Cap sur la maison."
+    ],
+    "FR": [
+      "Bienvenue en France ! Les bocaux sont à bord.",
+      "France ! Un café, et la pause est parfaite.",
+      "Entrée en France. Tous les sacs sont attachés.",
+      "France sur la route. Profitons du paysage."
+    ],
+    "CH": [
+      "Bienvenue en Suisse ! Vue sur les montagnes offerte.",
+      "Suisse ! Même les valises admirent les sommets.",
+      "Entrée en Suisse. On garde le cap.",
+      "Suisse sur la route. Le toit est toujours occupé."
+    ],
+    "NO": [
+      "Bienvenue en Norvège ! Les fjords défilent.",
+      "Norvège ! Un break et une vue magnifique.",
+      "Entrée en Norvège. Un café ne ferait pas de mal.",
+      "Norvège sur la route. Tous les sacs sont là."
+    ],
+    "DK": [
+      "Bienvenue au Danemark ! On suit la carte.",
+      "Danemark ! Pont après pont, plus près de la maison.",
+      "Entrée au Danemark. Valises toujours sur le toit.",
+      "Danemark sur le trajet. Le café reste chaud."
+    ],
+    "SE": [
+      "Bienvenue en Suède ! Des routes parmi les arbres.",
+      "Suède ! Les bocaux voyagent avec vue.",
+      "Entrée en Suède. Les ponts nous attendent.",
+      "Suède sur la route. Le compteur continue."
+    ],
+    "IE": [
+      "Bienvenue en Irlande ! Valises à bord.",
+      "Irlande ! En route vers la maison.",
+      "L'Irlande sur la route. Un café et on repart.",
+      "Tu entres en Irlande. Le toit est toujours plein."
+    ],
+    "ES": [
+      "Bienvenue en Espagne ! Une longue route nous attend.",
+      "Espagne ! Les valises sont prêtes à partir.",
+      "Tu entres en Espagne. Les bocaux sont prêts.",
+      "L'Espagne sur la route. La carte est dépliée."
+    ],
+    "IT": [
+      "Bienvenue en Italie ! Le toit est toujours plein.",
+      "Italie ! Les bagages sont prêts pour la montagne.",
+      "Tu entres en Italie. Le break garde le cap.",
+      "L'Italie sur la route. La maison nous attend au bout."
+    ],
+    "AT": [
+      "Bienvenue en Autriche ! Des montagnes à la fenêtre.",
+      "Autriche ! La thermos est encore pleine.",
+      "Tu entres en Autriche. Les bagages sont au complet.",
+      "L'Autriche sur la route. Les bocaux sont en sécurité."
+    ],
+    "FI": [
+      "Bienvenue en Finlande ! On vérifie l'horaire du ferry.",
+      "Finlande ! Le café est prêt pour la traversée.",
+      "Tu entres en Finlande. Les valises attendent.",
+      "La Finlande sur la route. Un ferry nous attend."
+    ],
+    "LU": [
+      "Bienvenue au Luxembourg ! En route vers la maison.",
+      "Luxembourg ! On a la carte, et les bagages aussi.",
+      "Tu entres au Luxembourg. Le toit est plein à craquer.",
+      "Le Luxembourg sur la route. Un kilomètre de plus."
+    ],
+    "CZ": [
+      "Bienvenue en Tchéquie ! La maison se rapproche.",
+      "Tchéquie ! La route file vers le nord.",
+      "Tu entres en Tchéquie. Tous les bocaux sont là.",
+      "La Tchéquie sur la route. Le café est encore chaud."
+    ],
+    "EE": [
+      "Bienvenue en Estonie ! Le ferry est derrière nous.",
+      "Estonie ! Encore quelques frontières avant la maison.",
+      "Tu entres en Estonie. Les valises sont en place.",
+      "L'Estonie sur la route. Il est temps de repartir."
+    ],
+    "LV": [
+      "Bienvenue en Lettonie ! On compte les kilomètres.",
+      "Lettonie ! Encore une étape derrière nous.",
+      "Tu entres en Lettonie. Le toit est toujours plein.",
+      "La Lettonie sur la route. Le moment d'une gorgée de café."
+    ],
+    "LT": [
+      "Bienvenue en Lituanie ! La Pologne se rapproche.",
+      "Lituanie ! Vérifie que les bocaux sont intacts.",
+      "Tu entres en Lituanie. L'arrivée est proche.",
+      "La Lituanie sur la route. La carte est presque à la maison."
+    ],
+    "PL": [
+      "Pologne ! Encore un peu et on est à la maison.",
+      "Bienvenue en Pologne ! Maman attend sûrement.",
+      "Entrée en Pologne. Les bocaux approchent du but.",
+      "Pologne sur la route ! Les pierogi approchent."
+    ]
   },
   "COUNTRY_LOCATIVE": {
     "BE": "en Belgique",
@@ -24,16 +150,39 @@ export default {
     "NO": "en Norvège",
     "DK": "au Danemark",
     "SE": "en Suède",
+    "IE": "en Irlande",
+    "ES": "en Espagne",
+    "IT": "en Italie",
+    "AT": "en Autriche",
+    "FI": "en Finlande",
+    "LU": "au Luxembourg",
+    "CZ": "en Tchéquie",
+    "EE": "en Estonie",
+    "LV": "en Lettonie",
+    "LT": "en Lituanie",
     "PL": "en Pologne"
   },
-  "OBSTACLE_NAME": {
-    "viaduct": "Pont trop bas",
-    "sign": "Panneau géant",
-    "crane": "Grue de chantier",
-    "roadworks": "Travaux routiers",
-    "barrier": "Barrière",
-    "truck": "Camion",
-    "ground": "Asphalte"
+  "COUNTRY_NAME": {
+    "BE": "Belgique",
+    "NL": "Pays-Bas",
+    "DE": "Allemagne",
+    "UK": "Royaume-Uni",
+    "FR": "France",
+    "CH": "Suisse",
+    "NO": "Norvège",
+    "DK": "Danemark",
+    "SE": "Suède",
+    "IE": "Irlande",
+    "ES": "Espagne",
+    "IT": "Italie",
+    "AT": "Autriche",
+    "FI": "Finlande",
+    "LU": "Luxembourg",
+    "CZ": "Tchéquie",
+    "EE": "Estonie",
+    "LV": "Lettonie",
+    "LT": "Lituanie",
+    "PL": "Pologne"
   },
   "FAIL_JOKES": {
     "viaduct": [
@@ -96,6 +245,16 @@ export default {
       "De la place sur la route, pas pour cette manœuvre.",
       "Les valises ont fait un signe d'adieu."
     ],
+    "baggage-gate": [
+      "Le portique a compté les valises. Il manquait un centimètre.",
+      "Trop de bagages ? Le pied à coulisse ne ment pas.",
+      "Les valises avaient un billet, mais plus de place.",
+      "Bagage à main. Mais dans quelle main ?",
+      "Le break ne s'attendait pas à un contrôle des dimensions.",
+      "Un bocal de moins et on passait parfaitement.",
+      "Le portique était plus étroit que nos projets.",
+      "La prochaine fois, on demandera un peu plus de marge."
+    ],
     "ground": [
       "La gravité adore les voitures bien chargées.",
       "Atterrissage en douceur ? C'était prévu, pourtant.",
@@ -105,124 +264,6 @@ export default {
       "Encore un saut et c'était parfait.",
       "Les valises sont prêtes pour un nouvel essai.",
       "Retour sur terre. Au sens propre."
-    ]
-  },
-  "PICKUP_TOAST": {
-    "parcel": "Colis de maman ! +{km} km",
-    "jar": "Bocal de cornichons ! +{km} km"
-  },
-  "BORDER_TEXTS": {
-    "BE": [
-      "Bienvenue en Belgique ! Les valises sont impeccables.",
-      "Belgique ! Un café à emporter et on repart.",
-      "Entrée en Belgique. Les bagages suivent.",
-      "Belgique sur le trajet ! Encore de la route."
-    ],
-    "NL": [
-      "Bienvenue aux Pays-Bas ! Vélos au bord des canaux.",
-      "Pays-Bas ! Admirons les canaux un instant.",
-      "Entrée aux Pays-Bas. Le toit est toujours plein.",
-      "Pays-Bas en vue. Le café est encore chaud."
-    ],
-    "DE": [
-      "Bienvenue en Allemagne ! Le voyage continue.",
-      "Allemagne ! Un kilomètre de plus vers la maison.",
-      "Entrée en Allemagne. Tous les bocaux sont là.",
-      "Allemagne sur la route. Valises pleines d'espoir."
-    ],
-    "UK": [
-      "Bienvenue au Royaume-Uni ! Les valises suivent.",
-      "Royaume-Uni ! Un café et on repart.",
-      "Entrée au Royaume-Uni. Attention aux voies.",
-      "Royaume-Uni sur le trajet. Cap sur la maison."
-    ],
-    "FR": [
-      "Bienvenue en France ! Les bocaux sont à bord.",
-      "France ! Un café, et la pause est parfaite.",
-      "Entrée en France. Tous les sacs sont attachés.",
-      "France sur la route. Profitons du paysage."
-    ],
-    "CH": [
-      "Bienvenue en Suisse ! Vue sur les montagnes offerte.",
-      "Suisse ! Même les valises admirent les sommets.",
-      "Entrée en Suisse. On garde le cap.",
-      "Suisse sur la route. Le toit est toujours occupé."
-    ],
-    "NO": [
-      "Bienvenue en Norvège ! Les fjords défilent.",
-      "Norvège ! Un break et une vue magnifique.",
-      "Entrée en Norvège. Un café ne ferait pas de mal.",
-      "Norvège sur la route. Tous les sacs sont là."
-    ],
-    "DK": [
-      "Bienvenue au Danemark ! On suit la carte.",
-      "Danemark ! Pont après pont, plus près de la maison.",
-      "Entrée au Danemark. Valises toujours sur le toit.",
-      "Danemark sur le trajet. Le café reste chaud."
-    ],
-    "SE": [
-      "Bienvenue en Suède ! Des routes parmi les arbres.",
-      "Suède ! Les bocaux voyagent avec vue.",
-      "Entrée en Suède. Les ponts nous attendent.",
-      "Suède sur la route. Le compteur continue."
-    ],
-    "PL": [
-      "Pologne ! Encore un peu et on est à la maison.",
-      "Bienvenue en Pologne ! Maman attend sûrement.",
-      "Entrée en Pologne. Les bocaux approchent du but.",
-      "Pologne sur la route ! Les pierogi approchent."
-    ]
-  },
-  "ARRIVAL_TEXTS": [
-    "Tu es à la maison ! Maman met déjà la table.",
-    "Fin du trajet. Début du deuxième service.",
-    "Les valises sont dans la voiture, le repas est prêt.",
-    "Maman demande : « Tu as faim ? » Ce n'est pas une question.",
-    "Des pierogi sur la table, la moitié de la maison dans le coffre.",
-    "Arrivé ! Le thé refroidit, tout le monde attend.",
-    "Le break se repose. Le repas de famille commence.",
-    "Arrivée ! D'abord les câlins, ensuite le rab.",
-    "Trajet réussi. Maman sort une assiette de plus.",
-    "On comptait les kilomètres. Maintenant, les pierogi.",
-    "Maman prépare déjà les bocaux pour le retour.",
-    "Pas encore déballé, les bocaux du retour sont prêts.",
-    "Te voilà chez toi. Ça sent bon le repas.",
-    "Clés posées. Il est temps de passer à table."
-  ],
-  "NEAR_MISS_TEXTS": [
-    "C'était juste ! Même le rétro n'a pas bougé.",
-    "Un centimètre de marge. C'est une victoire.",
-    "Ouf ! Les bocaux ont retenu leur souffle.",
-    "À un cheveu ! Le toit est toujours là.",
-    "Ouf ! Les valises n'ont rien remarqué.",
-    "Encore un peu et c'était un raccourci... vers le menu.",
-    "Presque ! Le break est passé sur la pointe des pneus.",
-    "De justesse ! Le café est resté dans la tasse.",
-    "Ça passe. Ne demande pas comment.",
-    "Ce n'était pas une manœuvre, c'était de la précision.",
-    "De justesse ! Même la carte s'est tue.",
-    "À un cheveu ! Le prochain virage sera plus calme."
-  ],
-  "PICKUP_TEXTS": {
-    "parcel": [
-      "Colis de maman ! +{km} km",
-      "Colis sur le toit ! +{km} km",
-      "Encore un colis ? +{km} km",
-      "Colis embarqué. Le toit tient ! +{km} km",
-      "Un colis de chez nous ? Oui ! +{km} km",
-      "Nouveau bagage, nouveau record ? +{km} km",
-      "Les valises ont fait de la place. +{km} km",
-      "Colis surprise ! +{km} km"
-    ],
-    "jar": [
-      "Bocal de cornichons ! +{km} km",
-      "Bocal attrapé ! +{km} km",
-      "Encore un bocal ! +{km} km",
-      "Le couvercle tient. +{km} km",
-      "Un bocal pour la collection ! +{km} km",
-      "Les réserves augmentent ! +{km} km",
-      "Attention, c'est du verre ! +{km} km",
-      "Pas une rayure. +{km} km"
     ]
   },
   "MILESTONE_TEXTS": [
@@ -247,6 +288,181 @@ export default {
     "{km} km ! Encore le temps de chanter.",
     "{km} km ! La maison se dessine."
   ],
+  "NEAR_MISS_TEXTS": [
+    "C'était juste ! Même le rétro n'a pas bougé.",
+    "Un centimètre de marge. C'est une victoire.",
+    "Ouf ! Les bocaux ont retenu leur souffle.",
+    "À un cheveu ! Le toit est toujours là.",
+    "Ouf ! Les valises n'ont rien remarqué.",
+    "Encore un peu et c'était un raccourci... vers le menu.",
+    "Presque ! Le break est passé sur la pointe des pneus.",
+    "De justesse ! Le café est resté dans la tasse.",
+    "Ça passe. Ne demande pas comment.",
+    "Ce n'était pas une manœuvre, c'était de la précision.",
+    "De justesse ! Même la carte s'est tue.",
+    "À un cheveu ! Le prochain virage sera plus calme."
+  ],
+  "OBSTACLE_NAME": {
+    "viaduct": "Pont trop bas",
+    "sign": "Panneau géant",
+    "crane": "Grue de chantier",
+    "roadworks": "Travaux routiers",
+    "barrier": "Barrière",
+    "truck": "Camion",
+    "baggage-gate": "Portique à bagages",
+    "ground": "Asphalte"
+  },
+  "PICKUP_TEXTS": {
+    "parcel": [
+      "Colis de maman ! +{km} km",
+      "Colis sur le toit ! +{km} km",
+      "Encore un colis ? +{km} km",
+      "Colis embarqué. Le toit tient ! +{km} km",
+      "Un colis de chez nous ? Oui ! +{km} km",
+      "Nouveau bagage, nouveau record ? +{km} km",
+      "Les valises ont fait de la place. +{km} km",
+      "Colis surprise ! +{km} km"
+    ],
+    "jar": [
+      "Bocal de cornichons ! +{km} km",
+      "Bocal attrapé ! +{km} km",
+      "Encore un bocal ! +{km} km",
+      "Le couvercle tient. +{km} km",
+      "Un bocal pour la collection ! +{km} km",
+      "Les réserves augmentent ! +{km} km",
+      "Attention, c'est du verre ! +{km} km",
+      "Pas une rayure. +{km} km"
+    ],
+    "boarding": [
+      "Priority Boarding ! 3 secondes de protection !",
+      "Voie prioritaire ! 3 secondes en sécurité.",
+      "Billet prioritaire ! Rien ne peut nous arrêter.",
+      "Bagages bien attachés ? On est protégés un instant !",
+      "Passage en or ! Trois secondes sans souci.",
+      "Route libre ! Protection pendant trois secondes."
+    ],
+    "tailwind": [
+      "Vent dans le dos ! 2 secondes d'accélération !",
+      "Le vent aide ! Deux secondes de voyage plus rapide.",
+      "Une rafale droit vers la maison ! Obstacles évités.",
+      "Le break a pris des ailes. Vol express !",
+      "Un coup de pouce de la météo ! Deux secondes d'avance.",
+      "On file avec le vent ! Route libre un instant."
+    ],
+    "mamcall": [
+      "Un appel de maman : Prends soin de toi !",
+      "Maman appelle : Prends soin de toi !",
+      "Prends soin de toi ! Maman t'attend à la maison.",
+      "Un appel de la maison. Prends soin de toi !",
+      "Doucement, rien ne presse. Prends soin de toi !",
+      "Maman te rappelle : Prends soin de toi !"
+    ]
+  },
+  "PICKUP_TOAST": {
+    "parcel": "Colis de maman ! +{km} km",
+    "jar": "Bocal de cornichons ! +{km} km",
+    "boarding": "Priority Boarding ! 3 secondes de protection !",
+    "tailwind": "Vent dans le dos ! 2 secondes d'accélération !",
+    "mamcall": "Un appel de maman : Prends soin de toi !"
+  },
+  "UI": {
+    "tapToStart": "Touchez pour démarrer",
+    "tapToFly": "Touchez pour sauter",
+    "remaining": "maison dans {km} km",
+    "welcome": "Bienvenue {where} !",
+    "over": "Fin du trajet !",
+    "arrived": "Tu es à la maison !",
+    "arrivedSub": "Maman met déjà la table.",
+    "returnFlight": "Vol retour",
+    "returnFlightHint": "Disponible après ta première arrivée en Pologne",
+    "returnDeparture": "Maman a préparé les bocaux. C'est l'heure de rentrer !",
+    "returnArrived": "Bon retour !",
+    "returnArrivedSub": "Les bocaux sont arrivés intacts.",
+    "returnRemaining": "vers {city} : {km} km",
+    "returnAgain": "Encore une fois depuis la Pologne",
+    "stoppedBy": "Arrêté par : {what}",
+    "distance": "{km} km",
+    "best": "Record : {km} km",
+    "newBest": "Nouveau record !",
+    "again": "Rejouer",
+    "share": "Partager",
+    "modeRanked": "Classement",
+    "modeCozy": "Détente",
+    "shareText": "J'ai parcouru {km} km de {from} vers {to} ! À toi de jouer !",
+    "shareArrivedText": "De {from} à {to} en {sec} s ! Et toi ?",
+    "daily": "Défi du jour",
+    "dailyHint": "Même trajet pour tous : {title}",
+    "league": "Ligue de la diaspora polonaise",
+    "close": "Fermer",
+    "portal": "Quoi de neuf dans la communauté polonaise {where} ?",
+    "settingsTitle": "Réglages",
+    "settingsSound": "Effets sonores",
+    "settingsMusic": "Musique",
+    "settingsMusicVolume": "Volume de la musique",
+    "settingsVibrations": "Vibrations",
+    "settingsLessMotion": "Moins d'animations",
+    "settingsMotionHint": "Par défaut, selon ton appareil. Ton choix est prioritaire.",
+    "settingsMotionSystem": "Utiliser les réglages de l'appareil",
+    "settingsLinks": "Informations légales",
+    "settingsPrivacy": "Politique de confidentialité",
+    "settingsLicenses": "Licences des images",
+    "updateReady": "Nouvelle version prête — chargement depuis le menu.",
+    "recordControlLabel": "Enregistrement du reel",
+    "recordStart": "Enregistrer un reel",
+    "recordEditorialHint": "Touche le jeu pour lancer l'enregistrement",
+    "recordCancel": "Annuler",
+    "recordPreviewTitle": "Reel prêt",
+    "recordPreviewLabel": "Aperçu de la vidéo enregistrée",
+    "recordSave": "Enregistrer",
+    "recordShare": "Partager",
+    "recordNew": "Nouveau reel",
+    "recordCountdown": "Enregistrement · encore {seconds} s",
+    "recordReady": "Prêt : {size} Mo · {format}",
+    "recordSaved": "Fichier vidéo enregistré",
+    "recordSavedGallery": "Vidéo enregistrée dans la galerie",
+    "recordDownloadStarted": "Téléchargement de la vidéo lancé",
+    "recordSaveError": "Impossible d'enregistrer la vidéo",
+    "recordError": "Impossible d'enregistrer le reel",
+    "recordStartError": "Impossible de lancer l'enregistrement",
+    "recordHidden": "Enregistrement interrompu : l'appli est passée en arrière-plan",
+    "recordShareFallback": "Le partage de fichiers n'est pas disponible. Téléchargement lancé.",
+    "recordShared": "Fenêtre de partage ouverte",
+    "recordCopied": "Lien copié. Enregistre le fichier vidéo séparément.",
+    "recordShareCancelled": "Partage annulé",
+    "recordShareError": "Échec du partage",
+    "recordShareText": "Un reel du voyage vers la Pologne",
+    "recordAlreadyRecording": "L'enregistrement est déjà en cours",
+    "recordCanvasSizeInvalid": "Le canvas source a des dimensions non valides",
+    "recordDurationInvalid": "Durée d'enregistrement non valide",
+    "recordUnsupported": "MediaRecorder n'est pas disponible dans ce navigateur",
+    "recordCanvasUnsupported": "Ce navigateur ne prend pas en charge canvas.captureStream",
+    "recordCanvasContextMissing": "Canvas 2D n'est pas disponible",
+    "recordAudioContextMismatch": "La source audio appartient à un autre AudioContext",
+    "recordTooLarge": "La vidéo dépasse la limite de 15 Mo",
+    "recordEncodingError": "Erreur d'encodage de la vidéo (MediaRecorder)",
+    "recordCancelled": "Enregistrement annulé",
+    "recordEmpty": "L'enregistrement n'a produit aucune donnée vidéo",
+    "recordOutroPlay": "Jouer :",
+    "recordOutroMore": "Plus d'actualités :",
+    "recordOutroMissing": "Direction la Pologne !",
+    "garage": "Garage",
+    "garageClose": "Fermer le garage",
+    "garageEyebrow": "Choisis ton équipage",
+    "garageSkin": "Choisir un véhicule",
+    "garageDefaultSkin": "Conducteur du break",
+    "garagePanCebulek": "Monsieur Cebulek",
+    "garagePaniCebulka": "Madame Cebulka",
+    "garageBusKurierski": "Fourgonnette de livraison",
+    "garagePrevious": "Apparence précédente",
+    "garageNext": "Apparence suivante",
+    "garageNick": "Ton pseudo au classement",
+    "garageGender": "Accord grammatical du pseudo",
+    "garageMale": "Conducteur",
+    "garageFemale": "Conductrice",
+    "garageNickHint": "Choisis un pseudo proposé. Aucune donnée à saisir.",
+    "garageNickChoices": "Idées de pseudos",
+    "garageShuffle": "Autres propositions"
+  },
   "WIGILIA_TEXTS": [
     "À la maison pour le réveillon ! La soupe attend.",
     "Les pierogi attendent. Les bocaux aussi voyagent.",
@@ -267,48 +483,6 @@ export default {
     "Neige dehors, pierogi en tête.",
     "Pour le réveillon ! Sans détour, ce serait trop simple."
   ],
-  "UI": {
-    "tapToStart": "Touchez pour démarrer",
-    "tapToFly": "Touchez pour sauter",
-    "remaining": "maison dans {km} km",
-    "welcome": "Bienvenue {where} !",
-    "over": "Fin du trajet !",
-    "arrived": "Tu es à la maison !",
-    "arrivedSub": "Maman met déjà la table.",
-    "stoppedBy": "Arrêté par : {what}",
-    "distance": "{km} km",
-    "best": "Record : {km} km",
-    "newBest": "Nouveau record !",
-    "again": "Rejouer",
-    "share": "Partager",
-    "modeRanked": "Classement",
-    "modeCozy": "Détente",
-    "shareText": "J'ai parcouru {km} km de {from} vers {to} ! À toi de jouer !",
-    "shareArrivedText": "De {from} à {to} en {sec} s ! Et toi ?",
-    "daily": "Défi du jour",
-    "dailyHint": "Même trajet pour tous : {title}",
-    "league": "Ligue de la diaspora polonaise",
-    "close": "Fermer",
-    "portal": "Quoi de neuf dans la communauté polonaise {where} ?",
-    "updateReady": "Nouvelle version prête — chargement depuis le menu.",
-    "garage": "Garage",
-    "garageClose": "Fermer le garage",
-    "garageEyebrow": "Choisis ton équipage",
-    "garageSkin": "Choisir un véhicule",
-    "garageDefaultSkin": "Conducteur du break",
-    "garagePanCebulek": "Monsieur Cebulek",
-    "garagePaniCebulka": "Madame Cebulka",
-    "garageBusKurierski": "Fourgonnette de livraison",
-    "garagePrevious": "Apparence précédente",
-    "garageNext": "Apparence suivante",
-    "garageNick": "Ton pseudo au classement",
-    "garageGender": "Accord grammatical du pseudo",
-    "garageMale": "Conducteur",
-    "garageFemale": "Conductrice",
-    "garageNickHint": "Choisis un pseudo proposé. Aucune donnée à saisir.",
-    "garageNickChoices": "Idées de pseudos",
-    "garageShuffle": "Autres propositions"
-  },
   "MENU": {
     "tagline": "Direction la Pologne",
     "homeLabel": "Pays de résidence",
