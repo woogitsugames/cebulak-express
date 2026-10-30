@@ -129,7 +129,24 @@ export class BackgroundRenderer {
   private gradientCtx: CanvasRenderingContext2D | null = null;
   private readonly gradients = new Map<CountryCode, CanvasGradient>();
 
+  /** Poziomy zakres widoczny w jednostkach świata (szerokie ekrany: składaki, tablety). */
+  private viewLeft = 0;
+  private viewRight: number = WORLD.width;
+
   constructor(readonly assets: AssetLoader = new AssetLoader()) {}
+
+  /** Tło rysujemy na całą szerokość ekranu; rozgrywka zostaje w kolumnie 360. */
+  setHorizontalView(left: number, right: number): void {
+    this.viewLeft = Math.min(0, left);
+    this.viewRight = Math.max(WORLD.width, right);
+  }
+
+  /** Pierwszy kafelek warstwy na lewo od widoku, zgodny z siatką kafelków świata. */
+  private tileStart(distancePx: number, parallax: number, width: number): number {
+    let x = -layerOffset(distancePx, parallax, width);
+    if (this.viewLeft < 0) x -= Math.ceil((x - this.viewLeft) / width) * width;
+    return x;
+  }
 
   drawBackground(ctx: CanvasRenderingContext2D, state: BackgroundState): void {
     const season = state.season ?? 'summer';
@@ -187,21 +204,21 @@ export class BackgroundRenderer {
   ): void {
     if (minY < 0) {
       ctx.fillStyle = PALETTES[country].skyTop;
-      ctx.fillRect(0, minY, WORLD.width, -minY);
+      ctx.fillRect(this.viewLeft, minY, this.viewRight - this.viewLeft, -minY);
       const sky = this.assets.getCountryLayer(country, 'sky', season);
       if (sky) {
         const rows = Math.min(3, sky.naturalHeight);
-        ctx.drawImage(sky, 0, 0, sky.naturalWidth, rows, 0, minY, WORLD.width, -minY);
+        ctx.drawImage(sky, 0, 0, sky.naturalWidth, rows, this.viewLeft, minY, this.viewRight - this.viewLeft, -minY);
       }
     }
     if (maxY > WORLD.height) {
       ctx.fillStyle = '#4a5157';
-      ctx.fillRect(0, WORLD.height, WORLD.width, maxY - WORLD.height);
+      ctx.fillRect(this.viewLeft, WORLD.height, this.viewRight - this.viewLeft, maxY - WORLD.height);
       const road = this.assets.getCountryLayer(country, 'road', season);
       if (road) {
         const rows = Math.min(3, road.naturalHeight);
-        for (let x = -layerOffset(distancePx, PARALLAX.road, ASSET_SIZES.road.width);
-          x < WORLD.width; x += ASSET_SIZES.road.width) {
+        for (let x = this.tileStart(distancePx, PARALLAX.road, ASSET_SIZES.road.width);
+          x < this.viewRight; x += ASSET_SIZES.road.width) {
           ctx.drawImage(road, 0, road.naturalHeight - rows, road.naturalWidth, rows,
             x, WORLD.height, ASSET_SIZES.road.width, maxY - WORLD.height);
         }
@@ -322,6 +339,12 @@ export class BackgroundRenderer {
     const { width, height } = ASSET_SIZES[layer];
     if (layer === 'sky') {
       ctx.drawImage(image, 0, LAYER_Y.sky, width, height);
+      // Szeroki ekran: boki z rozciągniętych skrajnych kolumn (bez deformacji środka nieba).
+      const cols = Math.min(3, image.width);
+      if (this.viewLeft < 0) ctx.drawImage(image, 0, 0, cols, image.height, this.viewLeft, LAYER_Y.sky, -this.viewLeft, height);
+      if (this.viewRight > width) {
+        ctx.drawImage(image, image.width - cols, 0, cols, image.height, width, LAYER_Y.sky, this.viewRight - width, height);
+      }
       return;
     }
     // Bez downscale do Canvas 1x: @3x jest próbkowane dopiero przez drawImage.
@@ -330,7 +353,7 @@ export class BackgroundRenderer {
     const visible = Math.min(height, WORLD.height - y);
     if (visible <= 0) return;
     const srcH = (visible / height) * image.height;
-    for (let x = -layerOffset(distancePx, PARALLAX[layer], width); x < WORLD.width; x += width) {
+    for (let x = this.tileStart(distancePx, PARALLAX[layer], width); x < this.viewRight; x += width) {
       ctx.drawImage(image, 0, 0, image.width, srcH, x, y, width, visible);
     }
   }
@@ -352,7 +375,7 @@ export class BackgroundRenderer {
         this.gradients.set(country, sky);
       }
       ctx.fillStyle = sky;
-      ctx.fillRect(0, 0, WORLD.width, WORLD.height);
+      ctx.fillRect(this.viewLeft, 0, this.viewRight - this.viewLeft, WORLD.height);
     } else if (layer === 'clouds') {
       ctx.fillStyle = 'rgba(255,255,255,0.85)';
       for (let i = 0; i < 4; i++) {
@@ -382,7 +405,7 @@ export class BackgroundRenderer {
     const width = onNear ? LANDMARK_NEAR_WIDTH : LANDMARK_FAR_WIDTH;
     const height = onNear ? LANDMARK_NEAR_HEIGHT : LANDMARK_FAR_HEIGHT;
     const x = waypointScreenX(point.km, state.progressKm, onNear ? PARALLAX.near : PARALLAX.far);
-    if (x < -width / 2 || x > WORLD.width + width / 2) return;
+    if (x < this.viewLeft - width / 2 || x > this.viewRight + width / 2) return;
 
     // Stacja jest już w near granicy; unikamy podwójnej stacji w tym samym kadrze.
     if (onNear && point.kind === 'rest' && state.season !== 'winter' &&
