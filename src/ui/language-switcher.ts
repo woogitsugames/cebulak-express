@@ -131,7 +131,7 @@ export function enableLanguageUi(): () => void {
     }
 
     const routeInfo = document.getElementById('route-info');
-    const distance = routeInfo?.textContent?.match(/:\\s*([\\d.,]+\\s*km)\\s*$/);
+    const distance = routeInfo?.textContent?.match(/:\s*([\d.,]+\s*km)\s*$/);
     if (routeInfo && distance) {
       const fromText = from.selectedOptions[0]?.textContent ?? '';
       const toText = to.selectedOptions[0]?.textContent ?? '';
@@ -141,7 +141,7 @@ export function enableLanguageUi(): () => void {
 
   const refreshResult = (): void => {
     const result = document.getElementById('over-route');
-    const match = result?.textContent?.match(/^(.+?)\\s*→\\s*(.+?)$/);
+    const match = result?.textContent?.match(/^(.+?)\s*→\s*(.+?)$/);
     if (!result || !match) return;
     const translated = `${display(findCity(match[1]), match[1])} → ${display(findCity(match[2]), match[2])}`;
     if (result.textContent !== translated) result.textContent = translated;
