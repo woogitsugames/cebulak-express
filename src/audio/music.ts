@@ -4,7 +4,11 @@
  * AudioContext można współdzielić z createSfx(ctx) ze zlecenia 19.
  */
 
+import { COUNTRY_CUE_INFO, scheduleCountryCue, type CountryCueCode } from './country-cues';
+
 export const MUSIC_BPM = 124;
+/** Wolniejsze tempo podczas zimowej aranżacji. */
+export const MUSIC_HOLIDAY_BPM = 106;
 export const MUSIC_BAR_COUNT = 32;
 
 export type MusicSeason = 'regular' | 'holiday';
@@ -32,6 +36,8 @@ export interface MusicPlayer {
   stop(): void;
   /** Zatrzymuje trasę i odtwarza krótki jingiel mety. */
   playFinishJingle(): void;
+  /** Krótki autorski sygnał kraju nad muzyką trasy (można też odsłuchać osobno). */
+  playCountryCue(country: CountryCueCode): void;
   setEnabled(enabled: boolean): void;
   setVolume(volume: number): void;
   setSeason(season: MusicSeason): void;
@@ -90,8 +96,9 @@ const HARMONY: Record<Chord, { bass: readonly [string, string]; notes: readonly 
 
 const STEPS_PER_BAR = 4;
 const STEP_COUNT = MUSIC_BAR_COUNT * STEPS_PER_BAR;
-const STEP_SECONDS = 30 / MUSIC_BPM;
-const BEAT_SECONDS = 60 / MUSIC_BPM;
+function stepSeconds(season: MusicSeason): number {
+  return 30 / (season === 'holiday' ? MUSIC_HOLIDAY_BPM : MUSIC_BPM);
+}
 const SCHEDULE_AHEAD = 0.2;
 const CLOCK_INTERVAL_MS = 25;
 const FADE_SECONDS = 0.16;
@@ -148,19 +155,26 @@ function playStep(ctx: AudioContext, output: AudioNode, step: number, at: number
   const position = step % STEPS_PER_BAR;
   const chord = HARMONY[SCORE[bar][1]];
   const note = MELODY[bar][position];
+  const step = stepSeconds(season);
 
   if (note !== '_') {
-    if (season === 'holiday') bell(ctx, output, note, at, 0.075);
-    else tone(ctx, output, note, at, STEP_SECONDS * 0.79, 'square', position === 0 ? 0.077 : 0.061);
+    if (season === 'holiday') {
+      // Własna melodia pozostaje, lecz instrument jest cieplejszy i subtelnie dzwoni.
+      tone(ctx, output, note, at, step * 0.85, 'triangle', position === 0 ? 0.069 : 0.052);
+      if (position % 2 === 0) bell(ctx, output, note, at, 0.032);
+    } else {
+      tone(ctx, output, note, at, step * 0.79, 'square', position === 0 ? 0.077 : 0.061);
+    }
   }
 
   if (position % 2 === 0) {
-    tone(ctx, output, chord.bass[position / 2], at, STEP_SECONDS * 0.87, 'triangle', 0.17);
+    tone(ctx, output, chord.bass[position / 2], at, step * 0.87, 'triangle', season === 'holiday' ? 0.14 : 0.17);
   } else {
     for (const pitch of chord.notes) {
-      tone(ctx, output, pitch, at, STEP_SECONDS * 0.67, 'triangle', season === 'holiday' ? 0.021 : 0.031);
+      tone(ctx, output, pitch, at, step * 0.67, season === 'holiday' ? 'sine' : 'triangle',
+        season === 'holiday' ? 0.028 : 0.031);
     }
-    if (season === 'holiday') bell(ctx, output, position === 1 ? 'E5' : 'G5', at, 0.022);
+    if (season === 'holiday') bell(ctx, output, position === 1 ? 'E5' : 'G5', at, 0.024);
   }
 }
 
@@ -182,6 +196,9 @@ export function createMusic(ctx?: AudioContext, options: MusicOptions = {}): Mus
   let master: GainNode | undefined;
   let loopBus: GainNode | undefined;
   let finishBus: GainNode | undefined;
+  let cueBus: GainNode | undefined;
+  let cueTimer: ReturnType<typeof setTimeout> | undefined;
+  let cueRequest = 0;
   let clock: ReturnType<typeof setInterval> | undefined;
   let state: MusicState = 'stopped';
   let enabled = options.enabled ?? true;
@@ -251,6 +268,18 @@ export function createMusic(ctx?: AudioContext, options: MusicOptions = {}): Mus
     }, Math.ceil((delay + 0.35) * 1000));
   }
 
+  // Dźwięk cue jest osobną szyną: nie ingeruje w zegar sekwencera.
+  function releaseCue(): void {
+    if (cueTimer !== undefined) clearTimeout(cueTimer);
+    cueTimer = undefined;
+    fadeChannel(cueBus, 0.08);
+    cueBus = undefined;
+    if (context && loopBus) {
+      loopBus.gain.cancelScheduledValues(context.currentTime);
+      loopBus.gain.setTargetAtTime(1, context.currentTime, 0.045);
+    }
+  }
+
   function endLoop(): void {
     if (clock !== undefined) clearInterval(clock);
     clock = undefined;
@@ -260,23 +289,24 @@ export function createMusic(ctx?: AudioContext, options: MusicOptions = {}): Mus
 
   function currentStep(): number {
     if (!context || !loopBus) return savedStep;
-    const elapsed = Math.max(0, Math.floor((context.currentTime - anchorTime) / STEP_SECONDS));
+    const elapsed = Math.max(0, Math.floor((context.currentTime - anchorTime) / stepSeconds(season)));
     return (firstStep + elapsed) % STEP_COUNT;
   }
 
   function schedule(): void {
     if (!context || !loopBus || state !== 'playing' || hidden()) return;
     const now = context.currentTime;
+    const step = stepSeconds(season);
     // Po uśpieniu karty pomijamy spóźnione nuty zamiast odtwarzać je naraz.
     if (nextTime < now - 0.05) {
-      const skipped = Math.ceil((now + 0.025 - nextTime) / STEP_SECONDS);
-      nextTime += skipped * STEP_SECONDS;
+      const skipped = Math.ceil((now + 0.025 - nextTime) / step);
+      nextTime += skipped * step;
       nextStep += skipped;
     }
     let work = 0;
     while (nextTime < now + SCHEDULE_AHEAD && work++ < 16) {
       playStep(context, loopBus, nextStep % STEP_COUNT, nextTime, season);
-      nextTime += STEP_SECONDS;
+      nextTime += step;
       nextStep += 1;
     }
   }
@@ -299,6 +329,8 @@ export function createMusic(ctx?: AudioContext, options: MusicOptions = {}): Mus
   }
 
   function pauseInternal(): void {
+    ++cueRequest;
+    releaseCue();
     if (state !== 'playing') return;
     savedStep = currentStep();
     state = 'paused';
@@ -308,6 +340,8 @@ export function createMusic(ctx?: AudioContext, options: MusicOptions = {}): Mus
 
   function stopInternal(): void {
     ++generation;
+    ++cueRequest;
+    releaseCue();
     state = 'stopped';
     savedStep = 0;
     resumeOnShow = false;
@@ -362,14 +396,15 @@ export function createMusic(ctx?: AudioContext, options: MusicOptions = {}): Mus
       const output = newChannel(active);
       finishBus = output;
       let at = active.currentTime + 0.045;
+      const beatSeconds = stepSeconds(season) * 2;
       for (const [note, beats] of FINISH) {
         if (season === 'holiday') bell(active, output, note, at, 0.11);
-        else tone(active, output, note, at, Math.min(beats * BEAT_SECONDS * 0.93, 0.43), 'square', 0.11);
-        at += beats * BEAT_SECONDS;
+        else tone(active, output, note, at, Math.min(beats * beatSeconds * 0.93, 0.43), 'square', 0.11);
+        at += beats * beatSeconds;
       }
       if (season === 'holiday') {
         for (let beat = 0; beat < 8; beat++) {
-          bell(active, output, beat % 2 ? 'G5' : 'E5', active.currentTime + 0.045 + beat * BEAT_SECONDS / 2, 0.023);
+          bell(active, output, beat % 2 ? 'G5' : 'E5', active.currentTime + 0.045 + beat * beatSeconds / 2, 0.023);
         }
       }
       const bus = output;
@@ -381,8 +416,34 @@ export function createMusic(ctx?: AudioContext, options: MusicOptions = {}): Mus
     });
   }
 
+  function playCountryCue(country: CountryCueCode): void {
+    if (disposed || !enabled || hidden() || !Object.prototype.hasOwnProperty.call(COUNTRY_CUE_INFO, country)) return;
+    const request = ++cueRequest;
+    releaseCue();
+    void prepare().then((active) => {
+      if (!active || disposed || request !== cueRequest || !enabled || hidden()) return;
+      const output = active.createGain();
+      output.gain.setValueAtTime(0, active.currentTime);
+      output.gain.linearRampToValueAtTime(0.88, active.currentTime + 0.035);
+      output.connect(master!);
+      channels.add(output);
+      cueBus = output;
+      // Lekki ducking zapewnia czytelność melodii przy niezmienionej głośności master.
+      if (loopBus) {
+        loopBus.gain.cancelScheduledValues(active.currentTime);
+        loopBus.gain.setTargetAtTime(0.72, active.currentTime, 0.028);
+      }
+      const duration = scheduleCountryCue(active, output, country, active.currentTime + 0.035);
+      cueTimer = setTimeout(() => {
+        if (cueBus === output) releaseCue();
+      }, Math.ceil((duration + 0.09) * 1000));
+    });
+  }
+
   function onVisibility(): void {
     if (hidden()) {
+      ++cueRequest;
+      releaseCue();
       if (state === 'playing') {
         resumeOnShow = true;
         pauseInternal();
@@ -404,6 +465,7 @@ export function createMusic(ctx?: AudioContext, options: MusicOptions = {}): Mus
     resume,
     stop: stopInternal,
     playFinishJingle,
+    playCountryCue,
     setEnabled(value) {
       if (disposed || value === enabled) return;
       enabled = value;
@@ -423,14 +485,17 @@ export function createMusic(ctx?: AudioContext, options: MusicOptions = {}): Mus
       if (context && master) master.gain.setTargetAtTime(volume * 0.26, context.currentTime, 0.025);
     },
     setSeason(value) {
-      if (disposed || value === season) return;
-      season = value;
+      if (disposed || value === season || (value !== 'regular' && value !== 'holiday')) return;
       if (state === 'playing') {
+        // Zapamiętaj pozycję przy STARYM tempie, dopiero potem zmień BPM.
         savedStep = currentStep();
         ++generation;
         endLoop();
-        requestLoop();
       }
+      ++cueRequest;
+      releaseCue();
+      season = value;
+      if (state === 'playing') requestLoop();
     },
     getState: () => ({ state, enabled, volume, season }),
     dispose() {
