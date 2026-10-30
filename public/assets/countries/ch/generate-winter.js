@@ -56,7 +56,7 @@ function inflateZlib(src,outSize){
   let pos=2,bits=0,buf=0,o=0;
   const out=new Uint8Array(outSize);
   function read(n){if(!n)return 0;while(bits<n){if(pos>=src.length)throw Error('Koniec zlib');buf|=src[pos++]<<bits;bits+=8;}const v=buf&((1<<n)-1);buf>>>=n;bits-=n;return v;}
-  let done=0;
+  let done=0;const hist=[];
   while(!done){
     done=read(1);const type=read(2);
     if(type===0){
@@ -87,14 +87,14 @@ function inflateZlib(src,outSize){
       lit=huffman(all.slice(0,nl),read);dist=huffman(all.slice(nl,nl+nd),read);
     }
     while(true){
-      const sym=lit();
+      const sym=lit();hist.push([sym,o,pos,bits]);if(hist.length>15)hist.shift();
       if(sym<256){if(o>=out.length)throw Error('Zlib za duzy');out[o++]=sym;continue;}
       if(sym===256)break;
       if(sym>285)throw Error('Niepoprawna dlugosc bloku');
       const li=sym-257,len=LBASE[li]+read(LEXTRA[li]),di=dist();
       if(di>29)throw Error('Niepoprawna odleglosc');
       const d=DBASE[di]+read(DEXTRA[di]);
-      if(o+len>out.length||d>o)throw Error('Niepoprawny backref o='+o+' len='+len+' dist='+d+' di='+di+' sym='+sym+' bytepos='+pos+' bits='+bits+' src='+src.length+' first='+Array.from(out.subarray(0,18))+' nextRow='+out[4321]);
+      if(o+len>out.length||d>o)throw Error('Niepoprawny backref o='+o+' len='+len+' dist='+d+' di='+di+' sym='+sym+' bytepos='+pos+' bits='+bits+' src='+src.length+' first='+Array.from(out.subarray(0,18))+' nextRow='+out[4321]+' hist='+JSON.stringify(hist));
       for(let j=0;j<len;j++){out[o]=out[o-d];o++;}
     }
   }
