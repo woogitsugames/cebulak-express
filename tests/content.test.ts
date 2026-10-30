@@ -19,8 +19,8 @@ import type { ObstacleKind, PickupKind } from '../src/core/obstacles';
 import type { CountryCode } from '../src/core/route';
 
 const COUNTRIES = ['BE', 'NL', 'DE', 'UK', 'FR', 'CH', 'NO', 'DK', 'SE', 'PL'] as const satisfies readonly CountryCode[];
-const OBSTACLES = ['viaduct', 'sign', 'crane', 'roadworks', 'barrier', 'truck', 'ground'] as const satisfies readonly ObstacleKind[];
-const PICKUPS = ['parcel', 'jar'] as const satisfies readonly PickupKind[];
+const OBSTACLES = ['viaduct', 'sign', 'crane', 'roadworks', 'barrier', 'truck', 'baggage-gate', 'ground'] as const satisfies readonly ObstacleKind[];
+const PICKUPS = ['parcel', 'jar', 'boarding', 'tailwind', 'mamcall'] as const satisfies readonly PickupKind[];
 
 /**
  * Kategorie zakazane określa docs/zlecenia/WSPOLNE.md.
@@ -107,16 +107,19 @@ describe('Polskie teksty gry', () => {
     }
   });
 
-  it('ma przynajmniej 6 wariantów na znajdźkę, każdy z podmianą km', () => {
+  it('ma odrębne komunikaty dla bagaży z km i trzech bonusów czasowych', () => {
     expect(Object.keys(PICKUP_TEXTS).sort()).toEqual([...PICKUPS].sort());
     for (const kind of PICKUPS) {
       const pool = PICKUP_TEXTS[kind];
       expect(pool.length).toBeGreaterThanOrEqual(6);
       expect(new Set(pool).size).toBe(pool.length);
       for (const text of pool) {
-        expect(text).toContain('{km}');
-        expect(fill(text, { km: 15 })).toContain('15');
-        expect(fill(text, { km: 15 })).not.toContain('{km}');
+        if (kind === 'parcel' || kind === 'jar') {
+          expect(text).toContain('{km}');
+          expect(fill(text, { km: 15 })).toContain('15');
+        } else {
+          expect(text).not.toContain('{km}');
+        }
       }
     }
   });

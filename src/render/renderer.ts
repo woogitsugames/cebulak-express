@@ -1,9 +1,10 @@
-import { OBSTACLE, PICKUPS, PLAYER, WORLD } from '../core/config';
+import { OBSTACLE, PICKUPS, PLAYER, TICK, WORLD } from '../core/config';
 import type { Game } from '../core/game';
-import type { BottomKind, Obstacle, Pickup, TopKind } from '../core/obstacles';
+import { effectiveGapH, isPowerupKind, type BottomKind, type Obstacle, type Pickup, type TopKind } from '../core/obstacles';
+import { POWERUP_NAME } from '../content/pl';
 import { BackgroundRenderer, type BackgroundState } from './background';
 import { PALETTES } from './palette';
-import { drawBottomSprite, drawHeroSprite, drawTopSprite } from './sprites';
+import { drawBottomSprite, drawGateSprite, drawHeroSprite, drawPowerupAura, drawPowerupSprite, drawTopSprite } from './sprites';
 
 /**
  * Render na Canvas 2D w logicznej rozdzielczości świata (360×640), skalowany do ekranu.
@@ -77,11 +78,13 @@ export class Renderer {
     ctx.rect(0, viewTop, WORLD.width, viewHeight);
     ctx.clip();
     for (const p of game.field.pickups) if (!p.taken) this.drawPickup(p, p.x - worldX, timeSec);
-    for (const o of game.field.obstacles) this.drawObstacle(o, o.x - worldX);
+    for (const o of game.field.obstacles) this.drawObstacle(o, o.x - worldX, game.weight);
     ctx.restore();
     this.background.drawRoad(this.ctx, bg);
     if (viewLeft < 0) this.drawSideVeil(viewLeft, viewRight, viewTop);
     if (!drawHeroSprite(this.ctx, game, timeSec)) this.drawPlayer(game, timeSec);
+    drawPowerupAura(this.ctx, game, timeSec);
+    this.drawPowerupHud(game);
   }
 
   /** Lekkie przyciemnienie boków nad drogą: widać, gdzie jest pole gry. */
@@ -106,12 +109,36 @@ export class Renderer {
     ctx.restore();
   }
 
-  private drawObstacle(o: Obstacle, sx: number): void {
+  private drawObstacle(o: Obstacle, sx: number, weight: number): void {
     if (sx > WORLD.width || sx + OBSTACLE.width < 0) return;
-    const topH = o.gapY - o.gapH / 2;
-    const bottomY = o.gapY + o.gapH / 2;
+    const gapH = effectiveGapH(o, weight);
+    const topH = o.gapY - gapH / 2;
+    const bottomY = o.gapY + gapH / 2;
+    if (o.gate) {
+      if (!drawGateSprite(this.ctx, sx, topH, bottomY, OFFSCREEN)) {
+        drawGateFallback(this.ctx, sx, topH, bottomY);
+      }
+      return;
+    }
     if (!drawTopSprite(this.ctx, o.top, sx, topH, OFFSCREEN)) drawTop(this.ctx, o.top, sx, topH);
     if (!drawBottomSprite(this.ctx, o.bottom, sx, bottomY)) drawBottom(this.ctx, o.bottom, sx, bottomY, WORLD.groundY - bottomY);
+  }
+
+  private drawPowerupHud(game: Game): void {
+    if (!game.activePowerup) return;
+    const { ctx } = this;
+    ctx.save();
+    ctx.fillStyle = 'rgba(28, 53, 64, 0.88)';
+    roundRect(ctx, 135, 17, 215, 34, 10);
+    ctx.fill();
+    ctx.fillStyle = '#fff9e8';
+    ctx.font = 'bold 12px system-ui, sans-serif';
+    ctx.textBaseline = 'middle';
+    ctx.textAlign = 'left';
+    ctx.fillText(POWERUP_NAME[game.activePowerup], 146, 34, 160);
+    ctx.textAlign = 'right';
+    ctx.fillText((game.powerupTicks * TICK).toFixed(1) + ' s', 340, 34);
+    ctx.restore();
   }
 
   private drawPickup(p: Pickup, sx: number, t: number): void {
@@ -131,7 +158,7 @@ export class Renderer {
       ctx.lineWidth = 1.5;
       roundRect(ctx, -r, -r * 0.85, r * 2, r * 1.7, 3);
       ctx.stroke();
-    } else {
+    } else if (p.kind === 'jar') {
       ctx.fillStyle = '#5c9a3a';
       roundRect(ctx, -r * 0.75, -r * 0.7, r * 1.5, r * 1.75, 4);
       ctx.fill();
@@ -139,6 +166,19 @@ export class Renderer {
       ctx.fillRect(-r * 0.85, -r * 1.05, r * 1.7, r * 0.45);
       ctx.fillStyle = 'rgba(255,255,255,0.5)';
       ctx.fillRect(-r * 0.5, -r * 0.4, 3, r);
+    } else if (isPowerupKind(p.kind) && !drawPowerupSprite(ctx, p.kind)) {
+      // Zaślepka działa również przy offline, zanim obrazek się załaduje.
+      ctx.fillStyle = p.kind === 'boarding' ? '#f1c65f' : p.kind === 'tailwind' ? '#73d6e2' : '#c59be8';
+      ctx.strokeStyle = '#364e61';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.arc(0, 0, r + 2, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+      ctx.fillStyle = '#fff';
+      ctx.beginPath();
+      ctx.arc(0, 0, 5, 0, Math.PI * 2);
+      ctx.fill();
     }
     ctx.restore();
   }
@@ -302,3 +342,17 @@ function roundRect(ctx: CanvasRenderingContext2D, x: number, y: number, w: numbe
   ctx.closePath();
 }
 
+
+/** Awaryjna ramka, gdy PNG nie został jeszcze pobrany (PWA/offline). */
+function drawGateFallback(ctx: CanvasRenderingContext2D, x: number, topY: number, bottomY: number): void {
+  ctx.fillStyle = '#377988';
+  ctx.fillRect(x + 4, -OFFSCREEN, OBSTACLE.width - 8, topY + OFFSCREEN);
+  ctx.fillRect(x + 4, bottomY, OBSTACLE.width - 8, WORLD.groundY - bottomY);
+  ctx.fillStyle = '#f5c35a';
+  ctx.fillRect(x - 4, topY - 9, OBSTACLE.width + 8, 9);
+  ctx.fillRect(x - 4, bottomY, OBSTACLE.width + 8, 9);
+  ctx.strokeStyle = '#244858';
+  ctx.lineWidth = 3;
+  ctx.strokeRect(x + 4, -OFFSCREEN, OBSTACLE.width - 8, topY + OFFSCREEN);
+  ctx.strokeRect(x + 4, bottomY, OBSTACLE.width - 8, WORLD.groundY - bottomY);
+}

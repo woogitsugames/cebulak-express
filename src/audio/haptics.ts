@@ -32,7 +32,9 @@ export function hapticForGameEvent(event: GameEvent): HapticName | null {
     case 'arrived': return 'arrived';
     // Po 'hit' następuje 'over'; nie wibruj dwa razy.
     case 'over':
-    case 'waypoint': return null;
+    case 'waypoint':
+    case 'powerup-start':
+    case 'powerup-end': return null;
   }
 }
 

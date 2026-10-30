@@ -47,3 +47,13 @@ python public/assets/obstacles/generate-assets.py
 Po wygenerowaniu sprawdź wymiary, kanał alfa, brak prześwitów w `x=[24,216)`, zgodność fazy kafelków i rozmiar `<200 kB`. Generator wykonuje kontrole wymiarów, alfa i rozmiaru; podgląd umożliwia ręczną kontrolę szwów i stylu. Skrypt jest wyłącznie narzędziem do przygotowania assetów, nie jest uruchamiany przez Vite.
 
 **Stan integracji (30.10.2026):** bazowe zasoby przeszkód, bohatera i `src/render/sprites.ts` zostały w międzyczasie scalone do `main`. Nowe PNG działają w tym samym kontrakcie, bez zmiany renderera. Podgląd 31 jest autorską sceną referencyjną w stylistyce DE; finalną ocenę kolorystyczną warto też przeprowadzić na `docs/art/podglady/countries-de-preview.png` z `main`.
+
+
+## Dodatek: bramka bagażowa (zlecenie 52)
+
+| Plik | Źródło/narzędzie | Licencja | Autor/uwagi |
+|---|---|---|---|
+| `baggage-gate-end.png` | Autorskie wektory SVG stworzone w ChatGPT, CairoSVG + Pillow, ręczne dostrojenie geometrii i kolorów | Autorski projekt do gry | 240×192, ramka z ikoną walizki; bez znaków i tekstu |
+| `baggage-gate-tile.png` | Jak wyżej | Jak wyżej | 240×96, powtarzalny filar bramki bez widocznego szwu |
+
+Grafiki są w sRGB, z przezroczystością i paletą 64 kolorów; oba końce szczeliny używają tego samego `end`, a część dolna jest odbita pionowo. Pozostawiono pas kolizyjny `x=24…216` px. Przeznaczone do `src/render/sprites.ts`.

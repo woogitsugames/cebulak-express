@@ -1,4 +1,4 @@
-import type { ObstacleKind, PickupKind } from '../core/obstacles';
+import type { ObstacleKind, PickupKind, PowerupKind } from '../core/obstacles';
 import type { CountryCode } from '../core/route';
 
 /**
@@ -41,6 +41,7 @@ export const OBSTACLE_NAME: Record<ObstacleKind, string> = {
   roadworks: 'Remont drogi',
   barrier: 'Szlaban',
   truck: 'Ciężarówka',
+  'baggage-gate': 'Bramka bagażowa',
   ground: 'Asfalt',
 };
 
@@ -106,6 +107,16 @@ export const FAIL_JOKES: Record<ObstacleKind, string[]> = {
     "Na drodze miejsca starczyło. Na manewr już nie.",
     "Walizki kiwnęły się na pożegnanie.",
   ],
+  'baggage-gate': [
+    "Bramka policzyła walizki. I zabrakło centymetra.",
+    "Za dużo bagażu? Suwmiarka nie kłamie.",
+    "Walizki miały bilety, ale zabrakło miejsca.",
+    "Bagaż podręczny. Tylko w której ręce?",
+    "Kombi nie spodziewało się kontroli wymiarów.",
+    "Jeden słoik mniej i zmieścilibyśmy się idealnie.",
+    "Bramka była węższa niż nasze plany.",
+    "Następnym razem poprosimy o większy prześwit.",
+  ],
   ground: [
     "Ziemia przyciąga. Zwłaszcza pełne kombi.",
     "Miękkie lądowanie? Tym razem tylko w planach.",
@@ -121,7 +132,17 @@ export const FAIL_JOKES: Record<ObstacleKind, string[]> = {
 export const PICKUP_TOAST = {
   parcel: 'Paczka od mamy! +{km} km',
   jar: 'Słoik ogórków! +{km} km',
+  boarding: 'Priority Boarding! 3 sekundy ochrony!',
+  tailwind: 'Wiatr w plecy! 2 sekundy przyspieszenia!',
+  mamcall: 'Telefon do mamy: Uważaj na siebie!',
 } as const;
+
+/** Wyświetlane podczas działania bonusu — bez słów wtopionych w grafiki. */
+export const POWERUP_NAME: Record<PowerupKind, string> = {
+  boarding: 'Priority Boarding',
+  tailwind: 'Wiatr w plecy',
+  mamcall: 'Telefon do mamy',
+};
 
 /** Powitania po wjeździe do kraju (wybierane losowo przy zdarzeniu granicy). */
 export const BORDER_TEXTS: Record<CountryCode, string[]> = {
@@ -280,6 +301,30 @@ export const PICKUP_TEXTS: Record<PickupKind, string[]> = {
     "Domowe zapasy rosną! +{km} km",
     "Ostrożnie, szkło! +{km} km",
     "Słoik bez rysy. +{km} km",
+  ],
+  boarding: [
+    PICKUP_TOAST.boarding,
+    "Priorytetowy przejazd! Przez 3 sekundy bezpiecznie.",
+    "Bilet pierwszeństwa! Teraz nic nas nie zatrzyma.",
+    "Bagaże zapięte? Przez chwilę mamy ochronę!",
+    "Złoty przejazd! Trzy sekundy bez obaw.",
+    "Wolna droga! Ochrona na trzy sekundy.",
+  ],
+  tailwind: [
+    PICKUP_TOAST.tailwind,
+    "Wiatr pomaga! Dwie sekundy szybszej podróży.",
+    "Podmuch prosto do domu! Omijamy przeszkody.",
+    "Kombi dostało skrzydeł. Szybki przelot!",
+    "Dopalacz od pogody! Dwie sekundy do przodu.",
+    "Pędzimy z wiatrem! Wolna droga na moment.",
+  ],
+  mamcall: [
+    PICKUP_TOAST.mamcall,
+    "Mama dzwoni: Uważaj na siebie!",
+    "Uważaj na siebie! Mama czeka na miejscu.",
+    "Telefon z domu. Uważaj na siebie!",
+    "Spokojnie, bez pośpiechu. Uważaj na siebie!",
+    "Mama przypomina: Uważaj na siebie!",
   ],
 };
 

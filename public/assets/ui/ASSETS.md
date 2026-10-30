@@ -43,3 +43,14 @@ Tekstury i ilustracje powstały z wygenerowanego od podstaw atlasu GPT Image; ma
 | `icon-vibration.png` | Autorska ilustracja SVG → CairoSVG/Pillow, ręczne ścieżki | CC0-1.0 | ChatGPT; telefon z falami drgań |
 
 Każdy nowy plik jest PNG **96×96 px, sRGB z przezroczystością**, z mocnym granatowym obrysem, bez tekstu. Piktogramy zaprojektowane i obejrzane w rozmiarze 32×32 px. Paleta skwantyzowana bez ditheringu do 256 kolorów z zachowaniem alpha. Wczytywać pod `/assets/ui/icon-*.png`; żadne istniejące ikony nie są nadpisywane. Arkusz poglądowy: `docs/art/podglady/ui-icons-preview.png`.
+
+
+## Dodatek: bonusy (zlecenie 52)
+
+| Plik | Źródło/narzędzie | Licencja | Autor/uwagi |
+|---|---|---|---|
+| `pickup-boarding.png` | Autorskie wektory SVG stworzone w ChatGPT, CairoSVG + Pillow, ręczna korekta kolorów | Autorski projekt do gry | 96×96, złoty bilet/znaczek z walizką, bez liter |
+| `pickup-tailwind.png` | Jak wyżej | Jak wyżej | 96×96, turkusowy podmuch i strzałka |
+| `pickup-mamcall.png` | Jak wyżej | Jak wyżej | 96×96, telefon z sercem, bez znaków operatorów |
+
+Grafiki mają przezroczyste marginesy; kolizja odbywa się na dotychczasowym promieniu `PICKUPS.radius = 12` px logicznych. W renderze obrazy @3x są skalowane do 32×32 px logicznych.
