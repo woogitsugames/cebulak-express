@@ -336,7 +336,7 @@ export const UI = {
   recordCopied: 'Skopiowano link. Plik wideo zapisz osobno.',
   recordShareCancelled: 'Udostępnianie anulowane',
   recordShareError: 'Błąd udostępniania',
-  recordShareText: 'Rolka z gry Cebulak Express',
+  recordShareText: 'Rolka z podróży do Polski',
   recordAlreadyRecording: 'Nagrywanie już trwa',
   recordCanvasSizeInvalid: 'Canvas źródłowy ma nieprawidłowe wymiary',
   recordDurationInvalid: 'Nieprawidłowy czas nagrania',
