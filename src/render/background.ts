@@ -2,7 +2,8 @@ import { KM_PER_PX, WORLD } from '../core/config';
 import type { Waypoint } from '../content/waypoints';
 import type { CountryCode, Route } from '../core/route';
 import { PALETTES } from './palette';
-import { ASSET_SIZES, AssetLoader, type BackgroundLayer, type DrawableAsset, type Season } from './assets';
+import { ASSET_SIZES, AssetLoader, drawableHeight, drawableWidth, type BackgroundLayer, type DrawableAsset, type Season } from './assets';
+import { AdaptiveQuality, storedPerformanceMode, type PerformanceMode } from './performance';
 
 export const PARALLAX = { sky: 0, clouds: 0.15, far: 0.25, near: 0.5, road: 1 } as const;
 export const COUNTRY_FADE_SECONDS = 1.5;
@@ -128,11 +129,18 @@ export class BackgroundRenderer {
   private borderAlpha = 0;
   private gradientCtx: CanvasRenderingContext2D | null = null;
   private readonly gradients = new Map<CountryCode, CanvasGradient>();
+  private readonly quality = new AdaptiveQuality(storedPerformanceMode());
+
+  /** Do powiązania z przyszłym przełącznikiem w ustawieniach (zlecenie 49). */
+  setPerformanceMode(mode: PerformanceMode): void { this.quality.setMode(mode); }
+  getPerformanceMode(): PerformanceMode { return this.quality.preference; }
+  isReducedQuality(): boolean { return this.quality.reduced; }
 
   constructor(readonly assets: AssetLoader = new AssetLoader()) {}
 
   drawBackground(ctx: CanvasRenderingContext2D, state: BackgroundState): void {
-    const season = state.season ?? 'summer';
+    this.quality.sample(state.timeSec * 1_000, typeof document === 'undefined' || !document.hidden);
+    const season = this.quality.reduced ? 'summer' : (state.season ?? 'summer');
     if (this.primedWaypoints !== state.waypoints || this.primedSeason !== season) {
       this.primedWaypoints = state.waypoints;
       this.primedSeason = season;
@@ -140,9 +148,11 @@ export class BackgroundRenderer {
     }
     this.updateRouteAndWaypoints(state);
     this.updateCountry(state.country, state.timeSec);
+    this.assets.setVisibleCountries?.(state.country,
+      this.fromCountry !== this.toCountry ? this.fromCountry : null, season);
     this.borderAlpha = season === 'winter' ? 0 : borderNearOpacity(state.progressKm, this.borderKm, this.restKm);
     this.drawPair(ctx, 'sky', state.distancePx, season);
-    this.drawPair(ctx, 'clouds', state.distancePx, season);
+    if (!this.quality.reduced) this.drawPair(ctx, 'clouds', state.distancePx, season);
     this.drawPair(ctx, 'far', state.distancePx, season);
     this.drawWaypoints(ctx, state, 'far');
     this.drawPair(ctx, 'near', state.distancePx, season);
@@ -153,7 +163,7 @@ export class BackgroundRenderer {
   /** Rysowanie asfaltu po przeszkodach, przed pojazdem. */
   drawRoad(ctx: CanvasRenderingContext2D, state: BackgroundState): void {
     this.updateCountry(state.country, state.timeSec);
-    this.drawPair(ctx, 'road', state.distancePx, state.season ?? 'summer');
+    this.drawPair(ctx, 'road', state.distancePx, this.quality.reduced ? 'summer' : (state.season ?? 'summer'));
   }
 
   /**
@@ -171,6 +181,9 @@ export class BackgroundRenderer {
     season: Season = 'summer',
   ): void {
     this.updateCountry(country, timeSec);
+    if (this.quality.reduced) season = 'summer';
+    this.assets.setVisibleCountries?.(country,
+      this.fromCountry !== this.toCountry ? this.fromCountry : null, season);
     if (minY >= 0 && maxY <= WORLD.height) return;
     if (this.fromCountry) this.drawOutsideCountry(ctx, this.fromCountry, distancePx, minY, maxY, season);
     if (this.toCountry && this.toCountry !== this.fromCountry) {
@@ -190,8 +203,8 @@ export class BackgroundRenderer {
       ctx.fillRect(0, minY, WORLD.width, -minY);
       const sky = this.assets.getCountryLayer(country, 'sky', season);
       if (sky) {
-        const rows = Math.min(3, sky.naturalHeight);
-        ctx.drawImage(sky, 0, 0, sky.naturalWidth, rows, 0, minY, WORLD.width, -minY);
+        const rows = Math.min(3, drawableHeight(sky));
+        ctx.drawImage(sky, 0, 0, drawableWidth(sky), rows, 0, minY, WORLD.width, -minY);
       }
     }
     if (maxY > WORLD.height) {
@@ -199,10 +212,10 @@ export class BackgroundRenderer {
       ctx.fillRect(0, WORLD.height, WORLD.width, maxY - WORLD.height);
       const road = this.assets.getCountryLayer(country, 'road', season);
       if (road) {
-        const rows = Math.min(3, road.naturalHeight);
+        const rows = Math.min(3, drawableHeight(road));
         for (let x = -layerOffset(distancePx, PARALLAX.road, ASSET_SIZES.road.width);
           x < WORLD.width; x += ASSET_SIZES.road.width) {
-          ctx.drawImage(road, 0, road.naturalHeight - rows, road.naturalWidth, rows,
+          ctx.drawImage(road, 0, drawableHeight(road) - rows, drawableWidth(road), rows,
             x, WORLD.height, ASSET_SIZES.road.width, maxY - WORLD.height);
         }
       }
@@ -329,9 +342,9 @@ export class BackgroundRenderer {
     const y = LAYER_Y[layer];
     const visible = Math.min(height, WORLD.height - y);
     if (visible <= 0) return;
-    const srcH = (visible / height) * image.height;
+    const srcH = (visible / height) * drawableHeight(image);
     for (let x = -layerOffset(distancePx, PARALLAX[layer], width); x < WORLD.width; x += width) {
-      ctx.drawImage(image, 0, 0, image.width, srcH, x, y, width, visible);
+      ctx.drawImage(image, 0, 0, drawableWidth(image), srcH, x, y, width, visible);
     }
   }
 
