@@ -112,22 +112,33 @@ function embedCode() {
 
 function privacyPages() {
   const source = read('docs/prawo/polityka-prywatnosci.md');
-  const englishIndex = source.indexOf('\n## English — short privacy summary');
+  const englishIndex = source.search(/\n## English(?:\s| —)/);
   const editorialIndex = source.indexOf('\n## Kontrola wydawnicza');
   if (englishIndex < 0 || editorialIndex <= englishIndex) {
     throw new Error('Zmienił się podział polityki prywatności. Sprawdź nagłówki źródła.');
   }
   const polish = source.slice(0, englishIndex);
   const english = source.slice(englishIndex, editorialIndex);
-  const draftPL = '<aside class="notice" role="status"><strong>Projekt polityki — nie publikować jako wersji ostatecznej.</strong>' +
-    'Brakuje zatwierdzenia prawnego i danych oznaczonych w dokumencie. Wersja tylko do podglądu.</aside>';
-  const draftEN = '<aside class="notice" role="status"><strong>Draft — not a final privacy policy.</strong>' +
-    'This is a short summary only, not a complete English translation. Publication requires legal review.</aside>';
+  const polishIsDraft = /Wersja robocza do publikacji|\[UZUPEŁNIJ/i.test(polish);
+  const englishIsSummary = /short privacy summary|not a substitute|\[(?:INSERT|TO BE CONFIRMED)/i.test(english);
+  const draftPL = polishIsDraft
+    ? '<aside class="notice" role="status"><strong>Projekt polityki — nie publikować jako wersji ostatecznej.</strong>' +
+      'Brakuje zatwierdzenia prawnego i danych oznaczonych w dokumencie. Wersja tylko do podglądu.</aside>'
+    : '';
+  const draftEN = englishIsSummary
+    ? '<aside class="notice" role="status"><strong>Draft — not a final privacy policy.</strong>' +
+      'This is a short summary only, not a complete English translation. Publication requires legal review.</aside>'
+    : '';
   buildPage('prywatnosc.html', { '__POLICY_CONTENT__': draftPL + markdownToHtml(polish, { skipTitle: true }) },
     'Polityka prywatności — Cebulak Express', 'Informacje o danych i prawach graczy.');
-  buildPage('prywatnosc-en.html', { '__POLICY_CONTENT__': draftEN + markdownToHtml(english) +
-    '<p><a href="' + asset('prywatnosc.html') + '">Read the Polish draft policy</a></p>' },
-    'Privacy summary — Cebulak Express', 'English privacy summary (draft; not a complete translation).');
+  buildPage('prywatnosc-en.html', {
+    '__POLICY_CONTENT__': draftEN + markdownToHtml(english) +
+      '<p><a href="' + asset('prywatnosc.html') + '">Read the Polish policy</a></p>',
+    '__EN_PAGE_TITLE__': englishIsSummary ? 'Privacy summary' : 'Privacy policy',
+    '__EN_PAGE_INTRO__': englishIsSummary ? 'English-language summary of the Polish draft policy.' :
+      'Privacy information for players using the web and mobile game.',
+  }, englishIsSummary ? 'Privacy summary — Cebulak Express' : 'Privacy policy — Cebulak Express',
+    englishIsSummary ? 'English privacy summary (draft; not a complete translation).' : 'Privacy policy for Cebulak Express.');
 }
 
 function licensesPage() {
