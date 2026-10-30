@@ -78,7 +78,10 @@ export function selectNearestWaypoint(waypoints: readonly Waypoint[], progressKm
   let closest: Waypoint | null = null;
   let best = Number.POSITIVE_INFINITY;
   for (const point of waypoints) {
-    const delta = Math.abs(point.km - progressKm);
+    // Punkt near przewija się 2x szybciej niż far: porównuj odległość
+    // od środka EKRANU, nie same kilometry.
+    const parallax = point.kind === 'border' || point.kind === 'rest' ? PARALLAX.near : PARALLAX.far;
+    const delta = Math.abs(point.km - progressKm) * parallax;
     if (delta < best) {
       best = delta;
       closest = point;
