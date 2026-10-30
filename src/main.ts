@@ -13,7 +13,7 @@ import { RETURN_ARRIVAL_TEXTS, RETURN_CITY_LOCATIVE, RETURN_DEPARTURE_TEXTS } fr
 import { randomNickChoices } from './content/nicks';
 import { portalLink } from './content/portals';
 import { Renderer } from './render/renderer';
-import { mountSignJoke } from './render/signs';
+import type { SignJokeBubble } from './render/signs';
 import { installStoreShotHooks } from './test-hooks';
 import { normalizeHeroSkin, preloadSprites, setHeroSkin } from './render/sprites';
 import { createSfx, sfxForGameEvent, type SfxPlayer } from './audio/sfx';
@@ -128,7 +128,15 @@ let closeCollection: (() => void) | null = null;
 const winter = seasonAt(new Date(), location.search) === 'winter';
 renderer.winter = winter;
 const progressModule = () => import('./meta/progress');
-void progressModule().then((m) => m.loadProgress()).then((p) => { progress = p; });
+void progressModule().then((m) => m.loadProgress()).then((p) => {
+  progress = p;
+  // Auta za kilometry (zlecenie 72): wybrane auto wraca dopiero, gdy wiadomo, ile przejechano.
+  setHeroSkin(normalizeHeroSkin(settings.skin, totalKm()), totalKm());
+});
+/** Suma km ze wszystkich przejazdów (album/medale) — z niej odblokowujemy auta. */
+function totalKm(): number {
+  return progress?.stats.totalKm ?? 0;
+}
 
 function safeRoute(s: Settings): Route {
   try {
@@ -259,12 +267,13 @@ $('btn-garage').addEventListener('click', () => {
   if (ui.garage.hidden) return;
   closeGarage = mountGarage(ui.garage, {
     home: settings.home,
-    skin: normalizeHeroSkin(settings.skin),
+    skin: normalizeHeroSkin(settings.skin, totalKm()),
+    totalKm: totalKm(),
     nickId: settings.nickId,
     onChange: (sel) => {
       settings = { ...settings, skin: sel.skin, nickId: sel.nickId };
       save('ce.settings', settings);
-      setHeroSkin(sel.skin);
+      setHeroSkin(sel.skin, totalKm());
     },
     onClose: () => showMenu(),
   });
@@ -508,10 +517,16 @@ function showOver(g: Game): void {
     if (!progress) return;
     // Powrót za granicę to nie „dojazd do domu” — medale za dojazd liczymy tylko w stronę Polski.
     const homeward = g.baseWeight === 0;
+    const kmBefore = progress.stats.totalKm;
     const change = applyRun(progress, summarizeRun({ route: g.route, km: g.km, jars: g.jars, parcels: g.parcels,
       phase: homeward ? g.phase : 'over' }, winter && arrived && homeward));
     progress = change.progress;
     void saveProgress(progress);
+    const kmAfter = progress.stats.totalKm;
+    void import('./meta/unlocks').then(({ applyRunKm, unlockAnnouncement }) => {
+      const cars = applyRunKm({ totalKm: kmBefore }, kmAfter - kmBefore).newlyUnlocked;
+      cars.forEach((id, i) => window.setTimeout(() => toast(unlockAnnouncement(id)), 400 + i * 1800));
+    });
     if (change.newMedals.length || change.newPostcards.length) {
       void import('./ui/collection').then(({ medalToast, postcardToast }) => {
         const news = [...change.newMedals.map(medalToast), ...change.newPostcards.map(postcardToast)];
@@ -615,14 +630,15 @@ function frame(now: number): void {
     handleEvents(game);
     if (game.phase === 'playing') updateHud();
     renderer.draw(game, now / 1000);
-    signJoke.show(game.phase === 'playing' ? renderer.signJoke : null);
+    signJoke?.show(game.phase === 'playing' ? renderer.signJoke : null);
   } else {
     renderer.draw(previewGame, now / 1000);
   }
   requestAnimationFrame(frame);
 }
 
-const signJoke = mountSignJoke(ui.hud);
+let signJoke: SignJokeBubble | null = null;
+void import('./render/signs').then(({ mountSignJoke }) => { signJoke = mountSignJoke(ui.hud); });
 // Haki tylko dla ?test=1 (zrzuty do sklepu, e2e) — w zwykłej sesji nic nie robią.
 installStoreShotHooks(() => game, api);
 
