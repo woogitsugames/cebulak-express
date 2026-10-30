@@ -1,39 +1,49 @@
-# Przeszkody drogowe — zasoby 03
+# Przeszkody w stylu wektorowym — zlecenie 31
 
-Sześć rodzajów: górne `viaduct`, `sign`, `crane`; dolne `roadworks`, `barrier`, `truck`. Grafika to **autorskie ilustracje geometryczne**, bez logotypów i tekstu. Ciepłe światło od lewej góry; mocny granatowy kontur. Grafiki nie korzystają z zasobów stron trzecich.
+Sześć typów, trzynaście grafik PNG: 12 elementów (po jednym `*-end.png` i `*-tile.png` na typ) oraz wariant graniczny `roadworks-pl-end.png`. Projekt zgodny z `obstacles.json` ze zlecenia 03. **Nie zmieniano API renderera ani fizyki.**
 
-## Pochodzenie i licencja
+## Pochodzenie i prawa wykorzystania
 
-| Plik | Źródło/narzędzie | Licencja | Autor/uwagi |
+Wszystkie postacie i elementy narysowane od zera przez ChatGPT jako własne kształty SVG generowane skryptem `generate-assets.py`, rasteryzowane do PNG przez CairoSVG i zoptymalizowane przez Pillow. Do kierunku stylistycznego wygenerowano dodatkowy obraz koncepcyjny w GPT Image, lecz **żadne piksele z wygenerowanego obrazu ani cudzych zdjęć nie zostały przeniesione do sprite'ów**. Bez marek, logotypów, tekstów i zewnętrznych assetów. Materiały przygotowane do wykorzystania w projekcie Cebulak Express; prawa osób trzecich do materiałów nie są deklarowane.
+
+| Plik | Źródło/narzędzie | Licencja / pochodzenie | Autor/uwagi |
 |---|---|---|---|
-| `viaduct-end.png` | ChatGPT, autorskie kształty wektorowe rasteryzowane skryptem JS | Materiał przygotowany do wykorzystania w projekcie | Krawędź szczeliny, 240×192 px, PNG sRGB @3x |
-| `viaduct-tile.png` | ChatGPT, autorskie kształty wektorowe rasteryzowane skryptem JS | Materiał przygotowany do wykorzystania w projekcie | Powtarzalny pionowo, 240×96 px, PNG sRGB @3x |
-| `sign-end.png` | ChatGPT, autorskie kształty wektorowe rasteryzowane skryptem JS | Materiał przygotowany do wykorzystania w projekcie | Krawędź szczeliny, 240×192 px, PNG sRGB @3x |
-| `sign-tile.png` | ChatGPT, autorskie kształty wektorowe rasteryzowane skryptem JS | Materiał przygotowany do wykorzystania w projekcie | Powtarzalny pionowo, 240×96 px, PNG sRGB @3x |
-| `crane-end.png` | ChatGPT, autorskie kształty wektorowe rasteryzowane skryptem JS | Materiał przygotowany do wykorzystania w projekcie | Krawędź szczeliny, 240×192 px, PNG sRGB @3x |
-| `crane-tile.png` | ChatGPT, autorskie kształty wektorowe rasteryzowane skryptem JS | Materiał przygotowany do wykorzystania w projekcie | Powtarzalny pionowo, 240×96 px, PNG sRGB @3x |
-| `roadworks-end.png` | ChatGPT, autorskie kształty wektorowe rasteryzowane skryptem JS | Materiał przygotowany do wykorzystania w projekcie | Krawędź szczeliny, 240×192 px, PNG sRGB @3x |
-| `roadworks-tile.png` | ChatGPT, autorskie kształty wektorowe rasteryzowane skryptem JS | Materiał przygotowany do wykorzystania w projekcie | Powtarzalny pionowo, 240×96 px, PNG sRGB @3x |
-| `barrier-end.png` | ChatGPT, autorskie kształty wektorowe rasteryzowane skryptem JS | Materiał przygotowany do wykorzystania w projekcie | Krawędź szczeliny, 240×192 px, PNG sRGB @3x |
-| `barrier-tile.png` | ChatGPT, autorskie kształty wektorowe rasteryzowane skryptem JS | Materiał przygotowany do wykorzystania w projekcie | Powtarzalny pionowo, 240×96 px, PNG sRGB @3x |
-| `truck-end.png` | ChatGPT, autorskie kształty wektorowe rasteryzowane skryptem JS | Materiał przygotowany do wykorzystania w projekcie | Krawędź szczeliny, 240×192 px, PNG sRGB @3x |
-| `truck-tile.png` | ChatGPT, autorskie kształty wektorowe rasteryzowane skryptem JS | Materiał przygotowany do wykorzystania w projekcie | Powtarzalny pionowo, 240×96 px, PNG sRGB @3x |
-| `preview.png` | Skład automatyczny w `generate-assets.mjs` | Materiał przygotowany do wykorzystania w projekcie | 3 pary × 3 wysokości; na szachownicy |
-| `obstacles.json` | Autorski opis metadanych | Materiał przygotowany do wykorzystania w projekcie | Rozmiary i punkty styku |
-| `generate-assets.mjs` | Autorski skrypt JavaScript bez bibliotek | Materiał przygotowany do wykorzystania w projekcie | Odtwarza wszystkie PNG i JSON; bez nowych zależności |
+| `viaduct-end.png` | ChatGPT: wektory SVG, CairoSVG/Pillow | Autorski projekt dla gry | Betonowy wiadukt, biało-czerwony pas przy szczelinie |
+| `viaduct-tile.png` | Jak wyżej | Jak wyżej | Powtarzalna żelbetowa podpora |
+| `sign-end.png` | Jak wyżej | Jak wyżej | Zielona tablica ze strzałkami, bez liter |
+| `sign-tile.png` | Jak wyżej | Jak wyżej | Kratownica stalowa w cyklu 96 px |
+| `crane-end.png` | Jak wyżej | Jak wyżej | Żółty dźwig, pas pod obciążeniem |
+| `crane-tile.png` | Jak wyżej | Jak wyżej | Żółta kratownica |
+| `roadworks-end.png` | Jak wyżej | Jak wyżej | Bariery, lampy ostrzegawcze, pachołki, bloki |
+| `roadworks-tile.png` | Jak wyżej | Jak wyżej | Stos betonowych bloków |
+| `roadworks-pl-end.png` | Jak wyżej | Jak wyżej | Wariant z mocniejszym czerwono-białym wzorem |
+| `barrier-end.png` | Jak wyżej | Jak wyżej | Generyczna bramka z budką i szlabanem |
+| `barrier-tile.png` | Jak wyżej | Jak wyżej | Stelaż / filar bramki |
+| `truck-end.png` | Jak wyżej | Jak wyżej | Laweta z dwoma generycznymi samochodami |
+| `truck-tile.png` | Jak wyżej | Jak wyżej | Naczepa lawety |
+| `obstacles.json` | Oryginalny kontrakt zlecenia 03 | Własne metadane projektu | Bez zmian semantycznych: 240 / 192 / 96 / 24+192+24 |
+| `generate-assets.py` | ChatGPT, kod Python | Autorski generator | Źródło wektorów; deterministyczna regeneracja |
+| `docs/art/podglady/obstacles-preview.png` | ChatGPT: generator + autorska panorama w stylu DE | Autorski podgląd dla gry | 3 pary × 3 wysokości; sceny inspirowane paletą de-near, nie jest kopią istniejącego tła |
 
-## Integracja z rendererem (dla koordynatora)
+## Kontrakt integracyjny
 
-- **Nie zmieniano** `src/core/*` ani `src/render/renderer.ts`. W zleceniu własność tych plików jest zastrzeżona koordynatorowi.
-- Wymiary PNG są **fizyczne**: dzielić przez 3 w `ctx.drawImage`. Wspólny offset X to **-8 px logicznych** względem `obstacle.x`. Pas kolizji zajmuje zakres PNG `x=[24,216)` (192 fizyczne = 64 logiczne); przeźroczyste ozdobniki mogą wystawać max 8 logicznych w bok.
-- Górny end: dół obrazka równo z `topH = gapY-gapH/2`. Sposób: `drawImage(end, x - 8, topH - 64, 80, 64)`. Następnie tile w górę po **32 logiczne px**, od `topH - 64 - 32`; przyciąć canvasem/screenem.
-- Dolny end: góra obrazka równo z `bottomY = gapY+gapH/2`: `drawImage(end, x - 8, bottomY, 80, 64)`. Tile w dół od `bottomY + 64` po **32 logiczne px**, do `WORLD.groundY`.
-- **Kolejność**: kafle przed końcówką (aby dekoracja krawędzi była na wierzchu). Kafel i końcówka nie mają szczelin w pasie kolizji. Przycinanie do obszaru gry i asfaltu realizuje koordynator.
-- `sign`: tylko graficzne strzałki. `crane`: ładunek ma szerokość wewnątrz pasa kolizji, nie dynda poza nim. `truck`: samochody generyczne, bez marek.
+- Sprite: **240 px szerokości**. `*-end.png`: **240 × 192 px**; `*-tile.png`: **240 × 96 px**.
+- Skala fizyczna **@3x**: w renderze 80 × 64 oraz 80 × 32 px logiczne.
+- Nieprzezroczysty pas kolizji: `x = 24…215` w każdym wierszu, bez dziur. Pozostały obszar może mieć przezroczystość / elementy dekoracyjne.
+- Poziome przesunięcie względem `obstacle.x`: `-8 px logicznych`.
+- Górne (`viaduct`, `sign`, `crane`): krawędź szczeliny = **dół** `end`. Dolne (`roadworks`, `barrier`, `truck`): krawędź szczeliny = **góra** `end`.
+- Kafelki powtarzają się pionowo co **96 px fizycznych**, z tą samą fazą wzoru na granicy powtórzeń. Wykończenie `end` pozostawia pas bazowy przy połączeniu.
+- Dla Polski można użyć `roadworks-pl-end.png` zamiast `roadworks-end.png`, z tym samym kaflem `roadworks-tile.png`; opcjonalny wariant nie wymaga zmiany JSON.
 
-## Walidacja
+## Regeneracja i weryfikacja
 
-- Każda kolumna ma 240 px szerokości; end ma 192 px wysokości, tile 96 px. Wszystkie PNG mają kanał przezroczystości i wyłącznie indeksowane kolory sRGB.
-- `preview.png` zawiera 3 rodzaje par (viaduct/roadworks, sign/barrier, crane/truck), każdą w 3 wysokościach. Krawędzie góra/dół szczeliny są rozdzielone i ostre.
-- Dla każdego sprite'a wszystkie piksele z x 24..215 są nieprzezroczyste (brak „dziur do nieba”). Wysokości kafli są wielokrotnością fazy graficznej 96 px.
-- Regeneracja: `node public/assets/obstacles/generate-assets.mjs` z katalogu repo. Nie trzeba `npm install`.
+Na maszynie grafika (narzędzia Python, **bez nowych zależności npm**):
+
+```sh
+python -m pip install cairosvg pillow
+python public/assets/obstacles/generate-assets.py
+```
+
+Po wygenerowaniu sprawdź wymiary, kanał alfa, brak prześwitów w `x=[24,216)`, zgodność fazy kafelków i rozmiar `<200 kB`. Generator wykonuje kontrole wymiarów, alfa i rozmiaru; podgląd umożliwia ręczną kontrolę szwów i stylu. Skrypt jest wyłącznie narzędziem do przygotowania assetów, nie jest uruchamiany przez Vite.
+
+**Uwaga integracyjna:** 30.10.2026 zasoby zlecenia 03, bohater (01) i tła (06) były na osobnych gałęziach, nie w `main`. Przed końcowym testem w grze trzeba scalić odpowiednie gałęzie, zwłaszcza implementację `src/render/sprites.ts`. Podgląd 31 jest autorską sceną referencyjną w stylistyce DE, ponieważ wskazany `docs/art/podglady/countries-de-preview.png` nie był w `main`.
