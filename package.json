@@ -17,7 +17,9 @@
     "balance": "tsc --noEmit -p tools/balance/tsconfig.json && node tools/balance/run.mjs",
     "test:e2e": "playwright test",
     "typecheck:e2e": "tsc --noEmit -p tsconfig.e2e.json",
-    "ios:assets": "npx --yes @capacitor/assets@3.0.5 generate --ios --assetPath assets --splashBackgroundColor '#14654F'"
+    "ios:assets": "npx --yes @capacitor/assets@3.0.5 generate --ios --assetPath assets --splashBackgroundColor '#14654F'",
+    "report:league": "node tools/league-report/report.mjs",
+    "test:league-report": "node --test tools/league-report/report.test.mjs"
   },
   "devDependencies": {
     "@capacitor/cli": "^8.5.3",
@@ -33,7 +35,7 @@
     "@capacitor/ios": "8.5.3",
     "@capacitor/filesystem": "8.0.0",
     "@capacitor/haptics": "8.0.0",
-    "@capacitor/preferences": "8.0.1",
+    "@capacitor/preferences": "8.0.0",
     "@capacitor/share": "8.0.0",
     "@capacitor/splash-screen": "8.0.0",
     "@capacitor/status-bar": "8.0.4",

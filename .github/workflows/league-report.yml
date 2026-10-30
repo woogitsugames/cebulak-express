@@ -1,0 +1,65 @@
+name: Liga Polonii — cotygodniowy raport
+
+on:
+  workflow_dispatch:
+    inputs:
+      week:
+        description: 'Tydzień ISO (np. 2026-W50); puste = poprzedni zakończony tydzień'
+        required: false
+        type: string
+      mock:
+        description: 'Generuj wyłącznie oznaczone dane demonstracyjne (bez Firebase)'
+        required: false
+        default: false
+        type: boolean
+  schedule:
+    - cron: '13 8 * * 1'
+      timezone: 'Europe/Warsaw'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: league-report-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  report:
+    name: PNG 1080x1350, PNG 1080x1920, teksty krajowe
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+      LEAGUE_GAME_URL: ${{ vars.LEAGUE_GAME_URL }}
+      REPORT_WEEK: ${{ inputs.week }}
+      REPORT_MOCK: ${{ inputs.mock }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Zależności generatora
+        run: npm ci
+      - name: Testy generatora
+        run: npm run test:league-report
+      - name: Firebase Admin (tylko prawdziwy raport)
+        if: env.REPORT_MOCK != 'true'
+        run: npm ci --prefix functions --omit=dev
+      - name: Chromium / Playwright
+        run: npx playwright install --with-deps chromium
+      - name: Generuj raport
+        shell: bash
+        run: |
+          set -euo pipefail
+          args=()
+          if [[ -n "$REPORT_WEEK" ]]; then args+=("--week=$REPORT_WEEK"); fi
+          if [[ "$REPORT_MOCK" == 'true' ]]; then args+=(--mock); fi
+          npm run report:league -- "${args[@]}"
+      - name: Zachowaj pliki do publikacji
+        uses: actions/upload-artifact@v4
+        with:
+          name: liga-polonii-${{ github.run_id }}
+          path: out/liga-*
+          if-no-files-found: error
+          retention-days: 30
