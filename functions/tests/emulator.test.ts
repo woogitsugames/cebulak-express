@@ -6,6 +6,7 @@ import { deleteApp, initializeApp, type FirebaseApp } from 'firebase/app';
 import { connectAuthEmulator, getAuth, signInAnonymously } from 'firebase/auth';
 import { connectFunctionsEmulator, getFunctions, httpsCallable } from 'firebase/functions';
 import { replay } from '../../src/core/game';
+import { randomNickChoices } from '../../src/content/nicks';
 import { makeRoute } from '../../src/core/route';
 
 const projectId = 'demo-cebulak-express';
@@ -52,7 +53,7 @@ function finishedRun(seed: number) {
     seed, mode: 'ranked', route: makeRoute('BE', 'bruksela', 'rzeszow'),
   }, [0]);
   expect(game.phase).toBe('over');
-  return { flapTicks: [0], ticks: game.ticks, km: game.km, nickId: 'bocian-123' };
+  return { flapTicks: [0], ticks: game.ticks, km: game.km, nickId: randomNickChoices(() => 0.12, 1, 'BE')[0] };
 }
 
 async function ageRun(runId: string, delayMs = 10_000): Promise<void> {

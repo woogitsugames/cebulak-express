@@ -1,13 +1,32 @@
 import { KM_PER_PX, WORLD } from '../core/config';
 import type { Waypoint } from '../content/waypoints';
-import type { CountryCode } from '../core/route';
+import type { CountryCode, Route } from '../core/route';
 import { PALETTES } from './palette';
-import { ASSET_SIZES, AssetLoader, type BackgroundLayer, type DrawableAsset } from './assets';
+import { ASSET_SIZES, AssetLoader, type BackgroundLayer, type DrawableAsset, type Season } from './assets';
 
 export const PARALLAX = { sky: 0, clouds: 0.15, far: 0.25, near: 0.5, road: 1 } as const;
 export const COUNTRY_FADE_SECONDS = 1.5;
-const VIEW_MARGIN = ASSET_SIZES.landmark.width / 2;
-const OFFSCREEN = 400;
+export const WAYPOINT_FADE_SECONDS = 0.4;
+
+/**
+ * Kotwice w pikselach logicznych, zgodne z previews krajów:
+ * clouds y=110, far y=255, near y=418, road y=530.
+ * W road pierwsze 50 px stanowi pobocze/barierę; asfalt i linia kolizji
+ * zaczynają się dokładnie na WORLD.groundY = 580.
+ */
+export const LAYER_Y = {
+  sky: 0,
+  clouds: 110,
+  far: 255,
+  near: 418,
+  road: WORLD.groundY - 50,
+} as const;
+
+const LANDMARK_FAR_WIDTH = 330;
+const LANDMARK_FAR_HEIGHT = 183;
+const LANDMARK_NEAR_WIDTH = 180;
+const LANDMARK_NEAR_HEIGHT = 100;
+const FAR_BASE_Y = LAYER_Y.far + ASSET_SIZES.far.height;
 
 export interface BackgroundWaypointEvent {
   type: 'waypoint';
@@ -15,28 +34,25 @@ export interface BackgroundWaypointEvent {
 }
 
 export interface BackgroundState {
-  /** Bieżący kraj z Game.country. */
   country: CountryCode;
-  /** Dystans fizyczny symulacji, w pikselach świata. */
   distancePx: number;
-  /** Wynik Game.km (uwzględnia premie za znajdźki). */
+  /** Wynik Game.km, uwzględniający premie. */
   progressKm: number;
   waypoints: readonly Waypoint[];
-  /** Monotoniczny czas np. requestAnimationFrame(now) / 1000. */
   timeSec: number;
-  /** false: drogę narysuj osobno PO przeszkodach przez drawRoad. */
+  /** false: drogę narysuj osobno PO przeszkodach. */
   includeRoad?: boolean;
-  /** Opcjonalne; w src/main.ts istnieją już równoważne zdarzenia GameEvent. */
+  /** Grudzień: PL zima z fallbackiem do wariantu letniego. */
+  season?: Season;
   onWaypoint?: (event: BackgroundWaypointEvent) => void;
 }
 
-/** Dodatnie przesunięcie, również dla worldX < 0. */
 export function layerOffset(distancePx: number, parallax: number, tileWidth: number): number {
   if (tileWidth <= 0 || !Number.isFinite(distancePx)) return 0;
   return (((distancePx * parallax) % tileWidth) + tileWidth) % tileWidth;
 }
 
-/** Pozycje kafelków bez szczelin i kumulacji błędu po wielu kilometrach. */
+/** Pomoc do testów/preview; renderer kafelkuje pętlą, nie alokuje tablicy. */
 export function tilePositions(distancePx: number, parallax: number, tileWidth: number, viewportWidth = WORLD.width): number[] {
   if (!(tileWidth > 0 && viewportWidth > 0)) return [];
   const start = -layerOffset(distancePx, parallax, tileWidth);
@@ -45,19 +61,36 @@ export function tilePositions(distancePx: number, parallax: number, tileWidth: n
   return positions;
 }
 
-/** W chwili przejechania w.km środek panoramy wypada w połowie ekranu. */
-export function waypointScreenX(waypointKm: number, progressKm: number, parallax = PARALLAX.far): number {
+export function waypointScreenX(waypointKm: number, progressKm: number, parallax: number = PARALLAX.far): number {
   return WORLD.width / 2 + ((waypointKm - progressKm) / KM_PER_PX) * parallax;
 }
 
-export function visibleWaypoints(waypoints: readonly Waypoint[], progressKm: number, margin = VIEW_MARGIN): Waypoint[] {
+export function visibleWaypoints(waypoints: readonly Waypoint[], progressKm: number, margin = LANDMARK_FAR_WIDTH / 2): Waypoint[] {
   return waypoints.filter((point) => {
     const x = waypointScreenX(point.km, progressKm);
     return x >= -margin && x <= WORLD.width + margin;
   });
 }
 
-/** Zdarzenia dokładnie raz przy przekroczeniu progu; obsługa skoku wielu km w jednej klatce. */
+/** Zawsze tylko najbliższy środkowi punkt; remis: wcześniejszy w trasie. */
+export function selectNearestWaypoint(waypoints: readonly Waypoint[], progressKm: number): Waypoint | null {
+  if (!Number.isFinite(progressKm)) return null;
+  let closest: Waypoint | null = null;
+  let best = Number.POSITIVE_INFINITY;
+  for (const point of waypoints) {
+    // Punkt near przewija się 2x szybciej niż far: porównuj odległość
+    // od środka EKRANU, nie same kilometry.
+    const parallax = point.kind === 'border' || point.kind === 'rest' ? PARALLAX.near : PARALLAX.far;
+    const delta = Math.abs(point.km - progressKm) * parallax;
+    if (delta < best) {
+      best = delta;
+      closest = point;
+    }
+  }
+  return closest;
+}
+
+/** Czyste API do testów; w pętli renderowania zdarzenia są emitowane bez filter. */
 export function crossedWaypoints(waypoints: readonly Waypoint[], previousKm: number, nextKm: number): Waypoint[] {
   if (nextKm <= previousKm) return [];
   return waypoints.filter((point) => point.km > previousKm && point.km <= nextKm);
@@ -68,121 +101,256 @@ export function fadeProgress(nowSec: number, startSec: number, durationSec = COU
   return Math.max(0, Math.min(1, (nowSec - startSec) / durationSec));
 }
 
-interface CountryBlend {
-  from: CountryCode;
-  to: CountryCode;
-  progress: number;
+/** Wymienny near na granicy; po 18 km z obu stron, 6 km miękkiej krawędzi. */
+export function borderNearOpacity(progressKm: number, borderKm: number, restKm: number): number {
+  if (!Number.isFinite(borderKm) || !Number.isFinite(restKm)) return 0;
+  const from = borderKm - 18;
+  const to = Math.max(borderKm, restKm) + 18;
+  return Math.max(0, Math.min(1, (progressKm - from) / 6, (to - progressKm) / 6));
 }
 
-/**
- * Moduł nie zależy od Game, nie zmienia stanu symulacji ani napisów UI.
- * Wywołanie drawBackground nie czeka na sieć: brakująca warstwa ma fallback Canvas.
- */
+/** Renderer niezależny od Game, z asynchronicznymi PNG i fallbackiem Canvas. */
 export class BackgroundRenderer {
   private fromCountry: CountryCode | null = null;
   private toCountry: CountryCode | null = null;
   private fadeStartSec = 0;
+  private countryFade = 1;
+  private activeWaypoint: Waypoint | null = null;
+  private outgoingWaypoint: Waypoint | null = null;
+  private waypointFadeStartSec = 0;
+  private waypointFade = 1;
   private previousKm = 0;
   private previousWaypoints: readonly Waypoint[] | null = null;
-  private primed = false;
+  private primedWaypoints: readonly Waypoint[] | null = null;
+  private primedSeason: Season = 'summer';
+  private borderKm = Number.NaN;
+  private restKm = Number.NaN;
+  private borderAlpha = 0;
+  private gradientCtx: CanvasRenderingContext2D | null = null;
+  private readonly gradients = new Map<CountryCode, CanvasGradient>();
 
   constructor(readonly assets: AssetLoader = new AssetLoader()) {}
 
   drawBackground(ctx: CanvasRenderingContext2D, state: BackgroundState): void {
-    if (!this.primed) {
-      this.primed = true;
-      this.assets.prime(state.country);
+    const season = state.season ?? 'summer';
+    if (this.primedWaypoints !== state.waypoints || this.primedSeason !== season) {
+      this.primedWaypoints = state.waypoints;
+      this.primedSeason = season;
+      this.assets.prime(state.country, state.waypoints, undefined, season);
     }
-    const blend = this.updateCountry(state.country, state.timeSec);
-    this.emitWaypoints(state);
-    this.drawPair(ctx, blend, 'sky', state.distancePx);
-    this.drawPair(ctx, blend, 'clouds', state.distancePx);
-    this.drawPair(ctx, blend, 'far', state.distancePx);
+    this.updateRouteAndWaypoints(state);
+    this.updateCountry(state.country, state.timeSec);
+    this.borderAlpha = season === 'winter' ? 0 : borderNearOpacity(state.progressKm, this.borderKm, this.restKm);
+    this.drawPair(ctx, 'sky', state.distancePx, season);
+    this.drawPair(ctx, 'clouds', state.distancePx, season);
+    this.drawPair(ctx, 'far', state.distancePx, season);
     this.drawWaypoints(ctx, state, 'far');
-    this.drawPair(ctx, blend, 'near', state.distancePx);
+    this.drawPair(ctx, 'near', state.distancePx, season);
     this.drawWaypoints(ctx, state, 'near');
-    if (state.includeRoad !== false) this.drawPair(ctx, blend, 'road', state.distancePx);
+    if (state.includeRoad !== false) this.drawPair(ctx, 'road', state.distancePx, season);
   }
 
-  /** Oddzielny render drogi pozwala zachować kolejność: tło → przeszkody → droga → bohater. */
+  /** Rysowanie asfaltu po przeszkodach, przed pojazdem. */
   drawRoad(ctx: CanvasRenderingContext2D, state: BackgroundState): void {
-    this.drawPair(ctx, this.updateCountry(state.country, state.timeSec), 'road', state.distancePx);
+    this.updateCountry(state.country, state.timeSec);
+    this.drawPair(ctx, 'road', state.distancePx, state.season ?? 'summer');
   }
 
-  private updateCountry(country: CountryCode, timeSec: number): CountryBlend {
-    if (this.toCountry === null) {
-      this.toCountry = country;
+  /**
+   * Przedłużenie obrazu poza świat 9:16 (ctx z transformacją WORLD):
+   * minY=-offsetY/scale, maxY=(canvas.height-offsetY)/scale.
+   * Górę próbkujemy z 3 pierwszych wierszy sky, dół z 3 ostatnich road.
+   */
+  drawOutsideWorld(
+    ctx: CanvasRenderingContext2D,
+    country: CountryCode,
+    distancePx: number,
+    timeSec: number,
+    minY: number,
+    maxY: number,
+    season: Season = 'summer',
+  ): void {
+    this.updateCountry(country, timeSec);
+    if (minY >= 0 && maxY <= WORLD.height) return;
+    if (this.fromCountry) this.drawOutsideCountry(ctx, this.fromCountry, distancePx, minY, maxY, season);
+    if (this.toCountry && this.toCountry !== this.fromCountry) {
+      ctx.save();
+      ctx.globalAlpha *= this.countryFade;
+      this.drawOutsideCountry(ctx, this.toCountry, distancePx, minY, maxY, season);
+      ctx.restore();
+    }
+  }
+
+  private drawOutsideCountry(
+    ctx: CanvasRenderingContext2D, country: CountryCode, distancePx: number,
+    minY: number, maxY: number, season: Season,
+  ): void {
+    if (minY < 0) {
+      ctx.fillStyle = PALETTES[country].skyTop;
+      ctx.fillRect(0, minY, WORLD.width, -minY);
+      const sky = this.assets.getCountryLayer(country, 'sky', season);
+      if (sky) {
+        const rows = Math.min(3, sky.naturalHeight);
+        ctx.drawImage(sky, 0, 0, sky.naturalWidth, rows, 0, minY, WORLD.width, -minY);
+      }
+    }
+    if (maxY > WORLD.height) {
+      ctx.fillStyle = '#4a5157';
+      ctx.fillRect(0, WORLD.height, WORLD.width, maxY - WORLD.height);
+      const road = this.assets.getCountryLayer(country, 'road', season);
+      if (road) {
+        const rows = Math.min(3, road.naturalHeight);
+        for (let x = -layerOffset(distancePx, PARALLAX.road, ASSET_SIZES.road.width);
+          x < WORLD.width; x += ASSET_SIZES.road.width) {
+          ctx.drawImage(road, 0, road.naturalHeight - rows, road.naturalWidth, rows,
+            x, WORLD.height, ASSET_SIZES.road.width, maxY - WORLD.height);
+        }
+      }
+    }
+  }
+
+  private updateRouteAndWaypoints(state: BackgroundState): void {
+    if (this.previousWaypoints !== state.waypoints || state.progressKm < this.previousKm) {
+      this.previousWaypoints = state.waypoints;
+      this.previousKm = state.progressKm;
+      this.activeWaypoint = null;
+      this.outgoingWaypoint = null;
+      this.waypointFade = 1;
+      this.fromCountry = null;
+      this.toCountry = null;
+      this.borderKm = Number.NaN;
+      this.restKm = Number.NaN;
+      let foundBorder = false;
+      for (const point of state.waypoints) {
+        if (!foundBorder && point.kind === 'border' && point.country === 'PL') {
+          this.borderKm = point.km;
+          foundBorder = true;
+        } else if (foundBorder && point.kind === 'rest' && point.country === 'PL') {
+          this.restKm = point.km;
+          break;
+        }
+      }
+    } else if (state.onWaypoint && state.progressKm > this.previousKm) {
+      for (const point of state.waypoints) {
+        if (point.km > this.previousKm && point.km <= state.progressKm) {
+          state.onWaypoint({ type: 'waypoint', waypoint: point });
+        }
+      }
+    }
+    this.previousKm = state.progressKm;
+
+    const next = selectNearestWaypoint(state.waypoints, state.progressKm);
+    if (!this.activeWaypoint) {
+      this.activeWaypoint = next;
+      this.outgoingWaypoint = null;
+      this.waypointFade = 1;
+    } else if (next?.id !== this.activeWaypoint.id) {
+      this.outgoingWaypoint = this.activeWaypoint;
+      this.activeWaypoint = next;
+      this.waypointFadeStartSec = state.timeSec;
+    }
+    if (this.outgoingWaypoint) {
+      this.waypointFade = fadeProgress(state.timeSec, this.waypointFadeStartSec, WAYPOINT_FADE_SECONDS);
+      if (this.waypointFade >= 1) this.outgoingWaypoint = null;
+    } else this.waypointFade = 1;
+  }
+
+  private updateCountry(country: CountryCode, timeSec: number): void {
+    if (!this.toCountry) {
       this.fromCountry = country;
+      this.toCountry = country;
     } else if (this.toCountry !== country) {
       this.fromCountry = this.toCountry;
       this.toCountry = country;
       this.fadeStartSec = timeSec;
     }
-    const progress = this.fromCountry === this.toCountry
-      ? 1 : fadeProgress(timeSec, this.fadeStartSec);
-    if (progress >= 1) this.fromCountry = this.toCountry;
-    return { from: this.fromCountry!, to: this.toCountry, progress };
+    this.countryFade = this.fromCountry === this.toCountry ? 1 : fadeProgress(timeSec, this.fadeStartSec);
+    if (this.countryFade >= 1) this.fromCountry = this.toCountry;
   }
 
-  private emitWaypoints(state: BackgroundState): void {
-    if (this.previousWaypoints === state.waypoints && state.progressKm >= this.previousKm && state.onWaypoint) {
-      for (const waypoint of crossedWaypoints(state.waypoints, this.previousKm, state.progressKm)) {
-        state.onWaypoint({ type: 'waypoint', waypoint });
+  private drawPair(ctx: CanvasRenderingContext2D, layer: BackgroundLayer, distancePx: number, season: Season): void {
+    const from = this.fromCountry;
+    const to = this.toCountry;
+    if (!to) return;
+    if (!from || from === to) {
+      this.drawLayer(ctx, to, layer, distancePx, season);
+      return;
+    }
+    ctx.save();
+    if (layer !== 'sky' && layer !== 'road') ctx.globalAlpha *= 1 - this.countryFade;
+    this.drawLayer(ctx, from, layer, distancePx, season);
+    ctx.restore();
+    ctx.save();
+    ctx.globalAlpha *= this.countryFade;
+    this.drawLayer(ctx, to, layer, distancePx, season);
+    ctx.restore();
+  }
+
+  private drawLayer(
+    ctx: CanvasRenderingContext2D, country: CountryCode, layer: BackgroundLayer,
+    distancePx: number, season: Season,
+  ): void {
+    const image = this.assets.getCountryLayer(country, layer, season);
+    if (layer === 'near' && country === 'PL' && season !== 'winter' && this.borderAlpha > 0) {
+      const special = this.assets.getBorderNear();
+      if (special) {
+        ctx.save();
+        ctx.globalAlpha *= 1 - this.borderAlpha;
+        this.drawImageOrFallback(ctx, image, country, layer, distancePx);
+        ctx.restore();
+        ctx.save();
+        ctx.globalAlpha *= this.borderAlpha;
+        this.drawAssetLayer(ctx, special, layer, distancePx);
+        ctx.restore();
+        return;
       }
     }
-    this.previousWaypoints = state.waypoints;
-    this.previousKm = state.progressKm;
+    this.drawImageOrFallback(ctx, image, country, layer, distancePx);
   }
 
-  private drawPair(ctx: CanvasRenderingContext2D, blend: CountryBlend, layer: BackgroundLayer, distancePx: number): void {
-    const { from, to, progress } = blend;
-    if (from === to || progress >= 1) {
-      this.drawLayer(ctx, to, layer, distancePx);
-      return;
-    }
-    // Niebo/droga są nieprzezroczyste; reszta warstw ma kanał alfa.
-    const opaque = layer === 'sky' || layer === 'road';
-    ctx.save();
-    ctx.globalAlpha *= opaque ? 1 : 1 - progress;
-    this.drawLayer(ctx, from, layer, distancePx);
-    ctx.restore();
-    ctx.save();
-    ctx.globalAlpha *= progress;
-    this.drawLayer(ctx, to, layer, distancePx);
-    ctx.restore();
+  private drawImageOrFallback(
+    ctx: CanvasRenderingContext2D, image: DrawableAsset | undefined,
+    country: CountryCode, layer: BackgroundLayer, distancePx: number,
+  ): void {
+    if (image) this.drawAssetLayer(ctx, image, layer, distancePx);
+    else this.drawFallbackLayer(ctx, country, layer, distancePx);
   }
 
-  private drawLayer(ctx: CanvasRenderingContext2D, country: CountryCode, layer: BackgroundLayer, distancePx: number): void {
-    const image = this.assets.getCountryLayer(country, layer);
-    if (image) {
-      this.drawAssetLayer(ctx, image, layer, distancePx);
-    } else {
-      this.drawFallbackLayer(ctx, country, layer, distancePx);
-    }
-  }
-
-  private drawAssetLayer(ctx: CanvasRenderingContext2D, image: DrawableAsset, layer: BackgroundLayer, distancePx: number): void {
+  private drawAssetLayer(
+    ctx: CanvasRenderingContext2D, image: DrawableAsset, layer: BackgroundLayer, distancePx: number,
+  ): void {
     const { width, height } = ASSET_SIZES[layer];
     if (layer === 'sky') {
-      ctx.drawImage(image, 0, 0, width, height);
+      ctx.drawImage(image, 0, LAYER_Y.sky, width, height);
       return;
     }
-    const y = layer === 'clouds' ? 20
-      : layer === 'road' ? WORLD.groundY - 6 : WORLD.groundY - height;
-    // Bez alokacji tablic podczas każdej klatki animacji.
+    // Bez downscale do Canvas 1x: @3x jest próbkowane dopiero przez drawImage.
+    // Warstwa nie może wyjść poniżej świata (640) — tam pas poza światem maluje przedłużenie drogi.
+    const y = LAYER_Y[layer];
+    const visible = Math.min(height, WORLD.height - y);
+    if (visible <= 0) return;
+    const srcH = (visible / height) * image.height;
     for (let x = -layerOffset(distancePx, PARALLAX[layer], width); x < WORLD.width; x += width) {
-      ctx.drawImage(image, x, y, width, height);
+      ctx.drawImage(image, 0, 0, image.width, srcH, x, y, width, visible);
     }
   }
 
-  private drawFallbackLayer(ctx: CanvasRenderingContext2D, country: CountryCode, layer: BackgroundLayer, distancePx: number): void {
+  private drawFallbackLayer(
+    ctx: CanvasRenderingContext2D, country: CountryCode, layer: BackgroundLayer, distancePx: number,
+  ): void {
     const pal = PALETTES[country];
     if (layer === 'sky') {
-      ctx.fillStyle = pal.skyTop;
-      ctx.fillRect(0, -OFFSCREEN, WORLD.width, OFFSCREEN);
-      const sky = ctx.createLinearGradient(0, 0, 0, WORLD.groundY);
-      sky.addColorStop(0, pal.skyTop);
-      sky.addColorStop(1, pal.skyBottom);
+      if (this.gradientCtx !== ctx) {
+        this.gradientCtx = ctx;
+        this.gradients.clear();
+      }
+      let sky = this.gradients.get(country);
+      if (!sky) {
+        sky = ctx.createLinearGradient(0, 0, 0, WORLD.groundY);
+        sky.addColorStop(0, pal.skyTop);
+        sky.addColorStop(1, pal.skyBottom);
+        this.gradients.set(country, sky);
+      }
       ctx.fillStyle = sky;
       ctx.fillRect(0, 0, WORLD.width, WORLD.height);
     } else if (layer === 'clouds') {
@@ -196,31 +364,41 @@ export class BackgroundRenderer {
       drawHills(ctx, distancePx * PARALLAX.far, 470, 40, 0.012, pal.hillsFar);
     } else if (layer === 'near') {
       drawHills(ctx, distancePx * PARALLAX.near, 520, 30, 0.02, pal.hillsNear);
-    } else {
-      drawFallbackRoad(ctx, distancePx);
-    }
+    } else drawFallbackRoad(ctx, distancePx);
   }
 
   private drawWaypoints(ctx: CanvasRenderingContext2D, state: BackgroundState, layer: 'far' | 'near'): void {
-    for (const point of state.waypoints) {
-      const x = waypointScreenX(point.km, state.progressKm);
-      if (x < -VIEW_MARGIN || x > WORLD.width + VIEW_MARGIN) continue;
-      const image = this.assets.getLandmark(point);
-      const nearFallback = !image && (point.kind === 'rest' || point.kind === 'border');
-      if (nearFallback !== (layer === 'near')) continue;
-      if (image) {
-        ctx.drawImage(image, x - ASSET_SIZES.landmark.width / 2,
-          WORLD.groundY - ASSET_SIZES.landmark.height, ASSET_SIZES.landmark.width, ASSET_SIZES.landmark.height);
-      } else if (point.kind === 'rest') {
-        drawFallbackStation(ctx, x);
-      } else if (point.kind === 'border') {
-        drawFallbackBorder(ctx, x);
-      } else if (point.kind === 'crossing') {
-        drawFallbackFerry(ctx, x);
-      } else {
-        drawFallbackSkyline(ctx, point.id, x);
-      }
-    }
+    if (this.outgoingWaypoint) this.drawWaypoint(ctx, state, layer, this.outgoingWaypoint, 1 - this.waypointFade);
+    if (this.activeWaypoint) this.drawWaypoint(ctx, state, layer, this.activeWaypoint, this.waypointFade);
+  }
+
+  private drawWaypoint(
+    ctx: CanvasRenderingContext2D, state: BackgroundState, layer: 'far' | 'near',
+    point: Waypoint, alpha: number,
+  ): void {
+    if (alpha <= 0) return;
+    const onNear = point.kind === 'border' || point.kind === 'rest';
+    if (onNear !== (layer === 'near')) return;
+    const width = onNear ? LANDMARK_NEAR_WIDTH : LANDMARK_FAR_WIDTH;
+    const height = onNear ? LANDMARK_NEAR_HEIGHT : LANDMARK_FAR_HEIGHT;
+    const x = waypointScreenX(point.km, state.progressKm, onNear ? PARALLAX.near : PARALLAX.far);
+    if (x < -width / 2 || x > WORLD.width + width / 2) return;
+
+    // Stacja jest już w near granicy; unikamy podwójnej stacji w tym samym kadrze.
+    if (onNear && point.kind === 'rest' && state.season !== 'winter' &&
+      this.borderAlpha >= 0.75 && this.assets.getBorderNear()) return;
+
+    ctx.save();
+    ctx.globalAlpha *= alpha;
+    const image = this.assets.getLandmark(point, state.season ?? 'summer');
+    if (image) {
+      const baseY = onNear ? WORLD.groundY : FAR_BASE_Y;
+      ctx.drawImage(image, x - width / 2, baseY - height, width, height);
+    } else if (point.kind === 'rest') drawFallbackStation(ctx, x);
+    else if (point.kind === 'border') drawFallbackBorder(ctx, x);
+    else if (point.kind === 'crossing') drawFallbackFerry(ctx, x);
+    else drawFallbackSkyline(ctx, point.id, x);
+    ctx.restore();
   }
 }
 
@@ -249,7 +427,7 @@ function drawFallbackRoad(ctx: CanvasRenderingContext2D, worldX: number): void {
   ctx.fillStyle = '#9aa3a8';
   ctx.fillRect(0, WORLD.groundY - 6, WORLD.width, 6);
   ctx.fillStyle = '#4a5157';
-  ctx.fillRect(0, WORLD.groundY, WORLD.width, WORLD.height - WORLD.groundY + OFFSCREEN);
+  ctx.fillRect(0, WORLD.groundY, WORLD.width, WORLD.height - WORLD.groundY);
   ctx.fillStyle = '#f4f4f4';
   for (let x = -layerOffset(worldX, 1, 60); x < WORLD.width; x += 60) ctx.fillRect(x, WORLD.groundY + 28, 32, 4);
 }
@@ -328,7 +506,7 @@ function drawFallbackFerry(ctx: CanvasRenderingContext2D, cx: number): void {
   ctx.fillRect(cx - 40, 448, 80, 4);
 }
 
-// Gotowe API funkcji dla koordynatora; klasę można również instancjonować per scena.
+// Wspólny singleton do integracji bez bezpośredniej instancji BackgroundRenderer.
 const defaultRenderer = new BackgroundRenderer();
 
 export function drawBackground(ctx: CanvasRenderingContext2D, state: BackgroundState): void {
@@ -339,6 +517,16 @@ export function drawBackgroundRoad(ctx: CanvasRenderingContext2D, state: Backgro
   defaultRenderer.drawRoad(ctx, state);
 }
 
-export function preloadBackgroundAssets(country: CountryCode, heroPaths?: readonly string[]): void {
-  defaultRenderer.assets.prime(country, heroPaths);
+export function drawBackgroundBars(
+  ctx: CanvasRenderingContext2D, country: CountryCode, distancePx: number,
+  timeSec: number, minY: number, maxY: number, season: Season = 'summer',
+): void {
+  defaultRenderer.drawOutsideWorld(ctx, country, distancePx, timeSec, minY, maxY, season);
+}
+
+export function preloadBackgroundAssets(
+  country: CountryCode, heroPaths?: readonly string[],
+  route?: Pick<Route, 'waypoints'>, season: Season = 'summer',
+): void {
+  defaultRenderer.assets.prime(country, route, heroPaths, season);
 }

@@ -11,7 +11,7 @@
   "offsetXLogical": -8,
   "tileRepeatHeight": 96,
   "spriteColorSpace": "sRGB",
-  "alpha": "indexed PNG; transparent outside artwork, completely opaque within collision core",
+  "alpha": "RGBA PNG; transparent outside artwork, completely opaque within collision core",
   "obstacles": {
     "viaduct": {
       "position": "top",

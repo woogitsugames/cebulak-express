@@ -36,11 +36,6 @@ export function isCalendarDay(value: unknown): value is string {
   return !Number.isNaN(parsed.getTime()) && parsed.toISOString().slice(0, 10) === value;
 }
 
-/** Tymczasowy kontrakt T13: po scaleniu listy nicków należy zastąpić regex walidacją ID. */
-export function isNickId(value: unknown): value is string {
-  return typeof value === 'string' && /^[a-z0-9-]{3,40}$/.test(value);
-}
-
 export interface RunReplayData {
   seed: number;
   home: HomeCountry;
