@@ -1,11 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import { MAX_PENDING_RUNS, OfflineRunQueue, submitOrQueue } from '../src/net/queue';
-import { randomNickChoices } from '../src/content/nicks';
 import type { SubmitRunRequest } from '../src/net/api';
 
-const validNickId = randomNickChoices(() => 0.12, 1, 'BE')[0];
 const item = (i: number): SubmitRunRequest => ({
-  runId: `run-${i}`, flapTicks: [0, 16, 32], ticks: 100, km: 20 + i, nickId: validNickId,
+  runId: `run-${i}`, flapTicks: [0, 16, 32], ticks: 100, km: 20 + i, nickId: 'bocian-z-gandawy',
 });
 function memoryStore() {
   const items = new Map<string, string>();

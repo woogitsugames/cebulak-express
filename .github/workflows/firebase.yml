@@ -32,10 +32,10 @@ jobs:
       - name: Zależności aplikacji z lockfile
         run: npm ci
       - name: Zależności backendu (przypięte wersje)
-        run: npm install --prefix firebase --package-lock=false --no-audit --no-fund
+        run: npm install --prefix functions --package-lock=false --no-audit --no-fund
       - name: TypeScript, esbuild i manifest Functions
-        run: npm --prefix firebase run build
+        run: npm --prefix functions run build
       - name: Testy jednostkowe Firebase
-        run: npm --prefix firebase run test:unit
+        run: npm --prefix functions run test:unit
       - name: Emulator Auth, Firestore, Functions i testy reguł
         run: npm run test:firebase

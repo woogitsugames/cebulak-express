@@ -57,7 +57,7 @@ Apple: [App Review Guidelines](https://developer.apple.com/app-store/review/guid
 
 ## App Privacy — robocza mapa danych
 
-**Źródło docelowe:** `firebase/PRIVACY.md` ze zlecenia 11. W `main` plik ten jeszcze **nie istnieje**; poniższa tabela wynika wyłącznie z kontraktu zlecenia 11 i nie stanowi zatwierdzonych deklaracji App Store. Po scaleniu zleceń 11, 17 i 24 trzeba przeprowadzić audyt rzeczywistej implementacji i usług zewnętrznych.
+**Źródło docelowe:** `functions/PRIVACY.md` ze zlecenia 11. W `main` plik ten jeszcze **nie istnieje**; poniższa tabela wynika wyłącznie z kontraktu zlecenia 11 i nie stanowi zatwierdzonych deklaracji App Store. Po scaleniu zleceń 11, 17 i 24 trzeba przeprowadzić audyt rzeczywistej implementacji i usług zewnętrznych.
 
 | Dane / planowane przetwarzanie | Kategoria Apple do sprawdzenia | Cel / powiązanie |
 |---|---|---|
@@ -79,6 +79,6 @@ Wymagane decyzje do podjęcia w **App Store Connect → App Privacy**:
 ## Integracja, ograniczenia i pytania
 
 - Zlecenie **24** (adaptery natywne) nie jest jeszcze scalone. Po scaleniu wykonać `npm run ios:sync`, sprawdzić dopisane pluginy do `ios/App/CapApp-SPM/Package.swift`, uprawnienia `Info.plist` i funkcje share/haptics/storage na urządzeniu. Nie edytować ręcznie pliku `Package.swift`, ponieważ zarządza nim Capacitor.
-- Zlecenie **11** nie dostarczyło jeszcze `firebase/PRIVACY.md`: zgłoszenie App Privacy ma pozostać otwarte do audytu po scałkowaniu backendu oraz analityki.
+- Zlecenie **11** nie dostarczyło jeszcze `functions/PRIVACY.md`: zgłoszenie App Privacy ma pozostać otwarte do audytu po scałkowaniu backendu oraz analityki.
 - Docelowa ikona i splash zależą od zlecenia **10**. Aktualnie użyte pliki są bezpiecznymi zaślepkami, nie gotowym brandingiem App Store.
 - **Do sprawdzenia przez koordynatora:** rzeczywiste uprawnienia i integracje natywne po 24; finalne etykiety prywatności, retencja i dostawcy po 11/17; dostępność nazwy / znaku towarowego; uruchomienie UI na iPhone/iPad.

@@ -8,17 +8,17 @@
 **Rodzaj:** kod (TypeScript, Firebase)
 
 ## Kontekst
-Backend: `firebase/` (funkcje `startRun`, `submitRun`, `cleanupExpiredRuns`, `collectEvents`, reguły `firebase/firestore.rules`, testy `firebase/tests/`). Klient: `src/net/api.ts`. Workflow: `.github/workflows/firebase.yml`.
+Backend: `functions/` (funkcje `startRun`, `submitRun`, `cleanupExpiredRuns`, `collectEvents`, reguły `functions/firestore.rules`, testy `functions/tests/`). Klient: `src/net/api.ts`. Workflow: `.github/workflows/firebase.yml`.
 
 ## Problemy (zweryfikowane)
-1. `npm --prefix firebase run build` kończy się kodem 1: kontrola „Direct SDK manifest” (`loadStack`) zwraca pustą listę `[]`, mimo że eksporty CommonJS są poprawne. Znajdź przyczynę (wersja `firebase-functions`, sposób ładowania `index.js`, `main` w `firebase/package.json`) i napraw tak, by build przechodził, a kontrola nadal wykrywała brak funkcji.
+1. (Naprawione przez koordynatora: katalog backendu nazywał się `firebase/` i Node ładował zamiast niego plik `firebase.json` — teraz to `functions/`.) Sprawdź, że `npm --prefix functions run build` przechodzi także w CI.
 2. Testy emulatora (`npm run test:firebase`) nigdy nie zostały uruchomione. Uruchom je w CI (`firebase.yml`: Java 21, cache emulatorów) i napraw, co nie przechodzi. Reguły wymagają teraz publicznego odczytu `daily/{date}/entries` (test to sprawdza).
-3. `src/net/api.ts` ładuje Firebase JS SDK z CDN `gstatic.com` przez `import(/* @vite-ignore */ ...)` — to łamie zasadę „SDK modularny z npm”, utrudnia offline/Capacitor i CSP. Dodaj `firebase` (dokładna wersja, ≥ 2 tygodnie od publikacji, ta sama główna wersja co w `firebase/`) i statyczne importy z `firebase/app`, `firebase/auth`, `firebase/functions`, `firebase/firestore/lite` w osobnym module ładowanym dynamicznie (`import('./firebase-client')`), żeby Vite wydzielił chunk i gra bez konfiguracji go nie ładowała. Podaj rozmiar chunka (gzip) w PR.
-4. Ujednolić wyrażenie walidujące `nickId`: zamiast regexów w `src/net/api.ts`, `src/net/queue.ts`, `firebase/src/*` użyj `isValidNickId` z `src/content/nicks.ts` (backend bundluje `src/` przez esbuild).
-5. `firebase/README.md`: krok po kroku dla właściciela — utworzenie projektu (region `europe-west1`, plan Blaze z limitem budżetu), Anonymous Auth, wdrożenie reguł i funkcji, jakie zmienne `VITE_FIREBASE_*` wpisać w `.env` (bez sekretów w repo), ustawienie `ANALYTICS_ALLOWED_ORIGINS` (w tym `capacitor://localhost` i `https://localhost`).
+3. `src/net/api.ts` ładuje Firebase JS SDK z CDN `gstatic.com` przez `import(/* @vite-ignore */ ...)` — to łamie zasadę „SDK modularny z npm”, utrudnia offline/Capacitor i CSP. Dodaj `firebase` (dokładna wersja, ≥ 2 tygodnie od publikacji, ta sama główna wersja co w `functions/`) i statyczne importy z `firebase/app`, `firebase/auth`, `firebase/functions`, `firebase/firestore/lite` w osobnym module ładowanym dynamicznie (`import('./firebase-client')`), żeby Vite wydzielił chunk i gra bez konfiguracji go nie ładowała. Podaj rozmiar chunka (gzip) w PR.
+4. Ujednolić wyrażenie walidujące `nickId`: zamiast regexów w `src/net/api.ts`, `src/net/queue.ts`, `functions/src/*` użyj `isValidNickId` z `src/content/nicks.ts` (backend bundluje `src/` przez esbuild).
+5. `functions/README.md`: krok po kroku dla właściciela — utworzenie projektu (region `europe-west1`, plan Blaze z limitem budżetu), Anonymous Auth, wdrożenie reguł i funkcji, jakie zmienne `VITE_FIREBASE_*` wpisać w `.env` (bez sekretów w repo), ustawienie `ANALYTICS_ALLOWED_ORIGINS` (w tym `capacitor://localhost` i `https://localhost`).
 
 ## Kryteria akceptacji
-`npm --prefix firebase run build` i `npm run test:firebase` zielone w CI. Gra bez `.env` działa na mocku jak dotąd.
+`npm --prefix functions run build` i `npm run test:firebase` zielone w CI. Gra bez `.env` działa na mocku jak dotąd.
 
 ---
 

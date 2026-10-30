@@ -26,7 +26,7 @@ npm --prefix firebase run test:unit
 npm run test:firebase
 ```
 
-`firebase/.env.example` można skopiować do `firebase/.env` i ustawić:
+`functions/.env.example` można skopiować do `functions/.env` i ustawić:
 
 ```dotenv
 REQUIRE_APP_CHECK=false
@@ -42,10 +42,10 @@ ANALYTICS_ALLOWED_ORIGINS=https://twoj-portal.example,capacitor://localhost,http
 Po zaliczeniu testów:
 
 ```bash
-./firebase/node_modules/.bin/firebase --config firebase.json deploy --only firestore:rules,firestore:indexes,functions --project YOUR_FIREBASE_PROJECT_ID
+./functions/node_modules/.bin/firebase --config firebase.json deploy --only firestore:rules,firestore:indexes,functions --project YOUR_FIREBASE_PROJECT_ID
 ```
 
-`firebase.json` wykonuje predeploy budujący funkcje. Dla funkcji użyto `firebase/package.json` z `main: "index.js"`; `firebase/index.js` eksportuje `startRun`, `submitRun`, `cleanupExpiredRuns` i `collectEvents` z `lib/index.js`. Plik główny `firebase.js` zapobiega kolizji rozwiązywania ścieżek Node z `firebase.json`, dzięki czemu loader Functions wykrywa wszystkie cztery funkcje. Nie usuwaj go.
+`firebase.json` wykonuje predeploy budujący funkcje. Dla funkcji użyto `functions/package.json` z `main: "index.js"`; `functions/index.js` eksportuje `startRun`, `submitRun`, `cleanupExpiredRuns` i `collectEvents` z `lib/index.js`. Katalog `functions/` jest oddzielny od pliku `firebase.json`: loader Functions wykrywa wszystkie cztery funkcje bez pośredniego pliku `firebase.js`.
 
 ## 3. Zmienne środowiskowe Vite (web, Android, iOS)
 

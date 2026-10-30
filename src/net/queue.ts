@@ -1,5 +1,4 @@
 import type { RankingApi, SubmitRunRequest, SubmitRunResponse } from './api';
-import { isValidNickId } from '../content/nicks';
 const STORAGE_KEY = 'ce.ranking.pending.v1';
 export const MAX_PENDING_RUNS = 20;
 const MAX_STORAGE_LENGTH = 1_000_000;
@@ -18,7 +17,7 @@ function validRequest(value: unknown): value is SubmitRunRequest {
   if (!value || typeof value !== 'object') return false;
   const item = value as Partial<SubmitRunRequest>;
   return typeof item.runId === 'string' && item.runId.length > 0 && item.runId.length <= 128 &&
-    typeof item.nickId === 'string' && isValidNickId(item.nickId) &&
+    typeof item.nickId === 'string' && /^[a-z0-9-]{3,40}$/.test(item.nickId) &&
     Number.isSafeInteger(item.ticks) && (item.ticks ?? 0) > 0 &&
     Number.isSafeInteger(item.km) && (item.km ?? -1) >= 0 &&
     Array.isArray(item.flapTicks) && item.flapTicks.length <= 12_000 &&

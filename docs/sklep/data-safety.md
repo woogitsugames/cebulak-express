@@ -1,6 +1,6 @@
 # Google Play — Data safety (projekt formularza, nie deklaracja końcowa)
 
-**BLOKADA PUBLIKACJI: wymaga aktualizacji.** W chwili przygotowania (30.10.2026) w `main` **nie ma `firebase/PRIVACY.md`**, a zlecenia 11 (backend rankingu), 17 (analityka), 27 (polityka prywatności) nie były jeszcze scalone. Nie da się uczciwie zatwierdzić odpowiedzi „nie zbieramy danych” bez finalnego kodu i konfiguracji. Poniżej robocza mapa danych oparta na kontraktach tych zleceń i dokumentacji dostawcy.
+**BLOKADA PUBLIKACJI: wymaga aktualizacji.** W chwili przygotowania (30.10.2026) w `main` **nie ma `functions/PRIVACY.md`**, a zlecenia 11 (backend rankingu), 17 (analityka), 27 (polityka prywatności) nie były jeszcze scalone. Nie da się uczciwie zatwierdzić odpowiedzi „nie zbieramy danych” bez finalnego kodu i konfiguracji. Poniżej robocza mapa danych oparta na kontraktach tych zleceń i dokumentacji dostawcy.
 
 ## Przepływ danych przewidziany w projekcie
 
@@ -40,7 +40,7 @@ W każdym rekordzie zadeklarować **właściwy cel** (funkcja, bezpieczeństwo, 
 
 ## Przed wypełnieniem produkcyjnego Data safety
 
-- [ ] Porównać po scaleniu z rzeczywistym `firebase/PRIVACY.md` i `docs/prawo/polityka-prywatnosci.md`; usunąć rozbieżności.
+- [ ] Porównać po scaleniu z rzeczywistym `functions/PRIVACY.md` i `docs/prawo/polityka-prywatnosci.md`; usunąć rozbieżności.
 - [ ] Sporządzić listę SDK (web i natywne), endpointów, plików cookie/localStorage, dzienników serwera, danych przesyłanych przy braku interakcji.
 - [ ] Sprawdzić na **release buildzie**, co trafia do usług podczas startu, rozgrywki, rankingowania, udostępniania i otwarcia portali.
 - [ ] Potwierdzić implementację retencji `runs` 30 dni i zasady usuwania UID / rekordów rankingowych; sprawdzić, czy Firebase Auth pozwala usuwać anonimowych użytkowników.

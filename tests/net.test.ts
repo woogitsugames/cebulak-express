@@ -1,19 +1,16 @@
 import { describe, expect, it } from 'vitest';
 import { TICK } from '../src/core/config';
-import { randomNickChoices } from '../src/content/nicks';
 import { Game } from '../src/core/game';
 import { makeRoute } from '../src/core/route';
 import { seedFromString } from '../src/core/rng';
 import { MockRankingApi, createRankingApi, type SubmitRunRequest } from '../src/net/api';
-
-const validNickId = randomNickChoices(() => 0.12, 1, 'BE')[0];
 
 function finishedRun(seed: number, runId: string): { ticks: number; km: number; flapTicks: number[]; nickId: string; runId: string } {
   const game = new Game({ seed, mode: 'ranked', route: makeRoute('BE', 'antwerpia', 'rzeszow') });
   game.flap();
   while (game.phase === 'playing' && game.ticks < 120 * 60) game.tick();
   expect(game.phase).toBe('over');
-  return { runId, flapTicks: [...game.flapTicks], ticks: game.ticks, km: game.km, nickId: validNickId };
+  return { runId, flapTicks: [...game.flapTicks], ticks: game.ticks, km: game.km, nickId: 'bocian-z-gandawy' };
 }
 
 describe('wybór klienta', () => {
@@ -42,7 +39,7 @@ describe('MockRankingApi', () => {
     expect((await api.submitRun(result)).reason).toBe('duplicate');
     const league = await api.getLeague(accepted.week);
     expect(league.countries.BE).toEqual({ km: result.km, runs: 1, players: 1 });
-    expect((await api.getLeaderboard(accepted.week, 5))[0]).toMatchObject({ nickId: validNickId, home: 'BE', bestKm: result.km });
+    expect((await api.getLeaderboard(accepted.week, 5))[0]).toMatchObject({ nickId: 'bocian-z-gandawy', home: 'BE', bestKm: result.km });
     expect((await api.getDaily('2026-10-30')).entries).toEqual([]);
     league.countries.BE!.km = 99999;
     expect((await api.getLeague(accepted.week)).countries.BE!.km).toBe(result.km);

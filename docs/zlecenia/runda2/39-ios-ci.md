@@ -12,7 +12,7 @@ Projekt iOS: `ios/` (Capacitor 8.5.3, SPM), workflow `.github/workflows/ios.yml`
 
 ## Zadanie
 1. Uruchom workflow (`workflow_dispatch` lub drobna zmiana w `ios/`) i doprowadź do zielonego buildu dla symulatora bez podpisu. Jeśli `macos-26` jest niedostępny, użyj dostępnego runnera z Xcode 26+ (opisz).
-2. Dodaj `ios/App/App/PrivacyInfo.xcprivacy` zgodnie z użyciem API (UserDefaults przez Preferences — powód `CA92.1`, brak śledzenia), zgodnie z `firebase/PRIVACY.md` i `docs/analityka.md`.
+2. Dodaj `ios/App/App/PrivacyInfo.xcprivacy` zgodnie z użyciem API (UserDefaults przez Preferences — powód `CA92.1`, brak śledzenia), zgodnie z `functions/PRIVACY.md` i `docs/analityka.md`.
 3. Ikona i splash iOS z `public/assets/brand/` (jeśli zlecenie 32 już je zmieniło na `main` — użyj nowych; inaczej obecnych) przez `npx @capacitor/assets generate --ios`.
 4. Uzupełnij `docs/ios.md`: co jeszcze potrzeba do TestFlight (konto Apple Developer, podpis, App Store Connect), lista kroków dla właściciela.
 
