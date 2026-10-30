@@ -23,8 +23,8 @@ const OBSTACLES = ['viaduct', 'sign', 'crane', 'roadworks', 'barrier', 'truck', 
 const PICKUPS = ['parcel', 'jar'] as const satisfies readonly PickupKind[];
 
 /**
- * Nazwy marek to przykłady z kategorii zakazanych w zasadach projektu.
- * Brak osobnego WSPOLNE.md w main; listę należy poszerzać przy nowych treściach.
+ * Kategorie zakazane określa docs/zlecenia/WSPOLNE.md.
+ * Lista przykładowych marek nie jest wyczerpująca; uzupełniaj ją przy nowych tekstach.
  */
 const FORBIDDEN_WORDS = [
   'cebulak',
