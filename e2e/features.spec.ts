@@ -40,6 +40,7 @@ test('Liga Polonii otwiera się i zamyka na mocku bez Firebase', async ({ page }
 
 test('Link do portalu na końcu ma target blank i parametry UTM', async ({ page }, testInfo) => {
   await openMenu(page);
+  await page.locator('#route-toggle').click();
   await page.locator('#sel-home').selectOption('BE');
   await startRun(page);
   await tapCanvas(page, testInfo.project.name);

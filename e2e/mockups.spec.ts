@@ -63,11 +63,11 @@ test('zmiana trasy i trybu oraz klawisze zachowują dostępność', async ({ pag
   await expect(page.locator('#hint')).toBeVisible();
 });
 
-test('przycisk garażu prowadzi do ekranu przygotowanego do integracji #36', async ({ page }) => {
+test('przycisk garażu otwiera i zamyka garaż', async ({ page }) => {
   await openMenu(page);
   await page.locator('#btn-garage').click();
   await expect(page.locator('#garage')).toBeVisible();
-  await page.locator('#btn-garage-close').click();
+  await page.locator('#garage .ce-garage__close').click();
   await expect(page.locator('#garage')).toBeHidden();
   await expect(page.locator('#menu')).toBeVisible();
 });
