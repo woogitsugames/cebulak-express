@@ -64,9 +64,12 @@ export const PICKUPS = {
 /** Bramki występują co 300 km świata (premie za znajdźki nie przesuwają ich). */
 export const BAGGAGE_GATE = {
   everyKm: 300,
+  /** Lekka załoga otrzymuje wyraźnie szersze przejście niż przy zwykłej przeszkodzie. */
+  extraGapPx: 40,
+  /** Zbieranie ciężkiego bagażu zabiera tę premię i dodatkowe 2 px. */
   maxShrinkPx: 42,
-  /** Nawet przy maksymalnej wadze nadwozie ma zapas do obu krawędzi. */
-  minGapH: 118,
+  /** Przy wadze 1 szczelina pozostaje zbliżona do zwykłego odcinka trasy. */
+  minGapH: 148,
 } as const;
 
 /** Efekty czasowe mierzymy wyłącznie tickami symulacji. */

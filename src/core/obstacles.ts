@@ -94,11 +94,14 @@ export class ObstacleField {
   /** Dogenerowuje przeszkody do `untilX` przy bieżącej trudności 0..1. */
   ensureAhead(untilX: number, difficulty: number): void {
     while (this.nextX < untilX) {
-      const gapH = lerp(DIFFICULTY.gap[0], DIFFICULTY.gap[1], difficulty);
+      const baselineGapH = lerp(DIFFICULTY.gap[0], DIFFICULTY.gap[1], difficulty);
       const spacing = lerp(DIFFICULTY.spacing[0], DIFFICULTY.spacing[1], difficulty);
       const maxShift = lerp(DIFFICULTY.maxGapShift[0], DIFFICULTY.maxGapShift[1], difficulty);
       const gate = this.nextX >= this.nextGateX;
       if (gate) this.nextGateX += BAGGAGE_GATE.everyKm / KM_PER_PX;
+      // Bramka nagradza oszczędny bagaż szerokim przejazdem, natomiast przy
+      // pełnym obciążeniu jest równie wymagająca jak normalna przeszkoda.
+      const gapH = baselineGapH + (gate ? BAGGAGE_GATE.extraGapPx : 0);
       // Przed bramką i zaraz za nią obliczamy przesunięcie dla najwęższej
       // szczeliny. Do limitu opadania używamy lekkiego auta: przy większym
       // ciężarze opada szybciej, więc nie pogarsza to dolnej osiągalności.
