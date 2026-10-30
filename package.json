@@ -17,7 +17,9 @@
     "balance": "tsc --noEmit -p tools/balance/tsconfig.json && node tools/balance/run.mjs",
     "test:e2e": "playwright test",
     "typecheck:e2e": "tsc --noEmit -p tsconfig.e2e.json",
-    "ios:assets": "npx --yes @capacitor/assets@3.0.5 generate --ios --assetPath assets --splashBackgroundColor '#14654F'"
+    "ios:assets": "npx --yes @capacitor/assets@3.0.5 generate --ios --assetPath assets --splashBackgroundColor '#14654F'",
+    "build:site": "npm run build && node scripts/build-site.mjs && node scripts/site-check.mjs",
+    "test:site": "node scripts/site-check.mjs"
   },
   "devDependencies": {
     "@capacitor/cli": "^8.5.3",

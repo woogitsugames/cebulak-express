@@ -1,0 +1,60 @@
+name: Strona gry / GitHub Pages (publikacja ręczna)
+
+on:
+  workflow_dispatch:
+    inputs:
+      potwierdzenie:
+        description: 'Potwierdzam zgodność i zatwierdzenie polityki prywatności'
+        required: true
+        default: false
+        type: boolean
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages-cebulak-express"
+  cancel-in-progress: false
+
+jobs:
+  build:
+    if: ${{ inputs.potwierdzenie == true }}
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm test
+      - name: Przygotuj stronę
+        env:
+          SITE_ORIGIN: ${{ vars.SITE_ORIGIN || 'https://woogitsugames.github.io' }}
+          SITE_BASE_PATH: ${{ vars.SITE_BASE_PATH || '/cebulak-express/' }}
+          SITE_CONTACT_EMAIL: ${{ vars.SITE_CONTACT_EMAIL }}
+        run: npm run build:site
+      - name: Weryfikacja gotowości prawnej przed publikacją
+        env:
+          SITE_ORIGIN: ${{ vars.SITE_ORIGIN || 'https://woogitsugames.github.io' }}
+          SITE_BASE_PATH: ${{ vars.SITE_BASE_PATH || '/cebulak-express/' }}
+          SITE_CONTACT_EMAIL: ${{ vars.SITE_CONTACT_EMAIL }}
+          SITE_LEGAL_APPROVED: YES
+        run: node scripts/site-check.mjs --release
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist-site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-24.04
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
