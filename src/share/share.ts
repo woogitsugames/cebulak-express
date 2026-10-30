@@ -17,6 +17,10 @@ export interface ShareOptions {
   nativeShare?: NativeShare;
   /** Wyłączenie podglądu przy testach lub niestandardowym interfejsie. */
   showPreview?: boolean;
+  /** Inny link niż `shareUrl(data)`, np. wyzwanie z duchem (`g=`). */
+  url?: string;
+  /** Inny tekst niż `cardShareText(data)`. */
+  text?: string;
 }
 
 export type ShareMethod = 'native' | 'web-file' | 'web-link' | 'clipboard' | 'preview' | 'cancelled';
@@ -173,8 +177,8 @@ export function showSavePreview(image: Blob, text: string, url: string): void {
  * i przekazać go w options.image, bo renderowanie może wygasić user activation.
  */
 export async function shareResult(data: CardData, options: ShareOptions = {}): Promise<ShareOutcome> {
-  const text = cardShareText(data);
-  const url = shareUrl(data);
+  const text = options.text ?? cardShareText(data);
+  const url = options.url ?? shareUrl(data);
   const image = options.image ?? await renderCard(data, options.format ?? 'story');
   const outcome = (method: ShareMethod): ShareOutcome => ({ method, text, url, image });
 
