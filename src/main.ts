@@ -7,12 +7,13 @@ import { seasonAt } from './core/season';
 import type { Progress } from './meta/progress';
 import type { CountryCueCode } from './audio/country-cues';
 import {
-  ARRIVAL_TEXTS, BORDER_TEXTS, COUNTRY_LOCATIVE, COUNTRY_NAME, FAIL_JOKES, MILESTONE_TEXTS,
-  OBSTACLE_NAME, PICKUP_TEXTS, UI, WIGILIA_TEXTS, fill, onLanguageChange,
+  ARRIVAL_TEXTS, BORDER_TEXTS, COUNTRY_LOCATIVE, COUNTRY_NAME, FAIL_JOKES, GHOST_TEXTS, MILESTONE_TEXTS,
+  OBSTACLE_NAME, PICKUP_TEXTS, RETURN_ARRIVAL_TEXTS, RETURN_DEPARTURE_TEXTS, UI, WIGILIA_TEXTS, fill,
+  getLanguage, initializeLanguage, loadLanguage, localized, onLanguageChange,
 } from './content/i18n';
 import { localizedCityName } from './content/lang/cities';
-import { RETURN_ARRIVAL_TEXTS, RETURN_CITY_LOCATIVE, RETURN_DEPARTURE_TEXTS } from './content/pl';
-import { GHOST_TEXTS } from './content/lang/pl';
+import { RETURN_CITY_LOCATIVE } from './content/lang/pl';
+import { waypointText } from './content/waypoint-text';
 import { randomNickChoices } from './content/nicks';
 import { portalLink } from './content/portals';
 import { Renderer } from './render/renderer';
@@ -101,6 +102,8 @@ const ui = {
   album: $('album'),
 };
 ui.btnChallenge.textContent = GHOST_TEXTS.challengeButton;
+/** Tytuł wyzwania dnia w bieżącym języku (logika sezonu porównuje polski dailyTitle). */
+const dailyTitleText = (key: string): string => dailyTitle(key, localized('DAILY_TITLES'));
 
 const params = new URLSearchParams(location.search);
 /** Gracz, który już kiedyś grał, nie dostaje ekranu pierwszego uruchomienia. */
@@ -255,7 +258,8 @@ function fillMenu(): void {
   ui.routeSummary.textContent = routeText;
   ui.routeFlag.src = import.meta.env.BASE_URL + 'assets/ui/flag-' + settings.home.toLowerCase() + '.png';
   ui.routeFlag.alt = COUNTRY_NAME[settings.home];
-  ui.dailyInfo.textContent = fill(UI.dailyHint, { title: dailyTitle(dailyKey(new Date())) });
+  ui.dailyInfo.textContent = fill(UI.dailyHint, { title: dailyTitleText(dailyKey(new Date())) });
+  ui.btnChallenge.textContent = GHOST_TEXTS.challengeButton;
 }
 // Menu jest jedynym właścicielem pól trasy: po zmianie języka (także po dociągnięciu
 // słownika) przerysowuje je samo, zamiast pozwalać modułom leniwym poprawiać opcje.
@@ -428,7 +432,7 @@ async function newRun(reverse = false): Promise<void> {
   ui.album.hidden = true;
   ui.hud.hidden = false;
   ui.hint.hidden = false;
-  ui.hint.textContent = returnTrip ? pick(RETURN_DEPARTURE_TEXTS) : daily ? dailyTitle(daily) : UI.tapToStart;
+  ui.hint.textContent = returnTrip ? pick(RETURN_DEPARTURE_TEXTS) : daily ? dailyTitleText(daily) : UI.tapToStart;
   ui.toast.hidden = true;
   // Po kliknięciu „Start” fokus zostaje na ukrytym przycisku — spacja ma sterować autem,
   // a nie ponownie „klikać” niewidoczny start (keyup na fokusowanym przycisku w WebKit).
@@ -502,7 +506,7 @@ function updateHud(): void {
   ui.remaining.textContent = fill(UI.remaining, { km: game.remainingKm });
   ui.lives.hidden = game.mode !== 'cozy';
   ui.lives.textContent = '🫙'.repeat(Math.max(0, game.lives));
-  ui.lives.setAttribute('aria-label', 'Pozostało żyć: ' + Math.max(0, game.lives));
+  ui.lives.setAttribute('aria-label', fill(UI.lives, { n: Math.max(0, game.lives) }));
 }
 
 function toast(text: string): void {
@@ -517,7 +521,7 @@ function handleEvents(g: Game): void {
     feedback(e);
     if (e.type === 'pickup') toast(fill(pick(PICKUP_TEXTS[e.kind]), { km: e.bonusKm }));
     else if (e.type === 'border') toast(pick(BORDER_TEXTS[e.country]) ?? fill(UI.welcome, { where: COUNTRY_LOCATIVE[e.country] }));
-    else if (e.type === 'waypoint') toast(e.waypoint.text);
+    else if (e.type === 'waypoint') toast(waypointText(e.waypoint));
     else if (e.type === 'over' || e.type === 'arrived') showOver(g);
   }
   const milestone = Math.floor(g.km / 100) * 100;
@@ -551,7 +555,7 @@ function cardData(g: Game, joke: string): CardData {
     to: g.route.to,
     home: g.route.home,
     causeText: joke,
-    ...(daily ? { daily: dailyTitle(daily) } : {}),
+    ...(daily ? { daily: dailyTitleText(daily) } : {}),
   };
 }
 
@@ -569,7 +573,7 @@ function showOver(g: Game): void {
   ui.over.classList.toggle('is-arrived', arrived);
   ui.overTitle.textContent = arrived ? UI.arrived : UI.over;
   ui.overKm.textContent = fill(UI.distance, { km: g.km });
-  ui.overRoute.textContent = g.route.from.name + ' → ' + g.route.to.name;
+  ui.overRoute.textContent = localizedCityName(g.route.from) + ' → ' + localizedCityName(g.route.to);
   const cause = g.cause ?? 'ground';
   const causeIcon = arrived ? 'assets/ui/icon-jar.png'
     : cause === 'ground' ? 'assets/ui/icon-map.png' : 'assets/obstacles/' + cause + '-end.png';
@@ -578,7 +582,10 @@ function showOver(g: Game): void {
   let joke: string;
   if (arrived) {
     joke = g.baseWeight > 0
-      ? fill(pick(RETURN_ARRIVAL_TEXTS), { city: RETURN_CITY_LOCATIVE[g.route.to.id] ?? g.route.to.name })
+      ? fill(pick(RETURN_ARRIVAL_TEXTS), {
+        // Polski: miejscownik; inne języki mają zdania bez odmiany, więc wystarczy nazwa miasta.
+        city: getLanguage() === 'pl' ? RETURN_CITY_LOCATIVE[g.route.to.id] ?? g.route.to.name : localizedCityName(g.route.to),
+      })
       : pick(ARRIVAL_TEXTS);
     ui.overCause.textContent = joke;
     ui.overJoke.textContent = seconds + ' s';
@@ -794,7 +801,7 @@ window.setTimeout(() => void import('./ui/record').then(({ createRecordControl }
   recordControl = createRecordControl({
     canvas,
     getAudio: () => (audioCtx && audioMix ? { context: audioCtx, source: audioMix } : undefined),
-    overlay: () => ({ km: game?.km ?? 0, route: `${(game?.route ?? route).from.name} → ${(game?.route ?? route).to.name}` }),
+    overlay: () => ({ km: game?.km ?? 0, route: `${localizedCityName((game?.route ?? route).from)} → ${localizedCityName((game?.route ?? route).to)}` }),
     portalUrl: () => portalLink(settings.home, 'video'),
     shareVideo: (file, text, url) => platform.share(file, text, url),
   });
@@ -829,6 +836,9 @@ requestAnimationFrame(() => void import('./ui/language-switcher'));
 // Pierwsze uruchomienie: wybór kraju i miasta. Kto już grał (ma zapisane ustawienia), nie widzi go wcześniej.
 void import('./ui/onboarding').then(async ({ ONBOARDING_STORAGE_KEY, mountOnboarding, shouldShowOnboarding }) => {
   if (!(await shouldShowOnboarding(params))) return;
+  // Onboarding w języku z ?lang= lub zapisu, a nie po polsku z chwilowym dociąganiem słownika.
+  await initializeLanguage();
+  await loadLanguage(getLanguage());
   if (returningPlayer) {
     void platform.storage.set(ONBOARDING_STORAGE_KEY, '1');
     return;

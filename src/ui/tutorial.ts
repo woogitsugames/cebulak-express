@@ -1,4 +1,4 @@
-import { UI } from '../content/pl';
+import { UI } from '../content/i18n';
 import './tutorial.css';
 
 /** Model samouczka odłączony od DOM i symulacji gry. */

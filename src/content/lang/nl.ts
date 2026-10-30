@@ -1,4 +1,5 @@
-import type { GameLocale } from './schema';
+import extra from './nl-extra';
+import type { ForeignLocale } from './schema';
 
 /** Teksty gry: niderlandzki. */
 export default {
@@ -368,6 +369,9 @@ export default {
   "UI": {
     "tapToStart": "Tik om te starten",
     "tapToFly": "Tik om te springen",
+    "lives": "Levens over: {n}",
+    "waypointStart": "{city}. Op naar huis!",
+    "waypointHome": "{city}. Je bent thuis!",
     "remaining": "nog {km} km tot thuis",
     "welcome": "Welkom {where}!",
     "over": "Einde van de rit!",
@@ -492,6 +496,11 @@ export default {
     "start": "Daar gaan we!",
     "garageButton": "Garage",
     "backToMenu": "Route wijzigen",
-    "gameLabel": "Spel Cebulak Express"
-  }
-} satisfies GameLocale;
+    "gameLabel": "Spel Cebulak Express",
+    "mainMenu": "Hoofdmenu",
+    "albumButton": "Album",
+    "distanceLabel": "Afgelegde afstand",
+    "miniLeague": "Top 3 van de Poolse gemeenschapsliga"
+  },
+  ...extra,
+} satisfies ForeignLocale;

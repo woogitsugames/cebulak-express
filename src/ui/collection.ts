@@ -1,9 +1,19 @@
-import { COUNTRY_NAME, fill } from '../content/pl';
-import { MEDAL_IDS, POSTCARDS, type Postcard, type Progress } from '../meta/progress';
-import { COLLECTION_TEXT as T, MEDAL_TEXT } from './collection-text';
+import { COUNTRY_NAME, fill, localized } from '../content/i18n';
+import { localizedCityName } from '../content/lang/cities';
+import { MEDAL_IDS, POSTCARDS, type MedalId, type Postcard, type Progress } from '../meta/progress';
+import { COLLECTION_TEXT, MEDAL_TEXT } from './collection-text';
 import './collection.css';
 
 const number = new Intl.NumberFormat('pl-PL');
+
+/** Teksty albumu w bieżącym języku (polski oryginał w collection-text.ts). */
+function texts(): Record<keyof typeof COLLECTION_TEXT, string> {
+  return localized('COLLECTION') ?? COLLECTION_TEXT;
+}
+function medalText(id: MedalId): { name: string; description: string; symbol: string } {
+  const translated = localized('MEDALS')?.[id];
+  return translated ? { ...translated, symbol: MEDAL_TEXT[id].symbol } : MEDAL_TEXT[id];
+}
 
 function element<K extends keyof HTMLElementTagNameMap>(
   tag: K, className: string, value?: string,
@@ -19,6 +29,7 @@ function assetPath(path: string): string {
 }
 
 function postcardCard(card: Postcard, owned: boolean): HTMLElement {
+  const T = texts();
   const figure = element('figure', 'ce-collection__postcard' + (owned ? ' ce-collection__postcard--owned' : ' ce-collection__postcard--locked'));
   const photo = element('div', 'ce-collection__photo');
   const pin = element('span', 'ce-collection__stamp', owned ? '✓' : '?');
@@ -48,7 +59,7 @@ function postcardCard(card: Postcard, owned: boolean): HTMLElement {
   }
   const caption = element('figcaption', 'ce-collection__postcard-caption');
   caption.append(
-    element('strong', '', card.name),
+    element('strong', '', localizedCityName(card)),
     element('span', '', COUNTRY_NAME[card.country]),
     element('small', '', owned ? T.unlocked : T.locked),
   );
@@ -57,7 +68,8 @@ function postcardCard(card: Postcard, owned: boolean): HTMLElement {
 }
 
 function medalCard(id: (typeof MEDAL_IDS)[number], owned: boolean): HTMLElement {
-  const text = MEDAL_TEXT[id];
+  const T = texts();
+  const text = medalText(id);
   const card = element('li', 'ce-collection__medal' + (owned ? ' ce-collection__medal--owned' : ' ce-collection__medal--locked'));
   const emblem = element('span', 'ce-collection__emblem', text.symbol);
   emblem.setAttribute('aria-hidden', 'true');
@@ -80,6 +92,7 @@ function stat(label: string, value: string): HTMLElement {
 /** Samodzielny ekran DOM. Zwrócona funkcja usuwa tylko elementy tego modułu. */
 export function mountCollection(container: HTMLElement, progress: Progress, onClose: () => void): () => void {
   let disposed = false;
+  const T = texts();
   const root = element('section', 'ce-collection');
   root.setAttribute('aria-label', T.title);
   const header = element('header', 'ce-collection__header');
@@ -138,8 +151,8 @@ export function mountCollection(container: HTMLElement, progress: Progress, onCl
 
 /** Formatowanie toastów bez HTML; wywołujący korzysta z istniejącego toast() w main.ts. */
 export function postcardToast(card: Postcard): string {
-  return fill(T.newPostcard, { city: card.name });
+  return fill(texts().newPostcard, { city: localizedCityName(card) });
 }
 export function medalToast(id: (typeof MEDAL_IDS)[number]): string {
-  return fill(T.newMedal, { name: MEDAL_TEXT[id].name });
+  return fill(texts().newMedal, { name: medalText(id).name });
 }

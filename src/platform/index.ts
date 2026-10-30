@@ -122,7 +122,17 @@ async function shareWeb(file: Blob | null, text: string, url: string): Promise<S
   return copyText(text, url);
 }
 
+/** Tytuł systemowego okna udostępniania; język z <html lang> (ustawia go i18n — bez importu, by uniknąć cyklu). */
+const SHARE_DIALOG_TITLE: Record<string, string> = {
+  pl: 'Udostępnij wynik', en: 'Share your result', nl: 'Deel je resultaat', de: 'Ergebnis teilen', fr: 'Partager le résultat',
+};
+function shareDialogTitle(): string {
+  const lang = typeof document === 'undefined' ? 'pl' : document.documentElement.lang;
+  return SHARE_DIALOG_TITLE[lang] ?? SHARE_DIALOG_TITLE.pl;
+}
+
 async function shareNative(file: Blob | null, text: string, url: string): Promise<ShareResult> {
+  const dialogTitle = shareDialogTitle();
   try {
     const files = file?.size ? [await saveShareFile(file)] : undefined;
     if (!files && !text && !url) return 'unavailable';
@@ -131,7 +141,7 @@ async function shareNative(file: Blob | null, text: string, url: string): Promis
       text,
       url,
       files,
-      dialogTitle: 'Udostępnij wynik',
+      dialogTitle,
     });
     return 'shared';
   } catch (error) {
@@ -139,7 +149,7 @@ async function shareNative(file: Blob | null, text: string, url: string): Promis
     // Gdy zapis pliku/odbiorca zawiedzie, gracz nadal może wysłać link.
     if (file && (text || url)) {
       try {
-        await Share.share({ text, url, dialogTitle: 'Udostępnij wynik' });
+        await Share.share({ text, url, dialogTitle });
         return 'shared';
       } catch (fallbackError) {
         if (isCancelled(fallbackError)) return 'cancelled';

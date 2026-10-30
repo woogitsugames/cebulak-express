@@ -1,5 +1,5 @@
 import type { City } from '../../core/route';
-import { getLanguage, type Language } from '../i18n';
+import { getLanguage, getTextsFor, type Language } from '../i18n';
 
 /** Odmiany polskie pozostają w rdzeniu. W pozostałych językach używamy form podstawowych. */
 const CITY_NAMES: Record<string, Partial<Record<Language, string>>> = {
@@ -36,9 +36,14 @@ const CITY_NAMES: Record<string, Partial<Record<Language, string>>> = {
   differdange: { nl: 'Differdingen', de: 'Differdingen' },
 };
 
-/** Nazwy niewymienione w tabeli zachowują polską/lokalną postać z City.name. */
+/**
+ * Nazwy niewymienione w tabeli zachowują polską/lokalną postać z City.name.
+ * Rzadziej widoczne miasta trasy (np. Norymberga, Kowno) tłumaczy PLACE_NAMES
+ * z leniwie wczytanego słownika języka.
+ */
 export function localizedCityName(city: Pick<City, 'id' | 'name'>, language: Language = getLanguage()): string {
-  return language === 'pl' ? city.name : CITY_NAMES[city.id]?.[language] ?? city.name;
+  if (language === 'pl') return city.name;
+  return CITY_NAMES[city.id]?.[language] ?? getTextsFor(language)?.PLACE_NAMES?.[city.id] ?? city.name;
 }
 
 /**

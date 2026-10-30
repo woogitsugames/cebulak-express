@@ -1,4 +1,5 @@
-import type { GameLocale } from './schema';
+import extra from './en-extra';
+import type { ForeignLocale } from './schema';
 
 /** Teksty gry: angielski. */
 export default {
@@ -368,6 +369,9 @@ export default {
   "UI": {
     "tapToStart": "Tap to start",
     "tapToFly": "Tap to hop",
+    "lives": "Lives left: {n}",
+    "waypointStart": "{city}. Heading home!",
+    "waypointHome": "{city}. You're home!",
     "remaining": "home in {km} km",
     "welcome": "Welcome! You're {where}!",
     "over": "End of the road!",
@@ -492,6 +496,11 @@ export default {
     "start": "Let's go!",
     "garageButton": "Garage",
     "backToMenu": "Change route",
-    "gameLabel": "Cebulak Express game"
-  }
-} satisfies GameLocale;
+    "gameLabel": "Cebulak Express game",
+    "mainMenu": "Main menu",
+    "albumButton": "Album",
+    "distanceLabel": "Distance covered",
+    "miniLeague": "Polish Community League top 3"
+  },
+  ...extra,
+} satisfies ForeignLocale;

@@ -1,4 +1,4 @@
-import { UI } from '../content/pl';
+import { UI } from '../content/i18n';
 import './settings.css';
 
 /** Preferencje dźwięku i dostępności niezależne od ustawień trasy. */

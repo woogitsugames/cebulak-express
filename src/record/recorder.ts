@@ -1,4 +1,4 @@
-import { UI } from '../content/pl';
+import { UI } from '../content/i18n';
 
 /** Pionowa rolka z obrazu gry. Moduł nie dotyka głównej pętli ani UI gry. */
 

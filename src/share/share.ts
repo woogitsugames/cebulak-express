@@ -1,5 +1,19 @@
+import { localized } from '../content/i18n';
 import { cardShareText, renderCard, type CardData, type CardFormat } from './card';
 import { GAME_ORIGIN } from './config';
+
+/** Polskie napisy okna zapisu karty; EN/NL/DE/FR w słownikach (SHARE). */
+export const SHARE_TEXT = {
+  title: 'Zapisz kartę wyniku',
+  hint: 'Zapisz PNG lub przytrzymaj obraz na iPhonie, aby zachować go w Zdjęciach.',
+  imageAlt: 'Karta z wynikiem przejazdu',
+  download: 'Pobierz PNG',
+  copy: 'Kopiuj tekst i link',
+  copied: 'Skopiowano',
+  copyFailed: 'Wybierz tekst poniżej',
+  close: 'Zamknij',
+  sourceLabel: 'Tekst i link do skopiowania',
+} as const;
 
 /**
  * Kontrakt adaptera z src/platform/share.ts (zlecenie 24).
@@ -98,12 +112,13 @@ let closePreview: (() => void) | null = null;
 export function showSavePreview(image: Blob, text: string, url: string): void {
   if (typeof document === 'undefined' || !document.body || typeof URL.createObjectURL !== 'function') return;
   closePreview?.();
+  const T = localized('SHARE') ?? SHARE_TEXT;
   const imageUrl = URL.createObjectURL(image);
   const backdrop = document.createElement('div');
   backdrop.id = 'ce-result-preview';
   backdrop.setAttribute('role', 'dialog');
   backdrop.setAttribute('aria-modal', 'true');
-  backdrop.setAttribute('aria-label', 'Zapisz kartę wyniku');
+  backdrop.setAttribute('aria-label', T.title);
   backdrop.style.cssText =
     'position:fixed;inset:0;z-index:2147483647;background:rgba(4,21,25,.92);' +
     'display:flex;align-items:center;justify-content:center;overflow:auto;padding:18px;';
@@ -113,41 +128,41 @@ export function showSavePreview(image: Blob, text: string, url: string): void {
     'border-radius:22px;background:#fdf8e9;color:#173d37;padding:18px;' +
     'font:16px/1.4 system-ui,sans-serif;text-align:center;';
   const heading = document.createElement('h2');
-  heading.textContent = 'Zapisz kartę wyniku';
+  heading.textContent = T.title;
   heading.style.cssText = 'margin:0 0 8px;font-size:22px;';
   const hint = document.createElement('p');
-  hint.textContent = 'Zapisz PNG lub przytrzymaj obraz na iPhonie, aby zachować go w Zdjęciach.';
+  hint.textContent = T.hint;
   hint.style.cssText = 'margin:0 0 12px;';
   const preview = document.createElement('img');
   preview.src = imageUrl;
-  preview.alt = 'Karta z wynikiem przejazdu';
+  preview.alt = T.imageAlt;
   preview.style.cssText = 'max-width:100%;max-height:55vh;object-fit:contain;border-radius:12px;';
   const controls = document.createElement('div');
   controls.style.cssText = 'display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin:16px 0;';
   const download = document.createElement('a');
   download.href = imageUrl;
   download.download = 'wynik-kierunek-polska.png';
-  download.textContent = 'Pobierz PNG';
+  download.textContent = T.download;
   download.style.cssText =
     'display:inline-block;padding:12px 18px;border-radius:12px;background:#15644e;' +
     'color:white;font-weight:700;text-decoration:none;';
   const copy = document.createElement('button');
   copy.type = 'button';
-  copy.textContent = 'Kopiuj tekst i link';
+  copy.textContent = T.copy;
   copy.style.cssText = 'padding:12px 18px;border-radius:12px;border:0;background:#f7d76f;color:#193e37;font-weight:700;';
   copy.addEventListener('click', () => {
     void copyText(text + '\n' + url).then((ok) => {
-      copy.textContent = ok ? 'Skopiowano' : 'Wybierz tekst poniżej';
+      copy.textContent = ok ? T.copied : T.copyFailed;
     });
   });
   const close = document.createElement('button');
   close.type = 'button';
-  close.textContent = 'Zamknij';
+  close.textContent = T.close;
   close.style.cssText = 'padding:12px 18px;border-radius:12px;border:1px solid #57776e;background:white;color:#193e37;';
   const source = document.createElement('textarea');
   source.readOnly = true;
   source.value = text + '\n' + url;
-  source.setAttribute('aria-label', 'Tekst i link do skopiowania');
+  source.setAttribute('aria-label', T.sourceLabel);
   source.style.cssText = 'box-sizing:border-box;width:100%;height:72px;border-radius:9px;padding:8px;';
   source.addEventListener('focus', () => source.select());
   const cleanup = (): void => {
