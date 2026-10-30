@@ -19,7 +19,7 @@ import { createMusic, type MusicPlayer } from './audio/music';
 import { renderCard, type CardData } from './share/card';
 import { setNativeShareAdapter, shareResult } from './share/share';
 import { parseGameParams } from './net/params';
-import { createRankingApi } from './net/api';
+import { MockRankingApi, createRankingApi } from './net/api';
 import { warsawWeekKey } from './net/week';
 import { OfflineRunQueue, submitOrQueue, watchQueueOnline } from './net/queue';
 import { mountLeague } from './ui/league';
@@ -461,7 +461,8 @@ function showOver(g: Game): void {
   const leagueRequest = ++overLeagueRequest;
   ui.overMiniLeague.hidden = true;
   ui.overLeagueList.replaceChildren();
-  void api.getLeague(warsawWeekKey()).then((data) => {
+  // Bez skonfigurowanego Firebase ranking to atrapa z przykładowymi liczbami — nie pokazujemy jej graczom.
+  if (!(api instanceof MockRankingApi) || params.get('test') === '1') void api.getLeague(warsawWeekKey()).then((data) => {
     if (leagueRequest !== overLeagueRequest || ui.over.hidden) return;
     const top = HOME_COUNTRIES
       .map((home) => ({ home, km: data.countries[home]?.km ?? 0 }))
