@@ -52,8 +52,8 @@ function cycle(index: number, length: number): number {
 }
 
 /**
- * Jedna trasa dziennie dla wszystkich: każdy blok 8 dni obejmuje wszystkie
- * kraje MVP. Miasto startowe zmienia się przy kolejnym wystąpieniu kraju,
+ * Jedna trasa dziennie dla wszystkich: każdy blok dni (tyle, ile krajów
+ * zamieszkania) obejmuje wszystkie kraje. Miasto startowe zmienia się przy kolejnym wystąpieniu kraju,
  * a polski cel zmienia się codziennie.
  */
 export function dailyRoute(key: string): Route {

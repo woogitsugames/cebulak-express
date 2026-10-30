@@ -101,7 +101,7 @@ describe('zlecenie 55 — kraje, trasy, km i fallback', () => {
   it('zachowuje modelowe dystanse wzorcowe i zróżnicowane starty', () => {
     const samples = [
       ['IE','dublin','2193'], ['ES','barcelona','1808'],
-      ['IT','mediolan','1185'], ['AT','wieden','305'],
+      ['IT','mediolan','1230'], ['AT','wieden','350'],
       ['SE','sztokholm','795'], ['FI','helsinki','790'],
       ['LU','luksemburg','888'],
     ] as const;

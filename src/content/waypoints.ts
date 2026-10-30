@@ -158,11 +158,11 @@ function czechToCieszyn(brnoKm: number): Waypoint[] {
   const b = brnoKm;
   return [
     { id: 'brno', name: 'Brno', country: 'CZ', km: b, kind: 'city', motifs: ['wieże katedry na wzgórzu', 'tramwaje'], text: 'Brno. Termos trzyma ciepło, mapa kierunek.' },
-    { id: 'olomouc', name: 'Ołomuniec', country: 'CZ', km: b + 60, kind: 'city', motifs: ['wieża ratusza', 'kamienice starego miasta'], text: 'Ołomuniec. Jeszcze jeden postój na kawę.' },
-    { id: 'ostrawa', name: 'Ostrawa', country: 'CZ', km: b + 130, kind: 'city', motifs: ['dawne wieże hutnicze', 'mosty nad Odrą'], text: 'Ostrawa. Ostatnia prosta przed granicą.' },
-    { id: 'cesky-tesin', name: 'Czeski Cieszyn', country: 'CZ', km: b + 150, kind: 'city', motifs: ['most nad Olzą', 'kamienice przy rynku'], text: 'Cieszyn za rzeką. Już pachnie domowym obiadem.' },
-    { id: 'granica-cieszyn', name: 'Granica (Cieszyn)', country: 'PL', km: b + 160, kind: 'border', motifs: BORDER_MOTIFS, text: 'Cieszyn. Polska na trasie, obiad coraz bliżej!', lat: 49.75, lon: 18.62 },
-    { id: 'stacja-cieszyn', name: 'Stacja za granicą', country: 'PL', km: b + 170, kind: 'rest', motifs: STATION_MOTIFS, text: 'Kawa na stacji i jedziemy dalej.', lat: 49.75, lon: 18.65 },
+    { id: 'olomouc', name: 'Ołomuniec', country: 'CZ', km: b + 75, kind: 'city', motifs: ['wieża ratusza', 'kamienice starego miasta'], text: 'Ołomuniec. Jeszcze jeden postój na kawę.' },
+    { id: 'ostrawa', name: 'Ostrawa', country: 'CZ', km: b + 165, kind: 'city', motifs: ['dawne wieże hutnicze', 'mosty nad Odrą'], text: 'Ostrawa. Ostatnia prosta przed granicą.' },
+    { id: 'cesky-tesin', name: 'Czeski Cieszyn', country: 'CZ', km: b + 195, kind: 'city', motifs: ['most nad Olzą', 'kamienice przy rynku'], text: 'Cieszyn za rzeką. Już pachnie domowym obiadem.' },
+    { id: 'granica-cieszyn', name: 'Granica (Cieszyn)', country: 'PL', km: b + 205, kind: 'border', motifs: BORDER_MOTIFS, text: 'Cieszyn. Polska na trasie, obiad coraz bliżej!', lat: 49.75, lon: 18.62 },
+    { id: 'stacja-cieszyn', name: 'Stacja za granicą', country: 'PL', km: b + 215, kind: 'rest', motifs: STATION_MOTIFS, text: 'Kawa na stacji i jedziemy dalej.', lat: 49.75, lon: 18.65 },
   ];
 }
 
@@ -229,7 +229,7 @@ export const ROUTE_WAYPOINTS: Record<HomeCountry, Waypoint[]> = {
   CH: [
     { id: 'zurych', name: 'Zurych', country: 'CH', km: 0, kind: 'city', motifs: ['jezioro z łabędziami', 'Alpy na horyzoncie', 'wieże starego miasta'], text: 'Zurych. Alpy za plecami, bigos przed nosem.' },
     { id: 'wodospad-renski', name: 'Wodospad Reński', country: 'CH', km: 45, kind: 'landmark', motifs: ['szeroki wodospad na Renie', 'skała pośrodku nurtu'], text: 'Wodospad. Woda w dół, my w górę mapy.' },
-    { id: 'stuttgart', name: 'Stuttgart', country: 'DE', km: 215, kind: 'city', motifs: ['wieża telewizyjna na wzgórzu', 'winnice na zboczach'], text: 'Stuttgart. Witamy w Niemczech!' },
+    { id: 'stuttgart', name: 'Stuttgart', country: 'DE', km: 215, kind: 'city', motifs: ['wieża telewizyjna na wzgórzu', 'zielone zbocza'], text: 'Stuttgart. Witamy w Niemczech!' },
     { id: 'norymberga', name: 'Norymberga', country: 'DE', km: 420, kind: 'city', motifs: ['zamek na skale', 'kamienice z belkami', 'piernikowe serca'], text: 'Norymberga. Zamek na skale, pierniki w kombi.' },
     { id: 'jena', name: 'Jena', country: 'DE', km: 590, kind: 'city', motifs: ['okrągła wieża', 'wzgórza nad Salą'], text: 'Jena. Okrągła wieża i drogowskaz na wschód.' },
     ...dresdenToJedrzychowice(770),
@@ -296,7 +296,7 @@ export const ROUTE_WAYPOINTS: Record<HomeCountry, Waypoint[]> = {
     { id: 'villach', name: 'Villach', country: 'AT', km: 530, kind: 'city', motifs: ['alpejski krajobraz', 'most nad rzeką'], text: 'Villach. Alpy zostają za nami.' },
     { id: 'graz', name: 'Graz', country: 'AT', km: 700, kind: 'city', motifs: ['wzgórze z wieżą zegarową', 'czerwone dachy'], text: 'Graz. Zegar tyka, my liczymy kilometry.' },
     { id: 'wieden', name: 'Wiedeń', country: 'AT', km: 875, kind: 'city', motifs: ['kopuła zabytkowego gmachu', 'tramwaj'], text: 'Wiedeń. Jeszcze parę godzin do pierogów.' },
-    { id: 'mikulov', name: 'Mikulov', country: 'CZ', km: 955, kind: 'border', motifs: ['zamek na skale', 'winnice na wzgórzach'], text: 'Mikulov. Zmieniamy kraj, nie kierunek.' },
+    { id: 'mikulov', name: 'Mikulov', country: 'CZ', km: 955, kind: 'border', motifs: ['zamek na skale', 'łagodne pagórki'], text: 'Mikulov. Zmieniamy kraj, nie kierunek.' },
     ...czechToCieszyn(1015),
   ],
   AT: [

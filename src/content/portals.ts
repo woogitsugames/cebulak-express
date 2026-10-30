@@ -23,14 +23,14 @@ export const PORTALS: Readonly<Record<HomeCountry, Readonly<PortalInfo>>> = {
   FR: { label: 'Francja', news: 'https://aktualnosci.fr/', guides: 'https://popolsku.fr/' },
   CH: { label: 'Szwajcaria', guides: 'https://popolsku.ch/' },
   NO: { label: 'Norwegia', guides: 'https://popolsku.no/' },
-  DK: { label: 'Dania', guides: 'https://popolsku.dk/' },  IE: { label: 'Irlandia' },
+  DK: { label: 'Dania', guides: 'https://popolsku.dk/' },
+  IE: { label: 'Irlandia' },
   ES: { label: 'Hiszpania', guides: 'https://popolsku.es/' },
   IT: { label: 'Włochy', guides: 'https://popolsku.it/' },
   AT: { label: 'Austria' },
   SE: { label: 'Szwecja', guides: 'https://popolsku.se/' },
   FI: { label: 'Finlandia' },
   LU: { label: 'Luksemburg' },
-
 };
 
 export type PortalChannel = 'news' | 'guides' | 'facebook';
