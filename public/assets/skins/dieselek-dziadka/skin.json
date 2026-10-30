@@ -93,5 +93,5 @@
     "wheel:front",
     "luggage-1|luggage-2|luggage-3|luggage-4"
   ],
-  "notes": "Nakładki bagażowe 1–4 są pełnymi alternatywami (nie sumować). Crash zawiera wrysowane koła, bo renderer nie rysuje ich przy game over. Płótno 288×168 @3x, kotwica (144,106)."
+  "notes": "Zlecenie 83: sylwetka poprawiona. Nakładki bagażowe 1-4 to kompletne alternatywy. Crash ma własne koła (renderer pomija wheel w stanie over). Anchor (144,106), PNG RGBA sRGB @3x."
 }

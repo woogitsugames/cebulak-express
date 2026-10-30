@@ -156,3 +156,21 @@ Trzy oryginalne skórki wykonane dla gry Cebulak Express w ChatGPT. Ilustracje p
 - Każdy zestaw ma 10 PNG + `skin.json` (@3x, `scale: 3`, wspólna kotwica (144,106), koła (80,138) i (219,138)).
 - Koordynator dodaje te trzy identyfikatory do `HERO_SKINS` oraz odpowiednich etykiet w `src/ui/garage.ts` (obecny `main` jeszcze ich nie zawiera). Wartości `unlockKm`: 10000, 20000, 40000. Nie zmieniono plików koordynatora.
 - Oryginalne etykiety w garażu i logika odblokowań nie są częścią tego PR. Zobacz `tests/skins-new-2.test.ts`.
+
+## Poprawki sylwetek — zlecenie 83
+# Sekcja do dopisania w public/assets/skins/ASSETS.md po scaleniu PR #77
+
+## Zlecenie 83 — poprawione sylwetki (30.10.2026)
+
+| Plik | Źródło / narzędzie | Licencja | Autor / uwagi |
+| --- | --- | --- | --- |
+| `mala-japonka/body.png`, `wheel.png`, `crash.png`, `flame-1.png`, `flame-2.png`, `luggage-1.png`–`luggage-4.png`, `portrait.png` | Koncepcja ChatGPT Images; własne ścieżki SVG, Python/CairoSVG/Pillow, ręczne poprawki | Utworzone dla projektu na warunkach korzystania z materiałów OpenAI, bez cudzych elementów | Mała, czerwona, bąbelkowa miejska trzydrzwiówka; osie 90/217, y=138 |
+| `dieselek-dziadka/body.png`, `wheel.png`, `crash.png`, `flame-1.png`, `flame-2.png`, `luggage-1.png`–`luggage-4.png`, `portrait.png` | Jak wyżej | Jak wyżej | Srebrne, długie niskie kombi, relingi, hak, patyna; osie 77/229, y=138 |
+| `mala-japonka/skin.json`, `dieselek-dziadka/skin.json`, `*/ASSETS.md` (oba auta) | ChatGPT, własne geometrie i dokumentacja | Materiał dla projektu | Zachowany format 288×168 @3x, anchor (144,106), hitbox 40×20, portrait 384×384 |
+| `docs/art/podglady/auta-83.png` | Kompozycja rzeczywistych warstw w Pillow | Jak wyżej | 2 auta × 5 stanów |
+| `docs/art/podglady/auta-83-generator.py` | Autorski skrypt ChatGPT / Python, SVG, CairoSVG, Pillow | Materiał dla projektu | Reprodukowalny generator warstw i podglądu |
+| `docs/art/podglady/auta-83-koncepcja.png` | ChatGPT Images, 30.10.2026 | Wygenerowany dla projektu | Referencja stylistyczna; NIE jest sprite'em runtime |
+
+**Prompt:** „Wymyśl dwa bezmarkowe auta dla polonijnej gry 2D: krótką koralową bąbelkową trzydrzwiówkę i długie, niskie, zmęczone srebrne kombi z początku lat 2000 z relingami i hakiem. Jazda w prawo, perspektywa boczna, ciepłe kolory, gruby granatowy kontur, kierowca, walizki na dachu, odrębne warstwy postaci, bez logotypów i tekstu w grafice”. Grafiki końcowe zostały przerysowane w autorskie kształty SVG i skorygowane ręcznie.
+
+**Geometria:** `wheel.png` jest współdzielony między kołami danej skórki; dlatego zachowano indywidualne ślady zużycia na karoserii Dieselka, bez deklarowania innej felgi, której obecny renderer nie obsługuje. Warstwy `luggage-1..4.png` się wykluczają. `crash.png` ma koła, gdyż renderer nie rysuje ich osobno w fazie `over`.
