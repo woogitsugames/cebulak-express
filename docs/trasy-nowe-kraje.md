@@ -12,12 +12,12 @@ szacunkiem odcinka; nie wykonano pełnego routingu wielopunktowego OSRM dla każ
 
 | Kraj / start wzorcowy | Przebieg | Stacja w Polsce i km od startu | Podstawa (źródło lub szacunek) |
 |---|---|---:|---|
-| IE / Dublin | Wicklow → Rosslare → **prom do Cherbourga** → Caen → Rouen → Reims → Metz → Niemcy → Drezno → Zgorzelec | Jędrzychowice, **2193 km** | Połączenie Rosslare–Cherbourg [operator promowy](https://www.stenaline.ie/routes/rosslare-cherbourg); dojazdy i odcinki FR/DE przybliżone |
+| IE / Dublin | Wicklow → Rosslare → **prom do Cherbourga** → Caen → Rouen → Reims → Metz → Niemcy → Drezno → Zgorzelec | Jędrzychowice, **2193 km** | Połączenie Rosslare–Cherbourg [aktualny operator promowy](https://www.brittany-ferries.co.uk/ferry-routes/ferries-france/rosslare-cherbourg/about); dojazdy i odcinki FR/DE przybliżone |
 | ES / Barcelona | Girona → La Jonquera → Perpignan → Narbonne → Montpellier → Lyon → Besançon → Mulhouse → Fryburg → Karlsruhe → Norymberga → Jena → Drezno | Jędrzychowice, **1808 km** | [Barcelona–Drezno, orientacyjna odległość drogowa](https://www.rome2rio.com/s/Barcelona/Dresden); poszczególne odcinki przybliżone |
 | IT / Mediolan | Werona → Padwa → Mestre → Udine → Tarvisio → Villach → Graz → Wiedeń → Mikulov → Brno → Ołomuniec → Ostrawa → Cieszyn | Cieszyn, **1185 km** | Wariant przez **Austrię i Czechy**, świadomie bez objazdu przez Niemcy; segmenty szacunkowe |
 | AT / Wiedeń | Mikulov → Brno → Ołomuniec → Ostrawa → Cieszyn | Cieszyn, **305 km** | [Wiedeń–Cieszyn, orientacyjna trasa drogowa](https://www.rome2rio.com/s/Vienna/Cieszyn); odchyłki od dokładnych węzłów |
 | SE / Sztokholm | Nyköping → Norrköping → Jönköping → Helsingborg → Malmö → Ystad → **prom do Świnoujścia** | Świnoujście, **795 km** | [Sztokholm–Ystad](https://www.rome2rio.com/s/Stockholm/Ystad) i [Ystad–Świnoujście](https://www.directferries.com/ystad_swinoujscie_ferry.htm); przejazd mieszany, odległość promowa ~171 km |
-| FI / Helsinki | **prom do Tallinna** → Pärnu → Ryga → Bauska → Poniewież → Kowno → Mariampol → Budzisko | Budzisko, **790 km** | [Helsinki–Tallinn (prom)](https://www.tallink.com/route/helsinki-tallinn), dalej droga przez Via Baltica; wartości pośrednie szacunkowe |
+| FI / Helsinki | **prom do Tallinna** → Pärnu → Ryga → Bauska → Poniewież → Kowno → Mariampol → Budzisko | Budzisko, **790 km** | [Helsinki–Tallinn (prom)](https://www.sales.vikingline.com/timetable/helsinki-tallinn/), dalej droga przez Via Baltica; wartości pośrednie szacunkowe |
 | LU / Luksemburg | Trewir → Koblencja → Frankfurt nad Menem → Erfurt → Drezno → Zgorzelec | Jędrzychowice, **888 km** | [Luksemburg–Drezno](https://www.rome2rio.com/s/Luxembourg/Dresden); wariant gry przez wskazane węzły może być dłuższy od najszybszej trasy |
 
 ### Decyzje i ograniczenia
