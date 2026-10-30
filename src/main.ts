@@ -1,14 +1,34 @@
 import { TICK } from './core/config';
-import { Game, type Mode } from './core/game';
+import { dailyKey, dailyRoute, dailySeed, dailyTitle } from './core/daily';
+import { Game, type GameEvent, type Mode } from './core/game';
 import { HOME_COUNTRIES, PL_CITIES, START_CITIES, makeRoute, type HomeCountry, type Route } from './core/route';
-import { COUNTRY_LOCATIVE, COUNTRY_NAME, FAIL_JOKES, OBSTACLE_NAME, PICKUP_TOAST, UI, fill } from './content/pl';
+import {
+  ARRIVAL_TEXTS, BORDER_TEXTS, COUNTRY_LOCATIVE, COUNTRY_NAME, FAIL_JOKES, MILESTONE_TEXTS,
+  OBSTACLE_NAME, PICKUP_TEXTS, UI, WIGILIA_TEXTS, fill,
+} from './content/pl';
+import { randomNickChoices } from './content/nicks';
+import { portalLink } from './content/portals';
 import { Renderer } from './render/renderer';
+import { preloadSprites } from './render/sprites';
+import { createSfx, sfxForGameEvent, type SfxPlayer } from './audio/sfx';
+import { createHaptics, hapticForGameEvent } from './audio/haptics';
+import { createMusic, type MusicPlayer } from './audio/music';
+import { renderCard, type CardData } from './share/card';
+import { setNativeShareAdapter, shareResult } from './share/share';
+import { parseGameParams } from './net/params';
+import { createRankingApi } from './net/api';
+import { OfflineRunQueue, submitOrQueue, watchQueueOnline } from './net/queue';
+import { mountLeague } from './ui/league';
+import { configureAnalytics, track, type AnalyticsHome } from './analytics/track';
+import { registerPwa } from './pwa/register';
+import { platform } from './platform';
 
 interface Settings {
   home: HomeCountry;
   from: string;
   to: string;
   mode: Mode;
+  nickId?: string;
 }
 
 const DEFAULTS: Settings = { home: 'BE', from: 'antwerpia', to: 'rzeszow', mode: 'ranked' };
@@ -30,6 +50,7 @@ function save(key: string, value: unknown): void {
   }
 }
 
+const pick = <T>(items: readonly T[]): T => items[Math.floor(Math.random() * items.length)];
 const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
 
 const canvas = $<HTMLCanvasElement>('game');
@@ -43,32 +64,84 @@ const ui = {
   hint: $('hint'),
   menu: $('menu'),
   over: $('over'),
+  league: $('league'),
+  leagueBody: $('league-body'),
   selHome: $<HTMLSelectElement>('sel-home'),
   selFrom: $<HTMLSelectElement>('sel-from'),
   selTo: $<HTMLSelectElement>('sel-to'),
   routeInfo: $('route-info'),
+  dailyInfo: $('daily-info'),
   overTitle: $('over-title'),
   overKm: $('over-km'),
   overRoute: $('over-route'),
   overCause: $('over-cause'),
   overJoke: $('over-joke'),
   overBest: $('over-best'),
+  overPortal: $<HTMLAnchorElement>('over-portal'),
 };
 
+const params = new URLSearchParams(location.search);
 let settings = load<Settings>('ce.settings', DEFAULTS);
+// Link z karty wyniku lub osadzenia w portalu ustawia kraj i miasto startu.
+const prefill = parseGameParams(params);
+if (prefill) settings = { ...settings, home: prefill.home, from: prefill.from };
+if (!settings.nickId) {
+  settings.nickId = randomNickChoices(Math.random, 1, settings.home)[0];
+  save('ce.settings', settings);
+}
+
 let route: Route = safeRoute(settings);
 let game: Game | null = null;
+/** Wyzwanie dnia: klucz daty (Europe/Warsaw) albo null dla zwykłego przejazdu. */
+let daily: string | null = null;
+let runId: string | null = null;
 let overAt = 0;
 let toastTimer = 0;
+let lastMilestone = 0;
+let cardImage: Promise<Blob> | null = null;
+let pendingReload: (() => void) | null = null;
+let closeLeague: (() => void) | null = null;
 
 function safeRoute(s: Settings): Route {
   try {
     return makeRoute(s.home, s.from, s.to);
   } catch {
-    settings = { ...DEFAULTS, mode: s.mode };
+    settings = { ...DEFAULTS, mode: s.mode, nickId: s.nickId };
     return makeRoute(settings.home, settings.from, settings.to);
   }
 }
+
+// --- Dźwięk: jeden AudioContext i wspólny miks, tworzone przy pierwszym geście ---
+let audioCtx: AudioContext | undefined;
+let sfx: SfxPlayer = createSfx();
+let music: MusicPlayer | undefined;
+const haptics = createHaptics({ vibrate: (pattern) => platform.vibrate(pattern) });
+
+function unlockAudio(): void {
+  if (audioCtx) return;
+  const Ctor = window.AudioContext ?? (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+  if (!Ctor) return;
+  try {
+    audioCtx = new Ctor();
+  } catch {
+    return;
+  }
+  const mix = audioCtx.createGain();
+  mix.connect(audioCtx.destination);
+  sfx = createSfx(audioCtx, mix);
+  music = createMusic(audioCtx, { destination: mix, volume: 0.5 });
+  void sfx.unlock();
+  void music.unlock();
+}
+
+// --- Ranking (bez konfiguracji Firebase działa na mocku) ---
+const api = createRankingApi();
+const queue = new OfflineRunQueue();
+watchQueueOnline(queue, api);
+
+// --- Analityka (wyłączona, gdy brak adresu) ---
+configureAnalytics({ endpoint: String(import.meta.env.VITE_ANALYTICS_ENDPOINT ?? '') });
+track('app_open');
 
 // --- Menu ---
 function option(value: string, label: string): HTMLOptionElement {
@@ -91,6 +164,7 @@ function fillMenu(): void {
   }
   route = safeRoute(settings);
   ui.routeInfo.textContent = `${route.from.name} → ${route.to.name}: ${route.totalKm} km`;
+  ui.dailyInfo.textContent = fill(UI.dailyHint, { title: dailyTitle(dailyKey(new Date())) });
 }
 
 ui.selHome.addEventListener('change', () => {
@@ -115,44 +189,97 @@ for (const b of document.querySelectorAll<HTMLButtonElement>('.mode')) {
 
 $('btn-start').addEventListener('click', () => {
   save('ce.settings', settings);
-  newRun();
+  daily = null;
+  void newRun();
 });
-$('btn-again').addEventListener('click', () => newRun());
+$('btn-daily').addEventListener('click', () => {
+  daily = dailyKey(new Date());
+  void newRun();
+});
+$('btn-league').addEventListener('click', () => {
+  ui.menu.hidden = true;
+  ui.league.hidden = false;
+  closeLeague = mountLeague(ui.leagueBody, api, settings.home);
+  track('league_open');
+});
+$('btn-league-close').addEventListener('click', () => showMenu());
+$('btn-again').addEventListener('click', () => void newRun());
 $('btn-menu').addEventListener('click', () => showMenu());
-$('btn-share').addEventListener('click', () => share());
+$('btn-share').addEventListener('click', () => void share());
+ui.overPortal.addEventListener('click', () => track('portal_click', { placement: 'result', home: settings.home as AnalyticsHome }));
 
 function showMenu(): void {
+  if (pendingReload) return pendingReload();
   game = null;
+  music?.stop();
+  closeLeague?.();
+  closeLeague = null;
   ui.over.hidden = true;
   ui.hud.hidden = true;
+  ui.league.hidden = true;
   ui.menu.hidden = false;
   fillMenu();
 }
 
-function newRun(): void {
-  const seed = (Math.random() * 2 ** 32) >>> 0;
-  game = new Game({ seed, mode: settings.mode, route });
+/** Tryb gry dla rdzenia: wyzwanie dnia zawsze rankingowe. */
+function currentMode(): Mode {
+  return daily ? 'ranked' : settings.mode;
+}
+
+async function newRun(): Promise<void> {
+  const runRoute = daily ? dailyRoute(daily) : route;
+  const mode = currentMode();
+  let seed = (Math.random() * 2 ** 32) >>> 0;
+  if (daily) seed = dailySeed(daily);
+  // Hak testowy dla E2E: stałe ziarno tylko z ?test=1.
+  if (params.get('test') === '1' && params.has('seed')) seed = Number(params.get('seed')) >>> 0;
+
+  runId = null;
+  if (mode === 'ranked') {
+    try {
+      const start = await api.startRun({
+        mode: daily ? 'daily' : 'ranked', home: runRoute.home, from: runRoute.from.id, to: runRoute.to.id,
+        ...(daily ? { daily } : {}),
+      });
+      runId = start.runId;
+      seed = start.seed;
+    } catch {
+      /* bez sieci gramy lokalnie, bez rankingu */
+    }
+  }
+
+  game = new Game({ seed, mode, route: runRoute });
+  lastMilestone = 0;
+  cardImage = null;
+  music?.setSeason(daily && dailyTitle(daily) === 'Na Wigilię!' ? 'holiday' : 'regular');
   ui.menu.hidden = true;
   ui.over.hidden = true;
+  ui.league.hidden = true;
   ui.hud.hidden = false;
   ui.hint.hidden = false;
-  ui.hint.textContent = UI.tapToStart;
+  ui.hint.textContent = daily ? dailyTitle(daily) : UI.tapToStart;
   ui.toast.hidden = true;
   updateHud();
 }
 
 // --- Sterowanie: dotyk, klik, spacja ---
 function tap(): void {
+  unlockAudio();
   if (!game) return;
   if (game.phase === 'over' || game.phase === 'arrived') {
-    if (performance.now() - overAt > 600) newRun();
+    if (performance.now() - overAt > 600) void newRun();
     return;
+  }
+  if (game.phase === 'ready') {
+    music?.start();
+    track('run_start', { mode: game.mode, home: game.route.home as AnalyticsHome });
   }
   game.flap();
   ui.hint.hidden = true;
 }
 
 $('stage').addEventListener('pointerdown', (e) => {
+  unlockAudio();
   if ((e.target as HTMLElement).closest('.panel')) return;
   e.preventDefault();
   tap();
@@ -160,9 +287,22 @@ $('stage').addEventListener('pointerdown', (e) => {
 window.addEventListener('keydown', (e) => {
   if (e.code === 'Space' || e.code === 'ArrowUp') {
     e.preventDefault();
-    if (!ui.menu.hidden) return;
+    if (!ui.menu.hidden || !ui.league.hidden) return;
     tap();
   }
+});
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) music?.pause();
+  else if (game?.phase === 'playing') music?.resume();
+});
+
+// Przycisk wstecz (Android) / Escape: z gry do menu, z menu wyjście z aplikacji.
+platform.onBack(() => {
+  if (ui.menu.hidden) {
+    showMenu();
+    return true;
+  }
+  return false;
 });
 
 // --- HUD i komunikaty ---
@@ -178,17 +318,51 @@ function toast(text: string): void {
   ui.toast.textContent = text;
   ui.toast.hidden = false;
   clearTimeout(toastTimer);
-  toastTimer = window.setTimeout(() => (ui.toast.hidden = true), 1400);
+  toastTimer = window.setTimeout(() => (ui.toast.hidden = true), 1600);
 }
 
 function handleEvents(g: Game): void {
   for (const e of g.drainEvents()) {
-    if (e.type === 'pickup') toast(fill(PICKUP_TOAST[e.kind], { km: e.bonusKm }));
-    else if (e.type === 'border') toast(fill(UI.welcome, { where: COUNTRY_LOCATIVE[e.country] }));
+    feedback(e);
+    if (e.type === 'pickup') toast(fill(pick(PICKUP_TEXTS[e.kind]), { km: e.bonusKm }));
+    else if (e.type === 'border') toast(pick(BORDER_TEXTS[e.country]) ?? fill(UI.welcome, { where: COUNTRY_LOCATIVE[e.country] }));
     else if (e.type === 'waypoint') toast(e.waypoint.text);
     else if (e.type === 'over' || e.type === 'arrived') showOver(g);
   }
+  const milestone = Math.floor(g.km / 100) * 100;
+  if (g.phase === 'playing' && milestone > lastMilestone && milestone > 0) {
+    lastMilestone = milestone;
+    if (ui.toast.hidden) {
+      const pool = daily && dailyTitle(daily) === 'Na Wigilię!' ? WIGILIA_TEXTS : MILESTONE_TEXTS;
+      toast(fill(pick(pool), { km: milestone }));
+    }
+  }
 }
+
+function feedback(e: GameEvent): void {
+  const sound = sfxForGameEvent(e);
+  if (sound) sfx.play(sound);
+  const haptic = hapticForGameEvent(e);
+  if (haptic) haptics.play(haptic);
+  if (e.type === 'arrived') music?.playFinishJingle();
+  else if (e.type === 'over') music?.stop();
+}
+
+function cardData(g: Game, joke: string): CardData {
+  return {
+    km: g.km,
+    totalKm: g.route.totalKm,
+    arrived: g.phase === 'arrived',
+    seconds: Math.round(g.ticks * TICK),
+    from: g.route.from,
+    to: g.route.to,
+    home: g.route.home,
+    causeText: joke,
+    ...(daily ? { daily: dailyTitle(daily) } : {}),
+  };
+}
+
+let lastCard: CardData | null = null;
 
 function showOver(g: Game): void {
   overAt = performance.now();
@@ -198,44 +372,63 @@ function showOver(g: Game): void {
   if (isBest) save(bestKey, { km: g.km });
 
   const arrived = g.phase === 'arrived';
+  const seconds = Math.round(g.ticks * TICK);
   ui.overTitle.textContent = arrived ? UI.arrived : UI.over;
   ui.overKm.textContent = fill(UI.distance, { km: g.km });
-  ui.overRoute.textContent = `${route.from.name} → ${route.to.name}`;
+  ui.overRoute.textContent = `${g.route.from.name} → ${g.route.to.name}`;
+  let joke: string;
   if (arrived) {
-    ui.overCause.textContent = UI.arrivedSub;
-    ui.overJoke.textContent = `${Math.round(g.seconds)} s`;
+    joke = pick(ARRIVAL_TEXTS);
+    ui.overCause.textContent = joke;
+    ui.overJoke.textContent = `${seconds} s`;
   } else {
     const cause = g.cause ?? 'ground';
-    const jokes = FAIL_JOKES[cause];
+    joke = pick(FAIL_JOKES[cause]);
     ui.overCause.textContent = fill(UI.stoppedBy, { what: OBSTACLE_NAME[cause].toLowerCase() });
-    ui.overJoke.textContent = `„${jokes[Math.floor(Math.random() * jokes.length)]}”`;
+    ui.overJoke.textContent = `„${joke}”`;
   }
   ui.overBest.textContent = isBest ? UI.newBest : fill(UI.best, { km: Math.max(prevBest, g.km) });
+
+  const link = portalLink(g.route.home, 'result');
+  ui.overPortal.hidden = !link;
+  if (link) {
+    ui.overPortal.href = link;
+    ui.overPortal.textContent = fill(UI.portal, { where: COUNTRY_LOCATIVE[g.route.home] });
+  }
   ui.hud.hidden = true;
   ui.over.hidden = false;
-}
 
-async function share(): Promise<void> {
-  if (!game) return;
-  const text =
-    game.phase === 'arrived'
-      ? fill(UI.shareArrivedText, { from: route.from.fromName, to: route.to.toName, sec: Math.round(game.seconds) })
-      : fill(UI.shareText, { km: game.km, from: route.from.fromName, to: route.to.toName });
-  const url = location.href.split('#')[0];
-  try {
-    if (navigator.share) {
-      await navigator.share({ title: 'Cebulak Express', text, url });
-      return;
-    }
-    await navigator.clipboard.writeText(`${text} ${url}`);
-    toastOver('Skopiowano do schowka');
-  } catch {
-    /* anulowane przez gracza */
+  // Kartę renderujemy od razu, żeby kliknięcie „Udostępnij” zachowało gest użytkownika.
+  lastCard = cardData(g, joke);
+  cardImage = renderCard(lastCard, 'story').catch(() => null as unknown as Blob);
+
+  track('run_end', {
+    km: g.km, seconds, cause: arrived ? 'arrived' : g.cause ?? 'ground', mode: g.mode, home: g.route.home as AnalyticsHome,
+  });
+  if (runId && settings.nickId) {
+    void submitOrQueue(api, queue, { runId, flapTicks: [...g.flapTicks], ticks: g.ticks, km: g.km, nickId: settings.nickId });
+    runId = null;
   }
 }
 
-function toastOver(text: string): void {
-  ui.overBest.textContent = text;
+// Natywnie udostępnia platforma (zlecenie 24); jej wynik mapujemy na wyjątki,
+// których oczekuje shareResult (zlecenie 14), żeby działał łańcuch zapasowy.
+setNativeShareAdapter({
+  async share(file, text, url) {
+    const result = await platform.share(file, text, url);
+    if (result === 'cancelled') throw new DOMException('Anulowano', 'AbortError');
+    if (result === 'unavailable') throw new Error('Udostępnianie natywne niedostępne');
+  },
+});
+
+async function share(): Promise<void> {
+  if (!lastCard) return;
+  const image = (await cardImage) ?? undefined;
+  const outcome = await shareResult(lastCard, { image });
+  if (outcome.method !== 'cancelled') {
+    const format = outcome.method === 'native' ? 'native' : outcome.method === 'clipboard' ? 'clipboard' : outcome.method === 'web-link' ? 'link' : 'image';
+    track('share_click', { format });
+  }
 }
 
 // --- Pętla: stały krok symulacji, render co klatkę ---
@@ -271,5 +464,15 @@ function resize(): void {
 }
 window.addEventListener('resize', resize);
 resize();
+preloadSprites();
 fillMenu();
 requestAnimationFrame(frame);
+void platform.initialize();
+// Aktualizacja PWA przeładowuje grę dopiero przy powrocie do menu.
+void registerPwa((reload) => {
+  if (!ui.menu.hidden) reload();
+  else {
+    pendingReload = reload;
+    toast(UI.updateReady);
+  }
+});

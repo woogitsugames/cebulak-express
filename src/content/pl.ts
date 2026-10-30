@@ -307,6 +307,12 @@ export const UI = {
   modeCozy: 'Łagodny',
   shareText: 'Przeleciałem {km} km z {from} w stronę {to}! Dasz radę dalej?',
   shareArrivedText: 'Doleciałem z {from} do {to} w {sec} s! A Ty?',
+  daily: 'Wyzwanie dnia',
+  dailyHint: 'Ta sama trasa dla wszystkich: {title}',
+  league: 'Liga Polonii',
+  close: 'Zamknij',
+  portal: 'Co słychać u Polonii {where}?',
+  updateReady: 'Nowa wersja gry gotowa — wczyta się w menu.',
 } as const;
 
 export function fill(template: string, vars: Record<string, string | number>): string {
