@@ -33,13 +33,13 @@ Ilustracje oryginalne wygenerowane w ChatGPT i wykonane programowo, 1620x900 px,
 
 | Plik | Źródło/narzędzie | Licencja | Autor / uwagi |
 |---|---|---|---|
-| `londyn.png` | ChatGPT: oryginalne ilustracje SVG (Python, CairoSVG, Pillow); korekta kafelkow | Własne, do projektu | id z `waypoints.ts`; przezroczystość |
+| `londyn.png` | ChatGPT GPT Image + Pillow/OpenCV (zlecenie 78) | Grafika generowana dla projektu | Westminster, Elizabeth Tower, London Eye; szczegóły w `ASSETS-78.md` |
 | `dover.png` | ChatGPT: oryginalne ilustracje SVG (Python, CairoSVG, Pillow); korekta kafelkow | Własne, do projektu | id z `waypoints.ts`; przezroczystość |
 | `prom-kanal.png` | ChatGPT: oryginalne ilustracje SVG (Python, CairoSVG, Pillow); korekta kafelkow | Własne, do projektu | id z `waypoints.ts`; przezroczystość |
 | `tunel-kanal.png` | ChatGPT: oryginalne ilustracje SVG (Python, CairoSVG, Pillow); korekta kafelkow | Własne, do projektu | dodatkowy motyw z briefu; obecnie poza `waypoints.ts`; przezroczystość |
-| `birmingham.png` | ChatGPT: oryginalne ilustracje SVG (Python, CairoSVG, Pillow); korekta kafelkow | Własne, do projektu | dodatkowy motyw z briefu; obecnie poza `waypoints.ts`; przezroczystość |
-| `manchester.png` | ChatGPT: oryginalne ilustracje SVG (Python, CairoSVG, Pillow); korekta kafelkow | Własne, do projektu | dodatkowy motyw z briefu; obecnie poza `waypoints.ts`; przezroczystość |
-| `edynburg.png` | ChatGPT: oryginalne ilustracje SVG (Python, CairoSVG, Pillow); korekta kafelkow | Własne, do projektu | dodatkowy motyw z briefu; obecnie poza `waypoints.ts`; przezroczystość |
+| `birmingham.png` | ChatGPT GPT Image + Pillow/OpenCV (zlecenie 78) | Grafika generowana dla projektu | Rotunda, St Martin, Bullring; szczegóły w `ASSETS-78.md` |
+| `manchester.png` | ChatGPT GPT Image + Pillow/OpenCV (zlecenie 78) | Grafika generowana dla projektu | Beetham Tower i Castlefield; szczegóły w `ASSETS-78.md` |
+| `edynburg.png` | ChatGPT GPT Image + Pillow/OpenCV (zlecenie 78) | Grafika generowana dla projektu | Castle Rock i Scott Monument; szczegóły w `ASSETS-78.md` |
 | `paryz.png` | ChatGPT: oryginalne ilustracje SVG (Python, CairoSVG, Pillow); korekta kafelkow | Własne, do projektu | id z `waypoints.ts`; przezroczystość |
 | `reims.png` | ChatGPT: oryginalne ilustracje SVG (Python, CairoSVG, Pillow); korekta kafelkow | Własne, do projektu | id z `waypoints.ts`; przezroczystość |
 | `metz.png` | ChatGPT: oryginalne ilustracje SVG (Python, CairoSVG, Pillow); korekta kafelkow | Własne, do projektu | id z `waypoints.ts`; przezroczystość |
@@ -141,7 +141,7 @@ Dokładnie **21 unikalnych identyfikatorów `country: 'DE'`** z `src/content/way
 | `oberhausen.png` | 1620×900 | SVG autorski → CairoSVG/Pillow, koncept stylistyczny GPT Image | Oryginalna ilustracja do projektu | Wielki gazometr, hutnicze kominy i wieża kopalni |
 | `saarbrucken.png` | 1620×900 | SVG autorski → CairoSVG/Pillow, koncept stylistyczny GPT Image | Oryginalna ilustracja do projektu | Most nad Saarą, przemysłowe kominy |
 | `mannheim.png` | 1620×900 | SVG autorski → CairoSVG/Pillow, koncept stylistyczny GPT Image | Oryginalna ilustracja do projektu | Okrągła wieża ciśnień i fontanny |
-| `frankfurt-main.png` | 1620×900 | SVG autorski → CairoSVG/Pillow, koncept stylistyczny GPT Image | Oryginalna ilustracja do projektu | Wieżowce nad Menem |
+| `frankfurt-main.png` | 1620×900 | ChatGPT GPT Image + Pillow/OpenCV (zlecenie 78) | Grafika generowana dla projektu | Mainhattan, Eiserner Steg i katedra; szczegóły w `ASSETS-78.md` |
 | `erfurt.png` | 1620×900 | SVG autorski → CairoSVG/Pillow, koncept stylistyczny GPT Image | Oryginalna ilustracja do projektu | Domy na moście oraz gotyckie wieże |
 | `drezno.png` | 1620×900 | SVG autorski → CairoSVG/Pillow, koncept stylistyczny GPT Image | Oryginalna ilustracja do projektu | Barokowa kopuła, Łaba i parowiec |
 | `stuttgart.png` | 1620×900 | SVG autorski → CairoSVG/Pillow, koncept stylistyczny GPT Image | Oryginalna ilustracja do projektu | Wieża telewizyjna na wzgórzu i winnice |
