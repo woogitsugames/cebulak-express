@@ -22,10 +22,12 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          base64 --decode public/assets/obstacles/source-package.b64 | tar -xz
+          cat public/assets/obstacles/source-package.part*.txt | base64 --decode > /tmp/source-31.tar.gz
+          echo 'ff36e476994fac82e6ee470a7f884e9429af6381c888bfb22949154626e7c8ad  /tmp/source-31.tar.gz' | sha256sum -c
+          tar -xzf /tmp/source-31.tar.gz
           python -m pip install --disable-pip-version-check 'cairosvg>=2.7,<3' 'pillow>=10,<13'
           python public/assets/obstacles/generate-assets.py
-          rm public/assets/obstacles/source-package.b64
+          rm public/assets/obstacles/source-package.b64 public/assets/obstacles/source-package.part*.txt
           rm .github/workflows/render-obstacles-31.yml
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
