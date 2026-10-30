@@ -62,6 +62,6 @@ Dokumentacja: [Apple — Required Reason APIs](https://developer.apple.com/docum
 
 ## Zależność od integracji i ryzyka
 
-W dniu przygotowania tego zadania `main` nie miał jeszcze `ios/` ani zasobów `public/assets/brand/`. Aby PR miał kompletną bazę iOS, przeniesiono pliki z gałęzi integracyjnej PR #32. **Koordynator** powinien najpierw scalić PR #32 i skontrolować konfliktujące pliki, szczególnie `package.json`, `package-lock.json`, `ios/`, `docs/ios.md` oraz branding. PR #39 nie powinien zastępować całej integracji gry.
+Na początku realizacji `main` nie zawierał jeszcze projektu `ios/` ani zasobów `public/assets/brand/`. **W trakcie prac PR #32 został scalony**, dlatego gałąź `zlecenie/39-ios-ci` połączono z aktualnym `main` bez nadpisywania zmian koordynatora. Docelowy diff PR #34 obejmuje wyłącznie trzynaście plików zlecenia 39. Projekt gry i lockfile pochodzą z aktualnego `main`; nie jest potrzebny kolejny import integracji.
 
 Ryzyka App Review: 4.1/4.3 (wyłącznie autorskie treści i jedna aplikacja z trasami, bez klonów) oraz 4.2 (samodzielna grywalność offline). Testy symulatora nie obejmują podpisywania, TestFlight, działania urządzenia ani przeglądu Apple.
