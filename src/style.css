@@ -194,14 +194,32 @@ button:focus-visible, select:focus-visible, summary:focus-visible, a:focus-visib
   letter-spacing: .1em;
   text-transform: uppercase;
 }
-.menu-car {
-  display: block;
-  width: min(65%, 230px);
-  height: clamp(56px, 10dvh, 80px);
-  margin: 0 auto 6px;
-  object-fit: contain;
+.menu-car-scene {
+  position: relative;
+  width: min(69%, 210px);
+  aspect-ratio: 288 / 168;
+  margin: -14px auto -3px;
   filter: drop-shadow(0 4px 0 #16323d44);
 }
+.menu-car-scene__layer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.menu-car-scene__wheel {
+  position: absolute;
+  z-index: 1;
+  top: 68.45%;
+  width: 12.5%;
+  height: 21.43%;
+  object-fit: contain;
+}
+.menu-car-scene__wheel--rear { left: 25.35%; }
+.menu-car-scene__wheel--front { left: 65.63%; }
+.menu-car-scene__body { z-index: 2; }
+.menu-car-scene__luggage { z-index: 3; }
 .modes { display: flex; gap: 8px; margin: 4px 0 10px; }
 .mode {
   flex: 1;
@@ -470,7 +488,7 @@ button:focus-visible, select:focus-visible, summary:focus-visible, a:focus-visib
 @media (max-width: 359px) {
   .panel { border-width: 19px; border-image-width: 19px 20px; padding-left: 8px; padding-right: 8px; }
   .menu-logo { max-width: 200px; }
-  .menu-car { height: 50px; }
+  .menu-car-scene { width: min(58%, 175px); }
   .mode { font-size: 12px; }
   .menu-action-grid .btn { font-size: 12px; }
   .over-ribbon { font-size: 20px; }
@@ -478,7 +496,7 @@ button:focus-visible, select:focus-visible, summary:focus-visible, a:focus-visib
 }
 @media (max-height: 700px) {
   .menu-logo { max-width: 175px; }
-  .menu-car { height: 45px; }
+  .menu-car-scene { width: min(52%, 165px); }
   .menu-subtitle { font-size: 10px; }
   .modes { margin-bottom: 6px; }
   .panel--menu .btn--play { min-height: 62px; }
