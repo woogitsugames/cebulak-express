@@ -2,7 +2,7 @@ import type { CountryCode, HomeCountry } from '../core/route';
 
 /**
  * Punkty trasy: miasta i miejsca, nad którymi przelatujemy. Trasy fabularyzowane
- * na podstawie typowych dróg Polonii do Polski; km częściowo zweryfikowane z routingiem (zob. docs/trasy-weryfikacja.md),
+ * na podstawie typowych dróg Polonii do Polski; km częściowo zweryfikowane z routingiem (zob. docs/trasy-weryfikacja.md i docs/trasy-nowe-kraje.md),
  * liczone od startu trasy wzorcowej. Odcinek w Polsce gra liczy osobno — od punktu
  * `rest` (stacja za granicą) do wybranego miasta docelowego.
  *
@@ -77,6 +77,20 @@ const BYDGOSZCZ: Omit<Waypoint, 'km'> = {
   motifs: ['spichlerze nad wodą', 'mosty i barki'], text: 'Bydgoszcz. Rzeka płynie, kilometrów ubywa.',
 };
 
+
+const BIALYSTOK: Omit<Waypoint, 'km'> = {
+  id: 'bialystok', name: 'Białystok', country: 'PL', kind: 'city', lat: 53.13, lon: 23.16,
+  motifs: ['rynek z ratuszem', 'zielone alejki'], text: 'Białystok. Coraz bliżej rodzinnego stołu.',
+};
+const LOMZA: Omit<Waypoint, 'km'> = {
+  id: 'lomza', name: 'Łomża', country: 'PL', kind: 'city', lat: 53.18, lon: 22.06,
+  motifs: ['most nad Narwią', 'wieża starego miasta'], text: 'Łomża. Jeszcze trochę do obiadu.',
+};
+const OLSZTYN: Omit<Waypoint, 'km'> = {
+  id: 'olsztyn', name: 'Olsztyn', country: 'PL', kind: 'city', lat: 53.78, lon: 20.49,
+  motifs: ['jezioro', 'ceglany zamek'], text: 'Olsztyn. Jeziora mijają, dom coraz bliżej.',
+};
+
 /** Wspólny odcinek przez Niemcy od Zagłębia Ruhry do Świecka (km względem Dortmundu). */
 function viaRuhrToSwiecko(dortmundKm: number): Waypoint[] {
   const d = dortmundKm;
@@ -105,6 +119,31 @@ function dresdenToJedrzychowice(dresdenKm: number): Waypoint[] {
     { id: 'drezno', name: 'Drezno', country: 'DE', km: d, kind: 'city', motifs: ['barokowa panorama nad Łabą', 'kopuła nad starym miastem', 'parowiec na Łabie'], text: 'Drezno. Barokowa panorama, granica tuż-tuż.' },
     { id: 'granica-jedrzychowice', name: 'Granica (Zgorzelec)', country: 'PL', km: d + 100, kind: 'border', motifs: [...BORDER_MOTIFS, 'most nad Nysą Łużycką'], text: 'Zgorzelec. Rzeczpospolita Polska wita!', lat: 51.16, lon: 15.0 },
     { id: 'stacja-jedrzychowice', name: 'Stacja przy A4', country: 'PL', km: d + 108, kind: 'rest', motifs: STATION_MOTIFS, text: 'Hot dogi i kawa przy A4. Zapiekanka na deser.', lat: 51.15, lon: 15.05 },
+  ];
+}
+
+
+/** Korytarz Brno–Ołomuniec–Ostrawa–Cieszyn, km od Brna. */
+function czechToCieszyn(brnoKm: number): Waypoint[] {
+  const b = brnoKm;
+  return [
+    { id: 'brno', name: 'Brno', country: 'CZ', km: b, kind: 'city', motifs: ['wieże katedry na wzgórzu', 'tramwaje'], text: 'Brno. Termos trzyma ciepło, mapa kierunek.' },
+    { id: 'olomouc', name: 'Ołomuniec', country: 'CZ', km: b + 60, kind: 'city', motifs: ['wieża ratusza', 'kamienice starego miasta'], text: 'Ołomuniec. Jeszcze jeden postój na kawę.' },
+    { id: 'ostrawa', name: 'Ostrawa', country: 'CZ', km: b + 130, kind: 'city', motifs: ['dawne wieże hutnicze', 'mosty nad Odrą'], text: 'Ostrawa. Ostatnia prosta przed granicą.' },
+    { id: 'cesky-tesin', name: 'Czeski Cieszyn', country: 'CZ', km: b + 150, kind: 'city', motifs: ['most nad Olzą', 'kamienice przy rynku'], text: 'Cieszyn za rzeką. Już pachnie domowym obiadem.' },
+    { id: 'granica-cieszyn', name: 'Granica (Cieszyn)', country: 'PL', km: b + 160, kind: 'border', motifs: BORDER_MOTIFS, text: 'Cieszyn. Polska na trasie, obiad coraz bliżej!', lat: 49.75, lon: 18.62 },
+    { id: 'stacja-cieszyn', name: 'Stacja za granicą', country: 'PL', km: b + 170, kind: 'rest', motifs: STATION_MOTIFS, text: 'Kawa na stacji i jedziemy dalej.', lat: 49.75, lon: 18.65 },
+  ];
+}
+
+/** Odcinek Ystad–Świnoujście, modelowany jako droga i prom. */
+function ystadToSwinoujscie(ystadKm: number): Waypoint[] {
+  const y = ystadKm;
+  return [
+    { id: 'ystad', name: 'Ystad', country: 'SE', km: y, kind: 'crossing', motifs: ['port z promem', 'domy z muru pruskiego'], text: 'Ystad. Walizki też chcą na pokład.' },
+    { id: 'prom-baltyk', name: 'Prom przez Bałtyk', country: 'SE', km: y + 85, kind: 'crossing', motifs: ['prom na Bałtyku', 'mewy na pokładzie'], text: 'Prom. Kawa w dłoni, słoiki zabezpieczone.' },
+    { id: 'swinoujscie', name: 'Świnoujście', country: 'PL', km: y + 165, kind: 'border', motifs: ['latarnia morska', 'port', ...BORDER_MOTIFS], text: 'Świnoujście. Po promie już polski brzeg!', lat: 53.91, lon: 14.25 },
+    { id: 'stacja-swinoujscie', name: 'Stacja przy S3', country: 'PL', km: y + 175, kind: 'rest', motifs: STATION_MOTIFS, text: 'Stacja po rejsie. Kawa i w drogę.', lat: 53.85, lon: 14.3 },
   ];
 }
 
@@ -185,12 +224,96 @@ export const ROUTE_WAYPOINTS: Record<HomeCountry, Waypoint[]> = {
     { id: 'hamburg', name: 'Hamburg', country: 'DE', km: 335, kind: 'city', motifs: ['port z dźwigami', 'ratusz z zieloną kopułą', 'spichlerze z cegły'], text: 'Hamburg. Mewy robią zdjęcia kombi.' },
     ...berlinToSwiecko(625),
   ],
+  IE: [
+    { id: 'dublin', name: 'Dublin', country: 'IE', km: 0, kind: 'city', motifs: ['ceglane kamienice', 'rzeka z mostami'], text: 'Dublin. Bagaże gotowe, kierunek: dom.' },
+    { id: 'wicklow', name: 'Wicklow', country: 'IE', km: 65, kind: 'city', motifs: ['zielone wzgórza', 'kamienne ogrodzenia'], text: 'Wicklow. Zieleń za oknem i torby na dachu.' },
+    { id: 'rosslare', name: 'Rosslare', country: 'IE', km: 155, kind: 'crossing', motifs: ['terminal promowy', 'mewy nad zatoką'], text: 'Rosslare. Na promie miejsca na słoiki nie brak.' },
+    { id: 'prom-irlandia-francja', name: 'Prom do Francji', country: 'IE', km: 455, kind: 'crossing', motifs: ['prom na otwartym morzu', 'kubek kawy przy oknie'], text: 'Prom. Spokojna chwila, zanim wrócą zakręty.' },
+    { id: 'cherbourg', name: 'Cherbourg', country: 'FR', km: 755, kind: 'city', motifs: ['baseny portowe', 'latarnie morskie'], text: 'Cherbourg. Ląd pod kołami, mapa znów pracuje.' },
+    { id: 'caen', name: 'Caen', country: 'FR', km: 875, kind: 'city', motifs: ['wieże opactwa', 'kamienny most'], text: 'Caen. Pierwszy odcinek po rejsie zaliczony.' },
+    { id: 'rouen', name: 'Rouen', country: 'FR', km: 995, kind: 'city', motifs: ['gotycka wieża', 'nabrzeże Sekwany'], text: 'Rouen. Katedra wysoka, dach jeszcze wyższy.' },
+    { id: 'reims', name: 'Reims', country: 'FR', km: 1195, kind: 'city', motifs: ['wieże katedry', 'łagodne wzgórza'], text: 'Reims. Kawa się skończyła, kilometry nie.' },
+    { id: 'metz', name: 'Metz', country: 'FR', km: 1360, kind: 'city', motifs: ['mosty nad Mozelą', 'kamienna katedra'], text: 'Metz. W bagażniku wszystko, oprócz wolnego miejsca.' },
+    { id: 'saarbrucken', name: 'Saarbrücken', country: 'DE', km: 1430, kind: 'city', motifs: ['most nad Saarą', 'zielone wzgórza'], text: 'Saarbrücken. Nowy kraj, ten sam pełny dach.' },
+    { id: 'mannheim', name: 'Mannheim', country: 'DE', km: 1560, kind: 'city', motifs: ['wieża ciśnień', 'rzeka z barkami'], text: 'Mannheim. Termos dostał kolejne zadanie.' },
+    { id: 'frankfurt-main', name: 'Frankfurt nad Menem', country: 'DE', km: 1610, kind: 'city', motifs: ['wieżowce nad rzeką', 'mosty'], text: 'Frankfurt. Piętra rosną, kilometrów ubywa.' },
+    { id: 'erfurt', name: 'Erfurt', country: 'DE', km: 1870, kind: 'city', motifs: ['kamienice na moście', 'wieże starego miasta'], text: 'Erfurt. Jeszcze trochę i pora na obiad.' },
+    ...dresdenToJedrzychowice(2085),
+  ],
+  ES: [
+    { id: 'barcelona', name: 'Barcelona', country: 'ES', km: 0, kind: 'city', motifs: ['wieże modernistycznej świątyni jako sylwetka', 'palmy'], text: 'Barcelona. Walizki gotowe na długą drogę.' },
+    { id: 'girona', name: 'Girona', country: 'ES', km: 105, kind: 'city', motifs: ['kolorowe domy nad rzeką', 'kamienny most'], text: 'Girona. Jeszcze chwila słońca do bagażnika.' },
+    { id: 'la-jonquera', name: 'La Jonquera', country: 'ES', km: 170, kind: 'border', motifs: ['górski przejazd', 'znaki drogowe bez marek'], text: 'Granica. Przed nami kolejny rozdział trasy.' },
+    { id: 'perpignan', name: 'Perpignan', country: 'FR', km: 215, kind: 'city', motifs: ['ceglana brama miejska', 'palmy przy placu'], text: 'Perpignan. Wjechaliśmy do Francji.' },
+    { id: 'narbonne', name: 'Narbonne', country: 'FR', km: 275, kind: 'city', motifs: ['kanał z barkami', 'stare kamienice'], text: 'Narbonne. Kanał płynie, kombi też.' },
+    { id: 'montpellier', name: 'Montpellier', country: 'FR', km: 380, kind: 'city', motifs: ['jasne fasady', 'tramwaj'], text: 'Montpellier. Bagażnik nadal trzyma fason.' },
+    { id: 'lyon', name: 'Lyon', country: 'FR', km: 650, kind: 'city', motifs: ['most nad Rodanem', 'wzgórze z bazyliką jako sylwetka'], text: 'Lyon. Most za mostem i bliżej domu.' },
+    { id: 'besancon', name: 'Besançon', country: 'FR', km: 850, kind: 'city', motifs: ['zakole rzeki', 'twierdza na wzgórzu'], text: 'Besançon. Jeszcze miejsce na jedną torbę?' },
+    { id: 'mulhouse', name: 'Mulhouse', country: 'FR', km: 965, kind: 'city', motifs: ['stary ratusz', 'kominy fabryczne'], text: 'Mulhouse. Termos wie, że droga jeszcze długa.' },
+    { id: 'freiburg', name: 'Fryburg Bryzgowijski', country: 'DE', km: 1045, kind: 'city', motifs: ['strzelista wieża katedry', 'lasy na horyzoncie'], text: 'Fryburg. Znów nowy kraj i nowa kawa.' },
+    { id: 'karlsruhe', name: 'Karlsruhe', country: 'DE', km: 1175, kind: 'city', motifs: ['pałac i park', 'aleje drzew'], text: 'Karlsruhe. Torby siedzą, licznik biegnie.' },
+    { id: 'norymberga', name: 'Norymberga', country: 'DE', km: 1445, kind: 'city', motifs: ['zamek na wzgórzu', 'dachy kamienic'], text: 'Norymberga. Dom coraz bliżej.' },
+    { id: 'jena', name: 'Jena', country: 'DE', km: 1580, kind: 'city', motifs: ['smukła wieża', 'zielone wzgórza'], text: 'Jena. Zapas kawy już policzony.' },
+    ...dresdenToJedrzychowice(1700),
+  ],
+  IT: [
+    { id: 'mediolan', name: 'Mediolan', country: 'IT', km: 0, kind: 'city', motifs: ['iglice katedry jako sylwetka', 'tramwaj'], text: 'Mediolan. Walizki po dach i jedziemy.' },
+    { id: 'werona', name: 'Werona', country: 'IT', km: 160, kind: 'city', motifs: ['stary kamienny most', 'zabytkowa arena jako sylwetka'], text: 'Werona. Bagażnik dostał owacje.' },
+    { id: 'padwa', name: 'Padwa', country: 'IT', km: 235, kind: 'city', motifs: ['arkadowe kamienice', 'wieża zegarowa'], text: 'Padwa. Jeszcze chwila i góry w oknie.' },
+    { id: 'mestre', name: 'Mestre', country: 'IT', km: 275, kind: 'city', motifs: ['kanał przy drodze', 'stare wieże w oddali'], text: 'Mestre. W drogę na północ.' },
+    { id: 'udine', name: 'Udine', country: 'IT', km: 410, kind: 'city', motifs: ['wieża zamkowa na wzgórzu', 'góry'], text: 'Udine. Alpy już zaglądają do kabiny.' },
+    { id: 'tarvisio', name: 'Tarvisio', country: 'IT', km: 490, kind: 'border', motifs: ['zielone przełęcze', 'tunel w górach'], text: 'Tarvisio. Góry za oknem, słoiki przypięte.' },
+    { id: 'villach', name: 'Villach', country: 'AT', km: 530, kind: 'city', motifs: ['alpejski krajobraz', 'most nad rzeką'], text: 'Villach. Alpy zostają za nami.' },
+    { id: 'graz', name: 'Graz', country: 'AT', km: 700, kind: 'city', motifs: ['wzgórze z wieżą zegarową', 'czerwone dachy'], text: 'Graz. Zegar tyka, my liczymy kilometry.' },
+    { id: 'wieden', name: 'Wiedeń', country: 'AT', km: 875, kind: 'city', motifs: ['kopuła zabytkowego gmachu', 'tramwaj'], text: 'Wiedeń. Jeszcze parę godzin do pierogów.' },
+    { id: 'mikulov', name: 'Mikulov', country: 'CZ', km: 955, kind: 'border', motifs: ['zamek na skale', 'winnice na wzgórzach'], text: 'Mikulov. Zmieniamy kraj, nie kierunek.' },
+    ...czechToCieszyn(1015),
+  ],
+  AT: [
+    { id: 'wieden', name: 'Wiedeń', country: 'AT', km: 0, kind: 'city', motifs: ['kopuła zabytkowego gmachu', 'tramwaj'], text: 'Wiedeń. Pakujemy wspomnienia i ruszamy.' },
+    { id: 'mikulov', name: 'Mikulov', country: 'CZ', km: 75, kind: 'border', motifs: ['zamek na wzgórzu', 'łagodne pagórki'], text: 'Mikulov. Przez Czechy coraz bliżej domu.' },
+    ...czechToCieszyn(135),
+  ],
+  SE: [
+    { id: 'sztokholm', name: 'Sztokholm', country: 'SE', km: 0, kind: 'city', motifs: ['kolorowe kamienice nad wodą', 'mosty między wyspami'], text: 'Sztokholm. Bagażnik gotowy do podróży.' },
+    { id: 'nykoping', name: 'Nyköping', country: 'SE', km: 100, kind: 'city', motifs: ['zamek nad rzeką', 'zielone wzgórza'], text: 'Nyköping. Pierwsza kawa zaliczona.' },
+    { id: 'norrkoping', name: 'Norrköping', country: 'SE', km: 160, kind: 'city', motifs: ['czerwone budynki nad wodą', 'most'], text: 'Norrköping. Walizki się nie nudzą.' },
+    { id: 'jonkoping', name: 'Jönköping', country: 'SE', km: 320, kind: 'city', motifs: ['jezioro z łodziami', 'drewniane domki'], text: 'Jönköping. Jezioro mija, kombi jedzie dalej.' },
+    { id: 'helsingborg', name: 'Helsingborg', country: 'SE', km: 510, kind: 'city', motifs: ['ceglana wieża', 'prom w cieśninie'], text: 'Helsingborg. Mewy znają już nasz bagażnik.' },
+    { id: 'malmo', name: 'Malmö', country: 'SE', km: 570, kind: 'city', motifs: ['most nad cieśniną', 'ceglany zamek'], text: 'Malmö. Port coraz bliżej.' },
+    ...ystadToSwinoujscie(620),
+  ],
+  FI: [
+    { id: 'helsinki', name: 'Helsinki', country: 'FI', km: 0, kind: 'city', motifs: ['jasna kopuła nad portem', 'tramwaje'], text: 'Helsinki. W drogę, najpierw prom!' },
+    { id: 'port-helsinki', name: 'Port w Helsinkach', country: 'FI', km: 12, kind: 'crossing', motifs: ['terminal promowy', 'statki przy nabrzeżu'], text: 'Port. Bagaże też mają bilety.' },
+    { id: 'prom-zatoka-finska', name: 'Prom przez Zatokę Fińską', country: 'FI', km: 50, kind: 'crossing', motifs: ['prom', 'mewy', 'woda po horyzont'], text: 'Prom. Kawa i krótka przerwa od drogi.' },
+    { id: 'tallinn', name: 'Tallinn', country: 'EE', km: 100, kind: 'city', motifs: ['wieże średniowiecznego miasta', 'port'], text: 'Tallinn. Wysiadamy z promu. Kierunek: Polska.' },
+    { id: 'parnu', name: 'Pärnu', country: 'EE', km: 230, kind: 'city', motifs: ['drewniane domki', 'plaża i las'], text: 'Pärnu. Las za oknem, termos wciąż pełny.' },
+    { id: 'granica-ee-lv', name: 'Granica Estonii i Łotwy', country: 'LV', km: 290, kind: 'border', motifs: ['droga przez lasy', 'znak graniczny bez logo'], text: 'Łotwa. Na mapie coraz bliżej domu.' },
+    { id: 'ryga', name: 'Ryga', country: 'LV', km: 400, kind: 'city', motifs: ['secesyjne fasady', 'most nad Dźwiną'], text: 'Ryga. Miasto mija, pierogi czekają.' },
+    { id: 'bauska', name: 'Bauska', country: 'LV', km: 470, kind: 'city', motifs: ['zamek nad rzeką', 'pola za miastem'], text: 'Bauska. Kawa już trochę chłodniejsza.' },
+    { id: 'granica-lv-lt', name: 'Granica Łotwy i Litwy', country: 'LT', km: 505, kind: 'border', motifs: ['szosa przez pola', 'łąki'], text: 'Litwa. Jeszcze trochę asfaltu i granica.' },
+    { id: 'panevezys', name: 'Poniewież', country: 'LT', km: 565, kind: 'city', motifs: ['most nad rzeką', 'zabudowa rynku'], text: 'Poniewież. Słoiki nadal w komplecie.' },
+    { id: 'kowno', name: 'Kowno', country: 'LT', km: 665, kind: 'city', motifs: ['zamek u zbiegu rzek', 'kamienne uliczki'], text: 'Kowno. Już tylko pół termosu drogi.' },
+    { id: 'mariampol', name: 'Mariampol', country: 'LT', km: 730, kind: 'city', motifs: ['zielone parki', 'niskie kamienice'], text: 'Mariampol. Polska już niedaleko.' },
+    { id: 'granica-budzisko', name: 'Granica (Budzisko)', country: 'PL', km: 780, kind: 'border', motifs: BORDER_MOTIFS, text: 'Budzisko. Polska! Słoiki prawie u celu.', lat: 54.28, lon: 23.08 },
+    { id: 'stacja-budzisko', name: 'Stacja za granicą', country: 'PL', km: 790, kind: 'rest', motifs: STATION_MOTIFS, text: 'Na stacji gorąca kawa. Do domu!', lat: 54.29, lon: 23.07 },
+  ],
+  LU: [
+    { id: 'luksemburg', name: 'Luksemburg', country: 'LU', km: 0, kind: 'city', motifs: ['most nad doliną', 'kamienne fortyfikacje'], text: 'Luksemburg. Torby na dach i ruszamy.' },
+    { id: 'trier', name: 'Trewir', country: 'DE', km: 60, kind: 'city', motifs: ['starożytna brama miejska', 'kamienny most'], text: 'Trewir. Granica minęła, trasa trwa.' },
+    { id: 'koblenz', name: 'Koblencja', country: 'DE', km: 190, kind: 'city', motifs: ['dwie rzeki u zbiegu', 'zamek na wzgórzu'], text: 'Koblencja. Dwie rzeki, jeden cel.' },
+    { id: 'frankfurt-main', name: 'Frankfurt nad Menem', country: 'DE', km: 315, kind: 'city', motifs: ['wieżowce nad Menem', 'mosty'], text: 'Frankfurt. Kombi nie liczy pięter.' },
+    { id: 'erfurt', name: 'Erfurt', country: 'DE', km: 570, kind: 'city', motifs: ['kamienice na moście', 'gotyckie wieże'], text: 'Erfurt. Walizki proszą o krótszy objazd.' },
+    ...dresdenToJedrzychowice(780),
+  ],
+
 };
 
 /** Polskie miasta „po drodze” — pokazywane, gdy leżą między granicą a celem. */
 export const PL_TRANSIT: Omit<Waypoint, 'km'>[] = [
   POZNAN, LODZ, WARSZAWA, SZCZECIN, WROCLAW, LEGNICA,
-  KRAKOW, KATOWICE, GDANSK, SLUPSK, BYDGOSZCZ,
+  KRAKOW, KATOWICE, GDANSK, SLUPSK, BYDGOSZCZ, BIALYSTOK, LOMZA, OLSZTYN,
 ];
 
 /** Dom na końcu trasy (meta). */

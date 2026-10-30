@@ -1,10 +1,10 @@
 import { HOME_WAYPOINT, PL_TRANSIT, ROUTE_WAYPOINTS, type Waypoint } from '../content/waypoints';
 
 /** Kraje zamieszkania w MVP (decyzja D3) i Polska jako cel. */
-export type CountryCode = 'BE' | 'NL' | 'DE' | 'UK' | 'FR' | 'CH' | 'NO' | 'DK' | 'SE' | 'PL';
-export type HomeCountry = 'BE' | 'NL' | 'DE' | 'UK' | 'FR' | 'CH' | 'NO' | 'DK';
+export type CountryCode = 'BE' | 'NL' | 'DE' | 'UK' | 'FR' | 'CH' | 'NO' | 'DK' | 'IE' | 'ES' | 'IT' | 'AT' | 'SE' | 'FI' | 'LU' | 'CZ' | 'EE' | 'LV' | 'LT' | 'PL';
+export type HomeCountry = 'BE' | 'NL' | 'DE' | 'UK' | 'FR' | 'CH' | 'NO' | 'DK' | 'IE' | 'ES' | 'IT' | 'AT' | 'SE' | 'FI' | 'LU';
 
-export const HOME_COUNTRIES: readonly HomeCountry[] = ['BE', 'NL', 'DE', 'UK', 'FR', 'CH', 'NO', 'DK'];
+export const HOME_COUNTRIES: readonly HomeCountry[] = ['BE', 'NL', 'DE', 'UK', 'FR', 'CH', 'NO', 'DK', 'IE', 'ES', 'IT', 'AT', 'SE', 'FI', 'LU'];
 
 export interface City {
   id: string;
@@ -67,6 +67,42 @@ export const START_CITIES: Record<HomeCountry, City[]> = {
     { id: 'aarhus', name: 'Aarhus', fromName: 'Aarhus', toName: 'Aarhus', lat: 56.16, lon: 10.2, via: { route: 'DK', at: 'hamburg', km: 380 } },
     { id: 'odense', name: 'Odense', fromName: 'Odense', toName: 'Odense', lat: 55.4, lon: 10.39, via: { route: 'DK', at: 'hamburg', km: 300 } },
   ],
+  IE: [
+    { id: 'dublin', name: 'Dublin', fromName: 'Dublina', toName: 'Dublina', lat: 53.35, lon: -6.26 },
+    { id: 'cork', name: 'Cork', fromName: 'Cork', toName: 'Cork', lat: 51.9, lon: -8.48, via: { route: 'IE', at: 'rosslare', km: 220 } },
+    { id: 'limerick', name: 'Limerick', fromName: 'Limerick', toName: 'Limerick', lat: 52.66, lon: -8.63, via: { route: 'IE', at: 'rosslare', km: 200 } },
+  ],
+  ES: [
+    { id: 'barcelona', name: 'Barcelona', fromName: 'Barcelony', toName: 'Barcelony', lat: 41.39, lon: 2.17 },
+    { id: 'madryt', name: 'Madryt', fromName: 'Madrytu', toName: 'Madrytu', lat: 40.42, lon: -3.7, via: { route: 'ES', at: 'barcelona', km: 620 } },
+    { id: 'walencja', name: 'Walencja', fromName: 'Walencji', toName: 'Walencji', lat: 39.47, lon: -0.38, via: { route: 'ES', at: 'barcelona', km: 350 } },
+  ],
+  IT: [
+    { id: 'mediolan', name: 'Mediolan', fromName: 'Mediolanu', toName: 'Mediolanu', lat: 45.46, lon: 9.19 },
+    { id: 'rzym', name: 'Rzym', fromName: 'Rzymu', toName: 'Rzymu', lat: 41.9, lon: 12.5, via: { route: 'IT', at: 'mestre', km: 530 } },
+    { id: 'bolonia', name: 'Bolonia', fromName: 'Bolonii', toName: 'Bolonii', lat: 44.49, lon: 11.34, via: { route: 'IT', at: 'mestre', km: 160 } },
+  ],
+  AT: [
+    { id: 'wieden', name: 'Wiedeń', fromName: 'Wiednia', toName: 'Wiednia', lat: 48.21, lon: 16.37 },
+    { id: 'linz', name: 'Linz', fromName: 'Linzu', toName: 'Linzu', lat: 48.31, lon: 14.29, via: { route: 'AT', at: 'brno', km: 275 } },
+    { id: 'salzburg', name: 'Salzburg', fromName: 'Salzburga', toName: 'Salzburga', lat: 47.8, lon: 13.05, via: { route: 'AT', at: 'brno', km: 420 } },
+  ],
+  SE: [
+    { id: 'sztokholm', name: 'Sztokholm', fromName: 'Sztokholmu', toName: 'Sztokholmu', lat: 59.33, lon: 18.07 },
+    { id: 'goteborg', name: 'Göteborg', fromName: 'Göteborga', toName: 'Göteborga', lat: 57.71, lon: 11.97, via: { route: 'SE', at: 'helsingborg', km: 210 } },
+    { id: 'malmo', name: 'Malmö', fromName: 'Malmö', toName: 'Malmö', lat: 55.61, lon: 13 },
+  ],
+  FI: [
+    { id: 'helsinki', name: 'Helsinki', fromName: 'Helsinek', toName: 'Helsinek', lat: 60.17, lon: 24.94 },
+    { id: 'tampere', name: 'Tampere', fromName: 'Tampere', toName: 'Tampere', lat: 61.5, lon: 23.76, via: { route: 'FI', at: 'helsinki', km: 180 } },
+    { id: 'turku', name: 'Turku', fromName: 'Turku', toName: 'Turku', lat: 60.45, lon: 22.27, via: { route: 'FI', at: 'helsinki', km: 170 } },
+  ],
+  LU: [
+    { id: 'luksemburg', name: 'Luksemburg', fromName: 'Luksemburga', toName: 'Luksemburga', lat: 49.61, lon: 6.13 },
+    { id: 'esch-sur-alzette', name: 'Esch-sur-Alzette', fromName: 'Esch-sur-Alzette', toName: 'Esch-sur-Alzette', lat: 49.5, lon: 5.98, via: { route: 'LU', at: 'trier', km: 80 } },
+    { id: 'differdange', name: 'Differdange', fromName: 'Differdange', toName: 'Differdange', lat: 49.52, lon: 5.89, via: { route: 'LU', at: 'trier', km: 95 } },
+  ],
+
 };
 
 export const PL_CITIES: City[] = [
@@ -213,6 +249,21 @@ export function makeRoute(home: HomeCountry, fromId: string, toId: string): Rout
       'gdansk': 605, 'slupsk': 570, 'rzeszow': 580, 'lublin': 640,
       'olsztyn': 640, 'bialystok': 735,
     },
+
+    'stacja-cieszyn': {
+      'katowice': 85, 'krakow': 145, 'rzeszow': 235, 'kielce': 250,
+      'opole': 175, 'wroclaw': 230, 'legnica': 300, 'lodz': 280,
+      'warszawa': 355, 'lublin': 370, 'poznan': 420, 'zielona-gora': 475,
+      'bydgoszcz': 500, 'bialystok': 565, 'olsztyn': 590, 'gdansk': 630,
+      'slupsk': 615, 'szczecin': 680,
+    },
+    'stacja-budzisko': {
+      'bialystok': 125, 'lomza': 175, 'olsztyn': 285, 'warszawa': 335,
+      'lublin': 440, 'gdansk': 450, 'lodz': 465, 'bydgoszcz': 525,
+      'kielce': 540, 'slupsk': 555, 'rzeszow': 620, 'poznan': 635,
+      'krakow': 650, 'katowice': 675, 'opole': 700, 'wroclaw': 730,
+      'zielona-gora': 780, 'szczecin': 800,
+    },
     'stacja-swinoujscie': {
       'szczecin': 90, 'slupsk': 235, 'gdansk': 340, 'poznan': 380,
       'bydgoszcz': 420, 'zielona-gora': 375, 'wroclaw': 510,
@@ -229,7 +280,9 @@ export function makeRoute(home: HomeCountry, fromId: string, toId: string): Rout
     }
     // Obszary przygraniczne i góry mają różny stosunek drogi do linii prostej.
     const factor = rest.id === 'stacja-swinoujscie' ? 1.34
-      : rest.id === 'stacja-jedrzychowice' ? 1.28 : 1.31;
+      : rest.id === 'stacja-jedrzychowice' ? 1.28
+        : rest.id === 'stacja-cieszyn' ? 1.30
+          : rest.id === 'stacja-budzisko' ? 1.35 : 1.31;
     return Math.round(haversineKm(restPos, { lat: point.lat, lon: point.lon }) * factor);
   };
 
@@ -244,7 +297,18 @@ export function makeRoute(home: HomeCountry, fromId: string, toId: string): Rout
   const northCentral = to.lat >= 52.7 && to.lon >= 17.0 && to.lon <= 20.8;
   let candidateIds: string[];
 
-  if (rest.id === 'stacja-swinoujscie') {
+  if (rest.id === 'stacja-cieszyn') {
+    // Południowy wjazd z Czech: A1/S1 na Katowice, dalej A4 lub A1.
+    candidateIds = southeast ? ['katowice', 'krakow']
+      : baltic ? ['katowice', 'lodz', 'gdansk']
+        : ['katowice', 'lodz', 'warszawa'];
+  } else if (rest.id === 'stacja-budzisko') {
+    // Północno-wschodni wjazd z Litwy: Podlasie albo S61/S8 ku centrum.
+    candidateIds = baltic ? ['olsztyn', 'gdansk']
+      : to.lon >= 22 && to.lat >= 52 ? ['bialystok']
+        : to.lon >= 21.5 && to.lat < 52 ? ['bialystok', 'lublin']
+          : ['lomza', 'warszawa'];
+  } else if (rest.id === 'stacja-swinoujscie') {
     // Nad morzem bez zbędnego zawracania przez Szczecin; w głębi lądu S3.
     candidateIds = baltic ? ['slupsk', 'gdansk']
       : southeast ? ['szczecin', 'wroclaw', 'katowice']

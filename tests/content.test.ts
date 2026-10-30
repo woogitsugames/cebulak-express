@@ -18,7 +18,7 @@ import { PL_TRANSIT, ROUTE_WAYPOINTS } from '../src/content/waypoints';
 import type { ObstacleKind, PickupKind } from '../src/core/obstacles';
 import type { CountryCode } from '../src/core/route';
 
-const COUNTRIES = ['BE', 'NL', 'DE', 'UK', 'FR', 'CH', 'NO', 'DK', 'SE', 'PL'] as const satisfies readonly CountryCode[];
+const COUNTRIES = ['BE', 'NL', 'DE', 'UK', 'FR', 'CH', 'NO', 'DK', 'SE', 'IE', 'ES', 'IT', 'AT', 'FI', 'LU', 'CZ', 'EE', 'LV', 'LT', 'PL'] as const satisfies readonly CountryCode[];
 const OBSTACLES = ['viaduct', 'sign', 'crane', 'roadworks', 'barrier', 'truck', 'ground'] as const satisfies readonly ObstacleKind[];
 const PICKUPS = ['parcel', 'jar'] as const satisfies readonly PickupKind[];
 

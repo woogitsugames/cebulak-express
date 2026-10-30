@@ -48,7 +48,7 @@ Stan researchu: **30.10.2026**. Adresy WWW pochodzą z rzeczywistych stron i z l
 
 Źródła pomocnicze: [Social Blade — Aktualnosci.be](https://socialblade.com/facebook/user/aktualnosci.be), [artykuł redakcyjny z odsyłaczem do posta na Facebooku](https://aktualnosci.be/2025/11/04/konkurs-co-kryje-sie-w-torbie-polaka-w-belgii/), [CMS PoPolsku/TuWiesz — list_portals](https://popolsku.be/) (wewnętrzne źródło instancji, bez publicznego endpointu listy).
 
-**Decyzja implementacyjna:** `src/content/portals.ts` nie zawiera niezweryfikowanych linków Facebook. Kod rozróżnia linki news, guides i facebook; dla nieznanego profilu `portalLink(..., 'facebook')` zwraca `undefined`. Po weryfikacji przez właściciela wpisujemy pełny URL w mapie. Kraje w kodzie ograniczamy do `HomeCountry` (BE, NL, DE, UK, FR, CH, NO, DK); pozostałe adresy zachowujemy tutaj na przyszłość.
+**Decyzja implementacyjna:** `src/content/portals.ts` nie zawiera niezweryfikowanych linków Facebook. Kod rozróżnia linki news, guides i facebook; dla nieznanego profilu `portalLink(..., 'facebook')` zwraca `undefined`. Po weryfikacji przez właściciela wpisujemy pełny URL w mapie. `HomeCountry` obejmuje 15 krajów (BE, NL, DE, UK, FR, CH, NO, DK, IE, ES, IT, AT, SE, FI, LU); adresy IE/AT/FI/LU pozostają nieaktywne do publicznej weryfikacji.
 
 ## Metoda sprawdzenia
 

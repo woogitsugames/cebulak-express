@@ -30,7 +30,7 @@ describe('trasy i dystans', () => {
           for (let i = 1; i < wps.length; i++) expect(wps[i].km).toBeGreaterThanOrEqual(wps[i - 1].km);
           expect(wps.some((w) => w.kind === 'rest' && w.country === 'PL')).toBe(true);
           expect(r.totalKm).toBeGreaterThan(150);
-          expect(r.totalKm).toBeLessThan(3200);
+          expect(r.totalKm).toBeLessThan(3800);
         }
       }
     }
