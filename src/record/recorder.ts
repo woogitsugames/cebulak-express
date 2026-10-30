@@ -1,3 +1,5 @@
+import { UI } from '../content/pl';
+
 /** Pionowa rolka z obrazu gry. Moduł nie dotyka głównej pętli ani UI gry. */
 
 export const VIDEO_WIDTH = 1080;
@@ -36,6 +38,10 @@ export interface RecordingOptions {
   portalLogo?: CanvasImageSource;
   /** Opcjonalna ścieżka audio z Web Audio (integracja ze zleceniem T19). */
   audio?: RecordingAudio;
+  /** Nagłówek planszy (domyślnie wezwanie do gry). */
+  outroHeadline?: string;
+  /** Krótszy czas wyłącznie do testów integracyjnych; produkcyjnie 15 s. */
+  durationMs?: number;
 }
 
 export interface RecordedVideo {
@@ -44,7 +50,7 @@ export interface RecordedVideo {
   mimeType: string;
   width: typeof VIDEO_WIDTH;
   height: typeof VIDEO_HEIGHT;
-  durationMs: typeof VIDEO_DURATION_MS;
+  durationMs: number;
 }
 
 /** Dostarcza zlecenie T24 w src/platform/ (Capacitor / natywny MediaStore). */
@@ -61,6 +67,7 @@ interface RecordingSession {
   chunks: Blob[];
   bytes: number;
   startedAt: number;
+  durationMs: number;
   frameId: number;
   stopping: boolean;
   failure: Error | null;
@@ -72,16 +79,16 @@ export function isEditorialMode(search: string): boolean {
   return new URLSearchParams(search).get('redakcja') === '1';
 }
 
-export function phaseAt(elapsedMs: number): VideoPhase {
-  if (elapsedMs >= VIDEO_DURATION_MS) return 'finished';
-  if (elapsedMs >= GAMEPLAY_DURATION_MS) return 'outro';
+export function phaseAt(elapsedMs: number, durationMs = VIDEO_DURATION_MS): VideoPhase {
+  if (elapsedMs >= durationMs) return 'finished';
+  if (elapsedMs >= durationMs - OUTRO_DURATION_MS) return 'outro';
   return 'gameplay';
 }
 
 /** Wycina środkowy obszar 9:16 bez rozciągania obrazu (desktop ma boczne pasy). */
 export function portraitCrop(width: number, height: number): { x: number; y: number; width: number; height: number } {
   if (!Number.isFinite(width) || !Number.isFinite(height) || width <= 0 || height <= 0) {
-    throw new Error('Canvas źródłowy ma nieprawidłowe wymiary');
+    throw new Error(UI.recordCanvasSizeInvalid);
   }
   const scale = Math.min(width / 9, height / 16);
   const cropWidth = 9 * scale;
@@ -193,19 +200,19 @@ function drawOutro(ctx: CanvasRenderingContext2D, options: RecordingOptions): vo
   ctx.fillText('Cebulak Express', VIDEO_WIDTH / 2, 710, 1010);
   ctx.fillStyle = '#ffe8a0';
   ctx.font = 'bold 79px system-ui, sans-serif';
-  ctx.fillText('Zagraj:', VIDEO_WIDTH / 2, 940, 1000);
+  ctx.fillText(options.outroHeadline ?? UI.recordOutroPlay, VIDEO_WIDTH / 2, 940, 1000);
   ctx.font = '52px system-ui, sans-serif';
-  for (const [i, line] of wrapLink(options.playUrl).entries()) {
+  for (const [i, line] of wrapLink(options.playUrl || UI.recordOutroMissing).entries()) {
     ctx.fillText(line, VIDEO_WIDTH / 2, 1070 + i * 71, 1000);
   }
   ctx.fillStyle = '#ffffff';
   ctx.font = '42px system-ui, sans-serif';
-  ctx.fillText(options.portalName, VIDEO_WIDTH / 2, 1575, 970);
+  if (options.portalName) ctx.fillText(options.portalName, VIDEO_WIDTH / 2, 1575, 970);
   ctx.restore();
 }
 
-function drawRecordingFrame(ctx: CanvasRenderingContext2D, options: RecordingOptions, elapsedMs: number): void {
-  const phase = phaseAt(elapsedMs);
+function drawRecordingFrame(ctx: CanvasRenderingContext2D, options: RecordingOptions, elapsedMs: number, durationMs: number): void {
+  const phase = phaseAt(elapsedMs, durationMs);
   if (phase !== 'gameplay') {
     drawOutro(ctx, options);
     return;
@@ -229,10 +236,14 @@ export class VerticalVideoRecorder {
   }
 
   start(): Promise<RecordedVideo> {
-    if (this.session) return Promise.reject(new Error('Nagrywanie już trwa'));
-    if (typeof MediaRecorder === 'undefined') return Promise.reject(new Error('MediaRecorder nie jest dostępny w tej przeglądarce'));
+    if (this.session) return Promise.reject(new Error(UI.recordAlreadyRecording));
+    const durationMs = this.options.durationMs ?? VIDEO_DURATION_MS;
+    if (!Number.isFinite(durationMs) || durationMs <= OUTRO_DURATION_MS || durationMs > VIDEO_DURATION_MS) {
+      return Promise.reject(new Error(UI.recordDurationInvalid));
+    }
+    if (typeof MediaRecorder === 'undefined') return Promise.reject(new Error(UI.recordUnsupported));
     if (typeof this.options.sourceCanvas.captureStream !== 'function') {
-      return Promise.reject(new Error('Przeglądarka nie obsługuje canvas.captureStream'));
+      return Promise.reject(new Error(UI.recordCanvasUnsupported));
     }
 
     let canvas: HTMLCanvasElement;
@@ -246,13 +257,13 @@ export class VerticalVideoRecorder {
       canvas.width = VIDEO_WIDTH;
       canvas.height = VIDEO_HEIGHT;
       const context = canvas.getContext('2d', { alpha: false });
-      if (!context) throw new Error('Canvas 2D nie jest dostępny');
+      if (!context) throw new Error(UI.recordCanvasContextMissing);
       ctx = context;
-      drawRecordingFrame(ctx, this.options, 0);
+      drawRecordingFrame(ctx, this.options, 0, durationMs);
       stream = canvas.captureStream(VIDEO_FPS);
       const audio = this.options.audio;
       if (audio) {
-        if (audio.source.context !== audio.context) throw new Error('Źródło audio należy do innego AudioContext');
+        if (audio.source.context !== audio.context) throw new Error(UI.recordAudioContextMismatch);
         audioBridge = audio.context.createMediaStreamDestination();
         audio.source.connect(audioBridge);
         for (const track of audioBridge.stream.getAudioTracks()) stream.addTrack(track);
@@ -284,7 +295,7 @@ export class VerticalVideoRecorder {
     return new Promise<RecordedVideo>((resolve, reject) => {
       const session: RecordingSession = {
         canvas, ctx, stream, recorder, audioBridge,
-        chunks: [], bytes: 0, startedAt: performance.now(), frameId: 0,
+        chunks: [], bytes: 0, startedAt: performance.now(), durationMs, frameId: 0,
         stopping: false, failure: null, resolve, reject,
       };
       this.session = session;
@@ -293,12 +304,12 @@ export class VerticalVideoRecorder {
         if (!event.data || event.data.size === 0) return;
         session.bytes += event.data.size;
         if (session.bytes > MAX_VIDEO_BYTES) {
-          this.stopSession(session, new Error('Film przekroczył limit 15 MB; zmniejsz bitrate w adapterze nagrywania'));
+          this.stopSession(session, new Error(UI.recordTooLarge));
           return;
         }
         session.chunks.push(event.data);
       };
-      recorder.onerror = () => this.stopSession(session, new Error('Błąd kodowania filmu (MediaRecorder)'));
+      recorder.onerror = () => this.stopSession(session, new Error(UI.recordEncodingError));
       recorder.onstop = () => this.finishSession(session);
       document.addEventListener('visibilitychange', this.onVisibilityChange);
       try {
@@ -313,23 +324,23 @@ export class VerticalVideoRecorder {
 
   /** Zatrzymanie przez użytkownika oznacza odrzucenie wyniku; nie zwraca uciętego filmu. */
   cancel(): void {
-    if (this.session) this.stopSession(this.session, new Error('Nagrywanie anulowane'));
+    if (this.session) this.stopSession(this.session, new Error(UI.recordCancelled));
   }
 
   private readonly onVisibilityChange = (): void => {
     // W tle requestAnimationFrame bywa wstrzymany, więc czas i klatki nie byłyby wiarygodne.
-    if (document.hidden && this.session) this.stopSession(this.session, new Error('Nagrywanie przerwane po ukryciu aplikacji'));
+    if (document.hidden && this.session) this.stopSession(this.session, new Error(UI.recordHidden));
   };
 
   private frame(session: RecordingSession, now: number): void {
     if (session.stopping || this.session !== session) return;
     const elapsed = Math.max(0, now - session.startedAt);
-    if (elapsed >= VIDEO_DURATION_MS) {
+    if (elapsed >= session.durationMs) {
       this.stopSession(session);
       return;
     }
     try {
-      drawRecordingFrame(session.ctx, this.options, elapsed);
+      drawRecordingFrame(session.ctx, this.options, elapsed, session.durationMs);
     } catch (error) {
       this.stopSession(session, error instanceof Error ? error : new Error(String(error)));
       return;
@@ -369,15 +380,15 @@ export class VerticalVideoRecorder {
     const mimeType = session.recorder.mimeType || (session.chunks[0]?.type ?? 'video/webm');
     const blob = new Blob(session.chunks, { type: mimeType });
     if (!blob.size) {
-      session.reject(new Error('Nagrywanie nie wygenerowało danych wideo'));
+      session.reject(new Error(UI.recordEmpty));
       return;
     }
     if (blob.size > MAX_VIDEO_BYTES) {
-      session.reject(new Error('Film przekroczył limit 15 MB'));
+      session.reject(new Error(UI.recordTooLarge));
       return;
     }
     const extension = mimeType.toLowerCase().includes('mp4') ? 'mp4' : 'webm';
-    session.resolve({ blob, filename: `cebulak-express-rolka.${extension}`, mimeType, width: VIDEO_WIDTH, height: VIDEO_HEIGHT, durationMs: VIDEO_DURATION_MS });
+    session.resolve({ blob, filename: `cebulak-express-rolka.${extension}`, mimeType, width: VIDEO_WIDTH, height: VIDEO_HEIGHT, durationMs: session.durationMs });
   }
 }
 

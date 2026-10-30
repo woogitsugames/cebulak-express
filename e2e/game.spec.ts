@@ -2,6 +2,7 @@ import { test, expect, openMenu, startRun, tapCanvas, screenshot } from './suppo
 
 test('menu → kraj i miasta → lot → kolizja → ekran końca → natychmiastowy restart', async ({ page }, testInfo) => {
   await openMenu(page);
+  await page.locator('#route-toggle').click();
   await page.locator('#sel-home').selectOption('NL');
   await page.locator('#sel-from').selectOption('rotterdam');
   await page.locator('#sel-to').selectOption('poznan');
@@ -54,6 +55,7 @@ test('po końcu można zmienić kraj, miasto startu i cel', async ({ page }, tes
   await page.locator('#btn-menu').click();
   await expect(page.locator('#menu')).toBeVisible();
   await expect(page.locator('#over')).toBeHidden();
+  await page.locator('#route-toggle').click();
   await page.locator('#sel-home').selectOption('UK');
   await expect(page.locator('#sel-from')).toHaveValue('londyn');
   await page.locator('#sel-from').selectOption('manchester');
@@ -82,6 +84,7 @@ test('spacja uruchamia przejazd i nalicza kilometry', async ({ page }, testInfo)
 
 test('osiem krajów ma dostępne miasta startu i poprawne podsumowanie trasy', async ({ page }, testInfo) => {
   await openMenu(page);
+  await page.locator('#route-toggle').click();
   const home = page.locator('#sel-home');
   const countries = await home.locator('option').evaluateAll((options) =>
     options.map((option) => (option as HTMLOptionElement).value),

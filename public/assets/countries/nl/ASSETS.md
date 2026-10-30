@@ -28,3 +28,16 @@ Wszystkie pliki: oryginalna grafika utworzona na potrzeby gry przy pomocy ChatGP
 - Kafelki mają powtarzalne skraje. Arkusz `preview.png` pokazuje po dwa identyczne kafelki.
 - W grafice nie ma napisów. Napisy należy renderować w interfejsie gry.
 - Nie do wdrażania jako tekstura: `preview.png`; służy do oceny graficznej.
+
+## Na Wigilię! — wariant zimowy (zlecenie 45)
+
+Sezon 1–26 grudnia. Trzy warianty zimowe zastępują wyłącznie `sky`, `far`, `near`; `clouds`, `road` i panoramy miast nie są zmieniane. PNG są własnymi przeróbkami letnich PNG: paleta zimowa, śnieg na istniejących bryłach, lampki w oknach, miejscami dym. Nieruchome położenie obrysów i niezmienione kadrowanie.
+
+| Plik | Źródło / narzędzie | Licencja | Autor / uwagi |
+|---|---|---|---|
+| `nl-sky-zima.png` | ChatGPT: edycja proceduralna PNG | Własny zasób projektu | 1080×1920, chłodne niebo i drobne płatki |
+| `nl-far-zima.png` | ChatGPT: edycja proceduralna PNG | Własny zasób projektu | 2160×900, śnieg na dachach i polach, bez szwów |
+| `nl-near-zima.png` | ChatGPT: edycja proceduralna PNG | Własny zasób projektu | 2160×720, śnieg na poboczach, bez szwów |
+| `docs/art/podglady/countries-nl-preview-zima.png` | ChatGPT: kompozycja PNG | Własny zasób projektu | Podgląd 1080×1920, bez panoram miast |
+
+Generator przeróbek: `../be/winter-builder.js`. Kontrola: wymiary @3x, PNG sRGB z alfa, identyczne skrajne kolumny, zachowane ciemne kontury i każdy zimowy plik poniżej 1,2 MB. Brak symboli religijnych i marek.

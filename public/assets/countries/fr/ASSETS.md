@@ -16,3 +16,16 @@ Grafiki oryginalne, wygenerowane w ChatGPT i wykonane programowo; poprawki: recz
 Pozycje sugerowane dla obrazu 1080x1920: `sky` y=0, `clouds` y=180, `far` y=390, `near` y=1170, `road` y=1590; punkt orientacyjny y=490. Współrzędne do korekty przez koordynatora. Warstwy są PNG RGBA, a `sky` jest celowo nieprzezroczyste. Wszystkie warstwy przewijane (`clouds`, `far`, `near`, `road`) są kafelkami poziomymi. W `preview.png` pokazano dwa kafelki obok siebie.
 
 Bez cudzych logotypów, nazw firm i tekstu w grafice. Widoki to stylizowane ilustracje, a nie dokumentacja architektury.
+
+## Na Wigilię! — wariant zimowy (zlecenie 45)
+
+Sezon 1–26 grudnia. Zimowe `sky`, `far` i `near` zastępują wyłącznie odpowiadające im tła letnie; `clouds`, `road` i panoramy miast pozostają bez zmian. PNG to własne przeróbki oryginalnych wersji letnich: chłodna paleta, śnieg na istniejących dachach, drzewach i polach, ciepłe światła w oknach, miejscami dym. Zachowano wszystkie ciemne kontury wewnątrz i pierwotne kadrowanie.
+
+| Plik | Źródło / narzędzie | Licencja | Autor / uwagi |
+|---|---|---|---|
+| `fr-sky-zima.png` | ChatGPT: edycja proceduralna PNG | Własne, do projektu | 1080×1920, zimowe niebo, nieruchome słońce |
+| `fr-far-zima.png` | ChatGPT: edycja proceduralna PNG | Własne, do projektu | 2160×900, śnieg na dachach i polach, kafelek |
+| `fr-near-zima.png` | ChatGPT: edycja proceduralna PNG | Własne, do projektu | 2160×720, śnieg na drzewach i poboczach, kafelek |
+| `docs/art/podglady/countries-fr-preview-zima.png` | ChatGPT: kompozycja PNG | Własne, do projektu | Podgląd 1080×1920, bez panoram miast |
+
+Generator przeróbek: `../be/winter-builder.js`. Kontrola: PNG sRGB, @3x, nienaruszone kontury, szwy bez skoków i każdy plik poniżej 1,2 MB. Bez nazw marek i symboli religijnych.

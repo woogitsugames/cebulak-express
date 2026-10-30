@@ -27,3 +27,16 @@ Zlecenie 06, „Cebulak Express — Kierunek Polska”. Grafika ilustracyjna: ci
 ## Weryfikacja
 
 Do weryfikacji technicznej: szerokość/wysokość, istnienie 21 landmarków DE z `src/content/waypoints.ts`, obecność alfy, budżet PNG (limit 1,2 MB tła, 300 kB landmark), porównanie pierwszej i ostatniej kolumny każdego kafelka. Złożony podgląd i wszystkie sylwetki dostępne w `preview.png`; oddzielny arkusz landmarków także w `../../landmarks/preview.png`.
+
+## Na Wigilię! — wariant zimowy (zlecenie 45)
+
+Sezon 1–26 grudnia. Trzy warianty zimowe zastępują wyłącznie `sky`, `far`, `near`; `clouds`, `road`, `near-baustelle` i panoramy miast pozostają bez zmian. PNG są własnymi przeróbkami letnich PNG: paleta zimowa, śnieg na istniejących bryłach, lampki w oknach, miejscami dym. Zachowano położenie obrysów i kadrowanie.
+
+| Plik | Źródło / narzędzie | Licencja | Autor / uwagi |
+|---|---|---|---|
+| `de-sky-zima.png` | ChatGPT: edycja proceduralna PNG | Własny zasób projektu | 1080×1920, chłodne niebo i drobne płatki |
+| `de-far-zima.png` | ChatGPT: edycja proceduralna PNG | Własny zasób projektu | 2160×900, śnieg na dachach i polach, bez szwów |
+| `de-near-zima.png` | ChatGPT: edycja proceduralna PNG | Własny zasób projektu | 2160×720, śnieg na poboczach, bez szwów |
+| `docs/art/podglady/countries-de-preview-zima.png` | ChatGPT: kompozycja PNG | Własny zasób projektu | Podgląd 1080×1920, bez panoram miast |
+
+Generator przeróbek: `../be/winter-builder.js`. Kontrola: @3x, PNG sRGB z alfa, identyczne skrajne kolumny, zachowane ciemne kontury i rozmiar każdego zimowego pliku poniżej 1,2 MB. Brak symboli religijnych i marek.

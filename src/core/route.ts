@@ -1,4 +1,4 @@
-import { HOME_WAYPOINT, PL_TRANSIT, ROUTE_WAYPOINTS, type Waypoint } from '../content/waypoints';
+import { BERLIN_ALTERNATIVE_EXITS, HOME_WAYPOINT, MUNICH_TO_JEDRZYCHOWICE, PL_TRANSIT, ROUTE_WAYPOINTS, type Waypoint } from '../content/waypoints';
 
 /** Kraje zamieszkania w MVP (decyzja D3) i Polska jako cel. */
 export type CountryCode = 'BE' | 'NL' | 'DE' | 'UK' | 'FR' | 'CH' | 'NO' | 'DK' | 'SE' | 'PL';
@@ -185,7 +185,63 @@ export function makeRoute(home: HomeCountry, fromId: string, toId: string): Rout
   const to = PL_CITIES.find((c) => c.id === toId);
   if (!from || !to) throw new Error(`Nieznane miasto: ${fromId} / ${toId}`);
 
-  const abroad = abroadWaypoints(home, from);
+  // Monachium nie jedzie przez Jenę: od Norymbergi A9/A72 do Drezna.
+  const initialAbroad = home === 'DE' && from.id === 'monachium'
+    ? MUNICH_TO_JEDRZYCHOWICE
+    : abroadWaypoints(home, from);
+
+  // Kilometry drogowe od stacji po polskiej stronie granicy (A2 / A6-S6 / A18-A4).
+  // Dla pozostałych miast zachowujemy dotychczasowy deterministyczny szacunek.
+  const polishRoadKm: Record<string, Record<string, number>> = {
+    'stacja-kolbaskowo': { szczecin: 25, gdansk: 375 },
+    'stacja-olszyna': { wroclaw: 178, krakow: 431, katowice: 350, rzeszow: 596 },
+  };
+  /** Kalibracje ze zlecenia 42 (wybór przejścia i odcinek stacja → cel), albo undefined. */
+  const calibratedToTarget = (station: Waypoint): number | undefined => {
+    if (home === 'DE' && from.id === 'monachium' && station.id === 'stacja-jedrzychowice') {
+      const munichRoadKm: Record<string, number> = { wroclaw: 150, krakow: 420, katowice: 300, rzeszow: 460 };
+      if (munichRoadKm[to.id] !== undefined) return munichRoadKm[to.id];
+    }
+    return polishRoadKm[station.id]?.[to.id];
+  };
+  const exitDistance = (station: Waypoint): number => {
+    // Do południowej Polski z Monachium samochody często jadą przez Czechy.
+    // Gra zostawia niemiecki korytarz, ale kalibruje całe km względem drogi realnej.
+    if (home === 'DE' && from.id === 'monachium' && station.id === 'stacja-jedrzychowice') {
+      const munichRoadKm: Record<string, number> = {
+        wroclaw: 150, krakow: 420, katowice: 300, rzeszow: 460,
+      };
+      if (munichRoadKm[to.id] !== undefined) return munichRoadKm[to.id];
+    }
+    const calibrated = polishRoadKm[station.id]?.[to.id];
+    if (calibrated !== undefined) return calibrated;
+    if (station.lat === undefined || station.lon === undefined) {
+      throw new Error(`Brak współrzędnych stacji ${station.id}`);
+    }
+    return haversineKm({ lat: station.lat, lon: station.lon }, to) * ROAD_FACTOR;
+  };
+
+  // Po dotarciu do Berlina porównujemy CAŁĄ długość do celu, a nie tylko
+  // kilometry po niemieckiej stronie. Dotyczy też BE/NL/UK/DK i Hamburga.
+  let abroad = initialAbroad;
+  const berlinIndex = initialAbroad.findIndex((waypoint) => waypoint.id === 'berlin');
+  if (berlinIndex >= 0) {
+    const berlinKm = initialAbroad[berlinIndex].km;
+    const prefix = initialAbroad.slice(0, berlinIndex + 1);
+    for (const exit of Object.values(BERLIN_ALTERNATIVE_EXITS)) {
+      const candidate = [
+        ...prefix,
+        ...exit.map((waypoint) => ({ ...waypoint, km: berlinKm + waypoint.km })),
+      ];
+      const candidateRest = candidate[candidate.length - 1];
+      const currentRest = abroad[abroad.length - 1];
+      if (candidateRest.km + exitDistance(candidateRest)
+        < currentRest.km + exitDistance(currentRest)) {
+        abroad = candidate;
+      }
+    }
+  }
+
   const rest = abroad[abroad.length - 1];
   if (rest.kind !== 'rest' || rest.lat === undefined || rest.lon === undefined) {
     throw new Error(`Trasa ${home} nie kończy się stacją za granicą`);
@@ -222,6 +278,10 @@ export function makeRoute(home: HomeCountry, fromId: string, toId: string): Rout
     },
   };
   const distanceFromRest = (point: { id: string; lat?: number; lon?: number }): number => {
+    if (point.id === to.id) {
+      const fromExitTable = calibratedToTarget(rest);
+      if (fromExitTable !== undefined) return fromExitTable;
+    }
     const calibrated = roadKmByRest[rest.id]?.[point.id];
     if (calibrated !== undefined) return calibrated;
     if (point.lat === undefined || point.lon === undefined) {

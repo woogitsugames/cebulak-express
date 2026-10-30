@@ -76,3 +76,11 @@ python public/assets/hero/generate.py
 ```
 
 Wymagane *jedynie do regeneracji*: Python 3, Pillow i CairoSVG; **aplikacja web/Android/iOS nie korzysta z tych narzędzi**. Skrypt nadpisuje tylko wygenerowane pliki we własnym folderze. Sprawdzić `preview.png`, zwłaszcza rosnący bagaż 1→4, opony z osobnymi felgami, widocznego ludzkiego kierowcę i miniatury na błękitnym tle.
+
+## Uzupełnienie — zlecenie 43 (portret do garażu)
+
+| Plik | Źródło / narzędzie | Licencja | Autor / uwagi |
+|---|---|---|---|
+| `portrait.png` | Autorska ilustracja wektorowa SVG → CairoSVG / Pillow, ręczne ścieżki, paleta 64 kolorów | CC0-1.0 | ChatGPT; karta 384×384 px, kompletne kremowo-czerwone kombi z dwoma kołami, bagażem na dachu i kierowcą machającym przez okno. Światło z lewego górnego rogu; tło karty, przezroczyste zaokrąglone narożniki, sRGB. Brak logotypów i napisów. |
+
+Portret jest osobną grafiką interfejsu, **nie zastępuje** `kombi-body.png` w renderowaniu rozgrywki. W garażu jako portret domyślnej skórki należy pobierać `/assets/hero/portrait.png` zamiast używać bezkółkowego sprite'a karoserii. Nie zmieniać fizyki ani hitboxu.
