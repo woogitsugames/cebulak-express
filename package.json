@@ -14,13 +14,15 @@
     "android:apk": "npm run android:sync && cd android && ./gradlew assembleDebug",
     "test:firebase": "npm --prefix firebase run test",
     "ios:sync": "npm run build && cap sync ios",
-    "balance": "tsc --noEmit -p tools/balance/tsconfig.json && node tools/balance/run.mjs"
+    "balance": "tsc --noEmit -p tools/balance/tsconfig.json && node tools/balance/run.mjs",
+    "test:e2e": "playwright test"
   },
   "devDependencies": {
     "@capacitor/cli": "^8.5.3",
     "typescript": "5.9",
     "vite": "^7.3.7",
-    "vitest": "^3.2.7"
+    "vitest": "^3.2.7",
+    "@playwright/test": "1.56.1"
   },
   "dependencies": {
     "@capacitor/android": "^8.5.3",
