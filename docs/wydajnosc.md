@@ -33,12 +33,23 @@ Raport powstaje z pomiarów **tego samego scenariusza** na wersji bazowej i zmod
 - 30 s rzeczywistego czasu gry na każdy profil CPU.
 - Średni FPS i długie klatki >33 ms z `requestAnimationFrame`; pamięć sterty JS z `performance.memory`; liczba aktywnych dekodowanych grafik z sondy `Image` / `createImageBitmap` wykorzystującej `WeakRef`.
 
-**Status pomiarów:** do uzupełnienia po wykonaniu benchmarku w GitHub Actions. W środowisku sesji nie ma dostępu do pełnego klonu repozytorium i zależności npm; wpisanie wartości FPS bez uruchomienia Chromium byłoby fikcją. Workflow `.github/workflows/perf-63.yml` automatycznie uruchamia dwa pomiary, dołącza JSON i plik Markdown jako artefakty oraz drukuje tabelę przed/po w podsumowaniu zadania.
+**Status: benchmark zakończony pomyślnie (30 października 2026).** Zmierzone liczby pochodzą z [GitHub Actions, przebieg 41078275506](https://github.com/woogitsugames/cebulak-express/actions/runs/41078275506), artefakt `zlecenie-63-pomiary` (dwa raporty JSON i porównanie Markdown). Porównano commit bazowy `5ce599b` i gałąź 63 na tym samym runnerze.
 
-| Profil | FPS przed | FPS po | Klatki >33 ms przed/po | Szczyt JS heap przed/po | Obrazy po dekodowaniu przed/po |
-|---|---:|---:|---:|---:|---:|
-| CPU 4× | pomiar CI | pomiar CI | pomiar CI | pomiar CI | pomiar CI |
-| CPU 6× | pomiar CI | pomiar CI | pomiar CI | pomiar CI | pomiar CI |
+| Parametr | CPU 4× przed | CPU 4× po | CPU 6× przed | CPU 6× po |
+|---|---:|---:|---:|---:|
+| Średni FPS | 9,47 | **10,24** | 6,34 | **7,17** |
+| Najgorszy FPS w oknie 1 s | 8,44 | 6,77 | 5,14 | 5,37 |
+| P95 czasu klatki (ms) | 116,8 | 166,6 | 183,3 | 166,6 |
+| Długie klatki >33 ms (liczba) | 283 | 307 | 190 | 215 |
+| Długie klatki >33 ms (%) | 100 | 100 | 100 | 100 |
+| Szczyt JS heap (MiB) | 4,48 | 4,44 | 4,50 | 4,52 |
+| Aktywne zdekodowane obrazy | 44 | **36** | 44 | **36** |
+| Oszacowana pamięć RGBA aktywnych obrazów (MiB) | 124,62 | **28,74** | 124,62 | **28,74** |
+| Błędy konsoli | 0 | 0 | 0 | 0 |
+
+**Wnioski:** pamięć RGBA aktywnych obrazów zmalała o 95,88 MiB (ok. 76,9%), a średni FPS wzrósł o 0,77 (CPU 4×) i 0,83 (CPU 6×). Jednak płynność nadal jest niewystarczająca w tej emulacji: wszystkie zmierzone interwały klatek przekraczały 33 ms; P95 CPU 4× pogorszył się o 49,8 ms, a liczba długich klatek wzrosła, częściowo dlatego, że łącznie zarejestrowano więcej klatek. **To poprawa pamięci, nie potwierdzenie płynności 45–60 FPS.**
+
+W benchmarku `navigator.deviceMemory` zadeklarowano jako 2 GiB, aby uruchomić politykę oszczędzania; sam runner nie ma limitu RAM fizycznego telefonu. Wyniki nie mogą być traktowane jako gwarancja płynnego działania na Android WebView. Osobny pomiar fizycznego telefonu oraz profil GPU są nadal wymagane.
 
 ### Lokalne uruchomienie
 
