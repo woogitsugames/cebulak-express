@@ -11,6 +11,7 @@ import { portalLink } from './content/portals';
 import { Renderer } from './render/renderer';
 import { normalizeHeroSkin, preloadSprites, setHeroSkin } from './render/sprites';
 import { mountGarage } from './ui/garage';
+import './ui/language-switcher';
 import { createRecordControl } from './ui/record';
 import { saveRecordedVideo } from './record/recorder';
 import { createSfx, sfxForGameEvent, type SfxPlayer } from './audio/sfx';
