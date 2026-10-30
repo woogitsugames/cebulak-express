@@ -1,0 +1,48 @@
+{
+  "version": 1,
+  "pixelRatio": 3,
+  "units": "source-px",
+  "format": "nine-slice",
+  "sprites": {
+    "btn-green.png": {
+      "left": 84,
+      "right": 84,
+      "top": 58,
+      "bottom": 58,
+      "width": 630,
+      "height": 162
+    },
+    "btn-blue.png": {
+      "left": 84,
+      "right": 84,
+      "top": 58,
+      "bottom": 58,
+      "width": 630,
+      "height": 162
+    },
+    "btn-wood.png": {
+      "left": 84,
+      "right": 84,
+      "top": 58,
+      "bottom": 58,
+      "width": 630,
+      "height": 162
+    },
+    "panel-paper.png": {
+      "left": 76,
+      "right": 76,
+      "top": 70,
+      "bottom": 70,
+      "width": 912,
+      "height": 507
+    },
+    "banner-red.png": {
+      "left": 133,
+      "right": 133,
+      "top": 57,
+      "bottom": 57,
+      "width": 912,
+      "height": 174
+    }
+  }
+}
