@@ -197,7 +197,7 @@ export class MockRankingApi implements RankingApi {
     const countries = {} as Partial<Record<HomeCountry, CountryStats>>;
     const kms = [184_250, 162_480, 145_120, 131_900, 116_500, 98_000, 81_200, 65_900];
     HOME_COUNTRIES.forEach((home, i) => {
-      countries[home] = { km: kms[i], runs: 1200 - i * 120, players: 310 - i * 27 };
+      countries[home] = { km: kms[i] ?? 0, runs: Math.max(0, 1200 - i * 120), players: Math.max(0, 310 - i * 27) };
     });
     this.leagues.set(week, { week, countries });
     this.leaders.set(week, new Map<string, PlayerEntry>([

@@ -3,15 +3,26 @@ import { HOME_COUNTRIES } from '../src/core/route';
 import { PORTALS, PORTAL_CAMPAIGN, portalLink } from '../src/content/portals';
 
 describe('linki do portali', () => {
-  it('każdy kraj gry ma etykietę i działający rodzaj linku', () => {
+  it('każdy kraj gry ma etykietę, a URL tylko gdy publicznie zweryfikowany', () => {
     expect(Object.keys(PORTALS).sort()).toEqual([...HOME_COUNTRIES].sort());
     for (const home of HOME_COUNTRIES) {
       expect(PORTALS[home].label).toBeTruthy();
-      expect(PORTALS[home].news ?? PORTALS[home].guides).toMatch(/^https:\/\//);
+      const url = PORTALS[home].news ?? PORTALS[home].guides;
+      if (url) expect(url).toMatch(/^https:\/\//);
+      else expect(portalLink(home, 'result')).toBeUndefined();
     }
   });
 
-  it('news ma pierwszeństwo przed poradnikami', () => {
+  it('sprawdzone portale ES, IT i SE są dostępne, niezweryfikowane NIE tworzą linków', () => {
+    expect(new URL(portalLink('ES', 'menu')!).hostname).toBe('popolsku.es');
+    expect(new URL(portalLink('IT', 'menu')!).hostname).toBe('popolsku.it');
+    expect(new URL(portalLink('SE', 'menu')!).hostname).toBe('popolsku.se');
+    for (const home of ['IE', 'AT', 'FI', 'LU'] as const) {
+      expect(portalLink(home, 'result')).toBeUndefined();
+    }
+  });
+
+    it('news ma pierwszeństwo przed poradnikami', () => {
     const url = new URL(portalLink('BE', 'result')!);
     expect(url.origin).toBe('https://aktualnosci.be');
     expect(url.searchParams.get('utm_source')).toBe('cebulak-express');
