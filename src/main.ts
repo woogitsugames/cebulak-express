@@ -14,7 +14,6 @@ import {
 import { localizedCityName } from './content/lang/cities';
 import { RETURN_CITY_LOCATIVE } from './content/lang/pl';
 import { waypointText } from './content/waypoint-text';
-import { randomNickChoices } from './content/nicks';
 import { portalLink } from './content/portals';
 import { Renderer } from './render/renderer';
 import type { SignJokeBubble } from './render/signs';
@@ -28,7 +27,7 @@ import type { GhostChallenge, GhostRunner } from './share/ghost-session';
 import { parseGameParams } from './net/params';
 import type { RankingApi } from './net/api';
 import { warsawWeekKey } from './net/week';
-import { configureAnalytics, track, type AnalyticsHome } from './analytics/track';
+import type { AnalyticsHome, track as TrackFn } from './analytics/track';
 import { registerPwa } from './pwa/register';
 import { prefetchPwaAssetsAfterRun } from './pwa/offline';
 import { platform } from './platform';
@@ -119,9 +118,13 @@ let settings = load<Settings>('ce.settings', DEFAULTS);
 // Link z karty wyniku lub osadzenia w portalu ustawia kraj i miasto startu.
 const prefill = parseGameParams(params);
 if (prefill) settings = { ...settings, home: prefill.home, from: prefill.from };
+// Nick z listy losujemy w tle (moduł nicków nie jest potrzebny do pierwszej klatki).
 if (!settings.nickId) {
-  settings.nickId = randomNickChoices(Math.random, 1, settings.home)[0];
-  save('ce.settings', settings);
+  void import('./content/nicks').then(({ randomNickChoices }) => {
+    if (settings.nickId) return;
+    settings = { ...settings, nickId: randomNickChoices(Math.random, 1, settings.home)[0] };
+    save('ce.settings', settings);
+  });
 }
 
 let route: Route = safeRoute(settings);
@@ -234,7 +237,19 @@ const net = Promise.all([import('./net/api'), import('./net/queue')]).then(([api
 });
 
 // --- Analityka (wyłączona, gdy brak adresu) ---
-configureAnalytics({ endpoint: String(import.meta.env.VITE_ANALYTICS_ENDPOINT ?? '') });
+// Analityka ładuje się po pierwszej klatce (budżet startu); zdarzenia sprzed tego czekają w kolejce.
+type TrackArgs = Parameters<typeof TrackFn>;
+const pendingTrack: TrackArgs[] = [];
+let realTrack: typeof TrackFn | null = null;
+const track = ((...args: TrackArgs) => {
+  if (realTrack) realTrack(...args);
+  else pendingTrack.push(args);
+}) as typeof TrackFn;
+requestAnimationFrame(() => void import('./analytics/track').then((m) => {
+  m.configureAnalytics({ endpoint: String(import.meta.env.VITE_ANALYTICS_ENDPOINT ?? '') });
+  realTrack = m.track;
+  for (const args of pendingTrack.splice(0)) m.track(...args);
+}).catch(() => undefined));
 track('app_open');
 
 // --- Menu ---
