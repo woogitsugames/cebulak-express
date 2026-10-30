@@ -3,28 +3,32 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Odsłuch muzyki — Cebulak Express</title>
+    <title>Odsłuch muzyki i akcentów krajów — Cebulak Express</title>
     <style>
-      :root { color-scheme: dark; font-family: system-ui, sans-serif; background: #15283a; color: #f8f5e6; }
+      :root { color-scheme: dark; font-family: system-ui, sans-serif; background: #142939; color: #f8f5e9; }
       body { margin: 0; padding: 2rem 1rem; }
-      main { max-width: 650px; margin: auto; padding: 2rem; border: 2px solid #ffd86c; border-radius: 18px; background: #20394b; }
+      main { max-width: 860px; margin: auto; padding: 2rem; border: 2px solid #ffd86c; border-radius: 18px; background: #213a4b; }
       h1 { margin-top: 0; }
-      p { line-height: 1.5; }
-      .buttons { display: flex; flex-wrap: wrap; gap: .65rem; margin: 1.5rem 0; }
-      button { padding: .8rem 1rem; border: 0; border-radius: 10px; background: #ffd86c; color: #16202a; font: inherit; font-weight: 700; cursor: pointer; }
-      button:focus-visible, input:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
-      label { display: block; margin: 1.25rem 0; }
-      input[type="range"] { display: block; width: 100%; margin-top: .65rem; }
+      h2 { margin: 2rem 0 .5rem; }
+      p { line-height: 1.55; }
+      .buttons, #cues { display: flex; flex-wrap: wrap; gap: .65rem; margin: 1.2rem 0; }
+      button { padding: .72rem .95rem; border: 0; border-radius: 10px; background: #ffd86c; color: #16202a; font: inherit; font-weight: 700; cursor: pointer; }
+      button.cue { background: #bde1f0; text-align: left; flex: 1 1 174px; }
+      button:hover { filter: brightness(1.07); }
+      button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
+      label { display: block; margin: 1.2rem 0; }
+      select { padding: .55rem; background: #142939; border: 1px solid #bde1f0; border-radius: 8px; color: #fff; font: inherit; }
+      input[type="range"] { display: block; width: 100%; margin-top: .5rem; }
       .note { font-size: .92rem; opacity: .88; }
-      #status { padding: .6rem 0; font-weight: 600; }
+      #status { padding: .65rem 0; font-weight: 600; min-height: 1.3em; }
     </style>
   </head>
   <body>
     <main>
       <h1>Muzyka — odsłuch</h1>
-      <p>Autorska pętla polkowa (32 takty, 2/4, 124 BPM). Wybierz aranżację i uruchom odtwarzanie. Świąteczna wersja ma dodatkowe dzwoneczki.</p>
+      <p>Autorska pętla 32 taktów (2/4), wariant świąteczny ze zwolnionym tempem i dzwoneczkami oraz 16 autorskich akcentów granicznych. Akcenty można odtwarzać oddzielnie lub nad pętlą.</p>
       <div class="buttons">
-        <button id="start" type="button">▶ Start od początku</button>
+        <button id="start" type="button">Start od początku</button>
         <button id="pause" type="button">Pauza</button>
         <button id="resume" type="button">Wznów</button>
         <button id="stop" type="button">Stop</button>
@@ -33,29 +37,44 @@
       <label for="season">Aranżacja
         <select id="season">
           <option value="regular">Zwykła trasa</option>
-          <option value="holiday">Na Wigilię! (dzwoneczki)</option>
+          <option value="holiday">Na Wigilię! (wolniej, ciepłe barwy i dzwoneczki)</option>
         </select>
       </label>
       <label for="volume">Głośność muzyki: <span id="volume-value">50%</span>
         <input id="volume" type="range" min="0" max="100" value="50" />
       </label>
       <label><input id="enabled" type="checkbox" checked /> Muzyka włączona</label>
+      <h2>Akcenty przy przekraczaniu granicy</h2>
+      <p>Wybierz kraj, by usłyszeć krótki motyw (każdy poniżej 3 sekund). Kolejne kliknięcie zastąpi poprzedni akcent.</p>
+      <div id="cues" aria-label="Odsłuch akcentów krajowych"></div>
       <p id="status" role="status" aria-live="polite">Odtwarzacz gotowy</p>
-      <p class="note">Przeglądarka odblokowuje Web Audio dopiero po geście użytkownika. Przełączenie karty w tło wstrzymuje odtwarzanie. Demo działa w Vite: <code>npm run dev</code> → <code>/tools/music-demo.html</code>.</p>
+      <p class="note">Uruchom przez <code>npm run dev</code> i otwórz <code>/tools/music-demo.html</code>. Przeglądarka odblokowuje Web Audio dopiero po geście użytkownika. W tle karty dźwięk zostaje wyciszony. Wszystkie melodie i brzmienia są generowane lokalnie, bez plików audio ani bibliotek.</p>
     </main>
     <script type="module">
-      import { createMusic } from '../src/audio/music.ts';
+      import { createMusic, MUSIC_BPM, MUSIC_HOLIDAY_BPM } from '../src/audio/music.ts';
+      import { COUNTRY_CUE_CODES, COUNTRY_CUE_INFO } from '../src/audio/country-cues.ts';
       const music = createMusic();
       const $ = (id) => document.getElementById(id);
-      const labels = { stopped: 'Zatrzymano', paused: 'Pauza', playing: 'Odtwarzanie' };
+      const labels = { stopped: 'Pętla zatrzymana', paused: 'Pauza', playing: 'Pętla gra' };
+      let lastCue = '';
       function update() {
         const info = music.getState();
-        $('status').textContent = `${labels[info.state]} · ${info.season === 'holiday' ? 'Na Wigilię!' : 'Zwykła trasa'} · ${info.enabled ? 'dźwięk włączony' : 'dźwięk wyłączony'}`;
+        const bpm = info.season === 'holiday' ? MUSIC_HOLIDAY_BPM : MUSIC_BPM;
+        $('status').textContent = `${labels[info.state]} · ${bpm} BPM · ${info.enabled ? 'dźwięk włączony' : 'dźwięk wyłączony'}${lastCue ? ` · ostatni akcent: ${lastCue}` : ''}`;
+      }
+      for (const country of COUNTRY_CUE_CODES) {
+        const cue = COUNTRY_CUE_INFO[country];
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'cue';
+        button.textContent = `${country} — ${cue.label.split(' · ')[1]} (${cue.durationSeconds.toFixed(1)} s)`;
+        button.addEventListener('click', () => { music.playCountryCue(country); lastCue = cue.label; update(); });
+        $('cues').append(button);
       }
       $('start').addEventListener('click', () => { music.start(); update(); });
       $('pause').addEventListener('click', () => { music.pause(); update(); });
       $('resume').addEventListener('click', () => { music.resume(); update(); });
-      $('stop').addEventListener('click', () => { music.stop(); update(); });
+      $('stop').addEventListener('click', () => { music.stop(); lastCue = ''; update(); });
       $('finish').addEventListener('click', () => { music.playFinishJingle(); update(); });
       $('season').addEventListener('change', (event) => { music.setSeason(event.target.value); update(); });
       $('enabled').addEventListener('change', (event) => { music.setEnabled(event.target.checked); update(); });
