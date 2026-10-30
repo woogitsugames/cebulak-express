@@ -285,7 +285,7 @@ async function captureScenario(context, number) {
         goal = (s) => s.jars > 0 || /słoik.*\+\s*30\s*km|\+\s*30\s*km.*słoik/i.test(s.toast);
         seconds = 16;
       } else if (number === 5) {
-        goal = (s) => !s.over && (s.country === 'PL' || /Rzeczpospolita Polska|Witamy w Polsce/i.test(s.toast) || s.km >= 140);
+        goal = (s) => !s.over && (s.country === 'PL' || /Rzeczpospolita Polska|Witamy w Polsce/i.test(s.toast));
         seconds = 48;
       } else {
         goal = (s) => s.km >= cfg.threshold;
@@ -308,9 +308,6 @@ async function captureScenario(context, number) {
   throw new Error(`Ekran ${String(number).padStart(2, '0')}: nie udało się zarejestrować autentycznego zdarzenia (${JSON.stringify(last)})`);
 }
 
-function escapeHtml(text) {
-  return text.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
-}
 
 async function overlay(page, headline) {
   await page.evaluate((lines) => {
