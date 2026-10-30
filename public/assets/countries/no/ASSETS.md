@@ -2,15 +2,15 @@
 
 | Plik | Źródło/narzędzie | Licencja | Autor / uwagi |
 |---|---|---|---|
-| `no-sky.png` | Autorska grafika proceduralna Python / CairoSVG / Pillow | własna — do użytku projektu | 1080×1920; statyczne niebo, ciepłe światło z lewej góry |
-| `no-clouds.png` | Autorska grafika proceduralna Python / CairoSVG / Pillow | własna — do użytku projektu | 2160×600; bezszwowy kafelek poziomy, przezroczystość; paralaksa 0,15 |
-| `no-far.png` | Autorska grafika proceduralna Python / CairoSVG / Pillow | własna — do użytku projektu | 2160×900; krajobraz charakterystyczny dla kraju, przezroczystość; paralaksa 0,25 |
-| `no-near.png` | Autorska grafika proceduralna Python / CairoSVG / Pillow | własna — do użytku projektu | 2160×720; bliskie elementy pobocza, przezroczystość; paralaksa 0,5 |
-| `no-road.png` | Autorska grafika proceduralna Python / CairoSVG / Pillow | własna — do użytku projektu | 1080×330; bezszwowy asfalt z barierą; paralaksa 1,0 |
-| `preview.png` | Zestawienie warstw i test powtarzania: Pillow | własna — do użytku projektu | Kompozycja oraz dwa kafelki obok siebie na szachownicy; linia szwu występuje wyłącznie na podglądzie. |
+| `no-sky.png` | Ilustracja wektorowa narysowana proceduralnie: Python / CairoSVG / Pillow | własna — do użytku projektu | 1080×1920; statyczny gradient, ciepłe światło z lewej góry; nie kafelkować |
+| `no-clouds.png` | Ilustracja wektorowa narysowana proceduralnie: Python / CairoSVG / Pillow | własna — do użytku projektu | 2160×600; bezszwowy kafelek, alpha; mnożnik 0,15 |
+| `no-far.png` | Ilustracja wektorowa narysowana proceduralnie: Python / CairoSVG / Pillow | własna — do użytku projektu | 2160×900; bezszwowy kafelek, alpha; mnożnik 0,25 |
+| `no-near.png` | Ilustracja wektorowa narysowana proceduralnie: Python / CairoSVG / Pillow | własna — do użytku projektu | 2160×720; bezszwowy kafelek, alpha; mnożnik 0,5 |
+| `no-road.png` | Ilustracja wektorowa narysowana proceduralnie: Python / CairoSVG / Pillow | własna — do użytku projektu | 1080×330; bezszwowy kafelek, mnożnik 1,0 |
+| `preview.png` | Kompozycja i test powtarzania kafelków: Pillow | własna — do użytku projektu | Zawiera etykiety informacyjne i czerwoną linię szwu, tylko dla koordynatora, nie do gry. |
 
 ## Integracja
 
-Kolejność: `sky`, `clouds`, `far` (+ panorama przelotu), `near`, `road`. Wymiary fizyczne odpowiadają skali @3x świata 360×640. PNG RGBA, profil sRGB. Bez tekstu, logo i marek.
+Pliki zawierają grafikę @3x. Kolejność warstw od spodu: `sky`, `clouds`, `far` + okazjonalny `landmark`, `near`, `road`.
 
-**Stan szkicu PR:** pliki binarne PNG są przygotowane w załączonym do rozmowy archiwum `cebulak-09-do-repo.zip`; GitHub wymaga jeszcze wgrania ich z tego archiwum do tej gałęzi przed scaleniem.
+Każda warstwa jest gotowym, niezależnym PNG w sRGB, bez tekstu i prawdziwych marek.
