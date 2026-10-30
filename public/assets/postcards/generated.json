@@ -6,12 +6,12 @@
       "country": "DK",
       "style": 8,
       "sources": {
-        "panorama": "150153f400b3905b577d2bd29aeaf354a0791c04b03a83691b9420df195e5f34",
+        "panorama": "b4a46ea098a9ffc7dfbdbc77c692fb492f8e65be3f214c35fa3b92242ed48774",
         "sky": "f31b71a9a8b0d00f14e79f5a5ae36a54e0efa73ebb7b8b53b58c06bb382f6f7e",
         "far": "861c4d21c821bd06a90d0b358df9054d535809012be30bc16976e9c711eca411",
         "stamp": "361ef30f638dfde3cf5da9ff279846c93639e55e47779eaa7a6923a04a11823e"
       },
-      "output": "56984a26f7b142021eaffd26460db653624a53f768bacfd171ea9c0983e30cd0"
+      "output": "c7b8d6127ef50604d8dd4e93e7b765c326957c0d5cd30e7c105df7112314ac8e"
     },
     "akwizgran": {
       "country": "DE",
@@ -71,56 +71,56 @@
       "country": "CH",
       "style": 8,
       "sources": {
-        "panorama": "c560d95bfff11529022fd6ec8cf6e1177c6a016c668eb1694daa6175fccefa6e",
+        "panorama": "c76fbe18bf189f5f344994ce9db65d970079972584b02fff6d785c23ad2b8cf0",
         "sky": "61d64e79f6b0fc25dee1eb6eb2e9e4ce15324ac19987cf44b16ba42513df1c49",
         "far": "82a248941fac7ed50cd441edd713dcc7a528fed0ba6d1344f0a747c7361d6ad8",
         "stamp": "755f94ed8e6ce03df1ee45ce2d4bcb24f7a379e5e58d9887e4c4534c3e592de7"
       },
-      "output": "0cdf27490e4b4015ba214adb7c852580d91386b8243d0b4e332e65713c7c553b"
+      "output": "ca039fea96bcaab5ee0c41558ab6af65f0f221afa3634fb345c223194643b491"
     },
     "bergen": {
       "country": "NO",
       "style": 8,
       "sources": {
-        "panorama": "6e1a82720a3f960bcab8cf270163d58041b1ce1a12b1b2c186faf8f824515601",
+        "panorama": "6f7b15b8d68680962ddada5d9f701f562f91fb16a04f3e396fe3a63fa6fca96f",
         "sky": "1092af10da124c42c0ab9f855f353ce70da613ee3f0e470f764a4751ba09714a",
         "far": "1cadf9b69c64cbb44f747dfd12b66dd8e6acbf881a2e21674ae57608ec6d973f",
         "stamp": "fc9214981e240c87e8c3787204ed82af44e02ac155255f8e34d3bb12e2533eac"
       },
-      "output": "21e1e28786a25dcaca16849c30662d49ba514f500d939907e1dfb64fd40b71e3"
+      "output": "080cda70531c788413cbcd8d476fed1960f0e6e0bbe6b038e2b687d5bd24c039"
     },
     "berlin": {
       "country": "DE",
       "style": 8,
       "sources": {
-        "panorama": "ce6ebdaa17c3053a5f2d09067992bfc89e228fd8d5d4cc156878e2a06eca8711",
+        "panorama": "d82c38d36339882c027995831ba0a1bd613c2221462729b5f12faecddf0da271",
         "sky": "bf55faa677c846b70c013f5d7c195e1d01664490e81c192e587467b2b5fc939c",
         "far": "f74e3d03208f1f83266bb9b619f8a51d2793871986dc1e0d505b93b4abe0f588",
         "stamp": "cca9f3551ca5a5242353e57d997341c3cab4621ea80af11c0b5237e3a5d339ea"
       },
-      "output": "921b8c31c4b75577f2e181a794256d8aa61afb53923ad0e418ce7ea397f0791b"
+      "output": "0820a942bf3d7e56d24007d264b7d9719763e2dd6e324530d7482ad7c0789643"
     },
     "bielefeld": {
       "country": "DE",
       "style": 8,
       "sources": {
-        "panorama": "5d090a72d82add2926a4c77ab7dd6fdad07cf00e8c1842f88c941e462f85d9f7",
+        "panorama": "24d38da4b015f86ad0bb0f4b5e958de860ce457b69afd128bb553596ac924ebd",
         "sky": "bf55faa677c846b70c013f5d7c195e1d01664490e81c192e587467b2b5fc939c",
         "far": "f74e3d03208f1f83266bb9b619f8a51d2793871986dc1e0d505b93b4abe0f588",
         "stamp": "cca9f3551ca5a5242353e57d997341c3cab4621ea80af11c0b5237e3a5d339ea"
       },
-      "output": "7b880b5d3a8f1a57ba27e3d4652723a8ff9ae4afcacc32c2534efcf86ba212ee"
+      "output": "4bd9b4e458720cd071f6608de66d0934174a53fe7d489ef485e433cb492d7e83"
     },
     "birmingham": {
       "country": "UK",
       "style": 8,
       "sources": {
-        "panorama": "1a5865333f414d81eb71374bcd8dce6d8a245257e98dc6aff10a2bee06f25f80",
+        "panorama": "6a73f60a9b988ab4b6e298ce1f50e68664c38c882c571955c84236728652e69e",
         "sky": "a76c1d1c4303d219080a9ddc412f369a0917ef4ca9c673f9cfee4f777057b66f",
         "far": "8e20cb5245cb3e306c6fa2d59434e74c6cd1c2b0b7bbcc9d96fff2f0400bf773",
         "stamp": "ac8b3bb56489db877ffa46ed7e50b9e00398f633612d62d2b75bf044bf92a4c9"
       },
-      "output": "6e78ebca81f3104ec179927b1bdfce2f94153b4e9f2e01f4b31718b606baee87"
+      "output": "f87bab032866ade229bf8297c0736ded7c83bfbca62e059bd694fa12b8222bbd"
     },
     "bolonia": {
       "country": "IT",
@@ -189,23 +189,23 @@
       "country": "DE",
       "style": 8,
       "sources": {
-        "panorama": "65c07807f2c99ba260557ee9505d3f7f3811328c0cc0c4ced1858a7ca4ed22f3",
+        "panorama": "a10ce7818619a4fed37760a9902c8f6945ae5d30a4c98dc7d969f2a20abc56d7",
         "sky": "bf55faa677c846b70c013f5d7c195e1d01664490e81c192e587467b2b5fc939c",
         "far": "f74e3d03208f1f83266bb9b619f8a51d2793871986dc1e0d505b93b4abe0f588",
         "stamp": "cca9f3551ca5a5242353e57d997341c3cab4621ea80af11c0b5237e3a5d339ea"
       },
-      "output": "c0fe8dd99b65603916ef5fa8ec19522ba624df93cca359e4eec9bb1ea5a866b2"
+      "output": "53581a65891b2f9168455011247f57864044e74b401b4574be110a3473e08899"
     },
     "drezno": {
       "country": "DE",
       "style": 8,
       "sources": {
-        "panorama": "8def5254afddc3032f0378d1b695407184eeb5749862f3afa7d2e4f16945258e",
+        "panorama": "f7bd62e4e676c68122e83bd28756b2c96f00c962801c31ee9cf4d9e72ff66f69",
         "sky": "bf55faa677c846b70c013f5d7c195e1d01664490e81c192e587467b2b5fc939c",
         "far": "f74e3d03208f1f83266bb9b619f8a51d2793871986dc1e0d505b93b4abe0f588",
         "stamp": "cca9f3551ca5a5242353e57d997341c3cab4621ea80af11c0b5237e3a5d339ea"
       },
-      "output": "9fde3337c872cb2c036f144e6462181d76a6875baac2899e22598005e7f0b66a"
+      "output": "b546bec560ab4eea316a0d42d91b8c113a21c978c6e6ce570817ef226c724f7a"
     },
     "dublin": {
       "country": "IE",
@@ -243,23 +243,23 @@
       "country": "UK",
       "style": 8,
       "sources": {
-        "panorama": "4ee85d84e2ce37d40603f56031728766e6a438d6e8bac9314cc8d136bde13a35",
+        "panorama": "77002a474f792a9017d912cb93dd78b9db080ed63188b9e59d0e8f4e2d038c7b",
         "sky": "a76c1d1c4303d219080a9ddc412f369a0917ef4ca9c673f9cfee4f777057b66f",
         "far": "8e20cb5245cb3e306c6fa2d59434e74c6cd1c2b0b7bbcc9d96fff2f0400bf773",
         "stamp": "ac8b3bb56489db877ffa46ed7e50b9e00398f633612d62d2b75bf044bf92a4c9"
       },
-      "output": "7e85186c56f803b63b9a52714f293ac7373cfc4f19cb2ae2a68f66fe3e9e42e9"
+      "output": "7e6c926e2598bbdf9f955a3ac5bff56a2573c3f1763845bdda22ad8b4116c673"
     },
     "eindhoven": {
       "country": "NL",
       "style": 8,
       "sources": {
-        "panorama": "c40d3df656da0aa3e088598a0a666f9038cdda4b7517e33279e361a376b0b959",
+        "panorama": "511ef22be36573a97232d4346fb85d640eefed367001aabce9128f7e75a60c59",
         "sky": "62a095e667ad52f4b2038a67ccaebc063c8977906958b6504f62855e3a84546f",
         "far": "976033dd7effe9bff10f5fc3a2353a44e35e927a4bfd9bc1f5a96f1a299eda0e",
         "stamp": "b89649e860dc4965d9e7f551398a85a8e9d18a316a044b113391362d76a6c36d"
       },
-      "output": "50acee89e26488eb2f133e9adb30b2e48ba558ab74bf0aac5c92c4fdfa6ee2b9"
+      "output": "9b2c5ec25b6a5f1621803df4bd30354167dc490094a8f104b4e64f7f37a6b17a"
     },
     "erfurt": {
       "country": "DE",
@@ -276,23 +276,23 @@
       "country": "DE",
       "style": 8,
       "sources": {
-        "panorama": "ee958ef0278fc4da8b760266b1653c331ffec51dcd5a743e746c9eae39630aa8",
+        "panorama": "bd9df8bf00e962e4ce2f5d3e88a1d29f7843c0ef96172ef17b25cffe887d0ce3",
         "sky": "bf55faa677c846b70c013f5d7c195e1d01664490e81c192e587467b2b5fc939c",
         "far": "f74e3d03208f1f83266bb9b619f8a51d2793871986dc1e0d505b93b4abe0f588",
         "stamp": "cca9f3551ca5a5242353e57d997341c3cab4621ea80af11c0b5237e3a5d339ea"
       },
-      "output": "216a670e851db26e1893aa0991aad7f7ba5a6c47a00acf7d882131d3fb033f49"
+      "output": "319315f09b98180a7c832fb985ddc0ac914b9c6a1cf38e9501d85891d0070a51"
     },
     "frankfurt-oder": {
       "country": "DE",
       "style": 8,
       "sources": {
-        "panorama": "06ea61ce68b666d9bd680d0f597077b252787f2b17d6e46370d849bbe716fd53",
+        "panorama": "05050335a072d0733a45e64ced3c4ac81c02c23a306d713b3832d1d851d82802",
         "sky": "bf55faa677c846b70c013f5d7c195e1d01664490e81c192e587467b2b5fc939c",
         "far": "f74e3d03208f1f83266bb9b619f8a51d2793871986dc1e0d505b93b4abe0f588",
         "stamp": "cca9f3551ca5a5242353e57d997341c3cab4621ea80af11c0b5237e3a5d339ea"
       },
-      "output": "b7db1f6f64c894a52615ffef2b9e8b3c63d155e17f1c534c42444de4c1bdae5a"
+      "output": "c17aecbe86b62a3e35557e8ef9196f29f363d49b69636ee8785377405ac85ae5"
     },
     "gandawa": {
       "country": "BE",
@@ -341,23 +341,23 @@
       "country": "DE",
       "style": 8,
       "sources": {
-        "panorama": "e2e5b13f423d40caebe80e29904e9394330ebc89eb63ff36b728b0402b143715",
+        "panorama": "10691f7d83275069905490a227b050cd6eb5f01d7e4c737fe47e68db1f40959c",
         "sky": "bf55faa677c846b70c013f5d7c195e1d01664490e81c192e587467b2b5fc939c",
         "far": "f74e3d03208f1f83266bb9b619f8a51d2793871986dc1e0d505b93b4abe0f588",
         "stamp": "cca9f3551ca5a5242353e57d997341c3cab4621ea80af11c0b5237e3a5d339ea"
       },
-      "output": "1b64d26d9bbdd96e7fc055a242f836a1877c42af963efe19705d0453db0c23c4"
+      "output": "d56922ad5d2a522ac290086bfaba40d33a75acd5acc62c2df52c3df415d3e546"
     },
     "hanower": {
       "country": "DE",
       "style": 8,
       "sources": {
-        "panorama": "733960d233b7117fa70546b641d2c1077ab9ded4940e273740bf5ff5baeac964",
+        "panorama": "26f5d908e674cca4b0237912963025870f95427037b04ce5bc93e670eed558c2",
         "sky": "bf55faa677c846b70c013f5d7c195e1d01664490e81c192e587467b2b5fc939c",
         "far": "f74e3d03208f1f83266bb9b619f8a51d2793871986dc1e0d505b93b4abe0f588",
         "stamp": "cca9f3551ca5a5242353e57d997341c3cab4621ea80af11c0b5237e3a5d339ea"
       },
-      "output": "982a6561ae2ff8ee44a85693104ccda2dc4df0797ed39d412e4cb5a71f4bb7ba"
+      "output": "c33ab6969f923f556dd77653dc60fffb06bb0b274f0f0d8932441a98c8f8fa98"
     },
     "helsingborg": {
       "country": "SE",
@@ -391,27 +391,49 @@
       },
       "output": "24d973971f8142e6390fc7c703d36b952ac4d98d1a4b315c96fc05a15b78d89c"
     },
+    "katowice": {
+      "country": "PL",
+      "style": 8,
+      "sources": {
+        "panorama": "7d8a1877429c509ab5e556b33d1844567a1daaba1d57ce35d40c71307b376ab7",
+        "sky": "79e3526f27d6063b059a1d52fbabc1e24171899824db3ed9f1ef303fc54112e9",
+        "far": "dd2b845afde63168bcf0d0380bbc4e2f9d4b83ae6b98dc72f1971fba5c98d02e",
+        "stamp": "74fbadf2156748780f9e833104425f6fc265288287783beece88571a59130b0a"
+      },
+      "output": "719dec8870ba777f0ff4b8e983e0ca8aeb89eb95f299f041582f38ffbaaa8a2b"
+    },
     "kolonia": {
       "country": "DE",
       "style": 8,
       "sources": {
-        "panorama": "b7b44c1efb6138dffc0e1b2ab5445855bf92057db08152d07876d32b7830a300",
+        "panorama": "9b55b3dd75c578df636d580b445bb1abb3aca21ee96949eaf041bf2fb36a39e9",
         "sky": "bf55faa677c846b70c013f5d7c195e1d01664490e81c192e587467b2b5fc939c",
         "far": "f74e3d03208f1f83266bb9b619f8a51d2793871986dc1e0d505b93b4abe0f588",
         "stamp": "cca9f3551ca5a5242353e57d997341c3cab4621ea80af11c0b5237e3a5d339ea"
       },
-      "output": "b0c9065ede534ea4637bde80f7600c72bed32eb1eed575b48d34c7a84cb08895"
+      "output": "88a53143b45cadf77a6e518ce5e68e7c81316bc898eeb353f90e8caa8627bb0c"
     },
     "kopenhaga": {
       "country": "DK",
       "style": 8,
       "sources": {
-        "panorama": "e3c844ca349db2faac3cd84e1aeb85a259ef48a1fef4d79318c2ec5f0e86feee",
+        "panorama": "34c763aa7139e1b6d2608ba4a7ee4062a1323f34141c2d8e62bfdc13fb3957b7",
         "sky": "f31b71a9a8b0d00f14e79f5a5ae36a54e0efa73ebb7b8b53b58c06bb382f6f7e",
         "far": "861c4d21c821bd06a90d0b358df9054d535809012be30bc16976e9c711eca411",
         "stamp": "361ef30f638dfde3cf5da9ff279846c93639e55e47779eaa7a6923a04a11823e"
       },
-      "output": "95fd0e5cbf5444bc1512a823f71b2b544cffee2757dfdf5fc3167df86af4d7d4"
+      "output": "549f9941aa58288bd30c686dd2278671781e8aedb9b12387498aae47144f28fd"
+    },
+    "krakow": {
+      "country": "PL",
+      "style": 8,
+      "sources": {
+        "panorama": "f9970de3b3fa85e7a57c79b00972f46238b6a4d43a7552d3dfa67255c89de29d",
+        "sky": "79e3526f27d6063b059a1d52fbabc1e24171899824db3ed9f1ef303fc54112e9",
+        "far": "dd2b845afde63168bcf0d0380bbc4e2f9d4b83ae6b98dc72f1971fba5c98d02e",
+        "stamp": "74fbadf2156748780f9e833104425f6fc265288287783beece88571a59130b0a"
+      },
+      "output": "84d2557d32fa6721f0c35b015671d335cb41ad00fe9272930bdbe8f61b5298e7"
     },
     "legnica": {
       "country": "PL",
@@ -481,23 +503,23 @@
       "country": "PL",
       "style": 8,
       "sources": {
-        "panorama": "f4253342e159888504aa49cd6f99072da013991da3b49cfab9bdffdde5ef8032",
+        "panorama": "a09a04b0d5c693ed32e48142d926b1ba23716a2e49f563fb78aa0164b9724269",
         "sky": "79e3526f27d6063b059a1d52fbabc1e24171899824db3ed9f1ef303fc54112e9",
         "far": "dd2b845afde63168bcf0d0380bbc4e2f9d4b83ae6b98dc72f1971fba5c98d02e",
         "stamp": "74fbadf2156748780f9e833104425f6fc265288287783beece88571a59130b0a"
       },
-      "output": "c37ea595dd07bc5aa9db8874262fe510446026ef6be3fe7ef4c80540b5395692"
+      "output": "bca626e31bf951e897c67b0e407b1337dc472bf96d6da42de9085f9278e7a8e7"
     },
     "londyn": {
       "country": "UK",
       "style": 8,
       "sources": {
-        "panorama": "36bedc9d0048938d1325cea8d05ba1aa9c29e7b434c8d6f382bd5402bc0b7bfe",
+        "panorama": "114a3344823e1137e1fa1c9ab3d003cc15fe32458b1a98f7f3c22c045f15e935",
         "sky": "a76c1d1c4303d219080a9ddc412f369a0917ef4ca9c673f9cfee4f777057b66f",
         "far": "8e20cb5245cb3e306c6fa2d59434e74c6cd1c2b0b7bbcc9d96fff2f0400bf773",
         "stamp": "ac8b3bb56489db877ffa46ed7e50b9e00398f633612d62d2b75bf044bf92a4c9"
       },
-      "output": "bdd9fa775cc7a91b4d9d5791d141659a38109f0a5fabda047f95de8710d003a4"
+      "output": "63ac6a44c8358a14572e6a425c8853453f23c26d47a39873b568703ccc6d872b"
     },
     "lubeka": {
       "country": "DE",
@@ -545,12 +567,12 @@
       "country": "DE",
       "style": 8,
       "sources": {
-        "panorama": "19aa58beb9d9b616c7d3e74cc73d24ed1646bfa3a7412659ebd310362cabc7a6",
+        "panorama": "a1ef0c990f689c3f37d86922f2ecc1a3c31393b6abf9a804bdb3165bfb43d552",
         "sky": "bf55faa677c846b70c013f5d7c195e1d01664490e81c192e587467b2b5fc939c",
         "far": "f74e3d03208f1f83266bb9b619f8a51d2793871986dc1e0d505b93b4abe0f588",
         "stamp": "cca9f3551ca5a5242353e57d997341c3cab4621ea80af11c0b5237e3a5d339ea"
       },
-      "output": "68e3751460059baee73a04584f5375ef937d4eda6c8121317ef902712cbaabf8"
+      "output": "7db79559867c92bf009d2c48ccdb9060be88a44eba09903992e614dec5fd2ea6"
     },
     "malmo": {
       "country": "SE",
@@ -567,12 +589,12 @@
       "country": "UK",
       "style": 8,
       "sources": {
-        "panorama": "ec62748b04362163f2aa8e265a5c9a8ac9fcb2d0358c0f0983395eca68c2ba46",
+        "panorama": "ce67bacfec82847aadb75f68c50d19e492604cbd8cb1199c6a75fd7b21ed7b13",
         "sky": "a76c1d1c4303d219080a9ddc412f369a0917ef4ca9c673f9cfee4f777057b66f",
         "far": "8e20cb5245cb3e306c6fa2d59434e74c6cd1c2b0b7bbcc9d96fff2f0400bf773",
         "stamp": "ac8b3bb56489db877ffa46ed7e50b9e00398f633612d62d2b75bf044bf92a4c9"
       },
-      "output": "4df73cc4fc482967a04795c997bd5e1b5fc2083296b30c71d38cf069f9c2b788"
+      "output": "af3018d216db486a75f23dd5a4572b001a728da69831a8381d7cd01b85c4d434"
     },
     "mannheim": {
       "country": "DE",
@@ -606,6 +628,17 @@
       },
       "output": "c9df042b7892e398a9a6e94081a2f84368cfab11136799df86538b042d4aeb6b"
     },
+    "monachium": {
+      "country": "DE",
+      "style": 8,
+      "sources": {
+        "panorama": "58a64dd7b69a6436a3da1307f7506e0682e03c0073969869e5fcee8a18b8a0ec",
+        "sky": "bf55faa677c846b70c013f5d7c195e1d01664490e81c192e587467b2b5fc939c",
+        "far": "f74e3d03208f1f83266bb9b619f8a51d2793871986dc1e0d505b93b4abe0f588",
+        "stamp": "cca9f3551ca5a5242353e57d997341c3cab4621ea80af11c0b5237e3a5d339ea"
+      },
+      "output": "ceaf952a02fef144e5023aebc998d1deb62dd45d08470c7a36bce21d2f446752"
+    },
     "norymberga": {
       "country": "DE",
       "style": 8,
@@ -621,23 +654,23 @@
       "country": "DK",
       "style": 8,
       "sources": {
-        "panorama": "7cd3cd786f0aaab3ee7e17967d934262f9e5ec5e4b547e9cf3b2391c90cd88a5",
+        "panorama": "c051191a31ba4732872040fc1114ad4c868d398275b65795f466d59c573b75a0",
         "sky": "f31b71a9a8b0d00f14e79f5a5ae36a54e0efa73ebb7b8b53b58c06bb382f6f7e",
         "far": "861c4d21c821bd06a90d0b358df9054d535809012be30bc16976e9c711eca411",
         "stamp": "361ef30f638dfde3cf5da9ff279846c93639e55e47779eaa7a6923a04a11823e"
       },
-      "output": "9dd852352f83bcfdec6ac2fcd9cb502ce15338d734c9a5477fbae10f2e9a82a2"
+      "output": "9b07dc414fafe0e57ece5f3e5c00a46d882469cb400337e151002077f8ee5d71"
     },
     "oslo": {
       "country": "NO",
       "style": 8,
       "sources": {
-        "panorama": "c7fdf21cccd06455ba1f7a7779be8b8c4a558dca586f4066070eae2fc0e8cd20",
+        "panorama": "742297d422d34bffe8c084bdb3796578a0426236962b5dafa82e29a282a9caaf",
         "sky": "1092af10da124c42c0ab9f855f353ce70da613ee3f0e470f764a4751ba09714a",
         "far": "1cadf9b69c64cbb44f747dfd12b66dd8e6acbf881a2e21674ae57608ec6d973f",
         "stamp": "fc9214981e240c87e8c3787204ed82af44e02ac155255f8e34d3bb12e2533eac"
       },
-      "output": "3411354d2ccb96a32cda21058601387ba5d8208c740868c5ac79802a6782485f"
+      "output": "4636ff0ecb56393c9cf3a328f502baed42a8eb5abd2244f50c409b8a026935b2"
     },
     "ostrawa": {
       "country": "CZ",
@@ -664,12 +697,12 @@
       "country": "PL",
       "style": 8,
       "sources": {
-        "panorama": "1f7dfbe1996f9b79a326b42bbec71a2c728ca03520510899623259da583b6ba1",
+        "panorama": "c8473fa3f5dfb35714e84b9d0f72a78d26f5f78ef6183f06cb1845fd38cf313c",
         "sky": "79e3526f27d6063b059a1d52fbabc1e24171899824db3ed9f1ef303fc54112e9",
         "far": "dd2b845afde63168bcf0d0380bbc4e2f9d4b83ae6b98dc72f1971fba5c98d02e",
         "stamp": "74fbadf2156748780f9e833104425f6fc265288287783beece88571a59130b0a"
       },
-      "output": "4ad7e9997c3a165c3b74d243ea275fa1f0a4b1fbb6dc169b4338c8391e828b8f"
+      "output": "423c1fffcb12b2570193c2a5e25b0b5c4cff611938ed08540a525c447f9579c9"
     },
     "reims": {
       "country": "FR",
@@ -728,12 +761,12 @@
       "country": "NO",
       "style": 8,
       "sources": {
-        "panorama": "dd3a12020f37979ab3b0f6c77be75cd464e4adad7e5dfd3d5371513fcd01431a",
+        "panorama": "05f528fcdeb3ac61e278ee9ee98d8adc188544950c808f65ab963e4cb5f5031b",
         "sky": "1092af10da124c42c0ab9f855f353ce70da613ee3f0e470f764a4751ba09714a",
         "far": "1cadf9b69c64cbb44f747dfd12b66dd8e6acbf881a2e21674ae57608ec6d973f",
         "stamp": "fc9214981e240c87e8c3787204ed82af44e02ac155255f8e34d3bb12e2533eac"
       },
-      "output": "41b265a3962d1b710ef753af14458a62c911f00af64820c2c5d37b94cc7acaba"
+      "output": "440fcd33cc8aad6154373d9bb88d0c213042164fc2f09ce2f20a1ae8247e4be3"
     },
     "stuttgart": {
       "country": "DE",
@@ -750,12 +783,12 @@
       "country": "PL",
       "style": 8,
       "sources": {
-        "panorama": "a2715f077999ac63939c96a44aca1fd5909b9d87bea83d86c55503048fe0b081",
+        "panorama": "c16506f339ec6f55318904cd54e98474d40c83eea8644f423f547d91a4001215",
         "sky": "79e3526f27d6063b059a1d52fbabc1e24171899824db3ed9f1ef303fc54112e9",
         "far": "dd2b845afde63168bcf0d0380bbc4e2f9d4b83ae6b98dc72f1971fba5c98d02e",
         "stamp": "74fbadf2156748780f9e833104425f6fc265288287783beece88571a59130b0a"
       },
-      "output": "3877bc50e6e98c26139aad4b07a4e746444bfdffcddd4eb8cd9e263506ac9027"
+      "output": "278d84774b61cab0935fd7f67d79d55a4ed7695634da2c4944d283aa8d3aba82"
     },
     "tampere": {
       "country": "FI",
@@ -803,12 +836,12 @@
       "country": "PL",
       "style": 8,
       "sources": {
-        "panorama": "2773df835c21f4f84307ecff6efe38c239668ae71f71fd802825c8157744f603",
+        "panorama": "a3e1ac3734e178dc337456c538206280fa05149e2e8df9df951a3583a5084cbf",
         "sky": "79e3526f27d6063b059a1d52fbabc1e24171899824db3ed9f1ef303fc54112e9",
         "far": "dd2b845afde63168bcf0d0380bbc4e2f9d4b83ae6b98dc72f1971fba5c98d02e",
         "stamp": "74fbadf2156748780f9e833104425f6fc265288287783beece88571a59130b0a"
       },
-      "output": "b098d40abf6b0dfe06d060248d349a2cb9cd327dd41e6f17eec4d2c4e1c7a406"
+      "output": "ec6dda20fa851a1434f814a28937765ba949a1773504fe9b6db707bce55eea95"
     },
     "wieden": {
       "country": "AT",
@@ -824,12 +857,12 @@
       "country": "PL",
       "style": 8,
       "sources": {
-        "panorama": "1f70278171c82d3608849a6bc967af7ae2a0204433639d048503991867a1115b",
+        "panorama": "4c5ce38bd2644698674c15c320e17973318e67ca9d558d1f3fa88460a7dadd00",
         "sky": "79e3526f27d6063b059a1d52fbabc1e24171899824db3ed9f1ef303fc54112e9",
         "far": "dd2b845afde63168bcf0d0380bbc4e2f9d4b83ae6b98dc72f1971fba5c98d02e",
         "stamp": "74fbadf2156748780f9e833104425f6fc265288287783beece88571a59130b0a"
       },
-      "output": "9c127715e7f232351ea7df70bcb58ba157c5b4bb7e5d27c40db607d4a36182e9"
+      "output": "076aa59a540584f667ee21a0c6c49eee82556434ecf1c18f38b4c3bd17640dd7"
     },
     "zurych": {
       "country": "CH",

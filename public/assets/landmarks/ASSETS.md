@@ -461,3 +461,38 @@ Wszystkie grafiki źródłowe wygenerowano w ChatGPT; brak wykorzystania obcych 
 2. **Dortmund:** ujęcie łączy symbole regionu; nie jest jednorodną rekonstrukcją jednego fizycznego punktu widokowego. Jeśli realizm geograficzny jest kryterium bezwzględnym, należy wykonać nowy wariant oparty na jednej perspektywie.
 3. **Bielefeld i Hanower:** źródłem był większy arkusz AI, nie oddzielne rendery; mimo eksportu 1620×900 ich bazowa szczegółowość jest niższa. Warto zastąpić obrazami generowanymi osobno, jeśli po teście w aplikacji będzie to widoczne.
 4. **Eindhoven:** bryły przemysłowe są stylizowane. Zegar jest świadomie pozbawiony nazwy przedsiębiorstwa; weryfikować podobieństwo do Klokgebouw.
+
+# ASSETS-77 — Panoramy A+ Niemcy (runda 6)
+
+**Data:** 2026-10-30  
+**Projekt:** Cebulak Express — Kierunek Polska  
+**Format:** 5 × PNG, 1620 × 900 px, RGBA, profil sRGB, przezroczyste niebo, linia gruntu przy dolnej krawędzi.  
+**Narzędzia:** wbudowany generator obrazów ChatGPT; kadrowanie, oczyszczanie przezroczystości, korekta kolejności sylwetek, dodanie konturu oraz arkusz podglądu: Python / Pillow / OpenCV.
+
+Grafiki mają charakter **oryginalnych ilustracji**, a nie kopii fotografii. Generator wykonał osobny Berlin oraz arkusze z pięcioma miastami. Cztery pozostałe panoramy wyodrębniono z wygenerowanego arkusza, ponownie wykadrowano i technicznie dopracowano. W arkuszu końcowym podpisy znajdują się **wyłącznie pod ilustracjami**, nie w plikach gry.
+
+## Pliki, motywy, punkty widzenia i prompty
+
+Wspólny brief dla generatora: *„Szeroka, płaska rysunkowa panorama miasta do mobilnej gry 2D: uproszczona architektura, 2–4 duże rozpoznawalne sylwetki, ciepłe kolory, jednolite plamy cienia od światła z lewej góry, wyraźny kontur ciemnogranatowy #1d2f3b, bez zdjęciowych tekstur, napisów, logotypów, flag i postaci; wycięte przezroczyste niebo i dolna linia nabrzeża lub gruntu”.* Opisy w kolumnie „prompt motywu” odtwarzają zakres tematyczny przekazany generatorowi; wewnętrzny dosłowny prompt systemowy nie jest dostępny.
+
+| Plik / id | Miasto | Dominujące budowle | Przybliżony punkt widzenia | Prompt motywu | Źródło / licencja |
+|---|---|---|---|---|---|
+| `berlin.png` / `berlin` | Berlin | Brama Brandenburska, szklana kopuła Reichstagu, Fernsehturm; uproszczone kamienice i kopuły w tle | Od zachodu, w osi Bramy Brandenburskiej, od strony Tiergarten i alei Straße des 17. Juni; szeroka stylizacja perspektywy | „Berlin: duża Brama Brandenburska na środku, Reichstag po lewej, wieża telewizyjna po prawej, niewielkie korony drzew i ulice bez napisów” | ChatGPT GPT Image, korekta Pillow/OpenCV; prawa do wygenerowanego wyniku: właściciel projektu |
+| `magdeburg.png` / `magdeburg` | Magdeburg | Gotycka katedra św. Maurycego i św. Katarzyny z dwiema wieżami, most przez Łabę, niska zabudowa | Od wschodniego brzegu Łaby w kierunku starego miasta | „Magdeburg: potężna gotycka katedra z dwiema wysokimi wieżami po lewej, most i nabrzeże Łaby po prawej, jasny piaskowiec, dachy i drzewa” | ChatGPT GPT Image, wydzielenie z wygenerowanego arkusza, korekta Pillow/OpenCV; prawa właściciela projektu |
+| `drezno.png` / `drezno` | Drezno | Frauenkirche z kopułą, barokowe wieże starego miasta (w tym sylwetka inspirowana Hofkirche), most Augusta i Łaba | Północny brzeg Łaby (Neustädter Elbufer), widok na Altstadt | „Drezno: wielka kopuła Frauenkirche po lewej, kościelne wieże i historyczne kamienice po prawej, kamienny most Augusta przed panoramą, pas Łaby” | ChatGPT GPT Image, wydzielenie z wygenerowanego arkusza, korekta Pillow/OpenCV; prawa właściciela projektu |
+| `hamburg.png` / `hamburg` | Hamburg | Elbphilharmonie na ceglanej podstawie, wieża kościoła św. Michała (Michel), dźwigi portowe | Południowy brzeg Łaby, spojrzenie ku północnemu nabrzeżu; orientacja elementów skorygowana lustrzanym odbiciem | „Hamburg: dźwigi portowe z lewej, wieża kościelna w centrum, duża falista szklana bryła Elbphilharmonie z prawej, historyczne magazyny i woda” | ChatGPT GPT Image, wydzielenie z wygenerowanego arkusza, korekta Pillow/OpenCV; prawa właściciela projektu |
+| `monachium.png` / `monachium` | Monachium | Nowy Ratusz, Frauenkirche z dwiema zielonymi kopułami, odległy zarys Alp | Umowny publiczny punkt obserwacyjny na północ od centrum, widok na południe; odwrócenie kadru dla właściwego porządku zachód–wschód | „Monachium: gotycki Nowy Ratusz po lewej, dwie zielone kopuły Frauenkirche po prawej, niska starówka z czerwonymi dachami, dalekie Alpy” | ChatGPT GPT Image, wydzielenie z wygenerowanego arkusza, korekta Pillow/OpenCV; prawa właściciela projektu |
+
+## Obróbka i ograniczenia
+
+- Skala i kadrowanie: 1620 × 900 px; główne sylwetki zajmują ok. 80% wysokości, najniższa linia na y=882.
+- Kontur: `#1d2f3b`, dodatkowa zewnętrzna obwódka około 9–10 px wraz z istniejącą krawędzią ilustracji; świadomie pozostawiono prostsze wewnętrzne linie okien.
+- Brak tła nieba, chmur, tekstów, logo, herbu, flag i ludzi. Źródła zdjęciowe oglądano jedynie jako ogólne odniesienie do sylwetek.
+- Prawdziwy krajobraz miejski został **uproszczony i miejscami przeskalowany** dla rozpoznawalności na małym ekranie. To stylizowana kompozycja oparta na przybliżonym kierunku widoku, **nie** dokładna rekonstrukcja fotogrametryczna.
+- Elbphilharmonie jest współczesną budowlą. Wizerunki jej zewnętrznej formy przedstawianej z przestrzeni publicznej rozpatrywano w świetle niemieckiej *Panoramafreiheit* (§ 59 UrhG: https://www.gesetze-im-internet.de/urhg/__59.html). Nie użyto cudzego zdjęcia ani nie powielono materiałów promocyjnych obiektu. Ocena dotyczy tej konkretnej grafiki, a nie innych sposobów wykorzystania budynku.
+
+## Pliki pomocnicze
+
+`docs/art/podglady/panoramy-77.png` — arkusz na jasnoniebieskim tle z pięcioma podpisanymi panoramami; podpisy nie należą do sprite'ów.
+
+**Licencja / użytkowanie:** obrazy wygenerowano na zlecenie właściciela projektu w ChatGPT. Prawa do wyników przysługują zamawiającemu zgodnie z obowiązującymi warunkami usługi. Nie są to zasoby CC0 ani zdjęcia stron trzecich; nie gwarantuje się wyłączności względem podobnych wyników AI.

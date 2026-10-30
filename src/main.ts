@@ -763,7 +763,8 @@ function frame(now: number): void {
     renderer.draw(game, now / 1000);
     // Renderer zeruje ducha po błędzie rysowania — wtedy nie próbujemy ponownie w tym przejeździe.
     if (drawGhost && !renderer.ghost) ghostDrawFailed = true;
-    signJoke?.show(game.phase === 'playing' ? renderer.signJoke : null);
+    // Żart z tablicy nie nachodzi na komunikat o mieście lub granicy.
+    signJoke?.show(game.phase === 'playing' && ui.toast.hidden ? renderer.signJoke : null);
   } else {
     renderer.draw(previewGame, now / 1000);
   }

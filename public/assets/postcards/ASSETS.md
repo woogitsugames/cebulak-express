@@ -47,8 +47,10 @@ Złożone automatycznie (`npm run art:postcards`) wyłącznie z zasobów projekt
 | `helsingborg.png` | `tools/art/postcards_from_panoramas.py` (styl 8) | Własna grafika projektu (pochodna zasobów projektu) | Helsingborg (SE); panorama `landmarks/helsingborg.png`, tło `countries/se/se-sky.png`, `countries/se/se-far.png`, `stamp-se.png`. |
 | `helsinki.png` | `tools/art/postcards_from_panoramas.py` (styl 8) | Własna grafika projektu (pochodna zasobów projektu) | Helsinki (FI); panorama `landmarks/helsinki.png`, tło `countries/fi/fi-sky.png`, `countries/fi/fi-far.png`, znaczek zastępczy rysowany w skrypcie. |
 | `jena.png` | `tools/art/postcards_from_panoramas.py` (styl 8) | Własna grafika projektu (pochodna zasobów projektu) | Jena (DE); panorama `landmarks/jena.png`, tło `countries/de/de-sky.png`, `countries/de/de-far.png`, `stamp-de.png`. |
+| `katowice.png` | `tools/art/postcards_from_panoramas.py` (styl 8) | Własna grafika projektu (pochodna zasobów projektu) | Katowice (PL); panorama `landmarks/katowice.png`, tło `countries/pl/pl-sky.png`, `countries/pl/pl-far.png`, `stamp-pl.png`. |
 | `kolonia.png` | `tools/art/postcards_from_panoramas.py` (styl 8) | Własna grafika projektu (pochodna zasobów projektu) | Kolonia (DE); panorama `landmarks/kolonia.png`, tło `countries/de/de-sky.png`, `countries/de/de-far.png`, `stamp-de.png`. |
 | `kopenhaga.png` | `tools/art/postcards_from_panoramas.py` (styl 8) | Własna grafika projektu (pochodna zasobów projektu) | Kopenhaga (DK); panorama `landmarks/kopenhaga.png`, tło `countries/dk/dk-sky.png`, `countries/dk/dk-far.png`, `stamp-dk.png`. |
+| `krakow.png` | `tools/art/postcards_from_panoramas.py` (styl 8) | Własna grafika projektu (pochodna zasobów projektu) | Kraków (PL); panorama `landmarks/krakow.png`, tło `countries/pl/pl-sky.png`, `countries/pl/pl-far.png`, `stamp-pl.png`. |
 | `legnica.png` | `tools/art/postcards_from_panoramas.py` (styl 8) | Własna grafika projektu (pochodna zasobów projektu) | Legnica (PL); panorama `landmarks/legnica.png`, tło `countries/pl/pl-sky.png`, `countries/pl/pl-far.png`, `stamp-pl.png`. |
 | `leuven.png` | `tools/art/postcards_from_panoramas.py` (styl 8) | Własna grafika projektu (pochodna zasobów projektu) | Leuven (BE); panorama `landmarks/leuven.png`, tło `countries/be/be-sky.png`, `countries/be/be-far.png`, `stamp-be.png`. |
 | `lille.png` | `tools/art/postcards_from_panoramas.py` (styl 8) | Własna grafika projektu (pochodna zasobów projektu) | Lille (FR); panorama `landmarks/lille.png`, tło `countries/fr/fr-sky.png`, `countries/fr/fr-far.png`, `stamp-fr.png`. |
@@ -66,6 +68,7 @@ Złożone automatycznie (`npm run art:postcards`) wyłącznie z zasobów projekt
 | `mannheim.png` | `tools/art/postcards_from_panoramas.py` (styl 8) | Własna grafika projektu (pochodna zasobów projektu) | Mannheim (DE); panorama `landmarks/mannheim.png`, tło `countries/de/de-sky.png`, `countries/de/de-far.png`, `stamp-de.png`. |
 | `mediolan.png` | `tools/art/postcards_from_panoramas.py` (styl 8) | Własna grafika projektu (pochodna zasobów projektu) | Mediolan (IT); panorama `landmarks/mediolan.png`, tło `countries/it/it-sky.png`, `countries/it/it-far.png`, znaczek zastępczy rysowany w skrypcie. |
 | `metz.png` | `tools/art/postcards_from_panoramas.py` (styl 8) | Własna grafika projektu (pochodna zasobów projektu) | Metz (FR); panorama `landmarks/metz.png`, tło `countries/fr/fr-sky.png`, `countries/fr/fr-far.png`, `stamp-fr.png`. |
+| `monachium.png` | `tools/art/postcards_from_panoramas.py` (styl 8) | Własna grafika projektu (pochodna zasobów projektu) | Monachium (DE); panorama `landmarks/monachium.png`, tło `countries/de/de-sky.png`, `countries/de/de-far.png`, `stamp-de.png`. |
 | `norymberga.png` | `tools/art/postcards_from_panoramas.py` (styl 8) | Własna grafika projektu (pochodna zasobów projektu) | Norymberga (DE); panorama `landmarks/norymberga.png`, tło `countries/de/de-sky.png`, `countries/de/de-far.png`, `stamp-de.png`. |
 | `odense.png` | `tools/art/postcards_from_panoramas.py` (styl 8) | Własna grafika projektu (pochodna zasobów projektu) | Odense (DK); panorama `landmarks/odense.png`, tło `countries/dk/dk-sky.png`, `countries/dk/dk-far.png`, `stamp-dk.png`. |
 | `oslo.png` | `tools/art/postcards_from_panoramas.py` (styl 8) | Własna grafika projektu (pochodna zasobów projektu) | Oslo (NO); panorama `landmarks/oslo.png`, tło `countries/no/no-sky.png`, `countries/no/no-far.png`, `stamp-no.png`. |
@@ -99,14 +102,11 @@ Wszystkie pliki PNG mają kanał alfa (zaokrąglone narożniki lub tło stempla)
 
 | plik | źródło/narzędzie | licencja | autor/uwagi |
 | --- | --- | --- | --- |
-| `krakow.png` | ChatGPT, Python/SVG/CairoSVG/Pillow | Oryginalna grafika do gry | Kraków (PL); motywy: wieże zabytkowego rynku; wzgórze zamkowe nad Wisłą. |
-| `katowice.png` | ChatGPT, Python/SVG/CairoSVG/Pillow | Oryginalna grafika do gry | Katowice (PL); motywy: hala widowiskowa o owalnym dachu; nowoczesne biurowce. |
 | `gdansk.png` | ChatGPT, Python/SVG/CairoSVG/Pillow | Oryginalna grafika do gry | Gdańsk (PL); motywy: kolorowe kamienice nad wodą; żurawie portowe. |
 | `slupsk.png` | ChatGPT, Python/SVG/CairoSVG/Pillow | Oryginalna grafika do gry | Słupsk (PL); motywy: ceglane mury i wieże; zielony skwer. |
 | `bydgoszcz.png` | ChatGPT, Python/SVG/CairoSVG/Pillow | Oryginalna grafika do gry | Bydgoszcz (PL); motywy: spichlerze; most i barka. |
 | `cottbus.png` | ChatGPT, Python/SVG/CairoSVG/Pillow | Oryginalna grafika do gry | Cottbus (DE); motywy: ceglana wieża; zielone parki. |
 | `forst.png` | ChatGPT, Python/SVG/CairoSVG/Pillow | Oryginalna grafika do gry | Forst (DE); motywy: most nad rzeką; lasy łużyckie. |
-| `monachium.png` | ChatGPT, Python/SVG/CairoSVG/Pillow | Oryginalna grafika do gry | Monachium (DE); motywy: dwie wieże ponad dachami; alpejskie wzgórza. |
 | `bayreuth.png` | ChatGPT, Python/SVG/CairoSVG/Pillow | Oryginalna grafika do gry | Bayreuth (DE); motywy: barokowe kamienice; zielone wzgórza. |
 | `chemnitz.png` | ChatGPT, Python/SVG/CairoSVG/Pillow | Oryginalna grafika do gry | Chemnitz (DE); motywy: ceglana zabudowa; zielone doliny. |
 | `stamp-be.png` | ChatGPT, Python/SVG/CairoSVG/Pillow | Oryginalna grafika do gry | Abstrakcyjny geometryczny stempel BE, w kolorach flagi, bez tekstu ani godła. |
