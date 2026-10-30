@@ -2,7 +2,7 @@ import type { CountryCode, HomeCountry } from '../core/route';
 
 /**
  * Punkty trasy: miasta i miejsca, nad którymi przelatujemy. Trasy fabularyzowane
- * na podstawie typowych dróg Polonii do Polski; km to szacunki [do weryfikacji],
+ * na podstawie typowych dróg Polonii do Polski; km częściowo zweryfikowane z routingiem (zob. docs/trasy-weryfikacja.md),
  * liczone od startu trasy wzorcowej. Odcinek w Polsce gra liczy osobno — od punktu
  * `rest` (stacja za granicą) do wybranego miasta docelowego.
  *
@@ -55,6 +55,28 @@ const LEGNICA: Omit<Waypoint, 'km'> = {
   motifs: ['rynek z kamienicami', 'zamek piastowski'], text: 'Legnica. Rynek, kamienice i już prawie Wrocław.',
 };
 
+
+const KRAKOW: Omit<Waypoint, 'km'> = {
+  id: 'krakow', name: 'Kraków', country: 'PL', kind: 'city', lat: 50.06, lon: 19.94,
+  motifs: ['wieże zabytkowego rynku', 'zakole Wisły i wzgórze zamkowe'], text: 'Kraków. Jeszcze jeden zakręt i będzie obiad.',
+};
+const KATOWICE: Omit<Waypoint, 'km'> = {
+  id: 'katowice', name: 'Katowice', country: 'PL', kind: 'city', lat: 50.26, lon: 19.02,
+  motifs: ['charakterystyczna hala widowiskowa jako sylwetka', 'nowoczesne biurowce'], text: 'Katowice. W drogę, bo w domu czeka rosół.',
+};
+const GDANSK: Omit<Waypoint, 'km'> = {
+  id: 'gdansk', name: 'Gdańsk', country: 'PL', kind: 'city', lat: 54.35, lon: 18.65,
+  motifs: ['portowe żurawie', 'kolorowe kamienice nad kanałem'], text: 'Gdańsk. Mewy też wracają do domu.',
+};
+const SLUPSK: Omit<Waypoint, 'km'> = {
+  id: 'slupsk', name: 'Słupsk', country: 'PL', kind: 'city', lat: 54.46, lon: 17.03,
+  motifs: ['ceglane mury i wieże', 'zielone skwery'], text: 'Słupsk. Jeszcze chwila i słoiki na stole.',
+};
+const BYDGOSZCZ: Omit<Waypoint, 'km'> = {
+  id: 'bydgoszcz', name: 'Bydgoszcz', country: 'PL', kind: 'city', lat: 53.12, lon: 18.01,
+  motifs: ['spichlerze nad wodą', 'mosty i barki'], text: 'Bydgoszcz. Rzeka płynie, kilometrów ubywa.',
+};
+
 /** Wspólny odcinek przez Niemcy od Zagłębia Ruhry do Świecka (km względem Dortmundu). */
 function viaRuhrToSwiecko(dortmundKm: number): Waypoint[] {
   const d = dortmundKm;
@@ -90,7 +112,7 @@ function dresdenToJedrzychowice(dresdenKm: number): Waypoint[] {
 export const ROUTE_WAYPOINTS: Record<HomeCountry, Waypoint[]> = {
   BE: [
     { id: 'bruksela', name: 'Bruksela', country: 'BE', km: 0, kind: 'city', motifs: ['kamienice ze zdobionymi szczytami wokół rynku', 'ratusz z ażurową wieżą', 'frytki w papierowym rożku'], text: 'Bruksela. Bagażnik po dach, serce już w Polsce.' },
-    { id: 'leuven', name: 'Leuven', country: 'BE', km: 28, kind: 'city', motifs: ['koronkowy gotycki ratusz', 'rowery pod ceglanymi murami'], text: 'Leuven. Ratusz jak koronka, bagażnik jak cegła.' },
+    { id: 'leuven', name: 'Leuven', country: 'BE', km: 24, kind: 'city', motifs: ['koronkowy gotycki ratusz', 'rowery pod ceglanymi murami'], text: 'Leuven. Ratusz jak koronka, bagażnik jak cegła.' },
     { id: 'liege', name: 'Liège', country: 'BE', km: 100, kind: 'city', motifs: ['wzgórze z długimi schodami', 'Moza z barkami'], text: 'Liège. Moza płynie, a my lecimy dalej.' },
     { id: 'akwizgran', name: 'Akwizgran', country: 'DE', km: 147, kind: 'city', motifs: ['ośmioboczna kopuła katedry', 'stara brama miejska'], text: 'Akwizgran. Witamy w Niemczech!' },
     { id: 'kolonia', name: 'Kolonia', country: 'DE', km: 215, kind: 'city', motifs: ['dwie ostre wieże katedry nad Renem', 'most kolejowy nad Renem'], text: 'Kolonia. Katedra widzi, że wieziesz słoiki.' },
@@ -100,9 +122,9 @@ export const ROUTE_WAYPOINTS: Record<HomeCountry, Waypoint[]> = {
   ],
   NL: [
     { id: 'amsterdam', name: 'Amsterdam', country: 'NL', km: 0, kind: 'city', motifs: ['kanały z wąskimi kamienicami', 'rowery przy barierkach', 'wiatrak'], text: 'Amsterdam. Rowery wszędzie, miejsca w kombi brak.' },
-    { id: 'utrecht', name: 'Utrecht', country: 'NL', km: 40, kind: 'city', motifs: ['wysoka ceglana wieża nad kanałem', 'kanały z nabrzeżami'], text: 'Utrecht. Wieża wysoka, bagażnik jeszcze wyższy.' },
+    { id: 'utrecht', name: 'Utrecht', country: 'NL', km: 45, kind: 'city', motifs: ['wysoka ceglana wieża nad kanałem', 'kanały z nabrzeżami'], text: 'Utrecht. Wieża wysoka, bagażnik jeszcze wyższy.' },
     { id: 'arnhem', name: 'Arnhem', country: 'NL', km: 100, kind: 'city', motifs: ['most nad Renem', 'lasy i wrzosowiska'], text: 'Arnhem. Most nad Renem i jazda na całego.' },
-    { id: 'oberhausen', name: 'Zagłębie Ruhry', country: 'DE', km: 175, kind: 'landmark', motifs: ['gazometr jak wielki walec', 'kominy huty', 'wieże wyciągowe'], text: 'Gazometr jak wielki słoik bez wieczka.' },
+    { id: 'oberhausen', name: 'Zagłębie Ruhry', country: 'DE', km: 191, kind: 'landmark', motifs: ['gazometr jak wielki walec', 'kominy huty', 'wieże wyciągowe'], text: 'Gazometr jak wielki słoik bez wieczka.' },
     ...viaRuhrToSwiecko(235),
   ],
   DE: [
@@ -115,15 +137,15 @@ export const ROUTE_WAYPOINTS: Record<HomeCountry, Waypoint[]> = {
     { id: 'londyn', name: 'Londyn', country: 'UK', km: 0, kind: 'city', motifs: ['wieża zegarowa nad Tamizą', 'most zwodzony', 'czerwone piętrowe autobusy'], text: 'Londyn. Lewa strona drogi pożegnana!' },
     { id: 'dover', name: 'Dover', country: 'UK', km: 125, kind: 'landmark', motifs: ['białe klify nad portem', 'zamek na wzgórzu', 'mewy'], text: 'Dover. Klify białe jak serwetka pod zapiekanką.' },
     { id: 'prom-kanal', name: 'Prom przez kanał', country: 'UK', km: 145, kind: 'crossing', motifs: ['prom na morzu', 'białe klify za rufą', 'mewy nad pokładem'], text: 'Prom! Kawa, mewy i 90 minut bez korka.' },
-    { id: 'calais', name: 'Calais', country: 'FR', km: 170, kind: 'city', motifs: ['wieża ratusza i latarnia', 'szeroka plaża'], text: 'Calais. Znów po prawej stronie drogi.' },
-    { id: 'dunkierka', name: 'Dunkierka', country: 'FR', km: 215, kind: 'city', motifs: ['rozległa plaża i wydmy', 'dźwigi portowe'], text: 'Dunkierka. Wielka plaża, wielka trasa.' },
-    { id: 'brugia', name: 'Brugia', country: 'BE', km: 290, kind: 'city', motifs: ['kanały z łabędziami', 'wieża z dzwonami nad rynkiem'], text: 'Brugia. Kanały jak z bajki, bagażnik jak magazyn.' },
-    { id: 'gandawa', name: 'Gandawa', country: 'BE', km: 340, kind: 'city', motifs: ['zamek nad wodą', 'trzy wieże w jednym widoku'], text: 'Gandawa. Zamek na wodzie, w kombi pół spiżarni.' },
-    { id: 'antwerpia', name: 'Antwerpia', country: 'BE', km: 400, kind: 'city', motifs: ['dworzec z wielką kopułą', 'port z dźwigami'], text: 'Antwerpia. Dźwigi portowe liczą nasze słoiki.' },
-    { id: 'eindhoven', name: 'Eindhoven', country: 'NL', km: 490, kind: 'city', motifs: ['wiszące rondo dla rowerów', 'rowery'], text: 'Eindhoven. Rowery nad drogą, my pod chmurami.' },
-    { id: 'venlo', name: 'Venlo', country: 'NL', km: 545, kind: 'city', motifs: ['zielone szklarnie', 'ratusz na rynku'], text: 'Venlo. Szklarnie i Niemcy tuż-tuż.' },
-    { id: 'zaglebie-ruhry', name: 'Zagłębie Ruhry', country: 'DE', km: 630, kind: 'landmark', motifs: ['wieże wyciągowe kopalń', 'kominy', 'gazometr'], text: 'Zagłębie Ruhry. Kominy kopcą, kombi sapie.' },
-    ...viaRuhrToSwiecko(680),
+    { id: 'calais', name: 'Calais', country: 'FR', km: 185, kind: 'city', motifs: ['wieża ratusza i latarnia', 'szeroka plaża'], text: 'Calais. Znów po prawej stronie drogi.' },
+    { id: 'dunkierka', name: 'Dunkierka', country: 'FR', km: 230, kind: 'city', motifs: ['rozległa plaża i wydmy', 'dźwigi portowe'], text: 'Dunkierka. Wielka plaża, wielka trasa.' },
+    { id: 'brugia', name: 'Brugia', country: 'BE', km: 305, kind: 'city', motifs: ['kanały z łabędziami', 'wieża z dzwonami nad rynkiem'], text: 'Brugia. Kanały jak z bajki, bagażnik jak magazyn.' },
+    { id: 'gandawa', name: 'Gandawa', country: 'BE', km: 355, kind: 'city', motifs: ['zamek nad wodą', 'trzy wieże w jednym widoku'], text: 'Gandawa. Zamek na wodzie, w kombi pół spiżarni.' },
+    { id: 'antwerpia', name: 'Antwerpia', country: 'BE', km: 415, kind: 'city', motifs: ['dworzec z wielką kopułą', 'port z dźwigami'], text: 'Antwerpia. Dźwigi portowe liczą nasze słoiki.' },
+    { id: 'eindhoven', name: 'Eindhoven', country: 'NL', km: 505, kind: 'city', motifs: ['wiszące rondo dla rowerów', 'rowery'], text: 'Eindhoven. Rowery nad drogą, my pod chmurami.' },
+    { id: 'venlo', name: 'Venlo', country: 'NL', km: 560, kind: 'city', motifs: ['zielone szklarnie', 'ratusz na rynku'], text: 'Venlo. Szklarnie i Niemcy tuż-tuż.' },
+    { id: 'zaglebie-ruhry', name: 'Zagłębie Ruhry', country: 'DE', km: 645, kind: 'landmark', motifs: ['wieże wyciągowe kopalń', 'kominy', 'gazometr'], text: 'Zagłębie Ruhry. Kominy kopcą, kombi sapie.' },
+    ...viaRuhrToSwiecko(695),
   ],
   FR: [
     { id: 'paryz', name: 'Paryż', country: 'FR', km: 0, kind: 'city', motifs: ['stalowa wieża nad dachami (sylwetka, za dnia)', 'dachy mansardowe'], text: 'Paryż. Wieża żegna kombi z pełnym bagażnikiem.' },
@@ -131,17 +153,17 @@ export const ROUTE_WAYPOINTS: Record<HomeCountry, Waypoint[]> = {
     { id: 'metz', name: 'Metz', country: 'FR', km: 335, kind: 'city', motifs: ['katedra z żółtego kamienia', 'most nad Mozelą'], text: 'Metz. Katedra z witrażami, w głowie pierogi.' },
     { id: 'saarbrucken', name: 'Saarbrücken', country: 'DE', km: 405, kind: 'city', motifs: ['most na Saarze', 'dawna huta z kominami'], text: 'Saarbrücken. Witamy w Niemczech!' },
     { id: 'mannheim', name: 'Mannheim', country: 'DE', km: 535, kind: 'city', motifs: ['wieża ciśnień z fontanną', 'barki na Renie'], text: 'Mannheim. Miasto w kratkę, korek okrągły.' },
-    { id: 'frankfurt-main', name: 'Frankfurt nad Menem', country: 'DE', km: 615, kind: 'city', motifs: ['panorama wieżowców', 'Men z mostami'], text: 'Frankfurt. Wieżowce liczą piętra, my km.' },
-    { id: 'erfurt', name: 'Erfurt', country: 'DE', km: 870, kind: 'city', motifs: ['most z kamieniczkami nad rzeką', 'gotyckie wieże'], text: 'Erfurt. Dom na moście, nasz dom na końcu trasy.' },
-    ...dresdenToJedrzychowice(1090),
+    { id: 'frankfurt-main', name: 'Frankfurt nad Menem', country: 'DE', km: 585, kind: 'city', motifs: ['panorama wieżowców', 'Men z mostami'], text: 'Frankfurt. Wieżowce liczą piętra, my km.' },
+    { id: 'erfurt', name: 'Erfurt', country: 'DE', km: 845, kind: 'city', motifs: ['most z kamieniczkami nad rzeką', 'gotyckie wieże'], text: 'Erfurt. Dom na moście, nasz dom na końcu trasy.' },
+    ...dresdenToJedrzychowice(1065),
   ],
   CH: [
     { id: 'zurych', name: 'Zurych', country: 'CH', km: 0, kind: 'city', motifs: ['jezioro z łabędziami', 'Alpy na horyzoncie', 'wieże starego miasta'], text: 'Zurych. Alpy za plecami, bigos przed nosem.' },
     { id: 'wodospad-renski', name: 'Wodospad Reński', country: 'CH', km: 45, kind: 'landmark', motifs: ['szeroki wodospad na Renie', 'skała pośrodku nurtu'], text: 'Wodospad. Woda w dół, my w górę mapy.' },
     { id: 'stuttgart', name: 'Stuttgart', country: 'DE', km: 215, kind: 'city', motifs: ['wieża telewizyjna na wzgórzu', 'winnice na zboczach'], text: 'Stuttgart. Witamy w Niemczech!' },
     { id: 'norymberga', name: 'Norymberga', country: 'DE', km: 420, kind: 'city', motifs: ['zamek na skale', 'kamienice z belkami', 'piernikowe serca'], text: 'Norymberga. Zamek na skale, pierniki w kombi.' },
-    { id: 'jena', name: 'Jena', country: 'DE', km: 640, kind: 'city', motifs: ['okrągła wieża', 'wzgórza nad Salą'], text: 'Jena. Okrągła wieża i drogowskaz na wschód.' },
-    ...dresdenToJedrzychowice(815),
+    { id: 'jena', name: 'Jena', country: 'DE', km: 600, kind: 'city', motifs: ['okrągła wieża', 'wzgórza nad Salą'], text: 'Jena. Okrągła wieża i drogowskaz na wschód.' },
+    ...dresdenToJedrzychowice(740),
   ],
   NO: [
     { id: 'oslo', name: 'Oslo', country: 'NO', km: 0, kind: 'city', motifs: ['biały gmach opery nad fiordem (ogólnie)', 'fiord z żaglówkami', 'skocznia na wzgórzu'], text: 'Oslo. Fiord żegna, słoiki pakują się same.' },
@@ -149,14 +171,14 @@ export const ROUTE_WAYPOINTS: Record<HomeCountry, Waypoint[]> = {
     { id: 'goteborg', name: 'Göteborg', country: 'SE', km: 290, kind: 'city', motifs: ['dźwigi portowe', 'tramwaje', 'kanały'], text: 'Göteborg. Port, tramwaje i dalej na południe.' },
     { id: 'helsingborg', name: 'Helsingborg', country: 'SE', km: 510, kind: 'city', motifs: ['ceglana wieża twierdzy', 'prom w cieśninie'], text: 'Helsingborg. Za cieśniną już Dania.' },
     { id: 'malmo', name: 'Malmö', country: 'SE', km: 570, kind: 'city', motifs: ['most nad cieśniną na horyzoncie', 'ceglany zamek'], text: 'Malmö. Most na horyzoncie, prom przed nami.' },
-    { id: 'ystad', name: 'Ystad', country: 'SE', km: 630, kind: 'crossing', motifs: ['port z promem', 'domy z muru pruskiego'], text: 'Ystad. Wjeżdżamy na prom. Trzymaj się!' },
-    { id: 'prom-baltyk', name: 'Prom przez Bałtyk', country: 'SE', km: 705, kind: 'crossing', motifs: ['prom na Bałtyku', 'mewy', 'latarnia morska'], text: 'Na promie: kawa, mewy i cisza. Rzadkość!' },
+    { id: 'ystad', name: 'Ystad', country: 'SE', km: 615, kind: 'crossing', motifs: ['port z promem', 'domy z muru pruskiego'], text: 'Ystad. Wjeżdżamy na prom. Trzymaj się!' },
+    { id: 'prom-baltyk', name: 'Prom przez Bałtyk', country: 'SE', km: 700, kind: 'crossing', motifs: ['prom na Bałtyku', 'mewy', 'latarnia morska'], text: 'Na promie: kawa, mewy i cisza. Rzadkość!' },
     { id: 'swinoujscie', name: 'Świnoujście', country: 'PL', km: 780, kind: 'border', motifs: ['latarnia morska', 'wiatrak-stawa w porcie', ...BORDER_MOTIFS], text: 'Świnoujście. Polska wita po rejsie!', lat: 53.91, lon: 14.25 },
     { id: 'stacja-swinoujscie', name: 'Stacja przy S3', country: 'PL', km: 790, kind: 'rest', motifs: STATION_MOTIFS, text: 'Hot dog po rejsie smakuje podwójnie.', lat: 53.85, lon: 14.3 },
   ],
   DK: [
     { id: 'kopenhaga', name: 'Kopenhaga', country: 'DK', km: 0, kind: 'city', motifs: ['kolorowe domki nad kanałem', 'rowery', 'wieża z iglicą'], text: 'Kopenhaga. Rowery mkną, kombi się turla.' },
-    { id: 'roskilde', name: 'Roskilde', country: 'DK', km: 30, kind: 'city', motifs: ['łodzie wikingów', 'fiord'], text: 'Roskilde. Wikingowie pływali, my lecimy z kawą.' },
+    { id: 'roskilde', name: 'Roskilde', country: 'DK', km: 33, kind: 'city', motifs: ['łodzie wikingów', 'fiord'], text: 'Roskilde. Wikingowie pływali, my lecimy z kawą.' },
     { id: 'most-falster', name: 'Most nad cieśniną', country: 'DK', km: 100, kind: 'landmark', motifs: ['długi most nad wodą', 'mewy'], text: 'Długi most, mewy z boku, hot dog w głowie.' },
     { id: 'prom-fehmarn', name: 'Prom przez Bałtyk', country: 'DK', km: 160, kind: 'crossing', motifs: ['prom na Bałtyku', 'wiatraki na wybrzeżu', 'mewy nad pokładem'], text: 'Na promie: kawa i mewy. 45 minut ciszy.' },
     { id: 'lubeka', name: 'Lubeka', country: 'DE', km: 270, kind: 'city', motifs: ['brama z dwiema okrągłymi wieżami', 'ceglany gotyk'], text: 'Lubeka. Brama z dwiema wieżami wita z daleka.' },
@@ -166,7 +188,10 @@ export const ROUTE_WAYPOINTS: Record<HomeCountry, Waypoint[]> = {
 };
 
 /** Polskie miasta „po drodze” — pokazywane, gdy leżą między granicą a celem. */
-export const PL_TRANSIT: Omit<Waypoint, 'km'>[] = [POZNAN, LODZ, WARSZAWA, SZCZECIN, WROCLAW, LEGNICA];
+export const PL_TRANSIT: Omit<Waypoint, 'km'>[] = [
+  POZNAN, LODZ, WARSZAWA, SZCZECIN, WROCLAW, LEGNICA,
+  KRAKOW, KATOWICE, GDANSK, SLUPSK, BYDGOSZCZ,
+];
 
 /** Dom na końcu trasy (meta). */
 export const HOME_WAYPOINT: Pick<Waypoint, 'kind' | 'motifs'> = {
