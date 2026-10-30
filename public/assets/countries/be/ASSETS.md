@@ -28,3 +28,17 @@ Wszystkie pliki: oryginalna grafika utworzona na potrzeby gry przy pomocy ChatGP
 - Kafelki mają powtarzalne skraje. Arkusz `preview.png` pokazuje po dwa identyczne kafelki.
 - W grafice nie ma napisów. Napisy należy renderować w interfejsie gry.
 - Nie do wdrażania jako tekstura: `preview.png`; służy do oceny graficznej.
+
+## Na Wigilię! — wariant zimowy (zlecenie 45)
+
+Zima jest aktywna 1–26 grudnia. Tylko trzy warstwy `sky`, `far`, `near` zastępują sezon letni; pozostałe, w tym `clouds`, `road` i panoramy miast, pozostają bez zmian. Zimowe PNG powstały przez proceduralną edycję oryginalnych letnich PNG: chłodniejsza paleta, śnieg na polach, drzewach i dachach, ciepłe punkty świetlne w oknach i dyskretny dym. Bazowe kontury i kadr są zachowane.
+
+| Plik | Źródło / narzędzie | Licencja | Autor / uwagi |
+|---|---|---|---|
+| `be-sky-zima.png` | ChatGPT, proceduralna edycja PNG | Własne, do projektu | 1080×1920, zimowe niebo i drobny śnieg |
+| `be-far-zima.png` | ChatGPT, proceduralna edycja PNG | Własne, do projektu | 2160×900, zimowy daleki plan, bezszwowy |
+| `be-near-zima.png` | ChatGPT, proceduralna edycja PNG | Własne, do projektu | 2160×720, zimowy bliski plan, bezszwowy |
+| `docs/art/podglady/countries-be-preview-zima.png` | ChatGPT, kompozycja PNG | Własne, do projektu | Podgląd 1080×1920, lato drogi bez panoram |
+| `winter-builder.js` | ChatGPT, JavaScript | Własne, do projektu | Narzędzie do ponownej edycji PNG także innych krajów |
+
+**Kontrola:** sRGB, PNG z alfa, wymiary @3x, brak zmian ciemnych konturów, identyczne skrajne kolumny `far` i `near`, każdy z 3 PNG poniżej 1,2 MB. Brak obcych marek i symboli religijnych.
