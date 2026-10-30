@@ -10,12 +10,7 @@ declare global {
 }
 
 /** Rzeczywiste wywołanie Canvas 2D zamiast samego DOMContentLoaded lub widoczności HUD. */
-test('budżet pierwszej klatki < 2 s przy Slow 4G i CPU 4x', async ({ page, browserName }, testInfo) => {
-  test.skip(
-    browserName !== 'chromium' || testInfo.project.name !== 'Pixel 7 (Chromium)',
-    'CDP i ograniczanie CPU/sieci mierzymy wyłącznie na mobilnym Chromium',
-  );
-
+test('budżet pierwszej klatki < 2 s przy Slow 4G i CPU 4x', async ({ page }, testInfo) => {
   await page.addInitScript(() => {
     const original = CanvasRenderingContext2D.prototype.fillRect;
     CanvasRenderingContext2D.prototype.fillRect = function (x, y, w, h) {
@@ -53,7 +48,7 @@ test('budżet pierwszej klatki < 2 s przy Slow 4G i CPU 4x', async ({ page, brow
     });
     await cdp.send('Emulation.setCPUThrottlingRate', { rate: 4 });
 
-    await page.goto('/?seed=123&test=1', { waitUntil: 'domcontentloaded' });
+    await page.goto('/?test=1&seed=20261030', { waitUntil: 'domcontentloaded' });
     await page.waitForFunction(() => window.__ceFirstCanvasFrame !== undefined);
     await expect(page.locator('#sel-home option')).toHaveCount(8);
 

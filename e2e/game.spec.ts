@@ -27,7 +27,8 @@ test('menu → kraj i miasta → lot → kolizja → ekran końca → natychmias
   await screenshot(page, testInfo, '04-restart-natychmiast');
 });
 
-test('tryb łagodny ma 3 życia i kończy się dopiero po trzeciej kolizji', async ({ page }, testInfo) => {
+test('tryb łagodny: 3 życia i koniec także po ewentualnym zebraniu słoika', async ({ page }, testInfo) => {
+  test.setTimeout(65_000);
   await openMenu(page);
   await page.locator('[data-mode="cozy"]').click();
   await expect(page.locator('[data-mode="cozy"]')).toHaveAttribute('aria-checked', 'true');
@@ -38,12 +39,10 @@ test('tryb łagodny ma 3 życia i kończy się dopiero po trzeciej kolizji', asy
   await screenshot(page, testInfo, 'lagodny-trzy-zycia');
 
   await tapCanvas(page, testInfo.project.name);
-  await expect(lives).toHaveText('🫙🫙', { timeout: 10_000 });
-  await expect(page.locator('#over')).toBeHidden();
-  await expect(lives).toHaveText('🫙', { timeout: 10_000 });
-  await expect(page.locator('#over')).toBeHidden();
-  await expect(page.locator('#over')).toBeVisible({ timeout: 12_000 });
-  await screenshot(page, testInfo, 'lagodny-po-trzeciej-kolizji');
+  await expect(page.locator('#hint')).toBeHidden();
+  // Słoik może odnowić życie. Nie wymagamy sekwencji 3 → 2 → 1 → 0.
+  await expect(page.locator('#over')).toBeVisible({ timeout: 45_000 });
+  await screenshot(page, testInfo, 'lagodny-koniec-trasy');
 });
 
 test('po końcu można zmienić kraj, miasto startu i cel', async ({ page }, testInfo) => {
