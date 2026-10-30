@@ -80,13 +80,13 @@ test('spacja uruchamia przejazd i nalicza kilometry', async ({ page }, testInfo)
   await screenshot(page, testInfo, 'sterowanie-spacja');
 });
 
-test('osiem krajów ma dostępne miasta startu i poprawne podsumowanie trasy', async ({ page }, testInfo) => {
+test('piętnaście krajów ma dostępne miasta startu i poprawne podsumowanie trasy', async ({ page }, testInfo) => {
   await openMenu(page);
   const home = page.locator('#sel-home');
   const countries = await home.locator('option').evaluateAll((options) =>
     options.map((option) => (option as HTMLOptionElement).value),
   );
-  expect(countries).toEqual(['BE', 'NL', 'DE', 'UK', 'FR', 'CH', 'NO', 'DK']);
+  expect(countries).toEqual(['BE', 'NL', 'DE', 'UK', 'FR', 'CH', 'NO', 'DK', 'IE', 'ES', 'IT', 'AT', 'SE', 'FI', 'LU']);
 
   for (const country of countries) {
     await home.selectOption(country);
