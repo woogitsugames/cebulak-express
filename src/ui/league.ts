@@ -1,4 +1,4 @@
-import { COUNTRY_NAME } from '../content/pl';
+import { COUNTRY_NAME } from '../content/i18n';
 import { HOME_COUNTRIES, type HomeCountry } from '../core/route';
 import type { DailyEntry, LeagueData, PlayerEntry, RankingApi } from '../net/api';
 import { warsawDateKey, warsawWeekKey } from '../net/week';
