@@ -35,12 +35,12 @@ describe('reguły Firestore', () => {
     await assertFails(setDoc(doc(db, 'players', 'alice'), { bestKm: 99999 }));
   });
 
-  it('pozwalają czytać publiczne wyniki, lecz nie runs i daily', async () => {
+  it('pozwalają czytać publiczne wyniki (także daily), lecz nie runs', async () => {
     const db = env.unauthenticatedContext().firestore();
     await assertSucceeds(getDoc(doc(db, 'league', '2026-W50')));
     await assertSucceeds(getDoc(doc(db, 'leaderboard', '2026-W50', 'entries', 'alice')));
     await assertFails(getDoc(doc(db, 'runs', 'run-123')));
-    await assertFails(getDoc(doc(db, 'daily', '2026-12-01', 'entries', 'alice')));
+    await assertSucceeds(getDoc(doc(db, 'daily', '2026-12-01', 'entries', 'alice')));
     expect(true).toBe(true);
   });
 });

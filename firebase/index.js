@@ -8,3 +8,4 @@ const functions = require('./lib/index.js');
 exports.startRun = functions.startRun;
 exports.submitRun = functions.submitRun;
 exports.cleanupExpiredRuns = functions.cleanupExpiredRuns;
+exports.collectEvents = functions.collectEvents;

@@ -30,7 +30,7 @@ Próbkowanie od 0 do 1 jest **stałe na instalację**, żeby nie zniekształcać
 
 ## Integracja — odpowiedzialność koordynatora
 
-Backend Firebase nie istnieje jeszcze na `main`. Plik `firebase/functions/src/analytics.ts` jest niezależnym modułem przeznaczonym do włączenia w przyszły projekt Functions. W istniejącym lub nowym `firebase/functions/src/index.ts` dodać eksport:
+Backend Firebase nie istnieje jeszcze na `main`. Funkcja `collectEvents` jest w `firebase/src/analytics.ts` i eksportowana z `firebase/src/index.ts` (wdrażana razem z backendem rankingu).
 
 ```ts
 export { collectEvents } from './analytics';

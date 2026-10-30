@@ -9,11 +9,15 @@ service cloud.firestore {
     match /leaderboard/{week}/entries/{uid} {
       allow get, list: if true;
     }
+    // Ranking wyzwania dnia: tylko nickId, kraj i km — tak samo publiczne jak leaderboard.
+    match /daily/{date}/entries/{uid} {
+      allow get, list: if true;
+    }
     match /players/{uid} {
       allow get: if request.auth != null && request.auth.uid == uid;
       allow list: if false;
     }
-    // runs, daily, limity i wewnętrzne kolekcje nigdy nie są dostępne klientowi.
+    // runs, limity i wewnętrzne kolekcje nigdy nie są dostępne klientowi.
     match /{document=**} {
       allow read, write: if false;
     }

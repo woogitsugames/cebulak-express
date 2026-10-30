@@ -1,5 +1,5 @@
 import { randomInt } from 'node:crypto';
-import { initializeApp } from 'firebase-admin/app';
+import { getApps, initializeApp } from 'firebase-admin/app';
 import { FieldValue, getFirestore, type DocumentSnapshot } from 'firebase-admin/firestore';
 import { logger } from 'firebase-functions';
 import { HttpsError, onCall } from 'firebase-functions/v2/https';
@@ -12,7 +12,8 @@ import {
   verifyReplay, warsawDay, warsawWeek,
 } from './validation';
 
-initializeApp();
+// Moduł analityki też może zainicjalizować aplikację — inicjalizujemy tylko raz.
+if (!getApps().length) initializeApp();
 const db = getFirestore();
 const REGION = 'europe-west1';
 const REQUIRE_APP_CHECK = process.env.REQUIRE_APP_CHECK === 'true';
@@ -146,14 +147,33 @@ export const submitRun = onCall(
     if (typeof runId !== 'string' || !/^[A-Za-z0-9]{20}$/.test(runId)) {
       throw new HttpsError('invalid-argument', 'Niepoprawny identyfikator przejazdu.');
     }
+    let matchedPending = true;
     const runRef = db.collection('runs').doc(runId);
     const initial = (await runRef.get()).data() as RunDoc | undefined;
     if (!initial) throw new HttpsError('not-found', 'Przejazd nie istnieje.');
     if (initial.uid !== uid) throw new HttpsError('permission-denied', 'Przejazd należy do innego gracza.');
 
-    // Drogie odtworzenie wykonujemy raz, a atomowość rozstrzygamy w transakcji.
-    // Nie ufamy wartościom przekazanym przez klienta, w tym jego dacie, trasie ani seedowi.
-    const matched = verifyReplay(initial, data.flapTicks, data.ticks, data.km);
+    // Tanie odrzucenia przed drogim odtworzeniem (do 72 000 ticków symulacji),
+    // żeby spam zgłoszeń nie kosztował CPU. Transakcja niżej sprawdza je ponownie.
+    if (initial.status !== 'issued') {
+      return { accepted: false, km: 0, reason: 'duplicate', week: warsawWeek(initial.issuedAt) };
+    }
+    const nowPre = Date.now();
+    const ticksPre = data.ticks;
+    if (
+      nowPre - initial.issuedAt > RUN_EXPIRES_MS ||
+      !Number.isSafeInteger(ticksPre) ||
+      (ticksPre as number) <= 0 ||
+      nowPre - initial.issuedAt < (ticksPre as number) * TICK * 1_000 * 0.9
+    ) {
+      matchedPending = false;
+    }
+    const preLimit = (await db.collection('_submissionLimits').doc(uid).get());
+    const preRate = rateState(preLimit, nowPre, SUBMIT_GAP_MS, 500);
+
+    // Drogie odtworzenie wykonujemy raz i tylko gdy tanie warunki przeszły;
+    // atomowość rozstrzygamy w transakcji. Nie ufamy wartościom od klienta.
+    const matched = matchedPending && !preRate.blocked && verifyReplay(initial, data.flapTicks, data.ticks, data.km);
     const limiterRef = db.collection('_submissionLimits').doc(uid);
 
     return db.runTransaction(async (tx): Promise<SubmitResponse> => {
@@ -255,3 +275,5 @@ export const cleanupExpiredRuns = onSchedule(
     logger.info('Usunięto wygasłe dane', { runs, starts, submissions });
   },
 );
+
+export { collectEvents } from './analytics';
