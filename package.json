@@ -15,7 +15,8 @@
     "test:firebase": "npm --prefix functions run test",
     "ios:sync": "npm run build && cap sync ios",
     "balance": "tsc --noEmit -p tools/balance/tsconfig.json && node tools/balance/run.mjs",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "typecheck:e2e": "tsc --noEmit -p tsconfig.e2e.json"
   },
   "devDependencies": {
     "@capacitor/cli": "^8.5.3",
