@@ -23,11 +23,50 @@ export const LAYER_Y = {
   road: WORLD.groundY - 50,
 } as const;
 
-const LANDMARK_FAR_WIDTH = 330;
-const LANDMARK_FAR_HEIGHT = 183;
+/**
+ * Panorama miasta (punkt city/landmark/crossing) — decyzja D14 „A+”: duża i rozpoznawalna.
+ * Plik 1620×900 rysujemy jako 480×267 logicznych (≈1,45× dawnego 330×183),
+ * z dolną krawędzią na FAR_BASE_Y = 555; góra wypada na y≈288, pod HUD.
+ */
+export const LANDMARK_FAR_WIDTH = 480;
+export const LANDMARK_FAR_HEIGHT = Math.round(LANDMARK_FAR_WIDTH * 900 / 1620);
 const LANDMARK_NEAR_WIDTH = 180;
 const LANDMARK_NEAR_HEIGHT = 100;
 const FAR_BASE_Y = LAYER_Y.far + ASSET_SIZES.far.height;
+
+/**
+ * Wygaszanie ogólnej warstwy far za panoramą: domki i wieże z kafelka far
+ * nie mogą wystawać zza sylwetki miasta. Pełne wygaszenie w obrębie panoramy
+ * (z marginesem FAR_FADE_INSET od jej krawędzi), miękka rampa FAR_FADE_RAMP
+ * na zewnątrz. Rysujemy pionowymi pasami z obcinaniem, bez dodatkowych canvasów.
+ */
+export const FAR_FADE_INSET = 40;
+export const FAR_FADE_RAMP = 96;
+/** Szerokość pasa przy rysowaniu rampy (tryb oszczędny: mniej pasów). */
+const FAR_FADE_STEP = 6;
+const FAR_FADE_STEP_REDUCED = 24;
+/** Kwantyzacja alfy łączy sąsiednie pasy o tej samej wartości w jeden. */
+const FAR_FADE_LEVELS = 32;
+
+/**
+ * Krycie warstwy far w punkcie x przy panoramie o środku centerX.
+ * strength: krycie samej panoramy (0..1, z fade 0,4 s). Wynik 1 = far bez zmian,
+ * 0 = far całkiem ukryty. Przejście smoothstep, symetryczne względem środka.
+ */
+export function farLayerAlphaAt(
+  x: number, centerX: number, strength: number, width: number = LANDMARK_FAR_WIDTH,
+): number {
+  if (!(strength > 0) || !Number.isFinite(x) || !Number.isFinite(centerX)) return 1;
+  const s = Math.min(1, strength);
+  const core = Math.max(0, width / 2 - FAR_FADE_INSET);
+  const d = Math.abs(x - centerX);
+  let coverage = 1;
+  if (d > core) {
+    const t = Math.min(1, (d - core) / FAR_FADE_RAMP);
+    coverage = 1 - t * t * (3 - 2 * t);
+  }
+  return 1 - s * coverage;
+}
 
 export interface BackgroundWaypointEvent {
   type: 'waypoint';
@@ -127,6 +166,10 @@ export class BackgroundRenderer {
   private borderKm = Number.NaN;
   private restKm = Number.NaN;
   private borderAlpha = 0;
+  private fadeActiveX = 0;
+  private fadeActiveStrength = 0;
+  private fadeOutgoingX = 0;
+  private fadeOutgoingStrength = 0;
   private gradientCtx: CanvasRenderingContext2D | null = null;
   private readonly gradients = new Map<CountryCode, CanvasGradient>();
   private readonly quality = new AdaptiveQuality(storedPerformanceMode());
@@ -170,7 +213,7 @@ export class BackgroundRenderer {
     this.borderAlpha = season === 'winter' ? 0 : borderNearOpacity(state.progressKm, this.borderKm, this.restKm);
     this.drawPair(ctx, 'sky', state.distancePx, season);
     if (!this.quality.reduced) this.drawPair(ctx, 'clouds', state.distancePx, season);
-    this.drawPair(ctx, 'far', state.distancePx, season);
+    this.drawFar(ctx, state, season);
     this.drawWaypoints(ctx, state, 'far');
     this.drawPair(ctx, 'near', state.distancePx, season);
     this.drawWaypoints(ctx, state, 'near');
@@ -296,6 +339,65 @@ export class BackgroundRenderer {
     }
     this.countryFade = this.fromCountry === this.toCountry ? 1 : fadeProgress(timeSec, this.fadeStartSec);
     if (this.countryFade >= 1) this.fromCountry = this.toCountry;
+  }
+
+  /** Siła wygaszenia far przez panoramę: tylko punkty far z wczytanym PNG. */
+  private panoramaStrength(state: BackgroundState, point: Waypoint | null, alpha: number): number {
+    if (!point || alpha <= 0 || point.kind === 'border' || point.kind === 'rest') return 0;
+    // Panorama (z rampą) całkiem poza widokiem: far bez pasów i bez leniwego ładowania PNG.
+    const reach = LANDMARK_FAR_WIDTH / 2 - FAR_FADE_INSET + FAR_FADE_RAMP;
+    const x = waypointScreenX(point.km, state.progressKm);
+    if (x + reach <= this.viewLeft || x - reach >= this.viewRight) return 0;
+    return this.assets.getLandmark(point, state.season ?? 'summer') ? alpha : 0;
+  }
+
+  private drawFar(ctx: CanvasRenderingContext2D, state: BackgroundState, season: Season): void {
+    const activeStrength = this.panoramaStrength(state, this.activeWaypoint, this.waypointFade);
+    const outgoingStrength = this.panoramaStrength(state, this.outgoingWaypoint, 1 - this.waypointFade);
+    if (activeStrength <= 0 && outgoingStrength <= 0) {
+      this.drawPair(ctx, 'far', state.distancePx, season);
+      return;
+    }
+    this.fadeActiveStrength = activeStrength;
+    this.fadeOutgoingStrength = outgoingStrength;
+    this.fadeActiveX = activeStrength > 0 ? waypointScreenX(this.activeWaypoint!.km, state.progressKm) : 0;
+    this.fadeOutgoingX = outgoingStrength > 0 ? waypointScreenX(this.outgoingWaypoint!.km, state.progressKm) : 0;
+    const step = this.quality.reduced ? FAR_FADE_STEP_REDUCED : FAR_FADE_STEP;
+    let runStart = this.viewLeft;
+    let runAlpha = this.farAlphaAt(runStart + step / 2);
+    for (let x = runStart + step; ; x += step) {
+      const end = x >= this.viewRight;
+      const alpha = end ? -1 : this.farAlphaAt(x + step / 2);
+      if (end || alpha !== runAlpha) {
+        this.drawFarStrip(ctx, runStart, Math.min(x, this.viewRight), runAlpha, state.distancePx, season);
+        runStart = x;
+        runAlpha = alpha;
+      }
+      if (end) break;
+    }
+  }
+
+  /** Bez domknięć w pętli klatki: parametry panoram trzymamy w polach. */
+  private farAlphaAt(x: number): number {
+    const a = Math.min(
+      farLayerAlphaAt(x, this.fadeActiveX, this.fadeActiveStrength),
+      farLayerAlphaAt(x, this.fadeOutgoingX, this.fadeOutgoingStrength),
+    );
+    return Math.round(a * FAR_FADE_LEVELS) / FAR_FADE_LEVELS;
+  }
+
+  private drawFarStrip(
+    ctx: CanvasRenderingContext2D, left: number, right: number, alpha: number,
+    distancePx: number, season: Season,
+  ): void {
+    if (alpha <= 0 || right <= left) return;
+    ctx.save();
+    ctx.globalAlpha *= alpha;
+    ctx.beginPath();
+    ctx.rect(left, LAYER_Y.far, right - left, FAR_BASE_Y - LAYER_Y.far);
+    ctx.clip();
+    this.drawPair(ctx, 'far', distancePx, season);
+    ctx.restore();
   }
 
   private drawPair(ctx: CanvasRenderingContext2D, layer: BackgroundLayer, distancePx: number, season: Season): void {

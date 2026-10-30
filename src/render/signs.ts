@@ -2,7 +2,7 @@ import { WORLD } from '../core/config';
 import type { CountryCode } from '../core/route';
 import type { Waypoint } from '../content/waypoints';
 import { FUNNY_PLACES, type FunnyPlace, type FunnyPlaceKind } from '../content/funny-places';
-import { PARALLAX, waypointScreenX } from './background';
+import { LANDMARK_FAR_WIDTH, PARALLAX, waypointScreenX } from './background';
 
 /** Znaki sa dekoracja: nie uczestnicza w symulacji, kolizjach ani rankingu. */
 export interface RoadSign {
@@ -36,7 +36,6 @@ const NAVY = '#16323d';
 const BORDER = '#fff2d5';
 const MIN_WIDTH = 100;
 const MAX_WIDTH = 196;
-const PANORAMA_FAR_WIDTH = 330;
 const PANORAMA_NEAR_WIDTH = 180;
 
 /** Nazwy zostaja podlaczone do km konkretnego wariantu trasy. */
@@ -85,7 +84,7 @@ export function overlapsWaypointPanorama(
     const waypointX = waypointScreenX(
       waypoint.km, progressKm, isNear ? PARALLAX.near : PARALLAX.far,
     );
-    const landmarkHalf = (isNear ? PANORAMA_NEAR_WIDTH : PANORAMA_FAR_WIDTH) / 2;
+    const landmarkHalf = (isNear ? PANORAMA_NEAR_WIDTH : LANDMARK_FAR_WIDTH) / 2;
     // Brak kolizji dla obiektow zupelnie poza kadrem.
     if (waypointX + landmarkHalf < 0 || waypointX - landmarkHalf > WORLD.width) continue;
     if (Math.abs(signX - waypointX) < signHalf + landmarkHalf + SIGN_PANORAMA_GAP) return true;
