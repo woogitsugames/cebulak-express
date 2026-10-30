@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
-import { PL_CITIES } from '../core/route';
-import { searchOnboardingCities, shouldShowOnboarding, sortedOnboardingCities, ONBOARDING_STORAGE_KEY } from './onboarding';
-import { platform } from '../platform';
+import { PL_CITIES } from '../src/core/route';
+import { searchOnboardingCities, shouldShowOnboarding, sortedOnboardingCities, ONBOARDING_STORAGE_KEY } from '../src/ui/onboarding';
+import { platform } from '../src/platform';
 
 describe('pierwsze uruchomienie', () => {
   it('pokazuje popularne miasta przed alfabetyczną resztą, bez mutacji PL_CITIES', () => {
