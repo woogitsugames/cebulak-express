@@ -93,6 +93,12 @@ describe('tło: matematyka i polityka panoram', () => {
     expect(selectNearestWaypoint(nearby, 120)?.id).toBe('stacja-swiecko');
     expect(selectNearestWaypoint([], 10)).toBeNull();
     expect(selectNearestWaypoint(nearby, Number.NaN)).toBeNull();
+    // Mimo większej różnicy kilometrów far może być bliżej środka ekranu.
+    const mixed: Waypoint[] = [
+      { id: 'far', name: 'Miasto', km: 0, country: 'DE', kind: 'city', motifs: [], text: '' },
+      { id: 'near', name: 'Znak', km: 16, country: 'DE', kind: 'border', motifs: [], text: '' },
+    ];
+    expect(selectNearestWaypoint(mixed, 10)?.id).toBe('far');
   });
 
   it('przenikanie kraju trwa 1,5 s, panoram 0,4 s', () => {
