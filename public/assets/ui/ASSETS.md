@@ -29,3 +29,14 @@ Wczytaj grafiki z `/assets/ui/<nazwa>`. Do UI rysuj element przez `CanvasRenderi
 ## Uwaga dot. praw
 
 Tekstury i ilustracje powstały z wygenerowanego od podstaw atlasu GPT Image; maski, konwersje, poprawki barw i eksport wykonywano ręcznie/programistycznie. Nie wykorzystano zasobów firm trzecich ani chronionych symboli poza prostymi, zwyczajowymi wzorami flag. W razie potrzeby weryfikacji praw autorskich do assetów AI przed komercyjną publikacją koordynator może zamówić retusz ilustratora.
+
+
+## Dodatek: bonusy (zlecenie 52)
+
+| Plik | Źródło/narzędzie | Licencja | Autor/uwagi |
+|---|---|---|---|
+| `pickup-boarding.png` | Autorskie wektory SVG stworzone w ChatGPT, CairoSVG + Pillow, ręczna korekta kolorów | Autorski projekt do gry | 96×96, złoty bilet/znaczek z walizką, bez liter |
+| `pickup-tailwind.png` | Jak wyżej | Jak wyżej | 96×96, turkusowy podmuch i strzałka |
+| `pickup-mamcall.png` | Jak wyżej | Jak wyżej | 96×96, telefon z sercem, bez znaków operatorów |
+
+Grafiki mają przezroczyste marginesy; kolizja odbywa się na dotychczasowym promieniu `PICKUPS.radius = 12` px logicznych. W renderze obrazy @3x są skalowane do 32×32 px logicznych.
