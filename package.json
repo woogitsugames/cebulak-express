@@ -7,7 +7,7 @@
     "dev": "vite --host",
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview --host",
-    "test": "vitest run",
+    "test": "vitest run && node --test tools/licenses.test.mjs",
     "typecheck": "tsc --noEmit",
     "build:artifact": "npm run build && node scripts/build-artifact.mjs",
     "android:sync": "npm run build && cap sync android",
@@ -17,7 +17,8 @@
     "balance": "tsc --noEmit -p tools/balance/tsconfig.json && node tools/balance/run.mjs",
     "test:e2e": "playwright test",
     "typecheck:e2e": "tsc --noEmit -p tsconfig.e2e.json",
-    "ios:assets": "npx --yes @capacitor/assets@3.0.5 generate --ios --assetPath assets --splashBackgroundColor '#14654F'"
+    "ios:assets": "npx --yes @capacitor/assets@3.0.5 generate --ios --assetPath assets --splashBackgroundColor '#14654F'",
+    "prebuild": "node tools/licenses.mjs"
   },
   "devDependencies": {
     "@capacitor/cli": "^8.5.3",

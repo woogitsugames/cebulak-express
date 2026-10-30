@@ -74,7 +74,8 @@ const playerTexts = [
   ...Object.values(COUNTRY_NAME),
   ...Object.values(COUNTRY_LOCATIVE),
   ...Object.values(OBSTACLE_NAME),
-  ...Object.values(UI),
+  // Etykieta dokumentu prawnego nie jest tekstem fabuły ani komunikatem gry.
+  ...Object.entries(UI).filter(([key]) => key !== 'settingsPrivacy').map(([, value]) => value),
   ...toastTexts,
   ...endScreenTexts,
 ];
