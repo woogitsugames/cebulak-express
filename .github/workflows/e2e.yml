@@ -11,7 +11,7 @@ concurrency:
 jobs:
   playwright:
     name: Playwright - mobile, desktop, Slow 4G
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
@@ -39,4 +39,5 @@ jobs:
             e2e/.results/
             e2e/.report/
           if-no-files-found: warn
+          include-hidden-files: true
           retention-days: 30
