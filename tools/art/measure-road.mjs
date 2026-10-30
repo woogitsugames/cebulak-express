@@ -22,7 +22,7 @@ export function readPngPixels(png) {
     const len = png.readUInt32BE(p);
     const name = png.toString('ascii', p + 4, p + 8);
     const data = png.subarray(p + 8, p + 8 + len);
-    if (p + len + 12 > png.length) throw new Error(\`Nieprawidłowy fragment \${name}\`);
+    if (p + len + 12 > png.length) throw new Error(`Nieprawidłowy fragment ${name}`);
     if (name === 'IHDR') {
       width = data.readUInt32BE(0);
       height = data.readUInt32BE(4);
@@ -34,7 +34,7 @@ export function readPngPixels(png) {
     p += len + 12;
   }
   if (!width || !height || bitDepth !== 8 || interlace !== 0 || ![2, 3, 6].includes(colorType)) {
-    throw new Error(\`Nieobsługiwany PNG \${width}x\${height}, depth=\${bitDepth}, color=\${colorType}, interlace=\${interlace}\`);
+    throw new Error(`Nieobsługiwany PNG ${width}x${height}, depth=${bitDepth}, color=${colorType}, interlace=${interlace}`);
   }
   const channels = colorType === 6 ? 4 : colorType === 2 ? 3 : 1;
   const bytesPerRow = width * channels;
@@ -57,7 +57,7 @@ export function readPngPixels(png) {
         const p = left + up - upperLeft;
         const a = Math.abs(p - left), b = Math.abs(p - up), c = Math.abs(p - upperLeft);
         predictor = a <= b && a <= c ? left : b <= c ? up : upperLeft;
-      } else if (filter !== 0) throw new Error(\`Nieznany filtr PNG: \${filter}\`);
+      } else if (filter !== 0) throw new Error(`Nieznany filtr PNG: ${filter}`);
       current[x] = (filtered[offset++] + predictor) & 255;
     }
     for (let x = 0; x < width; x++) {
@@ -99,7 +99,7 @@ export function measureAsphaltEdge({ width, height, rgba }) {
       if (lum < 145) darkCount++;
       counted++;
     }
-    if (!counted) throw new Error(\`Przezroczysty wiersz \${y} w drodze\`);
+    if (!counted) throw new Error(`Przezroczysty wiersz ${y} w drodze`);
     values.sort((a, b) => a - b);
     medianLum[y] = values[Math.floor(values.length / 2)];
     dark[y] = darkCount / counted;
@@ -155,7 +155,7 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
   const root = resolve(process.argv.find((arg, i) => i > 1 && !arg.startsWith('--')) ?? 'public/assets/countries');
   const jsonOutput = process.argv.includes('--json');
   const paths = await findRoadFiles(root);
-  if (!paths.length) { console.error(\`Brak plików dróg w \${root}\`);process.exitCode=1; }
+  if (!paths.length) { console.error(`Brak plików dróg w ${root}`);process.exitCode=1; }
   if (!jsonOutput) {
     console.log('Kraj | Plik | Wymiary | Początek asfaltu | Odchylenie | Status');
     console.log('--- | --- | --- | ---: | ---: | ---');
@@ -169,8 +169,8 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
       const ok = x.width === 1080 && x.height === 330 && Math.abs(delta) <= ROAD_TOLERANCE;
       if (!ok) hasErrors = true;
       output.push({...x,path:relative(process.cwd(),path),delta,ok});
-      if (!jsonOutput) console.log(\`\${path.split('/').at(-2)} | \${path.split('/').at(-1)} | \${x.width}x\${x.height} | \${x.edge} | \${delta>0?'+':''}\${delta} | \${ok?'OK':'BŁĄD'}\`);
-    } catch(e) { hasErrors = true; output.push({ path: relative(process.cwd(), path), error: e.message, ok: false }); if (!jsonOutput) console.log(\`\${path} | BŁĄD: \${e.message}\`); }
+      if (!jsonOutput) console.log(`${path.split('/').at(-2)} | ${path.split('/').at(-1)} | ${x.width}x${x.height} | ${x.edge} | ${delta>0?'+':''}${delta} | ${ok?'OK':'BŁĄD'}`);
+    } catch(e) { hasErrors = true; output.push({ path: relative(process.cwd(), path), error: e.message, ok: false }); if (!jsonOutput) console.log(`${path} | BŁĄD: ${e.message}`); }
   }
   if (jsonOutput) console.log(JSON.stringify({ target: TARGET_ROAD_Y, tolerance: ROAD_TOLERANCE, roads: output }, null, 2));
   if (hasErrors) process.exitCode = 1;
