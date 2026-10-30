@@ -61,7 +61,7 @@ describe('parametry rolki', () => {
   it('dobiera format MP4 lub WebM do obsługi przeglądarki', () => {
     expect(chooseMimeType((mime) => mime === 'video/mp4', true)).toBe('video/mp4');
     expect(chooseMimeType((mime) => mime === 'video/webm', false)).toBe('video/webm');
-    expect(chooseMimeType((mime) => mime === 'video/mp4' || mime === 'video/webm', true)).toBe('video/webm');
+    expect(chooseMimeType((mime) => mime === 'video/mp4' || mime === 'video/webm', true)).toBe('video/mp4');
     expect(chooseMimeType(() => false, true)).toBeUndefined();
   });
 

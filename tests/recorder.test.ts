@@ -1,4 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { UI } from '../src/content/pl';
 import {
   GAMEPLAY_DURATION_MS, MAX_VIDEO_BYTES, OUTRO_DURATION_MS, VIDEO_DURATION_MS, VIDEO_FPS,
   VIDEO_HEIGHT, VIDEO_WIDTH, VerticalVideoRecorder, isEditorialMode, phaseAt,
@@ -17,6 +18,9 @@ describe('parametry rolki', () => {
     expect(phaseAt(13_500)).toBe('outro');
     expect(phaseAt(14_999)).toBe('outro');
     expect(phaseAt(15_000)).toBe('finished');
+    expect(phaseAt(1_499, 3_000)).toBe('gameplay');
+    expect(phaseAt(1_500, 3_000)).toBe('outro');
+    expect(phaseAt(3_000, 3_000)).toBe('finished');
   });
 
   it('przycina boczne lub górne pasy, bez deformacji obrazu', () => {
@@ -124,7 +128,7 @@ describe('nagrywanie przez MediaRecorder', () => {
     expect(canvasContext.fillText).toHaveBeenCalledWith('52 km', 60, 1769, 958);
     const drawOutro = nextFrame!;
     drawOutro(13_500);
-    expect(canvasContext.fillText).toHaveBeenCalledWith('Zagraj:', 540, 940, 1000);
+    expect(canvasContext.fillText).toHaveBeenCalledWith(UI.recordOutroPlay, 540, 940, 1000);
     nextFrame!(15_000);
     const video = await result;
     expect(recorder.isRecording).toBe(false);
@@ -145,6 +149,61 @@ describe('nagrywanie przez MediaRecorder', () => {
     await expect(pending).rejects.toThrow('anulowane');
     expect(stopTrack).toHaveBeenCalled();
     expect(recorder.isRecording).toBe(false);
+  });
+
+
+  it('używa nagłówka i adresu portalu na planszy oraz zwraca czas krótkiego testu', async () => {
+    const recorder = new VerticalVideoRecorder({
+      sourceCanvas: { width: 360, height: 640, captureStream: vi.fn() } as unknown as HTMLCanvasElement,
+      routeName: 'Antwerpia → Kraków',
+      portalName: 'aktualnosci.be',
+      playUrl: 'aktualnosci.be',
+      outroHeadline: UI.recordOutroMore,
+      getKm: () => 160,
+      durationMs: 3_000,
+    });
+    const pending = recorder.start();
+    nextFrame!(1_500);
+    expect(canvasContext.fillText).toHaveBeenCalledWith(UI.recordOutroMore, 540, 940, 1000);
+    expect(canvasContext.fillText).toHaveBeenCalledWith('aktualnosci.be', 540, 1070, 1000);
+    nextFrame!(3_000);
+    const result = await pending;
+    expect(result.durationMs).toBe(3_000);
+  });
+
+  it('limit 15 MB odrzuca fragment bez zachowywania go w buforze', async () => {
+    const recorder = setupRecorder();
+    const pending = recorder.start();
+    activeRecorder.ondataavailable?.({
+      data: { size: MAX_VIDEO_BYTES + 1, type: 'video/webm' } as Blob,
+    } as BlobEvent);
+    await expect(pending).rejects.toThrow(UI.recordTooLarge);
+    expect(stopTrack).toHaveBeenCalledTimes(1);
+  });
+
+  it('visibilitychange anuluje nagranie także bez aktywnej kontrolki UI', async () => {
+    const recorder = setupRecorder();
+    const pending = recorder.start();
+    const doc = document as unknown as {
+      hidden: boolean;
+      addEventListener: ReturnType<typeof vi.fn>;
+      removeEventListener: ReturnType<typeof vi.fn>;
+    };
+    const subscription = doc.addEventListener.mock.calls.find((call: unknown[]) => call[0] === 'visibilitychange');
+    expect(subscription).toBeDefined();
+    doc.hidden = true;
+    (subscription![1] as () => void)();
+    await expect(pending).rejects.toThrow(UI.recordHidden);
+    expect(doc.removeEventListener).toHaveBeenCalledWith('visibilitychange', subscription![1]);
+    expect(stopTrack).toHaveBeenCalledTimes(1);
+  });
+
+  it('odrzuca nieprawidłowy czas zamiast tworzyć MediaRecorder', async () => {
+    const recorder = new VerticalVideoRecorder({
+      sourceCanvas: { width: 360, height: 640, captureStream: vi.fn() } as unknown as HTMLCanvasElement,
+      routeName: '', portalName: '', playUrl: '', getKm: () => 0, durationMs: 1_000,
+    });
+    await expect(recorder.start()).rejects.toThrow(UI.recordDurationInvalid);
   });
 
   it('adapter galerii przyjmuje wynik bez kopiowania filmu do base64', async () => {
