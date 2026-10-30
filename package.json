@@ -13,7 +13,8 @@
     "android:sync": "npm run build && cap sync android",
     "android:apk": "npm run android:sync && cd android && ./gradlew assembleDebug",
     "test:firebase": "npm --prefix firebase run test",
-    "ios:sync": "npm run build && cap sync ios"
+    "ios:sync": "npm run build && cap sync ios",
+    "balance": "tsc --noEmit -p tools/balance/tsconfig.json && node tools/balance/run.mjs"
   },
   "devDependencies": {
     "@capacitor/cli": "^8.5.3",
