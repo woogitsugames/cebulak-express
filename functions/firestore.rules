@@ -4,14 +4,17 @@ service cloud.firestore {
   match /databases/{database}/documents {
     // Publiczne zestawienia nie zawierają danych kontaktowych ani tekstu użytkownika.
     match /league/{week} {
-      allow get, list: if true;
+      allow get: if true;
+      allow list: if request.query.limit != null && request.query.limit <= 100;
     }
     match /leaderboard/{week}/entries/{uid} {
-      allow get, list: if true;
+      allow get: if true;
+      allow list: if request.query.limit != null && request.query.limit <= 100;
     }
     // Ranking wyzwania dnia: tylko nickId, kraj i km — tak samo publiczne jak leaderboard.
     match /daily/{date}/entries/{uid} {
-      allow get, list: if true;
+      allow get: if true;
+      allow list: if request.query.limit != null && request.query.limit <= 100;
     }
     match /players/{uid} {
       allow get: if request.auth != null && request.auth.uid == uid;
