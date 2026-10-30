@@ -1,29 +1,40 @@
-import { UI } from '../content/pl';
+import { UI } from '../content/i18n';
 import './tutorial.css';
 
 /** Model samouczka odłączony od DOM i symulacji gry. */
 export interface TutorialProgress {
   readonly visible: boolean;
+  /** Gracz opanował skok (3 tapnięcia); wraca do false po serii szybkich wypadków. */
+  readonly dismissed: boolean;
   onTap(): void;
   onCrash(seconds: number): void;
   resetRun(): void;
 }
 
+export interface TutorialOptions {
+  /** Samouczek zaliczony w poprzedniej sesji: startujemy ukryci, ale nadal liczymy szybkie wypadki. */
+  dismissed?: boolean;
+  /** Wywoływane raz przy każdym zaliczeniu (np. zapis w pamięci). */
+  onDismiss?(): void;
+}
+
 /** Po 3 tapnięciach znika; po 3 kolejnych szybkich wypadkach wraca w następnym locie. */
-export function createTutorialProgress(): TutorialProgress {
+export function createTutorialProgress(options: TutorialOptions = {}): TutorialProgress {
   let taps = 0;
   let earlyCrashes = 0;
-  let visible = true;
-  let dismissed = false;
+  let dismissed = options.dismissed === true;
+  let visible = !dismissed;
   let reportedCrash = false;
   return {
     get visible(): boolean { return visible; },
+    get dismissed(): boolean { return dismissed; },
     onTap(): void {
       if (!visible) return;
       taps++;
       if (taps >= 3) {
         dismissed = true;
         visible = false;
+        options.onDismiss?.();
       }
     },
     onCrash(seconds: number): void {
@@ -50,6 +61,8 @@ export function createTutorialProgress(): TutorialProgress {
 
 export interface TutorialControl {
   readonly element: HTMLElement;
+  /** Dłoń jest teraz na ekranie. */
+  readonly visible: boolean;
   onTap(): void;
   /** Wywołać raz po zdarzeniu `over`, podając game.seconds. */
   onCrash(seconds: number): void;
@@ -61,13 +74,13 @@ export interface TutorialControl {
 }
 
 /** Samouczek nie przechwytuje pointerów; tap zawsze trafia do gry pod spodem. */
-export function mountTutorial(container: HTMLElement): TutorialControl {
-  const state = createTutorialProgress();
+export function mountTutorial(container: HTMLElement, options: TutorialOptions = {}): TutorialControl {
+  const state = createTutorialProgress(options);
   let disposed = false;
   const root = document.createElement('div');
   root.className = 'ce-tutorial';
+  root.id = 'tutorial';
   root.setAttribute('role', 'status');
-  root.setAttribute('aria-label', UI.tapToFly);
   const pulse = document.createElement('span');
   pulse.className = 'ce-tutorial__pulse';
   pulse.setAttribute('aria-hidden', 'true');
@@ -78,13 +91,20 @@ export function mountTutorial(container: HTMLElement): TutorialControl {
   hand.setAttribute('aria-hidden', 'true');
   const hint = document.createElement('span');
   hint.className = 'ce-tutorial__caption';
-  hint.textContent = UI.tapToFly;
   root.append(pulse, hand, hint);
   container.append(root);
-  function sync(): void { root.hidden = disposed || !state.visible; }
+  function sync(): void {
+    root.hidden = disposed || !state.visible;
+    // Język może się zmienić między lotami — podpis czytamy przy każdym pokazaniu.
+    if (!root.hidden && hint.textContent !== UI.tapToFly) {
+      hint.textContent = UI.tapToFly;
+      root.setAttribute('aria-label', UI.tapToFly);
+    }
+  }
   sync();
   return {
     get element(): HTMLElement { return root; },
+    get visible(): boolean { return !root.hidden; },
     onTap(): void { if (disposed) return; state.onTap(); sync(); },
     onCrash(seconds: number): void { if (disposed) return; state.onCrash(seconds); sync(); },
     resetRun(): void { if (disposed) return; state.resetRun(); sync(); },

@@ -1,95 +1,33 @@
-import { UI } from '../content/pl';
+import { UI } from '../content/i18n';
+import {
+  applyReducedMotion, motionQuery, normalizeSettings, shouldReduceMotion, type Settings,
+} from '../meta/preferences';
+import { PERFORMANCE_MODES, type PerformanceMode } from '../render/performance';
 import './settings.css';
 
-/** Preferencje dźwięku i dostępności niezależne od ustawień trasy. */
-export interface Settings {
-  soundEffects: boolean;
-  music: boolean;
-  musicVolume: number;
-  vibrations: boolean;
-  /** null = preferencja systemowa; boolean = świadomy wybór gracza. */
-  reducedMotion: boolean | null;
-}
-
-export interface SettingsStorage {
-  get(key: string): Promise<string | null>;
-  set(key: string, value: string): Promise<void>;
-}
+// Logika preferencji żyje w małym module ładowanym od startu; panel (ten plik) ładuje się leniwie.
+export {
+  DEFAULT_SETTINGS, SETTINGS_STORAGE_KEY, applyReducedMotion, loadSettings, normalizeSettings,
+  parseSettings, saveSettings, shouldReduceMotion, watchReducedMotion,
+  type Settings, type SettingsStorage,
+} from '../meta/preferences';
 
 export interface SettingsOptions {
   get(): Settings;
   set(next: Settings): void;
   onClose(): void;
-}
-
-export const SETTINGS_STORAGE_KEY = 'ce.preferences.v1';
-export const DEFAULT_SETTINGS: Readonly<Settings> = Object.freeze({
-  soundEffects: true,
-  music: true,
-  musicVolume: 0.5,
-  vibrations: true,
-  reducedMotion: null,
-});
-
-/** Odrzucamy błędne dane z pamięci, zachowując pozostałe poprawne pola. */
-export function normalizeSettings(value: unknown): Settings {
-  const data: Record<string, unknown> = value !== null && typeof value === 'object' && !Array.isArray(value)
-    ? value as Record<string, unknown>
-    : {};
-  const volume = data.musicVolume;
-  return {
-    soundEffects: typeof data.soundEffects === 'boolean' ? data.soundEffects : DEFAULT_SETTINGS.soundEffects,
-    music: typeof data.music === 'boolean' ? data.music : DEFAULT_SETTINGS.music,
-    musicVolume: typeof volume === 'number' && Number.isFinite(volume)
-      ? Math.max(0, Math.min(1, volume))
-      : DEFAULT_SETTINGS.musicVolume,
-    vibrations: typeof data.vibrations === 'boolean' ? data.vibrations : DEFAULT_SETTINGS.vibrations,
-    reducedMotion: typeof data.reducedMotion === 'boolean' ? data.reducedMotion : null,
+  /** Tryb oszczędny grafiki (zlecenie 63); bez tej opcji panel go nie pokazuje. */
+  performance?: {
+    get(): PerformanceMode;
+    set(mode: PerformanceMode): void;
   };
 }
 
-export function parseSettings(raw: string | null): Settings {
-  if (!raw) return normalizeSettings(null);
-  try { return normalizeSettings(JSON.parse(raw)); }
-  catch { return normalizeSettings(null); }
-}
-
-/** Działa także przy zablokowanym localStorage lub niedostępnych Preferences. */
-export async function loadSettings(storage: SettingsStorage): Promise<Settings> {
-  try { return parseSettings(await storage.get(SETTINGS_STORAGE_KEY)); }
-  catch { return normalizeSettings(null); }
-}
-
-export async function saveSettings(storage: SettingsStorage, settings: Settings): Promise<void> {
-  try { await storage.set(SETTINGS_STORAGE_KEY, JSON.stringify(normalizeSettings(settings))); }
-  catch { /* Brak możliwości zapisu nie przerywa gry. */ }
-}
-
-export function shouldReduceMotion(settings: Settings, systemPreference: boolean): boolean {
-  return settings.reducedMotion ?? systemPreference;
-}
-
-function motionQuery(): MediaQueryList | null {
-  try { return typeof window !== 'undefined' && typeof window.matchMedia === 'function'
-    ? window.matchMedia('(prefers-reduced-motion: reduce)') : null; }
-  catch { return null; }
-}
-
-/** Atrybut umożliwia nadpisanie media query także przy włączonym ruchu. */
-export function applyReducedMotion(settings: Settings, target: HTMLElement, systemPreference = motionQuery()?.matches ?? false): boolean {
-  const enabled = shouldReduceMotion(settings, systemPreference);
-  target.dataset.ceReducedMotion = String(enabled);
-  return enabled;
-}
-
-/** Wywołaj raz po starcie gry. Reaguje na zmiany ustawień systemowych. */
-export function watchReducedMotion(get: () => Settings, target: HTMLElement): () => void {
-  const query = motionQuery();
-  const update = (): void => { applyReducedMotion(get(), target, query?.matches ?? false); };
-  update();
-  query?.addEventListener?.('change', update);
-  return () => { query?.removeEventListener?.('change', update); };
-}
+const PERFORMANCE_LABEL: Record<PerformanceMode, () => string> = {
+  auto: () => UI.settingsPerformanceAuto,
+  always: () => UI.settingsPerformanceAlways,
+  off: () => UI.settingsPerformanceOff,
+};
 
 let nextId = 0;
 
@@ -109,6 +47,7 @@ export function mountSettings(container: HTMLElement, opts: SettingsOptions): ()
   const query = motionQuery();
 
   const root = element('section', 'ce-settings');
+  root.id = 'settings';
   root.setAttribute('role', 'dialog');
   root.setAttribute('aria-modal', 'true');
   root.setAttribute('aria-labelledby', `${id}-title`);
@@ -125,23 +64,24 @@ export function mountSettings(container: HTMLElement, opts: SettingsOptions): ()
   header.append(title, closeButton);
   panel.append(header);
 
-  function makeSwitch(label: string, checked: boolean): { row: HTMLLabelElement; input: HTMLInputElement } {
+  function makeSwitch(name: string, label: string, checked: boolean): { row: HTMLLabelElement; input: HTMLInputElement } {
     const row = element('label', 'ce-settings__switch');
-    const name = element('span', 'ce-settings__switch-text', label);
+    const text = element('span', 'ce-settings__switch-text', label);
     const input = element('input');
     input.type = 'checkbox';
+    input.name = name;
     input.setAttribute('role', 'switch');
     input.checked = checked;
     const track = element('span', 'ce-settings__track');
     track.setAttribute('aria-hidden', 'true');
-    row.append(name, input, track);
+    row.append(text, input, track);
     return { row, input };
   }
 
-  const sound = makeSwitch(UI.settingsSound, current.soundEffects);
-  const music = makeSwitch(UI.settingsMusic, current.music);
-  const vibrations = makeSwitch(UI.settingsVibrations, current.vibrations);
-  const motion = makeSwitch(UI.settingsLessMotion, shouldReduceMotion(current, query?.matches ?? false));
+  const sound = makeSwitch('sound', UI.settingsSound, current.soundEffects);
+  const music = makeSwitch('music', UI.settingsMusic, current.music);
+  const vibrations = makeSwitch('vibrations', UI.settingsVibrations, current.vibrations);
+  const motion = makeSwitch('motion', UI.settingsLessMotion, shouldReduceMotion(current, query?.matches ?? false));
   const volumeRow = element('div', 'ce-settings__volume');
   const volumeLabel = element('label', '', UI.settingsMusicVolume);
   volumeLabel.htmlFor = `${id}-volume`;
@@ -149,6 +89,7 @@ export function mountSettings(container: HTMLElement, opts: SettingsOptions): ()
   volumeOutput.htmlFor = `${id}-volume`;
   const volume = element('input');
   volume.id = `${id}-volume`;
+  volume.name = 'music-volume';
   volume.type = 'range';
   volume.min = '0';
   volume.max = '100';
@@ -166,6 +107,31 @@ export function mountSettings(container: HTMLElement, opts: SettingsOptions): ()
 
   const list = element('div', 'ce-settings__options');
   list.append(sound.row, music.row, volumeRow, vibrations.row, motionSection);
+
+  // Tryb oszczędny: trzy stany, więc grupa radiowa zamiast przełącznika.
+  const performance = opts.performance;
+  const performanceInputs: HTMLInputElement[] = [];
+  if (performance) {
+    const group = element('fieldset', 'ce-settings__choice');
+    const legend = element('legend', '', UI.settingsPerformance);
+    const options = element('div', 'ce-settings__choice-options');
+    for (const mode of PERFORMANCE_MODES) {
+      const option = element('label', 'ce-settings__choice-option');
+      const input = element('input');
+      input.type = 'radio';
+      input.name = `${id}-performance`;
+      input.value = mode;
+      input.checked = performance.get() === mode;
+      input.addEventListener('change', () => { if (input.checked) performance.set(mode); });
+      option.append(input, element('span', '', PERFORMANCE_LABEL[mode]()));
+      options.append(option);
+      performanceInputs.push(input);
+    }
+    const hint = element('p', 'ce-settings__hint', UI.settingsPerformanceHint);
+    group.append(legend, options, hint);
+    list.append(group);
+  }
+
   const links = element('nav', 'ce-settings__links');
   links.setAttribute('aria-label', UI.settingsLinks);
   const privacy = element('a', '', UI.settingsPrivacy);
@@ -193,6 +159,7 @@ export function mountSettings(container: HTMLElement, opts: SettingsOptions): ()
     volume.disabled = !current.music;
     volumeOutput.textContent = `${Math.round(current.musicVolume * 100)}%`;
     motionReset.hidden = current.reducedMotion === null;
+    if (performance) for (const input of performanceInputs) input.checked = input.value === performance.get();
     applyReducedMotion(current, document.documentElement, query?.matches ?? false);
   }
 

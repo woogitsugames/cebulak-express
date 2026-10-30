@@ -155,6 +155,13 @@ describe('wibracje', () => {
     expect(() => haptics.setEnabled(false)).not.toThrow();
   });
 
+  it('wyłączenie z zapisanych ustawień przed jakąkolwiek wibracją nie woła vibrate (Chrome blokuje bez gestu)', () => {
+    const vibrate = vi.fn();
+    const haptics = createHaptics({ vibrate });
+    haptics.setEnabled(false);
+    expect(vibrate).not.toHaveBeenCalled();
+  });
+
   it('korzysta z navigator.vibrate, respektuje wyłączenie i odwołuje wibrację', () => {
     const vibrate = vi.fn();
     vi.stubGlobal('navigator', { vibrate });
