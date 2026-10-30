@@ -1,0 +1,149 @@
+{
+  "schemaVersion": 1,
+  "units": "physical-pixels",
+  "scale": 3,
+  "logicalCollisionWidth": 64,
+  "collisionWidth": 192,
+  "canvasWidth": 240,
+  "collisionInsetLeft": 24,
+  "collisionInsetRight": 24,
+  "offsetX": -24,
+  "offsetXLogical": -8,
+  "tileRepeatHeight": 96,
+  "spriteColorSpace": "sRGB",
+  "alpha": "indexed PNG; transparent outside artwork, completely opaque within collision core",
+  "obstacles": {
+    "viaduct": {
+      "position": "top",
+      "offsetX": -24,
+      "end": {
+        "file": "viaduct-end.png",
+        "width": 240,
+        "height": 192,
+        "attachY": 0,
+        "gapEdgeY": 192
+      },
+      "tile": {
+        "file": "viaduct-tile.png",
+        "width": 240,
+        "height": 96,
+        "attachY": 96
+      },
+      "collisionCoreX": [
+        24,
+        216
+      ],
+      "repeat": "vertical, no scaling of individual segments"
+    },
+    "sign": {
+      "position": "top",
+      "offsetX": -24,
+      "end": {
+        "file": "sign-end.png",
+        "width": 240,
+        "height": 192,
+        "attachY": 0,
+        "gapEdgeY": 192
+      },
+      "tile": {
+        "file": "sign-tile.png",
+        "width": 240,
+        "height": 96,
+        "attachY": 96
+      },
+      "collisionCoreX": [
+        24,
+        216
+      ],
+      "repeat": "vertical, no scaling of individual segments"
+    },
+    "crane": {
+      "position": "top",
+      "offsetX": -24,
+      "end": {
+        "file": "crane-end.png",
+        "width": 240,
+        "height": 192,
+        "attachY": 0,
+        "gapEdgeY": 192
+      },
+      "tile": {
+        "file": "crane-tile.png",
+        "width": 240,
+        "height": 96,
+        "attachY": 96
+      },
+      "collisionCoreX": [
+        24,
+        216
+      ],
+      "repeat": "vertical, no scaling of individual segments"
+    },
+    "roadworks": {
+      "position": "bottom",
+      "offsetX": -24,
+      "end": {
+        "file": "roadworks-end.png",
+        "width": 240,
+        "height": 192,
+        "attachY": 192,
+        "gapEdgeY": 0
+      },
+      "tile": {
+        "file": "roadworks-tile.png",
+        "width": 240,
+        "height": 96,
+        "attachY": 0
+      },
+      "collisionCoreX": [
+        24,
+        216
+      ],
+      "repeat": "vertical, no scaling of individual segments"
+    },
+    "barrier": {
+      "position": "bottom",
+      "offsetX": -24,
+      "end": {
+        "file": "barrier-end.png",
+        "width": 240,
+        "height": 192,
+        "attachY": 192,
+        "gapEdgeY": 0
+      },
+      "tile": {
+        "file": "barrier-tile.png",
+        "width": 240,
+        "height": 96,
+        "attachY": 0
+      },
+      "collisionCoreX": [
+        24,
+        216
+      ],
+      "repeat": "vertical, no scaling of individual segments"
+    },
+    "truck": {
+      "position": "bottom",
+      "offsetX": -24,
+      "end": {
+        "file": "truck-end.png",
+        "width": 240,
+        "height": 192,
+        "attachY": 192,
+        "gapEdgeY": 0
+      },
+      "tile": {
+        "file": "truck-tile.png",
+        "width": 240,
+        "height": 96,
+        "attachY": 0
+      },
+      "collisionCoreX": [
+        24,
+        216
+      ],
+      "repeat": "vertical, no scaling of individual segments"
+    }
+  }
+}
