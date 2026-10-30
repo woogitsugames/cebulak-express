@@ -1,8 +1,8 @@
-import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import { afterAll, beforeAll, describe, it } from 'vitest';
 import {
   assertFails, assertSucceeds, initializeTestEnvironment, type RulesTestEnvironment,
 } from '@firebase/rules-unit-testing';
-import { doc, getDoc, setDoc } from 'firebase/firestore';
+import { collection, doc, getDoc, getDocs, limit, query, setDoc } from 'firebase/firestore';
 
 const projectId = 'demo-cebulak-express';
 let env: RulesTestEnvironment;
@@ -41,6 +41,18 @@ describe('reguły Firestore', () => {
     await assertSucceeds(getDoc(doc(db, 'leaderboard', '2026-W50', 'entries', 'alice')));
     await assertFails(getDoc(doc(db, 'runs', 'run-123')));
     await assertSucceeds(getDoc(doc(db, 'daily', '2026-12-01', 'entries', 'alice')));
-    expect(true).toBe(true);
+  });
+
+  it('odrzucają nieograniczone i zbyt duże listy, ale pozwalają na limit 100', async () => {
+    const db = env.unauthenticatedContext().firestore();
+    for (const ref of [
+      collection(db, 'league'),
+      collection(db, 'leaderboard', '2026-W50', 'entries'),
+      collection(db, 'daily', '2026-12-01', 'entries'),
+    ]) {
+      await assertFails(getDocs(ref));
+      await assertFails(getDocs(query(ref, limit(101))));
+      await assertSucceeds(getDocs(query(ref, limit(100))));
+    }
   });
 });

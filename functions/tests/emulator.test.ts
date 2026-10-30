@@ -5,7 +5,7 @@ import { getFirestore as adminFirestore } from 'firebase-admin/firestore';
 import { deleteApp, initializeApp, type FirebaseApp } from 'firebase/app';
 import { connectAuthEmulator, getAuth, signInAnonymously } from 'firebase/auth';
 import { connectFunctionsEmulator, getFunctions, httpsCallable } from 'firebase/functions';
-import { replay } from '../../src/core/game';
+import { Game, replay } from '../../src/core/game';
 import { randomNickChoices } from '../../src/content/nicks';
 import { makeRoute } from '../../src/core/route';
 
@@ -56,6 +56,19 @@ function finishedRun(seed: number) {
   return { flapTicks: [0], ticks: game.ticks, km: game.km, nickId: randomNickChoices(() => 0.12, 1, 'BE')[0] };
 }
 
+
+function regularRun(seed: number) {
+  const game = new Game({ seed, mode: 'ranked', route: makeRoute('BE', 'bruksela', 'rzeszow') });
+  for (let tick = 0; tick < 120 * 30 && game.phase !== 'over' && game.phase !== 'arrived'; tick++) {
+    if (tick === 0 || (tick % 8 === 0 && tick < 360)) game.flap();
+    game.tick();
+  }
+  expect(game.phase).toBe('over');
+  expect(game.flapTicks.length).toBeGreaterThanOrEqual(16);
+  return { flapTicks: [...game.flapTicks], ticks: game.ticks, km: game.km,
+    nickId: randomNickChoices(() => 0.12, 1, 'BE')[0] };
+}
+
 async function ageRun(runId: string, delayMs = 10_000): Promise<void> {
   await adminFirestore().doc('runs/' + runId).update({ issuedAt: Date.now() - delayMs });
 }
@@ -76,6 +89,8 @@ describe.sequential('callable Functions na emulatorze', () => {
     expect(entry.get('bestKm')).toBe(run.km);
     const league = await adminFirestore().doc('league/' + reply.week).get();
     expect(league.get('countries.BE.runs')).toBeGreaterThanOrEqual(1);
+    const savedRun = await adminFirestore().doc('runs/' + started.runId).get();
+    expect(savedRun.get('flagged')).toBe(false);
   });
 
   it('odrzuca podmienione tapnięcia jako replay_mismatch', async () => {
@@ -102,6 +117,20 @@ describe.sequential('callable Functions na emulatorze', () => {
     const payload = { runId: start.runId, ...finishedRun(start.seed) };
     expect((await ctx.submit(payload)).data.accepted).toBe(true);
     expect((await ctx.submit(payload)).data.reason).toBe('duplicate');
+  });
+
+
+  it('flaguje regularną sekwencję bez automatycznego odrzucenia wyniku', async () => {
+    const ctx = await session();
+    const start = (await ctx.start({ mode: 'ranked', home: 'BE', from: 'bruksela', to: 'rzeszow' })).data;
+    const run = regularRun(start.seed);
+    await ageRun(start.runId, 60_000);
+    const result = (await ctx.submit({ runId: start.runId, ...run })).data;
+    expect(result.accepted).toBe(true);
+    const saved = await adminFirestore().doc('runs/' + start.runId).get();
+    expect(saved.get('status')).toBe('accepted');
+    expect(saved.get('flagged')).toBe(true);
+    expect(saved.get('flagReasons')).toContain('regular_taps');
   });
 
   it('nie zalicza daily do sum kraju i używa wspólnego ziarna', async () => {

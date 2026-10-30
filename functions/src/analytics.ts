@@ -7,6 +7,7 @@
 import { getApps, initializeApp } from 'firebase-admin/app';
 import { FieldValue, getFirestore } from 'firebase-admin/firestore';
 import { onRequest } from 'firebase-functions/v2/https';
+import { analyticsRateLimited, originPermitted } from './abuse';
 
 const HOMES = ['BE', 'NL', 'DE', 'UK', 'FR', 'CH', 'NO', 'DK'] as const;
 const MODES = ['ranked', 'cozy'] as const;
@@ -148,14 +149,23 @@ export const collectEvents = onRequest({
     return;
   }
   const origin = request.headers.origin;
-  if (allowedOrigins.length && origin && !allowedOrigins.includes(origin)) {
+  if (!originPermitted(origin, allowedOrigins)) {
     response.status(403).end();
     return;
   }
   // Parsujemy tekst/plain, by zwykłe sendBeacon nie wymagało preflight.
   const raw = request.rawBody;
-  if (raw && raw.byteLength > MAX_BYTES) {
+  const bytes = raw?.byteLength ?? Buffer.byteLength(
+    typeof request.body === 'string' ? request.body : JSON.stringify(request.body ?? null),
+  );
+  if (bytes > MAX_BYTES) {
     response.status(413).end();
+    return;
+  }
+  // Nie bazujemy na podanym przez klienta X-Forwarded-For; request.ip jest
+  // adresem wyznaczonym przez warstwę HTTP funkcji.
+  if (analyticsRateLimited(request.ip || request.socket.remoteAddress || 'unknown')) {
+    response.set('Retry-After', '60').status(429).end();
     return;
   }
   const body = object(parseBody(raw ? new TextDecoder().decode(raw) : request.body));

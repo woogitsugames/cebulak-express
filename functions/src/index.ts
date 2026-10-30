@@ -1,4 +1,5 @@
 import { randomInt } from 'node:crypto';
+import { regularTapRhythm } from './abuse';
 import { isValidNickId } from '../../src/content/nicks';
 import { getApps, initializeApp } from 'firebase-admin/app';
 import { FieldValue, getFirestore, type DocumentSnapshot } from 'firebase-admin/firestore';
@@ -38,6 +39,8 @@ interface RunDoc {
   km: number;
   ticks: number;
   daily?: string;
+  flagged?: boolean;
+  flagReasons?: string[];
 }
 
 interface SubmitResponse {
@@ -175,6 +178,7 @@ export const submitRun = onCall(
     // Drogie odtworzenie wykonujemy raz i tylko gdy tanie warunki przeszły;
     // atomowość rozstrzygamy w transakcji. Nie ufamy wartościom od klienta.
     const matched = matchedPending && !preRate.blocked && verifyReplay(initial, data.flapTicks, data.ticks, data.km);
+    const regularRhythm = matched && regularTapRhythm(data.flapTicks);
     const limiterRef = db.collection('_submissionLimits').doc(uid);
 
     return db.runTransaction(async (tx): Promise<SubmitResponse> => {
@@ -208,6 +212,16 @@ export const submitRun = onCall(
       const previousBest = playerSnap.exists && typeof playerSnap.get('bestKm') === 'number'
         ? playerSnap.get('bestKm') as number : 0;
       const playerBestKm = Math.max(previousBest, km);
+      // Nie ufamy licznikowi w kliencie. Długa seria dotarć do celu
+      // lub niemal identyczny rytm tapnięć to wyłącznie sygnały do przeglądu.
+      const previousStreakValue: unknown = playerSnap.get('perfectStreak');
+      const previousStreak = Number.isSafeInteger(previousStreakValue) && (previousStreakValue as number) >= 0
+        ? previousStreakValue as number : 0;
+      const perfect = km === makeRoute(run.home, run.from, run.to).totalKm;
+      const perfectStreak = perfect ? Math.min(previousStreak + 1, 1_000) : 0;
+      const flagReasons: string[] = [];
+      if (regularRhythm) flagReasons.push('regular_taps');
+      if (perfectStreak >= 5) flagReasons.push('perfect_streak');
 
       let countryRankKm: number | undefined;
       if (run.mode === 'ranked') {
@@ -243,8 +257,9 @@ export const submitRun = onCall(
         if (km > oldBest) tx.set(entryRef, { nickId, home: run.home, km });
       }
 
-      tx.set(playerRef, { nickId, home: run.home, bestKm: playerBestKm, updatedAt: now });
-      tx.update(runRef, { status: 'accepted', km, ticks, submittedAt: now });
+      tx.set(playerRef, { nickId, home: run.home, bestKm: playerBestKm, perfectStreak, updatedAt: now });
+      tx.update(runRef, { status: 'accepted', km, ticks, submittedAt: now,
+        flagged: flagReasons.length > 0, flagReasons });
       tx.set(limiterRef, limit.next);
       return { accepted: true, km, week, ...(countryRankKm === undefined ? {} : { countryRankKm }), playerBestKm };
     });
