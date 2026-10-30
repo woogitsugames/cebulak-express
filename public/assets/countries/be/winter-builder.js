@@ -4,7 +4,7 @@
  * Czysty JavaScript: brak zależności runtime gry.
  * Udostępnia funkcje przez wartość ostatniego wyrażenia (IIFE).
  */
-(() => {
+const WinterBuilder = (() => {
 const ABC="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 function fromBase64(s) {
  const tab=new Int8Array(128).fill(-1); for(let i=0;i<64;i++)tab[ABC.charCodeAt(i)]=i;
@@ -191,4 +191,6 @@ function verifyWinter(original,winter,kind){
  if(bad)throw Error("Zmieniono "+bad+" ciemnych konturów");}
 }
 return {fromBase64,toBase64,readPng,writePng,makeWinter,blend,verifyWinter};
-})()
+})();
+if (typeof module !== "undefined" && module.exports) module.exports = WinterBuilder;
+WinterBuilder;
