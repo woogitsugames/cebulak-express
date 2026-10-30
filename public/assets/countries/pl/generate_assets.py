@@ -506,8 +506,17 @@ def stacja_land(v,variant=0):
     border_sign(v,1227,740,.7)
     for x in [1000,1260]:small_van(v,x,750,.77,'#DDD9C7' if x==1000 else '#A8C0BC')
     for x in [20,1540]:pine(v,x,750,.85,False)
-    if variant==2:
+    if variant==1:
+        # Wariant A4: w dali poziomy wiadukt i dodatkowa kolejka kombi.
+        v.path('M1034 671 Q1298 636 1604 663',st='#899B96',sw=19)
+        for bx in [1120,1450]:v.line(bx,666,bx,767,'#8E8982',11)
+        small_van(v,992,765,.48,'#CFBBA2')
+    elif variant==2:
         v.path('M1000 801 Q1290 779 1590 800',st='#77B4C5',sw=26)
+    elif variant==3:
+        # Specjalna scena granicy: fizyczny szlaban i dwa samochody.
+        barrier(v,1053,793,.8)
+        small_van(v,1115,762,.45,'#B8C9BD')
 
 def swinoujscie(v):
     ground(v,1620,762,False,True)
@@ -639,7 +648,7 @@ def generate():
     for name,typ in [('granica-swiecko','swiecko'),('granica-jedrzychowice','jedrzychowice')]:
         v=landmark_canvas(water=True);border_land(v,typ)
         f=LM/(name+'.png');sizes.append((f,write_svg(v,f)))
-    for name,i in [('stacja-swiecko',0),('stacja-jedrzychowice',1),('stacja-swinoujscie',2),('granica-stacja',0)]:
+    for name,i in [('stacja-swiecko',0),('stacja-jedrzychowice',1),('stacja-swinoujscie',2),('granica-stacja',3)]:
         v=landmark_canvas();stacja_land(v,i)
         f=LM/(name+'.png');sizes.append((f,write_svg(v,f)))
     v=landmark_canvas(water=True);swinoujscie(v)
@@ -689,7 +698,7 @@ def previews():
         im.convert('RGB').save(p,optimize=True,compress_level=9)
     # Arkusz detali + przyklad dwoch identycznych kafelkow obok siebie
     W=1800; gap=22; titleH=65
-    d=Image.new('RGB',(W,3900),'#F7F9FA');dd=ImageDraw.Draw(d)
+    d=Image.new('RGB',(W,4450),'#F7F9FA');dd=ImageDraw.Draw(d)
     font=ImageFont.truetype('/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf',25)
     bold=ImageFont.truetype('/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf',34)
     def label(txt,x,y,boldly=False):dd.text((x,y),txt,fill='#283848',font=bold if boldly else font)
@@ -700,14 +709,17 @@ def previews():
     label('DZIEN',32,857);label('ZIMA',482,857)
     label('2x POWTARZALNE KAFELKI: chmury / daleki / bliski / droga',30,910,True)
     y=970
-    for layer,hh in [('pl-clouds',140),('pl-far',175),('pl-near',165),('pl-road',160)]:
+    for layer,hh in [('pl-clouds',140),('pl-far',175),('pl-near',165),('pl-road',160),
+                     ('pl-far-zima',175),('pl-near-zima',165),('pl-border-near',175)]:
         x=40;one=img(PL/(layer+'.png'))
-        tile=one.resize((845,hh),Image.Resampling.LANCZOS)
+        is_single=layer=='pl-border-near'
+        tile=one.resize((1690 if is_single else 845,hh),Image.Resampling.LANCZOS)
         dd.rectangle((x,y,x+1690,y+hh),fill='#DEE4E6')
         d.paste(tile,(x,y),tile)
-        d.paste(tile,(x+845,y),tile)
-        dd.line((x+845,y,x+845,y+hh),fill='#C44836',width=2)
-        label(layer,x+6,y+hh+4)
+        if not is_single:
+            d.paste(tile,(x+845,y),tile)
+            dd.line((x+845,y,x+845,y+hh),fill='#C44836',width=2)
+        label(layer+(' (scena jednorazowa)' if is_single else ' / 2x kafelek'),x+6,y+hh+4)
         y+=hh+62
     label('PANORAMY PUNKTOW TRASY (szachownica = przezroczystosc)',30,y,True)
     y+=56
@@ -722,7 +734,7 @@ def previews():
         d.paste(tile.convert('RGB'),(xx,yy))
         label(name,xx+8,yy+189)
     p=PL/'preview.png'
-    d.crop((0,0,W,max(3600,y+5*248+24))).quantize(colors=256, method=Image.Quantize.FASTOCTREE, dither=Image.Dither.NONE).save(p,optimize=True,compress_level=9)
+    d.crop((0,0,W,max(4350,y+5*248+24))).quantize(colors=256, method=Image.Quantize.FASTOCTREE, dither=Image.Dither.NONE).save(p,optimize=True,compress_level=9)
     # kopia arkusza landmarkow w odpowiednim folderze, zeby kazdy ma swoj podglad
     LM.joinpath('preview.png').write_bytes(p.read_bytes())
 
