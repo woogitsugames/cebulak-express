@@ -19,7 +19,9 @@
     "typecheck:e2e": "tsc --noEmit -p tsconfig.e2e.json",
     "ios:assets": "npx --yes @capacitor/assets@3.0.5 generate --ios --assetPath assets --splashBackgroundColor '#14654F'",
     "prebuild": "node tools/licenses.mjs",
-    "store:shots": "node tools/store-shots/shoot.mjs"
+    "store:shots": "node tools/store-shots/shoot.mjs",
+    "report:league": "node tools/league-report/report.mjs",
+    "test:league-report": "node --test tools/league-report/report.test.mjs"
   },
   "devDependencies": {
     "@capacitor/cli": "^8.5.3",

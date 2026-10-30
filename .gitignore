@@ -8,3 +8,6 @@ dist/
 .env
 .env.*
 !.env.example
+
+# Artefakty raportów tygodniowych (bez danych testowych w dystrybucji gry)
+/out/
