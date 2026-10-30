@@ -26,6 +26,17 @@ export async function openMenu(page: Page): Promise<void> {
   await expect(page.locator('#menu')).toBeVisible();
   await expect(page.locator('#sel-home option')).toHaveCount(15);
   await expect(page.locator('#route-info')).toContainText('km');
+  await waitForMenuReady(page);
+  await expect(page.locator('#ce-language')).toHaveValue('pl');
+}
+
+/**
+ * Przełącznik języka ładuje się leniwie po pierwszej klatce i dokłada kontrolkę do menu
+ * (przesuwa układ i tłumaczy teksty). Czekamy na sygnał gotowości, żeby test klikał
+ * w ustalone menu, a nie w trakcie jego montowania.
+ */
+export async function waitForMenuReady(page: Page): Promise<void> {
+  await expect(page.locator('#menu')).toHaveAttribute('data-ready', 'true');
 }
 
 export async function startRun(page: Page): Promise<void> {

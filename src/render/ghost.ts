@@ -1,6 +1,7 @@
 import { PLAYER, WORLD } from '../core/config';
 import { Game } from '../core/game';
 import { renderNick } from '../content/nicks';
+import { GHOST_TEXTS, fill } from '../content/lang/pl';
 import type { GhostChallenge } from '../share/ghost';
 import { drawHeroSprite } from './sprites';
 
@@ -25,7 +26,7 @@ export class GhostRunner {
   constructor(challenge: GhostChallenge) {
     this.challenge = challenge;
     this.game = new Game({ seed: challenge.seed, mode: challenge.mode, route: challenge.route });
-    this.label = challenge.nickId ? renderNick(challenge.nickId) : 'Duch znajomego';
+    this.label = challenge.nickId ? renderNick(challenge.nickId) : GHOST_TEXTS.label;
   }
 
   /**
@@ -66,8 +67,8 @@ export class GhostRunner {
     const ghostKm = this.challenge.km;
     const differenceKm = playerKm - ghostKm;
     const message = differenceKm > 0
-      ? `Wyprzedzasz ducha o ${differenceKm} km!`
-      : differenceKm < 0 ? `Duch był szybszy o ${-differenceKm} km!` : 'Remis z duchem!';
+      ? fill(GHOST_TEXTS.win, { km: differenceKm })
+      : differenceKm < 0 ? fill(GHOST_TEXTS.lose, { km: -differenceKm }) : GHOST_TEXTS.tie;
     return { playerKm, ghostKm, differenceKm, message, truncated: this.challenge.truncated };
   }
 

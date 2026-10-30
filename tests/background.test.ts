@@ -5,6 +5,7 @@ import { ASSET_SIZES, type AssetLoader, type BackgroundLayer } from '../src/rend
 import {
   BackgroundRenderer, PARALLAX, LAYER_Y, COUNTRY_FADE_SECONDS, WAYPOINT_FADE_SECONDS,
   borderNearOpacity, crossedWaypoints, fadeProgress, layerOffset,
+  farLayerAlphaAt, FAR_FADE_INSET, FAR_FADE_RAMP, LANDMARK_FAR_HEIGHT, LANDMARK_FAR_WIDTH,
   selectNearestWaypoint, tilePositions, visibleWaypoints, waypointScreenX,
 } from '../src/render/background';
 import type { BackgroundState } from '../src/render/background';
@@ -26,7 +27,7 @@ function fakeCanvas() {
   return {
     drawImage: vi.fn(), fillRect: vi.fn(), save: vi.fn(), restore: vi.fn(),
     beginPath: vi.fn(), moveTo: vi.fn(), lineTo: vi.fn(), closePath: vi.fn(),
-    fill: vi.fn(), arc: vi.fn(), createLinearGradient: vi.fn(),
+    fill: vi.fn(), arc: vi.fn(), createLinearGradient: vi.fn(), rect: vi.fn(), clip: vi.fn(),
     globalAlpha: 1, fillStyle: '',
   };
 }
@@ -185,5 +186,101 @@ describe('renderer warstw: docelowe współrzędne i pasy', () => {
     expect(borders[0][3]).toBe(180); // near, nie panorama far 330
     expect(rests[0][2]).toBe(WORLD.groundY - 100);
     expect(assets.prime).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe('panorama miasta (D14): rozmiar i wygaszanie warstwy far', () => {
+  it('panorama jest większa, zachowuje proporcje 1620:900 i mieści się pod HUD', () => {
+    expect(LANDMARK_FAR_WIDTH).toBe(480);
+    expect(LANDMARK_FAR_HEIGHT).toBe(267);
+    expect(LANDMARK_FAR_WIDTH / LANDMARK_FAR_HEIGHT).toBeCloseTo(1620 / 900, 1);
+    const top = LAYER_Y.far + ASSET_SIZES.far.height - LANDMARK_FAR_HEIGHT;
+    expect(top).toBeGreaterThan(250); // HUD i dymki kończą się wyżej
+  });
+
+  it('far znika za panoramą i płynnie wraca poza nią', () => {
+    const c = 180;
+    const core = LANDMARK_FAR_WIDTH / 2 - FAR_FADE_INSET;
+    expect(farLayerAlphaAt(c, c, 1)).toBe(0);
+    expect(farLayerAlphaAt(c + core, c, 1)).toBe(0);
+    expect(farLayerAlphaAt(c - core - FAR_FADE_RAMP / 2, c, 1)).toBeCloseTo(0.5);
+    expect(farLayerAlphaAt(c + core + FAR_FADE_RAMP, c, 1)).toBe(1);
+    expect(farLayerAlphaAt(c + 2000, c, 1)).toBe(1);
+    // Monotonicznie rośnie z odległością od środka, symetrycznie.
+    let previous = -1;
+    for (let d = 0; d <= core + FAR_FADE_RAMP + 10; d += 5) {
+      const a = farLayerAlphaAt(c + d, c, 1);
+      expect(a).toBeGreaterThanOrEqual(previous);
+      expect(a).toBeCloseTo(farLayerAlphaAt(c - d, c, 1));
+      previous = a;
+    }
+  });
+
+  it('siła wygaszenia idzie za fade panoramy; brak panoramy = far bez zmian', () => {
+    expect(farLayerAlphaAt(180, 180, 0)).toBe(1);
+    expect(farLayerAlphaAt(180, 180, 0.25)).toBeCloseTo(0.75);
+    expect(farLayerAlphaAt(180, 180, 2)).toBe(0);
+    expect(farLayerAlphaAt(180, Number.NaN, 1)).toBe(1);
+    expect(farLayerAlphaAt(Number.NaN, 180, 1)).toBe(1);
+  });
+
+  const cityOnly = nearby.slice(0, 1);
+  function cityState(progressKm: number): BackgroundState {
+    return { country: 'DE', distancePx: 0, progressKm, waypoints: cityOnly, timeSec: 1, includeRoad: false };
+  }
+
+  it('przy widocznej panoramie far rysujemy pasami z obcinaniem, bez fragmentu w środku', () => {
+    const { layers, loader, landmarks } = mockAssets();
+    const c = fakeCanvas();
+    const renderer = new BackgroundRenderer(loader);
+    renderer.drawBackground(c as unknown as CanvasRenderingContext2D, cityState(105));
+    const panorama = c.drawImage.mock.calls.find((args) => args[0] === landmarks.get('frankfurt'));
+    expect(panorama?.slice(3)).toEqual([LANDMARK_FAR_WIDTH, LANDMARK_FAR_HEIGHT]);
+    expect(panorama?.[2]).toBe(LAYER_Y.far + ASSET_SIZES.far.height - LANDMARK_FAR_HEIGHT);
+    // Panorama szersza niż ekran: cały widok 360 to rdzeń wygaszenia — far nie jest rysowany.
+    expect(c.drawImage.mock.calls.filter((args) => args[0] === layers.far)).toHaveLength(0);
+  });
+
+  it('panorama na skraju: far pojawia się tylko po drugiej stronie, w obciętych pasach', () => {
+    const { layers, loader } = mockAssets();
+    const c = fakeCanvas();
+    const renderer = new BackgroundRenderer(loader);
+    // 30 km za Frankfurtem: środek panoramy przy x = 180 - 150 = 30.
+    renderer.drawBackground(c as unknown as CanvasRenderingContext2D, cityState(135));
+    const farCalls = c.drawImage.mock.calls.filter((args) => args[0] === layers.far);
+    expect(farCalls.length).toBeGreaterThan(0);
+    const rects = c.rect.mock.calls;
+    expect(rects.length).toBeGreaterThan(1);
+    const x = 180 - (135 - 105) / KM_PER_PX * PARALLAX.far;
+    const core = LANDMARK_FAR_WIDTH / 2 - FAR_FADE_INSET;
+    for (const [left, top, width] of rects) {
+      expect(top).toBe(LAYER_Y.far);
+      expect(left + width).toBeGreaterThan(x + core); // nic nad rdzeniem panoramy
+    }
+    // Ostatni pas sięga prawej krawędzi ekranu.
+    expect(Math.max(...rects.map(([left, , width]) => left + width))).toBe(WORLD.width);
+  });
+
+  it('bez wczytanego PNG panoramy far rysujemy normalnie (zastępcza sylwetka jest mała)', () => {
+    const { layers, loader, landmarks } = mockAssets();
+    landmarks.delete('frankfurt');
+    const c = fakeCanvas();
+    const renderer = new BackgroundRenderer(loader);
+    renderer.drawBackground(c as unknown as CanvasRenderingContext2D, cityState(105));
+    expect(c.rect).not.toHaveBeenCalled();
+    expect(c.drawImage.mock.calls.filter((args) => args[0] === layers.far).length).toBeGreaterThan(0);
+  });
+
+  it('tryb oszczędny używa szerszych (mniej licznych) pasów', () => {
+    const count = (mode: 'off' | 'always') => {
+      const { loader } = mockAssets();
+      const c = fakeCanvas();
+      const renderer = new BackgroundRenderer(loader);
+      renderer.setPerformanceMode(mode);
+      renderer.drawBackground(c as unknown as CanvasRenderingContext2D, cityState(135));
+      return c.rect.mock.calls.length;
+    };
+    expect(count('always')).toBeLessThan(count('off'));
+    expect(count('always')).toBeGreaterThan(0);
   });
 });

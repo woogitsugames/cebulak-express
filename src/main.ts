@@ -1,15 +1,18 @@
 import { TICK } from './core/config';
 import { dailyKey, dailyRoute, dailySeed, dailyTitle } from './core/daily';
 import { Game, type GameEvent, type Mode } from './core/game';
+import { RULES_VERSION, rankedGameOptions } from './core/rules';
 import { HOME_COUNTRIES, PL_CITIES, START_CITIES, makeRoute, reverseRoute, type HomeCountry, type Route } from './core/route';
 import { seasonAt } from './core/season';
 import type { Progress } from './meta/progress';
 import type { CountryCueCode } from './audio/country-cues';
 import {
   ARRIVAL_TEXTS, BORDER_TEXTS, COUNTRY_LOCATIVE, COUNTRY_NAME, FAIL_JOKES, MILESTONE_TEXTS,
-  OBSTACLE_NAME, PICKUP_TEXTS, UI, WIGILIA_TEXTS, fill,
+  OBSTACLE_NAME, PICKUP_TEXTS, UI, WIGILIA_TEXTS, fill, onLanguageChange,
 } from './content/i18n';
+import { localizedCityName } from './content/lang/cities';
 import { RETURN_ARRIVAL_TEXTS, RETURN_CITY_LOCATIVE, RETURN_DEPARTURE_TEXTS } from './content/pl';
+import { GHOST_TEXTS } from './content/lang/pl';
 import { randomNickChoices } from './content/nicks';
 import { portalLink } from './content/portals';
 import { Renderer } from './render/renderer';
@@ -20,6 +23,7 @@ import { createSfx, sfxForGameEvent, type SfxPlayer } from './audio/sfx';
 import { createHaptics, hapticForGameEvent } from './audio/haptics';
 import type { MusicPlayer } from './audio/music';
 import type { CardData } from './share/card';
+import type { GhostChallenge, GhostRunner } from './share/ghost-session';
 import { parseGameParams } from './net/params';
 import type { RankingApi } from './net/api';
 import { warsawWeekKey } from './net/week';
@@ -91,8 +95,12 @@ const ui = {
   overBest: $('over-best'),
   overPortal: $<HTMLAnchorElement>('over-portal'),
   btnReturnFlight: $<HTMLButtonElement>('btn-return-flight'),
+  btnChallenge: $<HTMLButtonElement>('btn-challenge'),
+  overGhost: $('over-ghost'),
+  ghostInfo: $('ghost-info'),
   album: $('album'),
 };
+ui.btnChallenge.textContent = GHOST_TEXTS.challengeButton;
 
 const params = new URLSearchParams(location.search);
 /** Gracz, który już kiedyś grał, nie dostaje ekranu pierwszego uruchomienia. */
@@ -124,6 +132,20 @@ const RETURN_WEIGHT = 0.25;
 let returnTrip = false;
 let progress: Progress | null = null;
 let closeCollection: (() => void) | null = null;
+// --- Duch znajomego (zlecenie 59): wyzwanie z linku ?g= ---
+// Dekodowanie odtwarza cały przejazd nadawcy, więc moduł i replay ruszają dopiero po pierwszej klatce.
+type GhostModule = typeof import('./share/ghost-session');
+let ghostMod: GhostModule | null = null;
+const ghostModule = (): Promise<GhostModule> => import('./share/ghost-session').then((m) => (ghostMod = m));
+/** Wczytane wyzwanie — przejazdy z „Lecimy!” i „Zagraj ponownie” jadą z duchem, dopóki gracz nie zmieni trasy. */
+let ghostChallenge: GhostChallenge | null = null;
+/** Ładowanie wyzwania z linku (null, gdy link go nie ma). */
+let ghostLoad: Promise<void> | null = null;
+/** Duch bieżącego przejazdu; null po rozjechaniu się z grą. */
+let ghostRunner: GhostRunner | null = null;
+let ghostDrawFailed = false;
+/** Link „Wyzwij znajomego” przygotowany po zakończeniu przejazdu. */
+let challengeLink: Promise<{ url: string; text: string } | null> | null = null;
 const winter = seasonAt(new Date(), location.search) === 'winter';
 renderer.winter = winter;
 const progressModule = () => import('./meta/progress');
@@ -190,49 +212,79 @@ configureAnalytics({ endpoint: String(import.meta.env.VITE_ANALYTICS_ENDPOINT ??
 track('app_open');
 
 // --- Menu ---
-function option(value: string, label: string): HTMLOptionElement {
-  const o = document.createElement('option');
-  o.value = value;
-  o.textContent = label;
-  return o;
+/**
+ * Ustawia listę opcji pola wyboru jednym, atomowym krokiem.
+ * Gdy wartości się nie zmieniły, poprawia tylko teksty (bez podmiany węzłów),
+ * w przeciwnym razie buduje nowe opcje z już ustawionym zaznaczeniem i wymienia je naraz.
+ * Dzięki temu pole nigdy nie zostaje bez wybranej wartości (WebKit przy zmianie
+ * tekstu lub węzłów opcji potrafi przeliczyć zaznaczenie na nowo).
+ */
+function setOptions(select: HTMLSelectElement, items: ReadonlyArray<readonly [value: string, label: string]>, value: string): void {
+  const selected = items.some(([v]) => v === value) ? value : items[0]?.[0] ?? '';
+  const current = [...select.options];
+  const sameValues = current.length === items.length && current.every((o, i) => o.value === items[i][0]);
+  if (sameValues) {
+    current.forEach((o, i) => {
+      if (o.textContent !== items[i][1]) o.textContent = items[i][1];
+    });
+  } else {
+    select.replaceChildren(...items.map(([v, label]) => {
+      const o = document.createElement('option');
+      o.value = v;
+      o.textContent = label;
+      o.selected = v === selected;
+      return o;
+    }));
+  }
+  if (select.value !== selected) select.value = selected;
 }
 
 function fillMenu(): void {
   // Poprawiamy nieaktualne ustawienia przed wyrenderowaniem kontrolek.
   route = safeRoute(settings);
-  ui.selHome.replaceChildren(...HOME_COUNTRIES.map((c) => option(c, COUNTRY_NAME[c])));
-  ui.selHome.value = settings.home;
-  ui.selFrom.replaceChildren(...START_CITIES[settings.home].map((c) => option(c.id, c.name)));
-  ui.selFrom.value = settings.from;
+  setOptions(ui.selHome, HOME_COUNTRIES.map((c) => [c, COUNTRY_NAME[c]] as const), settings.home);
+  setOptions(ui.selFrom, START_CITIES[settings.home].map((c) => [c.id, localizedCityName(c)] as const), settings.from);
   const sorted = [...PL_CITIES].sort((a, b) => a.name.localeCompare(b.name, 'pl'));
-  ui.selTo.replaceChildren(...sorted.map((c) => option(c.id, c.name)));
-  ui.selTo.value = settings.to;
+  setOptions(ui.selTo, sorted.map((c) => [c.id, localizedCityName(c)] as const), settings.to);
 
   for (const b of document.querySelectorAll<HTMLButtonElement>('.mode')) {
     b.setAttribute('aria-checked', String(b.dataset.mode === settings.mode));
   }
-  ui.routeInfo.textContent = route.from.name + ' → ' + route.to.name + ': ' + route.totalKm + ' km';
-  ui.routeSummary.textContent = route.from.name + ' → ' + route.to.name;
+  const routeText = localizedCityName(route.from) + ' → ' + localizedCityName(route.to);
+  ui.routeInfo.textContent = routeText + ': ' + route.totalKm + ' km';
+  ui.routeSummary.textContent = routeText;
   ui.routeFlag.src = import.meta.env.BASE_URL + 'assets/ui/flag-' + settings.home.toLowerCase() + '.png';
   ui.routeFlag.alt = COUNTRY_NAME[settings.home];
   ui.dailyInfo.textContent = fill(UI.dailyHint, { title: dailyTitle(dailyKey(new Date())) });
 }
+// Menu jest jedynym właścicielem pól trasy: po zmianie języka (także po dociągnięciu
+// słownika) przerysowuje je samo, zamiast pozwalać modułom leniwym poprawiać opcje.
+onLanguageChange(() => fillMenu());
+
+function dropGhostChallenge(): void {
+  ghostChallenge = null;
+  ui.ghostInfo.hidden = true;
+}
 
 ui.selHome.addEventListener('change', () => {
+  dropGhostChallenge();
   const home = ui.selHome.value as HomeCountry;
   settings = { ...settings, home, from: START_CITIES[home][0].id };
   fillMenu();
 });
 ui.selFrom.addEventListener('change', () => {
+  dropGhostChallenge();
   settings = { ...settings, from: ui.selFrom.value };
   fillMenu();
 });
 ui.selTo.addEventListener('change', () => {
+  dropGhostChallenge();
   settings = { ...settings, to: ui.selTo.value };
   fillMenu();
 });
 for (const b of document.querySelectorAll<HTMLButtonElement>('.mode')) {
   b.addEventListener('click', () => {
+    if ((b.dataset.mode as Mode) !== settings.mode) dropGhostChallenge();
     settings = { ...settings, mode: b.dataset.mode as Mode };
     fillMenu();
   });
@@ -297,12 +349,15 @@ $('btn-again').addEventListener('click', () => void newRun(returnTrip));
 $('btn-return-flight').addEventListener('click', () => void newRun(true));
 $('btn-menu').addEventListener('click', () => showMenu());
 $('btn-share').addEventListener('click', () => void share());
+ui.btnChallenge.addEventListener('click', () => void shareChallenge());
 ui.overPortal.addEventListener('click', () => track('portal_click', { placement: 'result', home: settings.home as AnalyticsHome }));
 
 function showMenu(): void {
   if (pendingReload) return pendingReload();
   const menuWasHidden = ui.menu.hidden;
   game = null;
+  ghostRunner = null;
+  renderer.ghost = null;
   music?.stop();
   closeLeague?.();
   closeLeague = null;
@@ -327,20 +382,28 @@ function currentMode(): Mode {
 
 async function newRun(reverse = false): Promise<void> {
   returnTrip = reverse && !daily;
-  const runRoute = returnTrip ? reverseRoute(route) : daily ? dailyRoute(daily) : route;
-  const mode = returnTrip ? 'cozy' : currentMode();
+  // Wyzwanie z linku: czekamy na zdekodowanie (zwykle gotowe dużo wcześniej niż klik).
+  if (!returnTrip && !daily && ghostLoad) await ghostLoad;
+  const challenge = !returnTrip && !daily ? ghostChallenge : null;
+  ghostRunner = null;
+  ghostDrawFailed = false;
+  renderer.ghost = null;
+  const runRoute = challenge ? challenge.route : returnTrip ? reverseRoute(route) : daily ? dailyRoute(daily) : route;
+  const mode = challenge ? challenge.mode : returnTrip ? 'cozy' : currentMode();
   let seed = (Math.random() * 2 ** 32) >>> 0;
   if (daily) seed = dailySeed(daily);
   // Hak testowy dla E2E: stałe ziarno tylko z ?test=1.
   if (params.get('test') === '1' && params.has('seed')) seed = Number(params.get('seed')) >>> 0;
+  if (challenge) seed = challenge.seed;
 
   runId = null;
-  if (mode === 'ranked') {
+  // Przejazdy z duchem nie trafiają do rankingu (ziarno pochodzi z linku, nie z serwera).
+  if (mode === 'ranked' && !challenge) {
     try {
       const { api } = await net;
       const start = await api.startRun({
         mode: daily ? 'daily' : 'ranked', home: runRoute.home, from: runRoute.from.id, to: runRoute.to.id,
-        ...(daily ? { daily } : {}),
+        ...(daily ? { daily } : {}), rulesVersion: RULES_VERSION,
       });
       runId = start.runId;
       seed = start.seed;
@@ -349,9 +412,14 @@ async function newRun(reverse = false): Promise<void> {
     }
   }
 
-  game = new Game({ seed, mode, route: runRoute, ...(returnTrip ? { baseWeight: RETURN_WEIGHT } : {}) });
+  // Ranking: dokładnie te same opcje co replay na serwerze (bez baseWeight).
+  game = new Game(mode === 'ranked'
+    ? rankedGameOptions(seed, runRoute)
+    : { seed, mode, route: runRoute, ...(returnTrip ? { baseWeight: RETURN_WEIGHT } : {}) });
+  if (challenge && ghostMod) ghostRunner = ghostMod.createGhostRunner(challenge);
   lastMilestone = 0;
   cardImage = null;
+  challengeLink = null;
   music?.setSeason(winter || (daily && dailyTitle(daily) === 'Na Wigilię!') ? 'holiday' : 'regular');
   ui.menu.hidden = true;
   ui.over.hidden = true;
@@ -362,6 +430,9 @@ async function newRun(reverse = false): Promise<void> {
   ui.hint.hidden = false;
   ui.hint.textContent = returnTrip ? pick(RETURN_DEPARTURE_TEXTS) : daily ? dailyTitle(daily) : UI.tapToStart;
   ui.toast.hidden = true;
+  // Po kliknięciu „Start” fokus zostaje na ukrytym przycisku — spacja ma sterować autem,
+  // a nie ponownie „klikać” niewidoczny start (keyup na fokusowanym przycisku w WebKit).
+  releaseHiddenFocus();
   updateHud();
 }
 
@@ -391,10 +462,25 @@ window.addEventListener('keydown', (e) => {
   if (e.code !== 'Space' && e.code !== 'ArrowUp') return;
   // Spacja musi nadal aktywować przyciski, pola formularza i rozwijanie trasy.
   if (!ui.menu.hidden || !ui.league.hidden || !ui.garage.hidden || !ui.album.hidden) return;
-  if ((e.target as HTMLElement)?.closest('button, select, input, textarea, a, summary, [role="radio"]')) return;
+  // …ale tylko widoczne. Fokus potrafi zostać na ukrytym już #btn-start (WebKit nie zdejmuje
+  // fokusu z elementu schowanego w [hidden]); taki przycisk nie jest kontrolką, tylko grą.
+  const control = (e.target as HTMLElement | null)?.closest?.('button, select, input, textarea, a, summary, [role="radio"]');
+  if (control && isRendered(control)) return;
+  // preventDefault na keydown blokuje też „kliknięcie” fokusowanego przycisku przy keyup.
   e.preventDefault();
   tap();
 });
+
+/** Element faktycznie wyrenderowany (nie w ukrytym panelu, nie display:none). */
+function isRendered(element: Element): boolean {
+  return !element.closest('[hidden]') && element.getClientRects().length > 0;
+}
+
+/** Zdejmuje fokus z kontrolki w panelu, który właśnie schowaliśmy. */
+function releaseHiddenFocus(): void {
+  const active = document.activeElement;
+  if (active instanceof HTMLElement && active !== document.body && !isRendered(active)) active.blur();
+}
 document.addEventListener('visibilitychange', () => {
   if (document.hidden) music?.pause();
   else if (game?.phase === 'playing') music?.resume();
@@ -502,6 +588,9 @@ function showOver(g: Game): void {
     ui.overJoke.textContent = '„' + joke + '”';
   }
   ui.overBest.textContent = isBest ? UI.newBest : fill(UI.best, { km: Math.max(prevBest, g.km) });
+  const ghostText = ghostRunner && ghostMod ? ghostMod.ghostOutcomeText(ghostRunner, g) : null;
+  ui.overGhost.hidden = !ghostText;
+  ui.overGhost.textContent = ghostText ?? '';
 
   const link = portalLink(g.route.home, 'result');
   ui.overPortal.hidden = !link;
@@ -580,12 +669,15 @@ function showOver(g: Game): void {
   const card = lastCard;
   cardImage = import('./share/card').then(({ renderCard }) => renderCard(card, 'story')).catch(() => null as unknown as Blob);
   void import('./share/share');
+  prepareChallenge(g, card);
 
   track('run_end', {
     km: g.km, seconds, cause: arrived ? 'arrived' : g.cause ?? 'ground', mode: g.mode, home: g.route.home as AnalyticsHome,
   });
   if (runId && settings.nickId) {
-    const run = { runId, flapTicks: [...g.flapTicks], ticks: g.ticks, km: g.km, nickId: settings.nickId };
+    const run = {
+      runId, flapTicks: [...g.flapTicks], ticks: g.ticks, km: g.km, nickId: settings.nickId, rulesVersion: RULES_VERSION,
+    };
     void net.then(({ api, queue, submitOrQueue }) => submitOrQueue(api, queue, run));
     runId = null;
   }
@@ -616,6 +708,36 @@ async function share(): Promise<void> {
   }
 }
 
+/**
+ * „Wyzwij znajomego”: kod g= powstaje z replay całego przejazdu, więc liczymy go zaraz
+ * po końcu gry (w tle), a nie po kliknięciu — wtedy udostępnianie zachowuje gest gracza.
+ */
+function prepareChallenge(g: Game, card: CardData): void {
+  ui.btnChallenge.hidden = true;
+  if (g.baseWeight !== 0) return;
+  const request = Promise.all([import('./share/share'), ghostModule()]).then(([shareMod, gm]) => {
+    const url = gm.buildChallengeLink(shareMod.shareUrl(card), g, settings.nickId);
+    return url ? { url, text: gm.challengeShareText(g) } : null;
+  }).catch(() => null);
+  challengeLink = request;
+  void request.then((link) => {
+    if (link && challengeLink === request && !ui.over.hidden) ui.btnChallenge.hidden = false;
+  });
+}
+
+async function shareChallenge(): Promise<void> {
+  const card = lastCard;
+  const link = await challengeLink;
+  if (!card || !link) return;
+  const image = (await cardImage) ?? undefined;
+  const { shareResult } = await import('./share/share');
+  const outcome = await shareResult(card, { image, url: link.url, text: link.text });
+  if (outcome.method !== 'cancelled') {
+    const format = outcome.method === 'native' ? 'native' : outcome.method === 'clipboard' ? 'clipboard' : outcome.method === 'web-link' ? 'link' : 'image';
+    track('share_click', { format });
+  }
+}
+
 // --- Pętla: stały krok symulacji, render co klatkę ---
 let last = performance.now();
 let acc = 0;
@@ -628,14 +750,21 @@ function frame(now: number): void {
     let steps = 0;
     while (acc >= TICK && steps < 24) {
       game.tick();
+      // Duch musi dostać każdy tick gracza; rozjechanie się wyłącza go po cichu.
+      if (ghostRunner && ghostMod) ghostRunner = ghostMod.syncGhost(ghostRunner, game);
       acc -= TICK;
       steps++;
     }
     if (steps === 24) acc = 0;
     handleEvents(game);
     if (game.phase === 'playing') updateHud();
+    const drawGhost = !ghostDrawFailed && ghostRunner && ghostMod?.isGhostVisible(ghostRunner, game) ? ghostRunner : null;
+    renderer.ghost = drawGhost;
     renderer.draw(game, now / 1000);
-    signJoke?.show(game.phase === 'playing' ? renderer.signJoke : null);
+    // Renderer zeruje ducha po błędzie rysowania — wtedy nie próbujemy ponownie w tym przejeździe.
+    if (drawGhost && !renderer.ghost) ghostDrawFailed = true;
+    // Żart z tablicy nie nachodzi na komunikat o mieście lub granicy.
+    signJoke?.show(game.phase === 'playing' && ui.toast.hidden ? renderer.signJoke : null);
   } else {
     renderer.draw(previewGame, now / 1000);
   }
@@ -681,6 +810,19 @@ function syncRecordVisibility(): void {
 setInterval(syncRecordVisibility, 250);
 fillMenu();
 requestAnimationFrame(frame);
+// Wyzwanie z linku dekodujemy po pierwszej klatce (replay do 72 000 ticków nie może opóźnić startu).
+if (params.has('g')) {
+  ghostLoad = new Promise<void>((resolve) => requestAnimationFrame(() => window.setTimeout(resolve, 0)))
+    .then(() => ghostModule())
+    .then((gm) => {
+      const challenge = gm.loadGhostChallenge(params);
+      if (!challenge) return;
+      ghostChallenge = challenge;
+      ui.ghostInfo.textContent = gm.ghostMenuInfo(challenge);
+      ui.ghostInfo.hidden = false;
+    })
+    .catch(() => undefined);
+}
 // Przełącznik języków (i tłumaczenie menu) po pierwszej klatce — nie spowalnia startu.
 requestAnimationFrame(() => void import('./ui/language-switcher'));
 

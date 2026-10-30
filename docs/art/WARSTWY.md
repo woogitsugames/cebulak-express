@@ -32,8 +32,27 @@ istotnych fragmentów przeszkód poza obszarem pobocza.
 ## Punkty trasy
 
 - Punkt `city`, `landmark` lub `crossing` należy do warstwy **far**, przed `near`.
-  Panorama jest wyświetlana z pliku 1620×900 jako **330×183** logiczne,
-  z dolną krawędzią na **y=555** (`far`).
+  Panorama jest wyświetlana z pliku 1620×900 jako **480×267** logicznych
+  (decyzja D14 „A+”, ≈1,45× dawnego 330×183), z dolną krawędzią na **y=555**
+  (`far`), więc jej górna krawędź wypada na **y≈288** — pod HUD i dymkami.
+  Panorama jest **szersza niż ekran telefonu (360)**: gdy miasto jest na środku,
+  widać ok. 3/4 obrazu; brzegi pliku pokazują się dopiero przy przewijaniu
+  (paralaksa 0,25 = 5 px na km).
+- **Co widzi gracz z pliku 1620×900:** 1 px logiczny ≈ 3,4 px pliku, na ekranie
+  DPR 3 obraz jest wyświetlany ok. 1,1× mniejszy niż plik — kontur 9–10 px
+  zostaje czytelny. Dolne ok. **25 px logicznych** (≈ 85 px pliku) zasłania
+  zwykle near i bariera drogi (asfalt od y=530/580): grunt/wodę przy dolnej
+  krawędzi traktujemy jako podstawę, nie jako ważny element sylwetki.
+  Najważniejsze budowle trzymaj w środkowych ~70% szerokości.
+- **Wygaszanie ogólnego far:** gdy panorama jest widoczna, ogólne domki i wzgórza
+  z `<cc>-far.png` są ukrywane za nią (`farLayerAlphaAt` w `background.ts`):
+  całkowicie w obrębie panoramy pomniejszonej o **40 px** z każdej strony,
+  potem miękka rampa **96 px** na zewnątrz. Siła wygaszenia idzie za fade
+  panoramy (0,4 s) i działa z przenikaniem krajów, wariantami zimowymi
+  i szerokimi ekranami. Dlatego **tło panoramy musi być przezroczyste**
+  (niebo daje warstwa sky), a przerwy między budynkami pokażą niebo, nie
+  wzgórza far. Gdy PNG panoramy jeszcze się ładuje (zastępcza sylwetka),
+  far zostaje bez zmian. W trybie oszczędnym rampa jest rysowana szerszymi pasami.
 - Punkty `border` i `rest` należą do warstwy **near**, również gdy posiadają
   obraz w `public/assets/landmarks/`. Wyświetlamy je jako **180×100** logiczne,
   z dolną krawędzią na **y=580** (przy drodze).

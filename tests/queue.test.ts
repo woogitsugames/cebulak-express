@@ -53,6 +53,13 @@ describe('kolejka wyników offline', () => {
     expect(await queue.flush(api)).toEqual({ sent: 2, discarded: 1, pending: 0 });
     expect(calls).toEqual(['run-1', 'run-2', 'run-3']);
   });
+
+  it('usuwa z kolejki przejazd ze starszych zasad (old_rules) zamiast go ponawiać', async () => {
+    const queue = new OfflineRunQueue({ storage: null });
+    queue.enqueue(item(1));
+    const api = { submitRun: async () => ({ accepted: false, reason: 'old_rules' as const, week: '2026-W44', km: 0 }) };
+    expect(await queue.flush(api)).toEqual({ sent: 0, discarded: 1, pending: 0 });
+  });
   it('przy rate_limited zachowuje zgłoszenie i zgłasza po kolejnym flush', async () => {
     const queue = new OfflineRunQueue({ storage: null });
     queue.enqueue(item(1));

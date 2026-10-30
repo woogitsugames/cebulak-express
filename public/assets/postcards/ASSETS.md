@@ -1,0 +1,136 @@
+# Pocztówki miast
+
+Od decyzji właściciela (30.10.2026) pocztówki miast z panoramą (`public/assets/landmarks/<id>.png`) są generowane automatycznie skryptem `tools/art/postcards_from_panoramas.py` (`npm run art:postcards`; opcje `--only id1,id2`, `--dry-run`, `--force`). Skrypt pobiera listę miast z katalogu `POSTCARDS` (`src/meta/progress.ts`) przez `tools/art/postcards-list.mjs`, przebudowuje tylko miasta o zmienionych źródłach (manifest `generated.json`) i odświeża podgląd `docs/art/podglady/postcards-preview.png`. Ręczne ilustracje z zlecenia 54 zostają tylko dla miast bez panoramy — gdy panorama się pojawi, skrypt zastąpi pocztówkę i usunie jej wiersz z tabeli zlecenia 54.
+
+Układ generowanej pocztówki: 600 × 400 px RGBA (paleta 256 kolorów), kremowa ramka 16 px z zaokrąglonymi narożnikami i granatowym konturem `#1d2f3b`, w oknie niebo kraju (górny środek `<cc>-sky.png`), zamglone wzgórza `<cc>-far.png`, panorama na ~85% szerokości stojąca na dolnej krawędzi (pas gruntu/wody przedłużony do boków), znaczek kraju w prawym dolnym rogu, w środkowym kadrze 4:3 (album przycina boki `object-fit: cover`, a prawy górny róg zajmuje przypinka ✓). Kraje bez `stamp-<cc>.png` dostają znaczek zastępczy w tym samym stylu (romb w barwach flagi).
+
+<!-- postcards-from-panoramas:start -->
+## Pocztówki generowane z panoram
+
+Złożone automatycznie (`npm run art:postcards`) wyłącznie z zasobów projektu: panoramy miasta, warstw nieba i dalekich wzgórz kraju oraz znaczka kraju. Licencja: własna grafika projektu Cebulak Express, jak zasoby źródłowe. Tabela jest odświeżana przez skrypt — nie edytuj jej ręcznie. Skróty źródeł: `generated.json`.
+
+| plik | źródło/narzędzie | licencja | autor/uwagi |
+| --- | --- | --- | --- |
+| `aarhus.png` | `tools/art/postcards_from_panoramas.py` (styl 8) | Własna grafika projektu (pochodna zasobów projektu) | Aarhus (DK); panorama `landmarks/aarhus.png`, tło `countries/dk/dk-sky.png`, `countries/dk/dk-far.png`, `stamp-dk.png`. |
+| `akwizgran.png` | `tools/art/postcards_from_panoramas.py` (styl 8) | Własna grafika projektu (pochodna zasobów projektu) | Akwizgran (DE); panorama `landmarks/akwizgran.png`, tło `countries/de/de-sky.png`, `countries/de/de-far.png`, `stamp-de.png`. |
+| `amsterdam.png` | `tools/art/postcards_from_panoramas.py` (styl 8) | Własna grafika projektu (pochodna zasobów projektu) | Amsterdam (NL); panorama `landmarks/amsterdam.png`, tło `countries/nl/nl-sky.png`, `countries/nl/nl-far.png`, `stamp-nl.png`. |
+| `antwerpia.png` | `tools/art/postcards_from_panoramas.py` (styl 8) | Własna grafika projektu (pochodna zasobów projektu) | Antwerpia (BE); panorama `landmarks/antwerpia.png`, tło `countries/be/be-sky.png`, `countries/be/be-far.png`, `stamp-be.png`. |
+| `arnhem.png` | `tools/art/postcards_from_panoramas.py` (styl 8) | Własna grafika projektu (pochodna zasobów projektu) | Arnhem (NL); panorama `landmarks/arnhem.png`, tło `countries/nl/nl-sky.png`, `countries/nl/nl-far.png`, `stamp-nl.png`. |
+| `barcelona.png` | `tools/art/postcards_from_panoramas.py` (styl 8) | Własna grafika projektu (pochodna zasobów projektu) | Barcelona (ES); panorama `landmarks/barcelona.png`, tło `countries/es/es-sky.png`, `countries/es/es-far.png`, znaczek zastępczy rysowany w skrypcie. |
+| `bazylea.png` | `tools/art/postcards_from_panoramas.py` (styl 8) | Własna grafika projektu (pochodna zasobów projektu) | Bazylea (CH); panorama `landmarks/bazylea.png`, tło `countries/ch/ch-sky.png`, `countries/ch/ch-far.png`, `stamp-ch.png`. |
+| `bergen.png` | `tools/art/postcards_from_panoramas.py` (styl 8) | Własna grafika projektu (pochodna zasobów projektu) | Bergen (NO); panorama `landmarks/bergen.png`, tło `countries/no/no-sky.png`, `countries/no/no-far.png`, `stamp-no.png`. |
+| `berlin.png` | `tools/art/postcards_from_panoramas.py` (styl 8) | Własna grafika projektu (pochodna zasobów projektu) | Berlin (DE); panorama `landmarks/berlin.png`, tło `countries/de/de-sky.png`, `countries/de/de-far.png`, `stamp-de.png`. |
+| `bielefeld.png` | `tools/art/postcards_from_panoramas.py` (styl 8) | Własna grafika projektu (pochodna zasobów projektu) | Bielefeld (DE); panorama `landmarks/bielefeld.png`, tło `countries/de/de-sky.png`, `countries/de/de-far.png`, `stamp-de.png`. |
+| `birmingham.png` | `tools/art/postcards_from_panoramas.py` (styl 8) | Własna grafika projektu (pochodna zasobów projektu) | Birmingham (UK); panorama `landmarks/birmingham.png`, tło `countries/uk/uk-sky.png`, `countries/uk/uk-far.png`, `stamp-uk.png`. |
+| `bolonia.png` | `tools/art/postcards_from_panoramas.py` (styl 8) | Własna grafika projektu (pochodna zasobów projektu) | Bolonia (IT); panorama `landmarks/bolonia.png`, tło `countries/it/it-sky.png`, `countries/it/it-far.png`, znaczek zastępczy rysowany w skrypcie. |
+| `brno.png` | `tools/art/postcards_from_panoramas.py` (styl 8) | Własna grafika projektu (pochodna zasobów projektu) | Brno (CZ); panorama `landmarks/brno.png`, tło `countries/cz/cz-sky.png`, `countries/cz/cz-far.png`, znaczek zastępczy rysowany w skrypcie. |
+| `brugia.png` | `tools/art/postcards_from_panoramas.py` (styl 8) | Własna grafika projektu (pochodna zasobów projektu) | Brugia (BE); panorama `landmarks/brugia.png`, tło `countries/be/be-sky.png`, `countries/be/be-far.png`, `stamp-be.png`. |
+| `bruksela.png` | `tools/art/postcards_from_panoramas.py` (styl 8) | Własna grafika projektu (pochodna zasobów projektu) | Bruksela (BE); panorama `landmarks/bruksela.png`, tło `countries/be/be-sky.png`, `countries/be/be-far.png`, `stamp-be.png`. |
+| `calais.png` | `tools/art/postcards_from_panoramas.py` (styl 8) | Własna grafika projektu (pochodna zasobów projektu) | Calais (FR); panorama `landmarks/calais.png`, tło `countries/fr/fr-sky.png`, `countries/fr/fr-far.png`, `stamp-fr.png`. |
+| `cork.png` | `tools/art/postcards_from_panoramas.py` (styl 8) | Własna grafika projektu (pochodna zasobów projektu) | Cork (IE); panorama `landmarks/cork.png`, tło `countries/ie/ie-sky.png`, `countries/ie/ie-far.png`, znaczek zastępczy rysowany w skrypcie. |
+| `dortmund.png` | `tools/art/postcards_from_panoramas.py` (styl 8) | Własna grafika projektu (pochodna zasobów projektu) | Dortmund (DE); panorama `landmarks/dortmund.png`, tło `countries/de/de-sky.png`, `countries/de/de-far.png`, `stamp-de.png`. |
+| `drezno.png` | `tools/art/postcards_from_panoramas.py` (styl 8) | Własna grafika projektu (pochodna zasobów projektu) | Drezno (DE); panorama `landmarks/drezno.png`, tło `countries/de/de-sky.png`, `countries/de/de-far.png`, `stamp-de.png`. |
+| `dublin.png` | `tools/art/postcards_from_panoramas.py` (styl 8) | Własna grafika projektu (pochodna zasobów projektu) | Dublin (IE); panorama `landmarks/dublin.png`, tło `countries/ie/ie-sky.png`, `countries/ie/ie-far.png`, znaczek zastępczy rysowany w skrypcie. |
+| `dunkierka.png` | `tools/art/postcards_from_panoramas.py` (styl 8) | Własna grafika projektu (pochodna zasobów projektu) | Dunkierka (FR); panorama `landmarks/dunkierka.png`, tło `countries/fr/fr-sky.png`, `countries/fr/fr-far.png`, `stamp-fr.png`. |
+| `dusseldorf.png` | `tools/art/postcards_from_panoramas.py` (styl 8) | Własna grafika projektu (pochodna zasobów projektu) | Düsseldorf (DE); panorama `landmarks/dusseldorf.png`, tło `countries/de/de-sky.png`, `countries/de/de-far.png`, `stamp-de.png`. |
+| `edynburg.png` | `tools/art/postcards_from_panoramas.py` (styl 8) | Własna grafika projektu (pochodna zasobów projektu) | Edynburg (UK); panorama `landmarks/edynburg.png`, tło `countries/uk/uk-sky.png`, `countries/uk/uk-far.png`, `stamp-uk.png`. |
+| `eindhoven.png` | `tools/art/postcards_from_panoramas.py` (styl 8) | Własna grafika projektu (pochodna zasobów projektu) | Eindhoven (NL); panorama `landmarks/eindhoven.png`, tło `countries/nl/nl-sky.png`, `countries/nl/nl-far.png`, `stamp-nl.png`. |
+| `erfurt.png` | `tools/art/postcards_from_panoramas.py` (styl 8) | Własna grafika projektu (pochodna zasobów projektu) | Erfurt (DE); panorama `landmarks/erfurt.png`, tło `countries/de/de-sky.png`, `countries/de/de-far.png`, `stamp-de.png`. |
+| `frankfurt-main.png` | `tools/art/postcards_from_panoramas.py` (styl 8) | Własna grafika projektu (pochodna zasobów projektu) | Frankfurt nad Menem (DE); panorama `landmarks/frankfurt-main.png`, tło `countries/de/de-sky.png`, `countries/de/de-far.png`, `stamp-de.png`. |
+| `frankfurt-oder.png` | `tools/art/postcards_from_panoramas.py` (styl 8) | Własna grafika projektu (pochodna zasobów projektu) | Frankfurt nad Odrą (DE); panorama `landmarks/frankfurt-oder.png`, tło `countries/de/de-sky.png`, `countries/de/de-far.png`, `stamp-de.png`. |
+| `gandawa.png` | `tools/art/postcards_from_panoramas.py` (styl 8) | Własna grafika projektu (pochodna zasobów projektu) | Gandawa (BE); panorama `landmarks/gandawa.png`, tło `countries/be/be-sky.png`, `countries/be/be-far.png`, `stamp-be.png`. |
+| `genewa.png` | `tools/art/postcards_from_panoramas.py` (styl 8) | Własna grafika projektu (pochodna zasobów projektu) | Genewa (CH); panorama `landmarks/genewa.png`, tło `countries/ch/ch-sky.png`, `countries/ch/ch-far.png`, `stamp-ch.png`. |
+| `graz.png` | `tools/art/postcards_from_panoramas.py` (styl 8) | Własna grafika projektu (pochodna zasobów projektu) | Graz (AT); panorama `landmarks/graz.png`, tło `countries/at/at-sky.png`, `countries/at/at-far.png`, znaczek zastępczy rysowany w skrypcie. |
+| `goteborg.png` | `tools/art/postcards_from_panoramas.py` (styl 8) | Własna grafika projektu (pochodna zasobów projektu) | Göteborg (SE); panorama `landmarks/goteborg.png`, tło `countries/se/se-sky.png`, `countries/se/se-far.png`, `stamp-se.png`. |
+| `hamburg.png` | `tools/art/postcards_from_panoramas.py` (styl 8) | Własna grafika projektu (pochodna zasobów projektu) | Hamburg (DE); panorama `landmarks/hamburg.png`, tło `countries/de/de-sky.png`, `countries/de/de-far.png`, `stamp-de.png`. |
+| `hanower.png` | `tools/art/postcards_from_panoramas.py` (styl 8) | Własna grafika projektu (pochodna zasobów projektu) | Hanower (DE); panorama `landmarks/hanower.png`, tło `countries/de/de-sky.png`, `countries/de/de-far.png`, `stamp-de.png`. |
+| `helsingborg.png` | `tools/art/postcards_from_panoramas.py` (styl 8) | Własna grafika projektu (pochodna zasobów projektu) | Helsingborg (SE); panorama `landmarks/helsingborg.png`, tło `countries/se/se-sky.png`, `countries/se/se-far.png`, `stamp-se.png`. |
+| `helsinki.png` | `tools/art/postcards_from_panoramas.py` (styl 8) | Własna grafika projektu (pochodna zasobów projektu) | Helsinki (FI); panorama `landmarks/helsinki.png`, tło `countries/fi/fi-sky.png`, `countries/fi/fi-far.png`, znaczek zastępczy rysowany w skrypcie. |
+| `jena.png` | `tools/art/postcards_from_panoramas.py` (styl 8) | Własna grafika projektu (pochodna zasobów projektu) | Jena (DE); panorama `landmarks/jena.png`, tło `countries/de/de-sky.png`, `countries/de/de-far.png`, `stamp-de.png`. |
+| `katowice.png` | `tools/art/postcards_from_panoramas.py` (styl 8) | Własna grafika projektu (pochodna zasobów projektu) | Katowice (PL); panorama `landmarks/katowice.png`, tło `countries/pl/pl-sky.png`, `countries/pl/pl-far.png`, `stamp-pl.png`. |
+| `kolonia.png` | `tools/art/postcards_from_panoramas.py` (styl 8) | Własna grafika projektu (pochodna zasobów projektu) | Kolonia (DE); panorama `landmarks/kolonia.png`, tło `countries/de/de-sky.png`, `countries/de/de-far.png`, `stamp-de.png`. |
+| `kopenhaga.png` | `tools/art/postcards_from_panoramas.py` (styl 8) | Własna grafika projektu (pochodna zasobów projektu) | Kopenhaga (DK); panorama `landmarks/kopenhaga.png`, tło `countries/dk/dk-sky.png`, `countries/dk/dk-far.png`, `stamp-dk.png`. |
+| `krakow.png` | `tools/art/postcards_from_panoramas.py` (styl 8) | Własna grafika projektu (pochodna zasobów projektu) | Kraków (PL); panorama `landmarks/krakow.png`, tło `countries/pl/pl-sky.png`, `countries/pl/pl-far.png`, `stamp-pl.png`. |
+| `legnica.png` | `tools/art/postcards_from_panoramas.py` (styl 8) | Własna grafika projektu (pochodna zasobów projektu) | Legnica (PL); panorama `landmarks/legnica.png`, tło `countries/pl/pl-sky.png`, `countries/pl/pl-far.png`, `stamp-pl.png`. |
+| `leuven.png` | `tools/art/postcards_from_panoramas.py` (styl 8) | Własna grafika projektu (pochodna zasobów projektu) | Leuven (BE); panorama `landmarks/leuven.png`, tło `countries/be/be-sky.png`, `countries/be/be-far.png`, `stamp-be.png`. |
+| `lille.png` | `tools/art/postcards_from_panoramas.py` (styl 8) | Własna grafika projektu (pochodna zasobów projektu) | Lille (FR); panorama `landmarks/lille.png`, tło `countries/fr/fr-sky.png`, `countries/fr/fr-far.png`, `stamp-fr.png`. |
+| `limerick.png` | `tools/art/postcards_from_panoramas.py` (styl 8) | Własna grafika projektu (pochodna zasobów projektu) | Limerick (IE); panorama `landmarks/limerick.png`, tło `countries/ie/ie-sky.png`, `countries/ie/ie-far.png`, znaczek zastępczy rysowany w skrypcie. |
+| `linz.png` | `tools/art/postcards_from_panoramas.py` (styl 8) | Własna grafika projektu (pochodna zasobów projektu) | Linz (AT); panorama `landmarks/linz.png`, tło `countries/at/at-sky.png`, `countries/at/at-far.png`, znaczek zastępczy rysowany w skrypcie. |
+| `liege.png` | `tools/art/postcards_from_panoramas.py` (styl 8) | Własna grafika projektu (pochodna zasobów projektu) | Liège (BE); panorama `landmarks/liege.png`, tło `countries/be/be-sky.png`, `countries/be/be-far.png`, `stamp-be.png`. |
+| `londyn.png` | `tools/art/postcards_from_panoramas.py` (styl 8) | Własna grafika projektu (pochodna zasobów projektu) | Londyn (UK); panorama `landmarks/londyn.png`, tło `countries/uk/uk-sky.png`, `countries/uk/uk-far.png`, `stamp-uk.png`. |
+| `lubeka.png` | `tools/art/postcards_from_panoramas.py` (styl 8) | Własna grafika projektu (pochodna zasobów projektu) | Lubeka (DE); panorama `landmarks/lubeka.png`, tło `countries/de/de-sky.png`, `countries/de/de-far.png`, `stamp-de.png`. |
+| `luksemburg.png` | `tools/art/postcards_from_panoramas.py` (styl 8) | Własna grafika projektu (pochodna zasobów projektu) | Luksemburg (LU); panorama `landmarks/luksemburg.png`, tło `countries/lu/lu-sky.png`, `countries/lu/lu-far.png`, znaczek zastępczy rysowany w skrypcie. |
+| `lyon.png` | `tools/art/postcards_from_panoramas.py` (styl 8) | Własna grafika projektu (pochodna zasobów projektu) | Lyon (FR); panorama `landmarks/lyon.png`, tło `countries/fr/fr-sky.png`, `countries/fr/fr-far.png`, `stamp-fr.png`. |
+| `madryt.png` | `tools/art/postcards_from_panoramas.py` (styl 8) | Własna grafika projektu (pochodna zasobów projektu) | Madryt (ES); panorama `landmarks/madryt.png`, tło `countries/es/es-sky.png`, `countries/es/es-far.png`, znaczek zastępczy rysowany w skrypcie. |
+| `magdeburg.png` | `tools/art/postcards_from_panoramas.py` (styl 8) | Własna grafika projektu (pochodna zasobów projektu) | Magdeburg (DE); panorama `landmarks/magdeburg.png`, tło `countries/de/de-sky.png`, `countries/de/de-far.png`, `stamp-de.png`. |
+| `malmo.png` | `tools/art/postcards_from_panoramas.py` (styl 8) | Własna grafika projektu (pochodna zasobów projektu) | Malmö (SE); panorama `landmarks/malmo.png`, tło `countries/se/se-sky.png`, `countries/se/se-far.png`, `stamp-se.png`. |
+| `manchester.png` | `tools/art/postcards_from_panoramas.py` (styl 8) | Własna grafika projektu (pochodna zasobów projektu) | Manchester (UK); panorama `landmarks/manchester.png`, tło `countries/uk/uk-sky.png`, `countries/uk/uk-far.png`, `stamp-uk.png`. |
+| `mannheim.png` | `tools/art/postcards_from_panoramas.py` (styl 8) | Własna grafika projektu (pochodna zasobów projektu) | Mannheim (DE); panorama `landmarks/mannheim.png`, tło `countries/de/de-sky.png`, `countries/de/de-far.png`, `stamp-de.png`. |
+| `mediolan.png` | `tools/art/postcards_from_panoramas.py` (styl 8) | Własna grafika projektu (pochodna zasobów projektu) | Mediolan (IT); panorama `landmarks/mediolan.png`, tło `countries/it/it-sky.png`, `countries/it/it-far.png`, znaczek zastępczy rysowany w skrypcie. |
+| `metz.png` | `tools/art/postcards_from_panoramas.py` (styl 8) | Własna grafika projektu (pochodna zasobów projektu) | Metz (FR); panorama `landmarks/metz.png`, tło `countries/fr/fr-sky.png`, `countries/fr/fr-far.png`, `stamp-fr.png`. |
+| `monachium.png` | `tools/art/postcards_from_panoramas.py` (styl 8) | Własna grafika projektu (pochodna zasobów projektu) | Monachium (DE); panorama `landmarks/monachium.png`, tło `countries/de/de-sky.png`, `countries/de/de-far.png`, `stamp-de.png`. |
+| `norymberga.png` | `tools/art/postcards_from_panoramas.py` (styl 8) | Własna grafika projektu (pochodna zasobów projektu) | Norymberga (DE); panorama `landmarks/norymberga.png`, tło `countries/de/de-sky.png`, `countries/de/de-far.png`, `stamp-de.png`. |
+| `odense.png` | `tools/art/postcards_from_panoramas.py` (styl 8) | Własna grafika projektu (pochodna zasobów projektu) | Odense (DK); panorama `landmarks/odense.png`, tło `countries/dk/dk-sky.png`, `countries/dk/dk-far.png`, `stamp-dk.png`. |
+| `oslo.png` | `tools/art/postcards_from_panoramas.py` (styl 8) | Własna grafika projektu (pochodna zasobów projektu) | Oslo (NO); panorama `landmarks/oslo.png`, tło `countries/no/no-sky.png`, `countries/no/no-far.png`, `stamp-no.png`. |
+| `ostrawa.png` | `tools/art/postcards_from_panoramas.py` (styl 8) | Własna grafika projektu (pochodna zasobów projektu) | Ostrawa (CZ); panorama `landmarks/ostrawa.png`, tło `countries/cz/cz-sky.png`, `countries/cz/cz-far.png`, znaczek zastępczy rysowany w skrypcie. |
+| `paryz.png` | `tools/art/postcards_from_panoramas.py` (styl 8) | Własna grafika projektu (pochodna zasobów projektu) | Paryż (FR); panorama `landmarks/paryz.png`, tło `countries/fr/fr-sky.png`, `countries/fr/fr-far.png`, `stamp-fr.png`. |
+| `poznan.png` | `tools/art/postcards_from_panoramas.py` (styl 8) | Własna grafika projektu (pochodna zasobów projektu) | Poznań (PL); panorama `landmarks/poznan.png`, tło `countries/pl/pl-sky.png`, `countries/pl/pl-far.png`, `stamp-pl.png`. |
+| `reims.png` | `tools/art/postcards_from_panoramas.py` (styl 8) | Własna grafika projektu (pochodna zasobów projektu) | Reims (FR); panorama `landmarks/reims.png`, tło `countries/fr/fr-sky.png`, `countries/fr/fr-far.png`, `stamp-fr.png`. |
+| `roskilde.png` | `tools/art/postcards_from_panoramas.py` (styl 8) | Własna grafika projektu (pochodna zasobów projektu) | Roskilde (DK); panorama `landmarks/roskilde.png`, tło `countries/dk/dk-sky.png`, `countries/dk/dk-far.png`, `stamp-dk.png`. |
+| `rotterdam.png` | `tools/art/postcards_from_panoramas.py` (styl 8) | Własna grafika projektu (pochodna zasobów projektu) | Rotterdam (NL); panorama `landmarks/rotterdam.png`, tło `countries/nl/nl-sky.png`, `countries/nl/nl-far.png`, `stamp-nl.png`. |
+| `rzym.png` | `tools/art/postcards_from_panoramas.py` (styl 8) | Własna grafika projektu (pochodna zasobów projektu) | Rzym (IT); panorama `landmarks/rzym.png`, tło `countries/it/it-sky.png`, `countries/it/it-far.png`, znaczek zastępczy rysowany w skrypcie. |
+| `saarbrucken.png` | `tools/art/postcards_from_panoramas.py` (styl 8) | Własna grafika projektu (pochodna zasobów projektu) | Saarbrücken (DE); panorama `landmarks/saarbrucken.png`, tło `countries/de/de-sky.png`, `countries/de/de-far.png`, `stamp-de.png`. |
+| `salzburg.png` | `tools/art/postcards_from_panoramas.py` (styl 8) | Własna grafika projektu (pochodna zasobów projektu) | Salzburg (AT); panorama `landmarks/salzburg.png`, tło `countries/at/at-sky.png`, `countries/at/at-far.png`, znaczek zastępczy rysowany w skrypcie. |
+| `stavanger.png` | `tools/art/postcards_from_panoramas.py` (styl 8) | Własna grafika projektu (pochodna zasobów projektu) | Stavanger (NO); panorama `landmarks/stavanger.png`, tło `countries/no/no-sky.png`, `countries/no/no-far.png`, `stamp-no.png`. |
+| `stuttgart.png` | `tools/art/postcards_from_panoramas.py` (styl 8) | Własna grafika projektu (pochodna zasobów projektu) | Stuttgart (DE); panorama `landmarks/stuttgart.png`, tło `countries/de/de-sky.png`, `countries/de/de-far.png`, `stamp-de.png`. |
+| `szczecin.png` | `tools/art/postcards_from_panoramas.py` (styl 8) | Własna grafika projektu (pochodna zasobów projektu) | Szczecin (PL); panorama `landmarks/szczecin.png`, tło `countries/pl/pl-sky.png`, `countries/pl/pl-far.png`, `stamp-pl.png`. |
+| `tampere.png` | `tools/art/postcards_from_panoramas.py` (styl 8) | Własna grafika projektu (pochodna zasobów projektu) | Tampere (FI); panorama `landmarks/tampere.png`, tło `countries/fi/fi-sky.png`, `countries/fi/fi-far.png`, znaczek zastępczy rysowany w skrypcie. |
+| `utrecht.png` | `tools/art/postcards_from_panoramas.py` (styl 8) | Własna grafika projektu (pochodna zasobów projektu) | Utrecht (NL); panorama `landmarks/utrecht.png`, tło `countries/nl/nl-sky.png`, `countries/nl/nl-far.png`, `stamp-nl.png`. |
+| `venlo.png` | `tools/art/postcards_from_panoramas.py` (styl 8) | Własna grafika projektu (pochodna zasobów projektu) | Venlo (NL); panorama `landmarks/venlo.png`, tło `countries/nl/nl-sky.png`, `countries/nl/nl-far.png`, `stamp-nl.png`. |
+| `walencja.png` | `tools/art/postcards_from_panoramas.py` (styl 8) | Własna grafika projektu (pochodna zasobów projektu) | Walencja (ES); panorama `landmarks/walencja.png`, tło `countries/es/es-sky.png`, `countries/es/es-far.png`, znaczek zastępczy rysowany w skrypcie. |
+| `warszawa.png` | `tools/art/postcards_from_panoramas.py` (styl 8) | Własna grafika projektu (pochodna zasobów projektu) | Warszawa (PL); panorama `landmarks/warszawa.png`, tło `countries/pl/pl-sky.png`, `countries/pl/pl-far.png`, `stamp-pl.png`. |
+| `wieden.png` | `tools/art/postcards_from_panoramas.py` (styl 8) | Własna grafika projektu (pochodna zasobów projektu) | Wiedeń (AT); panorama `landmarks/wieden.png`, tło `countries/at/at-sky.png`, `countries/at/at-far.png`, znaczek zastępczy rysowany w skrypcie. |
+| `wroclaw.png` | `tools/art/postcards_from_panoramas.py` (styl 8) | Własna grafika projektu (pochodna zasobów projektu) | Wrocław (PL); panorama `landmarks/wroclaw.png`, tło `countries/pl/pl-sky.png`, `countries/pl/pl-far.png`, `stamp-pl.png`. |
+| `zurych.png` | `tools/art/postcards_from_panoramas.py` (styl 8) | Własna grafika projektu (pochodna zasobów projektu) | Zurych (CH); panorama `landmarks/zurych.png`, tło `countries/ch/ch-sky.png`, `countries/ch/ch-far.png`, `stamp-ch.png`. |
+| `lodz.png` | `tools/art/postcards_from_panoramas.py` (styl 8) | Własna grafika projektu (pochodna zasobów projektu) | Łódź (PL); panorama `landmarks/lodz.png`, tło `countries/pl/pl-sky.png`, `countries/pl/pl-far.png`, `stamp-pl.png`. |
+<!-- postcards-from-panoramas:end -->
+
+## Ilustracje ręczne i znaczki — zlecenie 54
+
+**Pochodzenie i licencja:** oryginalne, autorskie ilustracje wektorowe wygenerowane programowo w ChatGPT (Python / SVG / CairoSVG / Pillow); projekt kompozycji, stylizacja motywów i ręczne dopracowanie szablonów: ChatGPT, 2026-10-30. Bez zewnętrznych zdjęć, fontów osadzonych w plikach, logotypów, herbów i zasobów licencjonowanych stron trzecich. Do wykorzystania w projekcie Cebulak Express przez właściciela. Grafiki nie kopiują zastrzeżonych sylwetek Atomium.
+
+Wszystkie pliki PNG mają kanał alfa (zaokrąglone narożniki lub tło stempla). Ilustracje miast 600 × 400 px, znaczki 128 × 128 px. Nazwy miast nie są wtopione w obraz: pozostawiono dolną białą strefę na tekst dodawany przez grę oraz oznaczone miejsce na stempel. Identyfikatory plików zachowują wartości `Waypoint.id` z `src/content/waypoints.ts`.
+
+| plik | źródło/narzędzie | licencja | autor/uwagi |
+| --- | --- | --- | --- |
+| `gdansk.png` | ChatGPT, Python/SVG/CairoSVG/Pillow | Oryginalna grafika do gry | Gdańsk (PL); motywy: kolorowe kamienice nad wodą; żurawie portowe. |
+| `slupsk.png` | ChatGPT, Python/SVG/CairoSVG/Pillow | Oryginalna grafika do gry | Słupsk (PL); motywy: ceglane mury i wieże; zielony skwer. |
+| `bydgoszcz.png` | ChatGPT, Python/SVG/CairoSVG/Pillow | Oryginalna grafika do gry | Bydgoszcz (PL); motywy: spichlerze; most i barka. |
+| `cottbus.png` | ChatGPT, Python/SVG/CairoSVG/Pillow | Oryginalna grafika do gry | Cottbus (DE); motywy: ceglana wieża; zielone parki. |
+| `forst.png` | ChatGPT, Python/SVG/CairoSVG/Pillow | Oryginalna grafika do gry | Forst (DE); motywy: most nad rzeką; lasy łużyckie. |
+| `bayreuth.png` | ChatGPT, Python/SVG/CairoSVG/Pillow | Oryginalna grafika do gry | Bayreuth (DE); motywy: barokowe kamienice; zielone wzgórza. |
+| `chemnitz.png` | ChatGPT, Python/SVG/CairoSVG/Pillow | Oryginalna grafika do gry | Chemnitz (DE); motywy: ceglana zabudowa; zielone doliny. |
+| `stamp-be.png` | ChatGPT, Python/SVG/CairoSVG/Pillow | Oryginalna grafika do gry | Abstrakcyjny geometryczny stempel BE, w kolorach flagi, bez tekstu ani godła. |
+| `stamp-ch.png` | ChatGPT, Python/SVG/CairoSVG/Pillow | Oryginalna grafika do gry | Abstrakcyjny geometryczny stempel CH, w kolorach flagi, bez tekstu ani godła. |
+| `stamp-de.png` | ChatGPT, Python/SVG/CairoSVG/Pillow | Oryginalna grafika do gry | Abstrakcyjny geometryczny stempel DE, w kolorach flagi, bez tekstu ani godła. |
+| `stamp-dk.png` | ChatGPT, Python/SVG/CairoSVG/Pillow | Oryginalna grafika do gry | Abstrakcyjny geometryczny stempel DK, w kolorach flagi, bez tekstu ani godła. |
+| `stamp-fr.png` | ChatGPT, Python/SVG/CairoSVG/Pillow | Oryginalna grafika do gry | Abstrakcyjny geometryczny stempel FR, w kolorach flagi, bez tekstu ani godła. |
+| `stamp-nl.png` | ChatGPT, Python/SVG/CairoSVG/Pillow | Oryginalna grafika do gry | Abstrakcyjny geometryczny stempel NL, w kolorach flagi, bez tekstu ani godła. |
+| `stamp-no.png` | ChatGPT, Python/SVG/CairoSVG/Pillow | Oryginalna grafika do gry | Abstrakcyjny geometryczny stempel NO, w kolorach flagi, bez tekstu ani godła. |
+| `stamp-pl.png` | ChatGPT, Python/SVG/CairoSVG/Pillow | Oryginalna grafika do gry | Abstrakcyjny geometryczny stempel PL, w kolorach flagi, bez tekstu ani godła. |
+| `stamp-se.png` | ChatGPT, Python/SVG/CairoSVG/Pillow | Oryginalna grafika do gry | Abstrakcyjny geometryczny stempel SE, w kolorach flagi, bez tekstu ani godła. |
+| `stamp-uk.png` | ChatGPT, Python/SVG/CairoSVG/Pillow | Oryginalna grafika do gry | Abstrakcyjny geometryczny stempel UK, w kolorach flagi, bez tekstu ani godła. |
+
+## Integracja
+
+- Wyświetlaj `/assets/postcards/${waypoint.id}.png` dla unikatowych punktów `kind: 'city'` oraz `PL_TRANSIT`.
+- Stempel: `/assets/postcards/stamp-${country.toLowerCase()}.png`; country = kod kraju punktu.
+- Nie wypalaj nazwy miasta na PNG; wyświetl w interfejsie w dolnej części pocztówki. Strefa w prawym dolnym rogu jest przewidziana na stempel.
+- Zachowaj proporcje 3:2; obszar z ilustracją jest wewnątrz ramki, bez kadrowania `object-fit: cover`.
+
+## Kontrola jakości
+
+- Zestaw zlecenia 54 obejmował 59 unikalnych miast i 10 stempli krajowych (stan `main` z 30.10.2026); większość miast zastąpiły już pocztówki generowane z panoram.
+- Rozmiary, tryb RGBA i przezroczystość narożników zweryfikowano automatycznie.
+- Podgląd kolekcji (generowany przez skrypt, ● = pocztówka z panoramy): `docs/art/podglady/postcards-preview.png`.
+- Wymagana kontrola wizualna po stronie koordynatora: czy wszystkie motywy są dostatecznie charakterystyczne w docelowej skali aplikacji.

@@ -82,7 +82,7 @@ Test emulatorów wymaga **Node 22 i Java 21**, testuje callable Functions i regu
 
 - `startRun({ mode: 'ranked' | 'daily', home, from, to, daily? })` zwraca `runId, seed, issuedAt` i wymaga anonimowego Firebase Auth.
 - `submitRun({ runId, flapTicks, ticks, km, nickId })` odtwarza grę, odrzuca duplikaty, sprawdza czas i ziarno. `nickId` musi pochodzić z generatora `src/content/nicks.ts`, nie z wpisywanego przez użytkownika tekstu.
-- Publiczne odczyty: `league/{week}`, `leaderboard/{week}/entries`, `daily/{day}/entries`. Wszelkie zapisy klientów są zablokowane; własny dokument `players/{uid}` można tylko odczytać.
+- Publiczne odczyty: `league/{week}`, `leaderboard/{week}/entries`, `daily/{day}/entries`, gdzie `{week}`/`{day}` mają prefiks sezonu, np. `r2_2026-W44` (wersja zasad `RULES_VERSION`, zob. `docs/sezony-rankingu.md`). `startRun`/`submitRun` wymagają bieżącego `rulesVersion`; starszy wynik dostaje `old_rules`. Wszelkie zapisy klientów są zablokowane; własny dokument `players/{uid}` można tylko odczytać.
 - Zbiory `runs`, `_runStarts`, `_submissionLimits` oraz członkostwo krajów są prywatne. Retencja i dodatkowe ograniczenia dostępu opisane są w `PRIVACY.md`.
 - Region callable Functions: `europe-west1`. `daily` ma ten sam deterministyczny seed dla wyzwania dnia. Wyniki dzienne nie zwiększają rankingu tygodniowego.
 
