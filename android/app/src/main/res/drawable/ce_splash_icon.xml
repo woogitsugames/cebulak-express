@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="432dp"
+    android:height="432dp"
+    android:viewportWidth="432"
+    android:viewportHeight="432">
+    <!-- Tymczasowa, generyczna sylwetka kombi i bagażu. -->
+    <path android:fillColor="#f5c850"
+        android:pathData="M72,182 L360,182 L376,200 L376,277 L56,277 L56,206 Z" />
+    <path android:fillColor="#f5c850"
+        android:pathData="M119,126 L297,126 L320,184 L98,184 Z" />
+    <path android:fillColor="#91d8d3"
+        android:pathData="M139,143 L276,143 L290,178 L126,178 Z" />
+    <path android:fillColor="#df7451"
+        android:pathData="M122,100 L204,100 L204,128 L122,128 Z" />
+    <path android:fillColor="#82b668"
+        android:pathData="M218,90 L298,90 L298,128 L218,128 Z" />
+    <path android:fillColor="#18202a"
+        android:pathData="M134,263 a36,36 0,1 0,72 0 a36,36 0,1 0,-72 0
+                          M268,263 a36,36 0,1 0,72 0 a36,36 0,1 0,-72 0" />
+    <path android:fillColor="#f8f1dc"
+        android:pathData="M154,263 a16,16 0,1 0,32 0 a16,16 0,1 0,-32 0
+                          M288,263 a16,16 0,1 0,32 0 a16,16 0,1 0,-32 0" />
+</vector>
