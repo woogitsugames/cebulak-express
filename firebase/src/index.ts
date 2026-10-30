@@ -151,10 +151,22 @@ export const submitRun = onCall(
     if (!initial) throw new HttpsError('not-found', 'Przejazd nie istnieje.');
     if (initial.uid !== uid) throw new HttpsError('permission-denied', 'Przejazd należy do innego gracza.');
 
-    // Drogie odtworzenie wykonujemy raz, a atomowość rozstrzygamy w transakcji.
-    // Nie ufamy wartościom przekazanym przez klienta, w tym jego dacie, trasie ani seedowi.
-    const matched = verifyReplay(initial, data.flapTicks, data.ticks, data.km);
+    // Nie uruchamiamy kosztownego replay() dla duplikatów, limitów i danych
+    // ewidentnie nieprawidłowych. Decyzję końcową i tak podejmuje transakcja.
     const limiterRef = db.collection('_submissionLimits').doc(uid);
+    const week = warsawWeek(initial.issuedAt);
+    if (initial.status !== 'issued') return { accepted: false, km: 0, reason: 'duplicate', week };
+    const earlyNow = Date.now();
+    const earlyLimit = rateState(await limiterRef.get(), earlyNow, SUBMIT_GAP_MS, 500);
+    if (earlyLimit.blocked) return { accepted: false, km: 0, reason: 'rate_limited', week };
+    const elapsed = earlyNow - initial.issuedAt;
+    const validTicks = Number.isSafeInteger(data.ticks) && (data.ticks as number) > 0;
+    const plausible = elapsed <= RUN_EXPIRES_MS
+      && validTicks
+      && elapsed >= (data.ticks as number) * TICK * 1_000 * 0.9
+      && isNickId(data.nickId);
+    // Weryfikacja odtwarza te same wejścia w tym samym kodzie src/core.
+    const matched = plausible && verifyReplay(initial, data.flapTicks, data.ticks, data.km);
 
     return db.runTransaction(async (tx): Promise<SubmitResponse> => {
       const [runSnap, limitSnap] = await Promise.all([tx.get(runRef), tx.get(limiterRef)]);
