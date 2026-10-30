@@ -79,7 +79,7 @@ export function unlockAnnouncement(id: UnlockableSkinId): string {
 export function unlockHint(id: UnlockableSkinId, totalKm: number): string {
   const car = UNLOCKABLE_CARS.find((item) => item.id === id);
   if (!car) return '';
-  const format = (value: number): string => String(value).replace(/\\B(?=(\\d{3})+(?!\\d))/g, ' ');
+  const format = (value: number): string => String(value).replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
   return `Odblokujesz po ${format(car.requiredKm)} km łącznie (brakuje ${format(Math.max(0, car.requiredKm - safeKm(totalKm)))} km)`;
 }
 
