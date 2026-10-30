@@ -29,3 +29,9 @@ Wczytaj grafiki z `/assets/ui/<nazwa>`. Do UI rysuj element przez `CanvasRenderi
 ## Uwaga dot. praw
 
 Tekstury i ilustracje powstały z wygenerowanego od podstaw atlasu GPT Image; maski, konwersje, poprawki barw i eksport wykonywano ręcznie/programistycznie. Nie wykorzystano zasobów firm trzecich ani chronionych symboli poza prostymi, zwyczajowymi wzorami flag. W razie potrzeby weryfikacji praw autorskich do assetów AI przed komercyjną publikacją koordynator może zamówić retusz ilustratora.
+
+## Zlecenie 64 — pierwsze uruchomienie
+
+| Plik | Źródło / narzędzie | Licencja | Autor / uwagi |
+|---|---|---|---|
+| `hand-tap.png` | ChatGPT GPT Image (koncepcja), ręczny redrawing SVG oraz Python/CairoSVG (finalny PNG) | własne opracowanie, do użycia w projekcie | 192×192 px, kanał alpha, sRGB; prosta dłoń z ciemnogranatowym konturem i łukami tapnięcia; bez napisów i obcych logotypów. |
