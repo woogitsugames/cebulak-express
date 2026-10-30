@@ -112,7 +112,7 @@ export const COUNTRY_CUE_INFO: Readonly<Record<CountryCueCode, Readonly<{
   let end = 0;
   for (const [, beats] of cue.notes) {
     const length = Math.min(0.82, beats * secondsPerBeat * STYLES[cue.instrument].decay);
-    end = Math.max(end, at + length);
+    end = Math.max(end, at + length * (cue.instrument === 'mandolin' ? 1.04 : 1));
     at += beats * secondsPerBeat;
   }
   // Bufor na wygładzenie szyny, bez dodatkowych dźwięków.
