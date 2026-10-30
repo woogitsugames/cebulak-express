@@ -2,79 +2,190 @@ import { PLAYER, WORLD } from '../core/config';
 import type { Game } from '../core/game';
 import type { BottomKind, TopKind } from '../core/obstacles';
 
-/**
- * Sprite'y bohatera i przeszkód (zlecenia 01 i 03). Pliki są @3x — rysujemy je
- * w jednostkach logicznych, a transformacja renderera skaluje do ekranu,
- * więc na HiDPI używamy pełnej rozdzielczości. Brak pliku = grafika zastępcza.
- */
-const SCALE = 3;
+/** Identyfikatory zapisywane w settings.skin; po publikacji pozostają stałe. */
+export const HERO_SKINS = ['default', 'pan-cebulek', 'pani-cebulka', 'bus-kurierski'] as const;
+export type HeroSkinId = (typeof HERO_SKINS)[number];
+type SkinId = Exclude<HeroSkinId, 'default'>;
+type LayerName = 'body' | 'wheel' | 'crash' | 'flame-1' | 'flame-2' |
+  'luggage-1' | 'luggage-2' | 'luggage-3' | 'luggage-4';
+type Point = Readonly<{ x: number; y: number }>;
+type Layer = Readonly<{ path: string; anchor: Point }>;
+export interface SkinLayout {
+  readonly id: HeroSkinId;
+  readonly anchor: Point;
+  readonly wheels: readonly [Point, Point];
+  readonly layers: Readonly<Partial<Record<LayerName, Layer>>>;
+}
 
-const cache = new Map<string, HTMLImageElement>();
+const SCALE = 3;
+const NAMES: Readonly<Record<LayerName, string>> = {
+  body: 'body.png', wheel: 'wheel.png', crash: 'crash.png',
+  'flame-1': 'flame-1.png', 'flame-2': 'flame-2.png',
+  'luggage-1': 'luggage-1.png', 'luggage-2': 'luggage-2.png',
+  'luggage-3': 'luggage-3.png', 'luggage-4': 'luggage-4.png',
+};
+const DEFAULT_NAMES: Readonly<Record<LayerName, string>> = {
+  body: 'kombi-body.png', wheel: 'kombi-wheel.png', crash: 'kombi-crash.png',
+  'flame-1': 'kombi-flame-1.png', 'flame-2': 'kombi-flame-2.png',
+  'luggage-1': 'luggage-1.png', 'luggage-2': 'luggage-2.png',
+  'luggage-3': 'luggage-3.png', 'luggage-4': 'luggage-4.png',
+};
+const LAYERS = Object.keys(NAMES) as LayerName[];
+const CENTER: Point = { x: 144, y: 90 };
+const DEFAULT: SkinLayout = {
+  id: 'default', anchor: CENTER,
+  wheels: [{ x: 91, y: 133 }, { x: 207, y: 133 }],
+  layers: Object.fromEntries(LAYERS.map((name) => [name, {
+    path: 'assets/hero/' + DEFAULT_NAMES[name],
+    anchor: name === 'wheel' ? { x: 18, y: 18 } : CENTER,
+  }])) as Record<LayerName, Layer>,
+};
+
+function assetUrl(path: string): string {
+  const base = import.meta.env?.BASE_URL ?? './';
+  return base.replace(/\/?$/, '/') + path;
+}
+function record(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+function point(value: unknown): Point | null {
+  if (!record(value) || typeof value.x !== 'number' || typeof value.y !== 'number' ||
+      !Number.isFinite(value.x) || !Number.isFinite(value.y) ||
+      Math.abs(value.x) > 1000 || Math.abs(value.y) > 1000) return null;
+  return { x: value.x, y: value.y };
+}
+function anchor(value: unknown): Point | null {
+  return record(value) ? point({ x: value.anchorX, y: value.anchorY }) : null;
+}
+
+/** Z manifestu przyjmujemy wyłącznie pliki o ustalonych nazwach (bez path traversal). */
+export function parseSkinLayout(id: SkinId, raw: unknown): SkinLayout | null {
+  if (!record(raw) || raw.id !== id || raw.scale !== SCALE ||
+      !record(raw.hitbox) || !record(raw.wheelCenters) || !record(raw.layers)) return null;
+  const bodyAnchor = anchor(raw.hitbox);
+  const rear = point(raw.wheelCenters.rear);
+  const front = point(raw.wheelCenters.front);
+  if (!bodyAnchor || !rear || !front) return null;
+  const layers: Partial<Record<LayerName, Layer>> = {};
+  for (const name of LAYERS) {
+    const item = raw.layers[name];
+    if (!record(item) || item.file !== NAMES[name]) continue;
+    const at = anchor(item);
+    if (at) layers[name] = { path: 'assets/skins/' + id + '/' + NAMES[name], anchor: at };
+  }
+  return layers.body ? { id, anchor: bodyAnchor, wheels: [rear, front], layers } : null;
+}
+
+export function normalizeHeroSkin(value: unknown): HeroSkinId {
+  return HERO_SKINS.find((id) => id === value) ?? 'default';
+}
+let selected: HeroSkinId = 'default';
+const loaded = new Map<string, SkinLayout | null>();
+const pending = new Map<string, Promise<SkinLayout | null>>();
+const images = new Map<string, HTMLImageElement>();
 
 function image(path: string): HTMLImageElement | undefined {
-  let img = cache.get(path);
+  if (typeof Image === 'undefined') return undefined;
+  let img = images.get(path);
   if (!img) {
     img = new Image();
     img.decoding = 'async';
-    img.src = path;
-    cache.set(path, img);
+    img.src = assetUrl(path);
+    images.set(path, img);
   }
   return img.complete && img.naturalWidth > 0 ? img : undefined;
 }
+async function loadSkin(id: SkinId): Promise<SkinLayout | null> {
+  if (loaded.has(id)) return loaded.get(id) ?? null;
+  const inFlight = pending.get(id);
+  if (inFlight) return inFlight;
+  const promise = (async () => {
+    try {
+      if (typeof fetch !== 'function') return null;
+      const response = await fetch(assetUrl('assets/skins/' + id + '/skin.json'));
+      return response.ok ? parseSkinLayout(id, await response.json()) : null;
+    } catch { return null; }
+  })().then((layout) => {
+    pending.delete(id);
+    loaded.set(id, layout);
+    if (layout) for (const item of Object.values(layout.layers)) if (item) image(item.path);
+    return layout;
+  });
+  pending.set(id, promise);
+  return promise;
+}
+/** Ustawienie działa od razu; niezaładowane/nieobecne pliki pokazują domyślne kombi. */
+export function setHeroSkin(id: HeroSkinId): void {
+  selected = normalizeHeroSkin(id);
+  if (selected === 'default') preloadSprites();
+  else {
+    if (loaded.get(selected) === null) loaded.delete(selected); // retry po zmianie z offline
+    void loadSkin(selected);
+  }
+}
+export function getHeroSkin(): HeroSkinId { return selected; }
 
-/** Ładuje z wyprzedzeniem, żeby pierwszy przejazd nie mrugał zaślepkami. */
+function activeLayout(): SkinLayout {
+  if (selected === 'default') return DEFAULT;
+  const layout = loaded.get(selected);
+  const body = layout?.layers.body;
+  // Nie łączymy kół nowej skórki z karoserią domyślną podczas ładowania.
+  return body && image(body.path) ? layout : DEFAULT;
+}
+function sprite(layout: SkinLayout, name: LayerName): { img: HTMLImageElement; anchor: Point } | null {
+  const preferred = layout.layers[name];
+  if (preferred) {
+    const img = image(preferred.path);
+    if (img) return { img, anchor: preferred.anchor };
+  }
+  const backup = DEFAULT.layers[name];
+  if (!backup) return null;
+  const img = image(backup.path);
+  return img ? { img, anchor: backup.anchor } : null;
+}
 export function preloadSprites(): void {
-  for (const p of HERO_FILES) image(p);
+  for (const item of Object.values(DEFAULT.layers)) if (item) image(item.path);
   for (const kind of [...TOPS, ...BOTTOMS]) {
     image(obstaclePath(kind, 'end'));
     image(obstaclePath(kind, 'tile'));
   }
+  if (selected !== 'default') void loadSkin(selected);
 }
-
-const HERO = 'assets/hero/';
-const HERO_FILES = [
-  `${HERO}kombi-body.png`, `${HERO}kombi-wheel.png`, `${HERO}kombi-crash.png`,
-  `${HERO}kombi-flame-1.png`, `${HERO}kombi-flame-2.png`,
-  `${HERO}luggage-1.png`, `${HERO}luggage-2.png`, `${HERO}luggage-3.png`, `${HERO}luggage-4.png`,
-];
-/** Punkt odniesienia w pliku @3x (środek hitboxu) — z hero.json. */
-const ANCHOR = { x: 144, y: 90 };
-const WHEELS = [{ x: -53, y: 43 }, { x: 63, y: 43 }];
-
-/** Rysuje bohatera ze sprite'ów. Zwraca false, gdy pliki jeszcze się nie wczytały. */
+function layerDraw(ctx: CanvasRenderingContext2D, asset: { img: HTMLImageElement; anchor: Point }): void {
+  const { img, anchor: at } = asset;
+  ctx.drawImage(img, -at.x / SCALE, -at.y / SCALE, img.naturalWidth / SCALE, img.naturalHeight / SCALE);
+}
 export function drawHeroSprite(ctx: CanvasRenderingContext2D, game: Game, t: number): boolean {
+  const layout = activeLayout();
   const crashed = game.phase === 'over';
-  const body = image(`${HERO}${crashed ? 'kombi-crash' : 'kombi-body'}.png`);
-  const wheel = image(`${HERO}kombi-wheel.png`);
+  const body = sprite(layout, crashed ? 'crash' : 'body');
+  const wheel = crashed ? null : sprite(layout, 'wheel');
   if (!body || (!crashed && !wheel)) return false;
-
   const tilt = Math.max(-0.35, Math.min(0.5, game.vy / 900));
   ctx.save();
   ctx.translate(PLAYER.x, game.y);
   ctx.rotate(tilt);
-  const ax = -ANCHOR.x / SCALE;
-  const ay = -ANCHOR.y / SCALE;
-
   if (!crashed && game.vy < -150) {
-    const flame = image(`${HERO}kombi-flame-${Math.floor(t * 14) % 2 ? 2 : 1}.png`);
-    if (flame) ctx.drawImage(flame, ax, ay, flame.naturalWidth / SCALE, flame.naturalHeight / SCALE);
+    const flame = sprite(layout, Math.floor(t * 14) % 2 ? 'flame-2' : 'flame-1');
+    if (flame) layerDraw(ctx, flame);
   }
-  if (!crashed && wheel) {
+  const drawWheels = (): void => {
+    if (!wheel) return;
     const spin = (game.distancePx / 6) % (Math.PI * 2);
-    for (const w of WHEELS) {
+    for (const pos of layout.wheels) {
       ctx.save();
-      ctx.translate(w.x / SCALE, w.y / SCALE);
+      ctx.translate((pos.x - layout.anchor.x) / SCALE, (pos.y - layout.anchor.y) / SCALE);
       ctx.rotate(spin);
-      ctx.drawImage(wheel, -6, -6, 12, 12);
+      layerDraw(ctx, wheel);
       ctx.restore();
     }
-  }
-  ctx.drawImage(body, ax, ay, body.naturalWidth / SCALE, body.naturalHeight / SCALE);
-
-  // Im większy chwilowy ciężar, tym wyższy stos bagażu (1 = zawsze trochę bagażu).
-  const level = Math.min(4, 1 + Math.floor(game.weight * 4));
-  const luggage = !crashed && image(`${HERO}luggage-${level}.png`);
-  if (luggage) ctx.drawImage(luggage, ax, ay, luggage.naturalWidth / SCALE, luggage.naturalHeight / SCALE);
+  };
+  if (layout.id === 'default') drawWheels();
+  layerDraw(ctx, body);
+  if (layout.id !== 'default') drawWheels();
+  const level = Math.min(4, 1 + Math.floor(game.weight * 4)) as 1 | 2 | 3 | 4;
+  const luggage = !crashed && sprite(layout, ('luggage-' + level) as LayerName);
+  if (luggage) layerDraw(ctx, luggage);
   ctx.restore();
   return true;
 }
