@@ -5,7 +5,7 @@ import { HOME_COUNTRIES, PL_CITIES, START_CITIES, makeRoute, type HomeCountry, t
 import {
   ARRIVAL_TEXTS, BORDER_TEXTS, COUNTRY_LOCATIVE, COUNTRY_NAME, FAIL_JOKES, MILESTONE_TEXTS,
   OBSTACLE_NAME, PICKUP_TEXTS, UI, WIGILIA_TEXTS, fill,
-} from './content/pl';
+} from './content/i18n';
 import { randomNickChoices } from './content/nicks';
 import { portalLink } from './content/portals';
 import { Renderer } from './render/renderer';
