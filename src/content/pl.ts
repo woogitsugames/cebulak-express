@@ -227,8 +227,8 @@ export const RETURN_ARRIVAL_TEXTS: string[] = [
   'Z powrotem w {city}! Wszystkie słoiki przeszły próbę trasy.',
   'Kombi wróciło do bazy w {city}. Mama może być spokojna o słoiki.',
   'W {city} znowu czeka znajomy parking. Na dachu cały zapas.',
-  'Słoiki dotarły do {city}. Ani jedno wieczko nie puściło.',
-  'Powrót do {city} zaliczony! Dach wciąż trzyma fason.',
+  'Słoiki są już w {city}. Ani jedno wieczko nie puściło.',
+  'W {city} powrót zaliczony! Dach wciąż trzyma fason.',
   'Meta w {city}. Kombi odpoczywa, a słoiki szukają półki.',
   'W {city} koniec podróży. Najpierw wyładunek, potem kawa.',
 ];
