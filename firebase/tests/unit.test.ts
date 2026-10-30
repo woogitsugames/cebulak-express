@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { replay } from '../../src/core/game';
+import { isValidNickId, randomNickChoices } from '../../src/content/nicks';
 import { makeRoute } from '../../src/core/route';
-import { isCalendarDay, isNickId, verifyReplay, warsawDay, warsawWeek } from '../src/validation';
+import { isCalendarDay, verifyReplay, warsawDay, warsawWeek } from '../src/validation';
 
 const run = { seed: 77, home: 'BE' as const, from: 'bruksela', to: 'rzeszow' };
 
@@ -36,8 +37,11 @@ describe('strefa Warszawy i format nicków', () => {
     expect(isCalendarDay('2026-10-30')).toBe(true);
     expect(isCalendarDay('2026-02-30')).toBe(false);
     expect(isCalendarDay('2026-2-5')).toBe(false);
-    expect(isNickId('bocian-z-gandawy-423')).toBe(true);
-    expect(isNickId('Ala ma kota!')).toBe(false);
-    expect(isNickId('../other')).toBe(false);
+    const validId = randomNickChoices(() => 0.12, 1, 'BE')[0];
+    expect(isValidNickId(validId)).toBe(true);
+    expect(isValidNickId('bocian-z-gandawy-423')).toBe(false);
+    expect(isValidNickId('Ala ma kota!')).toBe(false);
+    expect(isValidNickId('../other')).toBe(false);
+    expect(isValidNickId(validId.slice(0, -1) + (validId.endsWith('0') ? '1' : '0'))).toBe(false);
   });
 });

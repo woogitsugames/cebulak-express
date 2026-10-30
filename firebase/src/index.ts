@@ -1,4 +1,5 @@
 import { randomInt } from 'node:crypto';
+import { isValidNickId } from '../../src/content/nicks';
 import { getApps, initializeApp } from 'firebase-admin/app';
 import { FieldValue, getFirestore, type DocumentSnapshot } from 'firebase-admin/firestore';
 import { logger } from 'firebase-functions';
@@ -8,7 +9,7 @@ import { TICK } from '../../src/core/config';
 import { seedFromString } from '../../src/core/rng';
 import { HOME_COUNTRIES, makeRoute, type HomeCountry } from '../../src/core/route';
 import {
-  isCalendarDay, isNickId, RETENTION_MS, RUN_EXPIRES_MS,
+  isCalendarDay, RETENTION_MS, RUN_EXPIRES_MS,
   verifyReplay, warsawDay, warsawWeek,
 } from './validation';
 
@@ -194,7 +195,7 @@ export const submitRun = onCall(
       };
 
       if (now - run.issuedAt > RUN_EXPIRES_MS) return reject('expired');
-      if (!isNickId(data.nickId)) return reject('bad_nick');
+      if (typeof data.nickId !== 'string' || !isValidNickId(data.nickId)) return reject('bad_nick');
       if (!Number.isSafeInteger(data.ticks) || (data.ticks as number) <= 0) return reject('replay_mismatch');
       if (now - run.issuedAt < (data.ticks as number) * TICK * 1_000 * 0.9) return reject('too_fast');
       if (!matched) return reject('replay_mismatch');

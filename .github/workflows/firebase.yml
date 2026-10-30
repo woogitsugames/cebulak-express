@@ -6,25 +6,36 @@ on:
     branches: [main]
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   emulator:
-    name: Weryfikacja backendu i reguł
-    runs-on: ubuntu-latest
+    name: Build funkcji, testy jednostkowe, emulatory i reguły
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 22
+          cache: npm
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: 21
-      # Zależności backendu są przypięte do konkretnych wersji w firebase/package.json.
-      - name: Zainstaluj zależności Firebase
+      - name: Cache binariów emulatorów Firebase
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/firebase/emulators
+          key: ${{ runner.os }}-firebase-emulators-14.12.0
+      - name: Zależności aplikacji z lockfile
+        run: npm ci
+      - name: Zależności backendu (przypięte wersje)
         run: npm install --prefix firebase --package-lock=false --no-audit --no-fund
-      - name: Testy typów i logiki
-        run: |
-          npm --prefix firebase run typecheck
-          npm --prefix firebase run test:unit
-      - name: Emulator Auth, Firestore, Functions i reguły
+      - name: TypeScript, esbuild i manifest Functions
+        run: npm --prefix firebase run build
+      - name: Testy jednostkowe Firebase
+        run: npm --prefix firebase run test:unit
+      - name: Emulator Auth, Firestore, Functions i testy reguł
         run: npm run test:firebase
