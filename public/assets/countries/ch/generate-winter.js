@@ -29,77 +29,16 @@ function b64encode(a){
   }
   parts.push(p);return parts.join('');
 }
-const LBASE=[3,4,5,6,7,8,9,10,11,13,15,17,19,23,27,31,35,43,51,59,67,83,99,115,131,163,195,227,258];
-const LEXTRA=[0,0,0,0,0,0,0,0,1,1,1,1,2,2,2,2,3,3,3,3,4,4,4,4,5,5,5,5,0];
-const DBASE=[1,2,3,4,5,7,9,13,17,25,33,49,65,97,129,193,257,385,513,769,1025,1537,2049,3073,4097,6145,8193,12289,16385,24577];
-const DEXTRA=[0,0,0,0,0,1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,11,11,12,12,13,13];
 function u32(a,i){return (((a[i]*16777216)+(a[i+1]<<16)+(a[i+2]<<8)+a[i+3])>>>0);}
 function write32(a,i,v){a[i]=(v>>>24)&255;a[i+1]=(v>>>16)&255;a[i+2]=(v>>>8)&255;a[i+3]=v&255;}
 function concat(parts){
   const len=parts.reduce((n,p)=>n+p.length,0),o=new Uint8Array(len);let x=0;
   for(const p of parts){o.set(p,x);x+=p.length;}return o;
 }
-function huffman(lengths,readBits){
-  let max=0;const counts=new Uint32Array(16);
-  for(const l of lengths){if(l){counts[l]++;if(l>max)max=l;}}
-  const next=new Uint32Array(16);let code=0;
-  for(let l=1;l<=15;l++){code=(code+counts[l-1])*2;next[l]=code;}
-  const maps=Array.from({length:max+1},()=>new Map());
-  for(let sym=0;sym<lengths.length;sym++){const l=lengths[sym];if(l)maps[l].set(next[l]++,sym);}
-  return function(){
-    let v=0;
-    for(let l=1;l<=max;l++){v=(v<<1)|readBits(1);const sym=maps[l].get(v);if(sym!==undefined)return sym;}
-    throw new Error('Niepoprawny kod Huffmana');
-  };
-}
-function inflateZlib(src,outSize){
-  let pos=2,bits=0,buf=0,o=0;
-  const out=new Uint8Array(outSize);
-  function read(n){if(!n)return 0;while(bits<n){if(pos>=src.length)throw Error('Koniec zlib');buf|=src[pos++]<<bits;bits+=8;}const v=buf&((1<<n)-1);buf>>>=n;bits-=n;return v;}
-  let done=0;const hist=[];
-  while(!done){
-    done=read(1);const type=read(2);
-    if(type===0){
-      read(bits%8);
-      const n=read(16),inv=read(16);if((n^inv)!==65535)throw Error('Blok zlib: LEN');
-      for(let i=0;i<n;i++){if(o>=out.length)throw Error('Zlib za duzy');out[o++]=read(8);}continue;
-    }
-    if(type===3)throw Error('Zlib: typ 3');
-    let lit,dist;
-    if(type===1){
-      const l=new Array(288).fill(8);for(let i=144;i<256;i++)l[i]=9;for(let i=256;i<280;i++)l[i]=7;for(let i=280;i<288;i++)l[i]=8;
-      lit=huffman(l,read);dist=huffman(new Array(32).fill(5),read);
-    } else {
-      const nl=257+read(5),nd=1+read(5),nc=4+read(4);
-      const order=[16,17,18,0,8,7,9,6,10,5,11,4,12,3,13,2,14,1,15],cl=new Array(19).fill(0);
-      for(let i=0;i<nc;i++)cl[order[i]]=read(3);
-      const readCL=huffman(cl,read),all=[];
-      while(all.length<nl+nd){
-        const v=readCL();
-        if(v<=15)all.push(v);
-        else {
-          if(v===16&&all.length===0)throw Error('Niepoprawna dlugosc');
-          const n=v===16?3+read(2):v===17?3+read(3):11+read(7);
-          const val=v===16?all[all.length-1]:0;
-          for(let j=0;j<n;j++)all.push(val);
-        }
-      }
-      lit=huffman(all.slice(0,nl),read);dist=huffman(all.slice(nl,nl+nd),read);
-    }
-    while(true){
-      const sym=lit();hist.push([sym,o,pos,bits]);if(hist.length>15)hist.shift();
-      if(sym<256){if(o>=out.length)throw Error('Zlib za duzy');out[o++]=sym;continue;}
-      if(sym===256)break;
-      if(sym>285)throw Error('Niepoprawna dlugosc bloku');
-      const li=sym-257,len=LBASE[li]+read(LEXTRA[li]),di=dist();
-      if(di>29)throw Error('Niepoprawna odleglosc');
-      const d=DBASE[di]+read(DEXTRA[di]);
-      if(o+len>out.length||d>o)throw Error('Niepoprawny backref o='+o+' len='+len+' dist='+d+' di='+di+' sym='+sym+' bytepos='+pos+' bits='+bits+' src='+src.length+' first='+Array.from(out.subarray(0,18))+' nextRow='+out[4321]+' hist='+JSON.stringify(hist));
-      for(let j=0;j<len;j++){out[o]=out[o-d];o++;}
-    }
-  }
-  if(o!==outSize)throw Error('Rozmiar inflate: '+o+' != '+outSize);
-  return out;
+function inflateZlib(src,size) {
+  const bytes=typeof require==='function' ? new Uint8Array(require('zlib').inflateSync(Buffer.from(src))) : pako.inflate(src);
+  if(bytes.length!==size)throw Error('Rozmiar zlib: '+bytes.length+' != '+size);
+  return bytes;
 }
 function decodePNG(data){
   if(u32(data,0)!==0x89504e47)throw Error('PNG: podpis');
@@ -125,51 +64,8 @@ function decodePNG(data){
   }
   return {w,h,pix};
 }
-function reversed(v,n){let r=0;for(let i=0;i<n;i++){r=(r<<1)|(v&1);v>>>=1;}return r;}
-function fixedCodes(){
-  const lengths=new Array(288).fill(8);
-  for(let i=144;i<256;i++)lengths[i]=9;
-  for(let i=256;i<280;i++)lengths[i]=7;
-  for(let i=280;i<288;i++)lengths[i]=8;
-  const count=new Array(16).fill(0);for(const l of lengths)count[l]++;
-  const next=new Array(16).fill(0);let code=0;
-  for(let i=1;i<=15;i++){code=(code+count[i-1])*2;next[i]=code;}
-  return lengths.map(l=>[reversed(next[l]++,l),l]);
-}
-const FC=fixedCodes();
-function deflateZlib(raw){
-  const out=[],head=new Int32Array(65536);head.fill(-1);
-  let cur=0,nb=0;
-  function bits(v,n){cur|=v<<nb;nb+=n;while(nb>=8){out.push(cur&255);cur>>>=8;nb-=8;}}
-  function symbol(s){const c=FC[s];bits(c[0],c[1]);}
-  function hash(i){return ((raw[i]*251+raw[i+1]*17+raw[i+2]*257)&65535);}
-  bits(3,3);
-  for(let i=0;i<raw.length;){
-    let match=0,distance=0,k=-1;
-    if(i+2<raw.length){k=hash(i);const prev=head[k];head[k]=i;
-      if(prev>=0&&i-prev<=32768&&raw[prev]===raw[i]&&raw[prev+1]===raw[i+1]&&raw[prev+2]===raw[i+2]){
-        const m=Math.min(258,raw.length-i);while(match<m&&raw[i+match]===raw[prev+match])match++;
-        distance=i-prev;
-      }
-    }
-    if(match>=4){
-      let j=28;while(j>0&&match<LBASE[j])j--;
-      symbol(j+257);bits(match-LBASE[j],LEXTRA[j]);
-      let d=29;while(d>0&&distance<DBASE[d])d--;
-      bits(reversed(d,5),5);bits(distance-DBASE[d],DEXTRA[d]);
-      for(let x=1;x<match;x++)if(i+x+2<raw.length)head[hash(i+x)]=i+x;
-      i+=match;
-    }else{symbol(raw[i]);i++;}
-  }
-  symbol(256);if(nb)out.push(cur&255);
-  let a=1,b=0;
-  for(let k=0;k<raw.length;){
-    const end=Math.min(k+5552,raw.length);
-    for(;k<end;k++){a+=raw[k];b+=a;}
-    a%=65521;b%=65521;
-  }
-  const z=new Uint8Array(out.length+6);z[0]=0x78;z[1]=0x01;
-  z.set(out,2);write32(z,z.length-4,((b<<16)|a)>>>0);return z;
+function deflateZlib(raw) {
+  return typeof require==='function' ? new Uint8Array(require('zlib').deflateSync(Buffer.from(raw),{level:8})) : pako.deflate(raw,{level:8});
 }
 const CRC_TABLE=new Uint32Array(256);
 for(let i=0;i<256;i++){let v=i;for(let j=0;j<8;j++)v=(v&1)?(0xedb88320^(v>>>1)):(v>>>1);CRC_TABLE[i]=v>>>0;}
