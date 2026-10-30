@@ -144,8 +144,8 @@ export const ROUTE_WAYPOINTS: Record<HomeCountry, Waypoint[]> = {
     { id: 'antwerpia', name: 'Antwerpia', country: 'BE', km: 415, kind: 'city', motifs: ['dworzec z wielką kopułą', 'port z dźwigami'], text: 'Antwerpia. Dźwigi portowe liczą nasze słoiki.' },
     { id: 'eindhoven', name: 'Eindhoven', country: 'NL', km: 505, kind: 'city', motifs: ['wiszące rondo dla rowerów', 'rowery'], text: 'Eindhoven. Rowery nad drogą, my pod chmurami.' },
     { id: 'venlo', name: 'Venlo', country: 'NL', km: 560, kind: 'city', motifs: ['zielone szklarnie', 'ratusz na rynku'], text: 'Venlo. Szklarnie i Niemcy tuż-tuż.' },
-    { id: 'zaglebie-ruhry', name: 'Zagłębie Ruhry', country: 'DE', km: 645, kind: 'landmark', motifs: ['wieże wyciągowe kopalń', 'kominy', 'gazometr'], text: 'Zagłębie Ruhry. Kominy kopcą, kombi sapie.' },
-    ...viaRuhrToSwiecko(695),
+    { id: 'zaglebie-ruhry', name: 'Zagłębie Ruhry', country: 'DE', km: 617, kind: 'landmark', motifs: ['wieże wyciągowe kopalń', 'kominy', 'gazometr'], text: 'Zagłębie Ruhry. Kominy kopcą, kombi sapie.' },
+    ...viaRuhrToSwiecko(661),
   ],
   FR: [
     { id: 'paryz', name: 'Paryż', country: 'FR', km: 0, kind: 'city', motifs: ['stalowa wieża nad dachami (sylwetka, za dnia)', 'dachy mansardowe'], text: 'Paryż. Wieża żegna kombi z pełnym bagażnikiem.' },
