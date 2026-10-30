@@ -40,7 +40,7 @@ if (isEditorialMode(location.search)) newRun();
 // Gdy gra zostanie zdemontowana / zmieniony widok, wywołaj recordControl.dispose().
 ~~~
 
-**Ważne:** aktualny `main` nie ma jeszcze `src/record/recorder.ts`, `src/platform/index.ts` ani `src/content/portals.ts` (osobne T23/T24/T16). Dlatego domyślny silnik MediaRecorder działa niezależnie, aby kontrolka kompilowała się już teraz. Po ich scaleniu użyj pokazanych adapterów. `getAudio` musi otrzymać istniejący miks gry (GainNode podpięty do efektów i muzyki) odblokowany po interakcji. Dla `shareVideo` natywne `platform.share(file,text,url)` z T24 udostępnia plik, ale **nie oznacza zapisu do galerii**. Natychmiastowy zapis do galerii wymaga osobnego adaptera MediaStore/Photos; T24 obecnie go nie udostępnia.
+**Ważne:** przy rozpoczęciu T37 gałąź `main` nie zawierała jeszcze `src/record/recorder.ts`, `src/platform/index.ts` ani `src/content/portals.ts` (osobne T23/T24/T16). Podczas realizacji moduły te zostały scalone do `main`; samodzielny silnik MediaRecorder wciąż działa bez nich, ale przy integracji zalecane jest użycie pokazanych adapterów i istniejącego `VerticalVideoRecorder`. `getAudio` musi otrzymać istniejący miks gry (GainNode podpięty do efektów i muzyki) odblokowany po interakcji. Dla `shareVideo` natywne `platform.share(file,text,url)` z T24 udostępnia plik, ale **nie oznacza zapisu do galerii**. Natychmiastowy zapis do galerii wymaga osobnego adaptera MediaStore/Photos; T24 obecnie go nie udostępnia.
 
 ## Działanie i ograniczenia
 
@@ -52,6 +52,6 @@ if (isEditorialMode(location.search)) newRun();
 
 ## Weryfikacja
 
-- `tsc --strict --noEmit` dla dodanych plików przechodzi lokalnie (TypeScript 5.8.3). `npm ci`/Vitest/Vite wymagają zależności repo i powinny zostać zweryfikowane przez CI PR.
+- `tsc --strict --noEmit` dla dodanych plików przechodzi lokalnie (TypeScript 5.8.3). Pełna ścieżka `npm ci && npm run typecheck && npm test && npm run build` przeszła na GitHub Actions CI w PR #39 (30.10.2026). Lokalnie pełnego zestawu npm nie uruchomiono ze względu na brak dostępu do rejestru.
 - **Rzeczywisty Chromium na desktopie (headless, 30.10.2026)**: nagrano demonstracyjny animowany canvas wraz z tonem Web Audio podłączonym do miksu. WebM VP9/Opus, 1080×1920, 1 678 766 bajtów. Ostatnia klatka 14,984 s, ostatni pakiet audio 14,967 s. Test `ffprobe` potwierdził osobne strumienie wideo i audio, `ffmpeg volumedetect` zmierzył średnio −13,5 dB. Plansza końcowa wyświetlała `aktualnosci.be`.
 - **Nie sprawdzono** produkcyjnej gry z docelowymi efektami, Chrome na fizycznym Androidzie, natywnego udostępniania przez Capacitor, pobierania z iframe ani zapisu do galerii. Rozmiar 1,68 MB dotyczy prostej animacji testowej, a nie pełnego renderera gry.
