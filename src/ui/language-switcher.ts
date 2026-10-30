@@ -2,7 +2,6 @@ import {
   LANGUAGE_NAMES, LANGUAGES, getLanguage, initializeLanguage, onLanguageChange,
   setLanguage, t, type Language,
 } from '../content/i18n';
-import { COUNTRY_NAME } from '../content/i18n';
 import { localizedCityName } from '../content/lang/cities';
 import { HOME_COUNTRIES, PL_CITIES, START_CITIES, type City } from '../core/route';
 
@@ -115,36 +114,6 @@ export function enableLanguageUi(): () => void {
   const display = (city: City | undefined, fallback: string): string =>
     city ? localizedCityName(city) : fallback;
 
-  const refresh = (): void => {
-    localizeStaticScreens();
-    const home = document.getElementById('sel-home') as HTMLSelectElement | null;
-    const from = document.getElementById('sel-from') as HTMLSelectElement | null;
-    const to = document.getElementById('sel-to') as HTMLSelectElement | null;
-    if (!home || !from || !to) return;
-
-    for (const option of home.options) {
-      const country = HOME_COUNTRIES.find((code) => code === option.value);
-      if (country) option.textContent = COUNTRY_NAME[country];
-    }
-    const starts = START_CITIES[home.value as keyof typeof START_CITIES];
-    if (starts) for (const option of from.options) {
-      const city = starts.find((item) => item.id === option.value);
-      if (city) option.textContent = localizedCityName(city);
-    }
-    for (const option of to.options) {
-      const city = PL_CITIES.find((item) => item.id === option.value);
-      if (city) option.textContent = localizedCityName(city);
-    }
-
-    const routeInfo = document.getElementById('route-info');
-    const distance = routeInfo?.textContent?.match(/:\s*([\d.,]+\s*km)\s*$/);
-    if (routeInfo && distance) {
-      const fromText = from.selectedOptions[0]?.textContent ?? '';
-      const toText = to.selectedOptions[0]?.textContent ?? '';
-      routeInfo.textContent = `${fromText} → ${toText}: ${distance[1]}`;
-    }
-  };
-
   const refreshResult = (): void => {
     const result = document.getElementById('over-route');
     const match = result?.textContent?.match(/^(.+?)\s*→\s*(.+?)$/);
@@ -153,25 +122,23 @@ export function enableLanguageUi(): () => void {
     if (result.textContent !== translated) result.textContent = translated;
   };
 
-  const disposeSwitcher = mountLanguageSwitcher(menu, () => {
-    refresh();
-    refreshResult();
-  });
-  const onMenuAction = (): void => queueMicrotask(refresh);
-  menu.addEventListener('change', onMenuAction);
-  menu.addEventListener('click', onMenuAction);
-  document.getElementById('btn-menu')?.addEventListener('click', onMenuAction);
+  // Pola trasy (#sel-home/#sel-from/#sel-to, #route-info) należą wyłącznie do menu w main.ts,
+  // które samo przerysowuje je po zmianie języka. Ten moduł ładuje się leniwie po pierwszej
+  // klatce, więc nie może ich dotykać: poprawianie tekstów opcji w trakcie wyboru kraju
+  // przeliczało w WebKit zaznaczenie pól (pusta lub cofnięta wartość).
+  const disposeSwitcher = mountLanguageSwitcher(menu, refreshResult);
   const overRoute = document.getElementById('over-route');
   const observer = typeof MutationObserver !== 'undefined' && overRoute
     ? new MutationObserver(refreshResult)
     : undefined;
   if (observer && overRoute) observer.observe(overRoute, { childList: true, characterData: true, subtree: true });
-  refresh();
+  // Sygnał gotowości menu: przełącznik zamontowany, zapisany język wczytany i teksty
+  // zlokalizowane (sync w mountLanguageSwitcher subskrybuje initializeLanguage wcześniej).
+  // Od tej chwili leniwy moduł nie zmienia już układu menu — testy i automaty czekają na to.
+  void initializeLanguage().then(() => { menu.dataset.ready = 'true'; });
   return () => {
+    delete menu.dataset.ready;
     observer?.disconnect();
-    menu.removeEventListener('change', onMenuAction);
-    menu.removeEventListener('click', onMenuAction);
-    document.getElementById('btn-menu')?.removeEventListener('click', onMenuAction);
     disposeSwitcher();
   };
 }

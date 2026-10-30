@@ -7,8 +7,9 @@ import type { Progress } from './meta/progress';
 import type { CountryCueCode } from './audio/country-cues';
 import {
   ARRIVAL_TEXTS, BORDER_TEXTS, COUNTRY_LOCATIVE, COUNTRY_NAME, FAIL_JOKES, MILESTONE_TEXTS,
-  OBSTACLE_NAME, PICKUP_TEXTS, UI, WIGILIA_TEXTS, fill,
+  OBSTACLE_NAME, PICKUP_TEXTS, UI, WIGILIA_TEXTS, fill, onLanguageChange,
 } from './content/i18n';
+import { localizedCityName } from './content/lang/cities';
 import { RETURN_ARRIVAL_TEXTS, RETURN_CITY_LOCATIVE, RETURN_DEPARTURE_TEXTS } from './content/pl';
 import { randomNickChoices } from './content/nicks';
 import { portalLink } from './content/portals';
@@ -190,33 +191,54 @@ configureAnalytics({ endpoint: String(import.meta.env.VITE_ANALYTICS_ENDPOINT ??
 track('app_open');
 
 // --- Menu ---
-function option(value: string, label: string): HTMLOptionElement {
-  const o = document.createElement('option');
-  o.value = value;
-  o.textContent = label;
-  return o;
+/**
+ * Ustawia listę opcji pola wyboru jednym, atomowym krokiem.
+ * Gdy wartości się nie zmieniły, poprawia tylko teksty (bez podmiany węzłów),
+ * w przeciwnym razie buduje nowe opcje z już ustawionym zaznaczeniem i wymienia je naraz.
+ * Dzięki temu pole nigdy nie zostaje bez wybranej wartości (WebKit przy zmianie
+ * tekstu lub węzłów opcji potrafi przeliczyć zaznaczenie na nowo).
+ */
+function setOptions(select: HTMLSelectElement, items: ReadonlyArray<readonly [value: string, label: string]>, value: string): void {
+  const selected = items.some(([v]) => v === value) ? value : items[0]?.[0] ?? '';
+  const current = [...select.options];
+  const sameValues = current.length === items.length && current.every((o, i) => o.value === items[i][0]);
+  if (sameValues) {
+    current.forEach((o, i) => {
+      if (o.textContent !== items[i][1]) o.textContent = items[i][1];
+    });
+  } else {
+    select.replaceChildren(...items.map(([v, label]) => {
+      const o = document.createElement('option');
+      o.value = v;
+      o.textContent = label;
+      o.selected = v === selected;
+      return o;
+    }));
+  }
+  if (select.value !== selected) select.value = selected;
 }
 
 function fillMenu(): void {
   // Poprawiamy nieaktualne ustawienia przed wyrenderowaniem kontrolek.
   route = safeRoute(settings);
-  ui.selHome.replaceChildren(...HOME_COUNTRIES.map((c) => option(c, COUNTRY_NAME[c])));
-  ui.selHome.value = settings.home;
-  ui.selFrom.replaceChildren(...START_CITIES[settings.home].map((c) => option(c.id, c.name)));
-  ui.selFrom.value = settings.from;
+  setOptions(ui.selHome, HOME_COUNTRIES.map((c) => [c, COUNTRY_NAME[c]] as const), settings.home);
+  setOptions(ui.selFrom, START_CITIES[settings.home].map((c) => [c.id, localizedCityName(c)] as const), settings.from);
   const sorted = [...PL_CITIES].sort((a, b) => a.name.localeCompare(b.name, 'pl'));
-  ui.selTo.replaceChildren(...sorted.map((c) => option(c.id, c.name)));
-  ui.selTo.value = settings.to;
+  setOptions(ui.selTo, sorted.map((c) => [c.id, localizedCityName(c)] as const), settings.to);
 
   for (const b of document.querySelectorAll<HTMLButtonElement>('.mode')) {
     b.setAttribute('aria-checked', String(b.dataset.mode === settings.mode));
   }
-  ui.routeInfo.textContent = route.from.name + ' → ' + route.to.name + ': ' + route.totalKm + ' km';
-  ui.routeSummary.textContent = route.from.name + ' → ' + route.to.name;
+  const routeText = localizedCityName(route.from) + ' → ' + localizedCityName(route.to);
+  ui.routeInfo.textContent = routeText + ': ' + route.totalKm + ' km';
+  ui.routeSummary.textContent = routeText;
   ui.routeFlag.src = import.meta.env.BASE_URL + 'assets/ui/flag-' + settings.home.toLowerCase() + '.png';
   ui.routeFlag.alt = COUNTRY_NAME[settings.home];
   ui.dailyInfo.textContent = fill(UI.dailyHint, { title: dailyTitle(dailyKey(new Date())) });
 }
+// Menu jest jedynym właścicielem pól trasy: po zmianie języka (także po dociągnięciu
+// słownika) przerysowuje je samo, zamiast pozwalać modułom leniwym poprawiać opcje.
+onLanguageChange(() => fillMenu());
 
 ui.selHome.addEventListener('change', () => {
   const home = ui.selHome.value as HomeCountry;
@@ -362,6 +384,9 @@ async function newRun(reverse = false): Promise<void> {
   ui.hint.hidden = false;
   ui.hint.textContent = returnTrip ? pick(RETURN_DEPARTURE_TEXTS) : daily ? dailyTitle(daily) : UI.tapToStart;
   ui.toast.hidden = true;
+  // Po kliknięciu „Start” fokus zostaje na ukrytym przycisku — spacja ma sterować autem,
+  // a nie ponownie „klikać” niewidoczny start (keyup na fokusowanym przycisku w WebKit).
+  releaseHiddenFocus();
   updateHud();
 }
 
@@ -391,10 +416,25 @@ window.addEventListener('keydown', (e) => {
   if (e.code !== 'Space' && e.code !== 'ArrowUp') return;
   // Spacja musi nadal aktywować przyciski, pola formularza i rozwijanie trasy.
   if (!ui.menu.hidden || !ui.league.hidden || !ui.garage.hidden || !ui.album.hidden) return;
-  if ((e.target as HTMLElement)?.closest('button, select, input, textarea, a, summary, [role="radio"]')) return;
+  // …ale tylko widoczne. Fokus potrafi zostać na ukrytym już #btn-start (WebKit nie zdejmuje
+  // fokusu z elementu schowanego w [hidden]); taki przycisk nie jest kontrolką, tylko grą.
+  const control = (e.target as HTMLElement | null)?.closest?.('button, select, input, textarea, a, summary, [role="radio"]');
+  if (control && isRendered(control)) return;
+  // preventDefault na keydown blokuje też „kliknięcie” fokusowanego przycisku przy keyup.
   e.preventDefault();
   tap();
 });
+
+/** Element faktycznie wyrenderowany (nie w ukrytym panelu, nie display:none). */
+function isRendered(element: Element): boolean {
+  return !element.closest('[hidden]') && element.getClientRects().length > 0;
+}
+
+/** Zdejmuje fokus z kontrolki w panelu, który właśnie schowaliśmy. */
+function releaseHiddenFocus(): void {
+  const active = document.activeElement;
+  if (active instanceof HTMLElement && active !== document.body && !isRendered(active)) active.blur();
+}
 document.addEventListener('visibilitychange', () => {
   if (document.hidden) music?.pause();
   else if (game?.phase === 'playing') music?.resume();
