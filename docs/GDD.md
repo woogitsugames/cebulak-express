@@ -27,6 +27,8 @@ Oznaczenia: **✅ zweryfikowane** = sprawdzone w sieci 30.10.2026, ze źródłem
 | D11 | **Panoramy miast mają być rozpoznawalne** (30.10.2026) | Najpierw próbki w 3 stylach (rysunkowy / stylizowane zdjęcie / foto) dla Antwerpii, Brukseli, Düsseldorfu i Amsterdamu; właściciel wybiera styl, potem reszta miast. Zlecenia 68–69. |
 | D12 | **Zabawnie brzmiące prawdziwe nazwy miejsc** (np. Deurne → „durne”) na tablicach przy trasie (30.10.2026) | Test babci: bez wulgaryzmów i skojarzeń dla dorosłych. Amsterdam/Bruksela: żart o ciasnych kamienicach tak, dzielnice czerwonych latarni nie. Zlecenia 70–71. |
 | D13 | **Składaki i tablety** (30.10.2026) | Na szerokich ekranach tło na całą szerokość, pole gry zostaje w kolumnie 9:16 (uczciwy ranking). |
+| D14 | **Panoramy miast w stylu A+** (30.10.2026) | Rysunkowe, rozpoznawalne, z grubszym konturem i mniejszą liczbą detali, 2–4 duże budowle. Najpierw ~40 najważniejszych miast (zlecenia 75–82), reszta później. Pocztówki albumu będą generowane z tych panoram. |
+| D15 | **Auta: poprawki sylwetek** (30.10.2026) | „Mała Japonka” ma być miejską trzydrzwiówką, „Dieselek po dziadku” długim kombi z lat 2000 (zlecenie 83). |
 
 Wpływ na §5: limit „< 1 MB” zniesiony, ale **czysty Canvas + TypeScript** zostaje — głównym powodem jest testowalna logika `src/core/` współdzielona z serwerem do weryfikacji rankingu, nie sama waga.
 
