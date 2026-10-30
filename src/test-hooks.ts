@@ -1,4 +1,5 @@
 import type { Game } from './core/game';
+import type { PickupKind } from './core/obstacles';
 import type { RankingApi } from './net/api';
 
 /** Wyłącznie odczyt stanu bieżącego przejazdu do automatycznych zrzutów. */
@@ -11,7 +12,7 @@ export interface StoreShotSnapshot {
   km: number;
   country: Game['country'];
   jars: number;
-  pickups: { x: number; y: number; kind: 'jar' | 'parcel'; taken: boolean }[];
+  pickups: { x: number; y: number; kind: PickupKind; taken: boolean }[];
   obstacles: { x: number; gapY: number; gapH: number }[];
 }
 
