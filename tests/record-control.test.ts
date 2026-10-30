@@ -157,6 +157,7 @@ describe('createRecordControl', () => {
     control.start();
     recording.fail();
     await Promise.resolve();
+    await Promise.resolve(); // .then(...).catch(...) wymaga dodatkowego obrotu mikrozadań
     expect(find(root, 'ce-record-start').hidden).toBe(false);
     control.dispose();
   });
