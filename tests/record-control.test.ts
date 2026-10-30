@@ -76,7 +76,7 @@ function buildBackend(): { backend: RecordingBackend; succeed: () => void; fail:
   let resolve!: (video: RecordedVideo) => void;
   let reject!: (error: Error) => void;
   const backend: RecordingBackend = {
-    start: vi.fn(() => new Promise((res, rej) => { resolve = res; reject = rej; })),
+    start: vi.fn(() => new Promise<RecordedVideo>((res, rej) => { resolve = res; reject = rej; })),
     cancel: vi.fn(),
   };
   return { backend, succeed: () => resolve(fakeVideo), fail: () => reject(new Error('Błąd kodowania')) };
