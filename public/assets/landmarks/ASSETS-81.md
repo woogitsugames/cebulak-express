@@ -14,7 +14,7 @@
 | `odense.png` | Odense — katedra św. Kanuta, historyczne domy z muru pruskiego | Stylizowany historyczny krajobraz; nie jest ścisłą rekonstrukcją jednej perspektywy | ChatGPT GPT Image; Pillow: skalowanie do 1620×900 | J.w. |
 | `frankfurt-oder.png` | Frankfurt nad Odrą — gotycki ratusz, wieże zabytkowego kościoła (Friedenskirche), niebieski most nad Odrą | Umowny kadr z kierunku Słubic, łączy symboliczne dominanty miasta | ChatGPT GPT Image; Pillow: skalowanie do 1620×900 | J.w. |
 | `szczecin.png` | Szczecin — Wały Chrobrego, Muzeum Narodowe, dawny gmach rejencji, portowe dźwigi | Widok od strony Łasztowni na zachodni brzeg Odry | ChatGPT GPT Image: wycięcie ze zbiorczej ilustracji; Pillow: kadrowanie i powiększanie | J.w. |
-| `poznan.png` | Poznań — ratusz renesansowy i kolorowe kamieniczki Starego Rynku, symboliczne wieże katedry | **Montaż ilustracyjny, nie jeden rzeczywisty punkt widzenia.** Katedra jest na Ostrowie Tumskim, poza Rynkiem. Do oceny koordynatora | ChatGPT GPT Image: wycięcie ze zbiorczej ilustracji; Pillow: kadrowanie, usunięcie niezamierzonego napisu i powiększanie | J.w. |
+| `poznan.png` | Poznań — renesansowy ratusz i kolorowe kamienice Starego Rynku | Stylizowany widok z poziomu płyty rynku w kierunku ratusza, **bez katedry** oddalonej na Ostrów Tumski | ChatGPT GPT Image: kadr z wielomiejskiego arkusza; Pillow: usunięcie obcego podpisu, wycięcie katedry, skalowanie i lustrzane przedłużenie pierzei kamienic | J.w. |
 
 ## Prompty — briefy wizualne
 
@@ -22,7 +22,7 @@
 - **Odense:** `Independent panoramic flat vector illustration of Odense, St Canute's red-brick Gothic cathedral with square tower and spire, historic timber-frame houses with ochre and pastel facades and red roofs, dark bold contour, flat warm colors, transparent background, no text.`
 - **Frankfurt nad Odrą:** `Independent panoramic vector illustration of Frankfurt Oder brick-Gothic Rathaus with stepped gables, twin historic church spires and blue road bridge across Oder to Slubice, dark thick outlines, simple facades and slim water strip, transparent background, no signage.`
 - **Szczecin:** `A clean five-city vector-style concept sheet including Szczecin waterfront, Wały Chrobrego, monumental National Museum, voivodeship office towers, river terraces and port cranes; isolate only Szczecin to an independent transparent PNG.`
-- **Poznań:** `A clean five-city vector-style concept sheet including Poznań Renaissance town hall and colourful historic townhouses, church towers; isolate only Poznań to an independent transparent PNG.`
+- **Poznań:** `Illustrate Renaissance town hall in the middle of Poznań Old Market Square, colourful merchant townhouses in the immediate frontage; omit the remote Ostrów Tumski cathedral, isolate on transparent background and extend the row of historic market buildings using matching house sections.`
 
 Generator nie udostępnił dokładnych wewnętrznych promptów. Powyższe zapisy są opisami briefów użytych przy tworzeniu zasobów.
 
@@ -42,6 +42,6 @@ Generator nie udostępnił dokładnych wewnętrznych promptów. Powyższe zapisy
 - Arkusz: `docs/art/podglady/panoramy-81.png`; jasnoniebieskie tło i podpisy tylko na arkuszu, nie w panoramach.
 - Przed odbiorem sprawdzić czytelność w około 324×180 px oraz zgodność lokalizacji budynków.
 - Szczecin i Poznań wycięto z mniejszego arkusza wygenerowanego przez AI. W razie utraty czytelności po redukcji w grze należy wygenerować je osobno w większej rozdzielczości źródłowej.
-- **Poznań** wymaga decyzji: aktualna kompozycja nie spełnia kryterium jednego rzeczywistego punktu widzenia.
+- W Poznaniu po korekcie pozostawiono **tylko Stary Rynek**. Boki pierzei kamienic uzupełniono powielonymi fragmentami wygenerowanej ilustracji. Sprawdzić, czy powtórzenia są zauważalne w docelowym rozmiarze.
 - Ze względów ograniczeń środowiska **binarnych PNG nie przesłano tym commitem**. Koordynator otrzymuje ZIP ze wszystkimi plikami, gotowy do rozpakowania w katalogu głównym repo.
 
