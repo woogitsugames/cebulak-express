@@ -20,53 +20,94 @@
           <div class="pill" id="hud-lives" hidden></div>
         </div>
         <div class="hud-remaining" id="hud-remaining"></div>
-        <div class="toast" id="toast" hidden></div>
-        <div class="hint" id="hint">Dotknij, aby wystartować</div>
+        <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+        <div class="hint" id="hint" role="status">Dotknij, aby wystartować</div>
       </div>
 
-      <section id="menu" class="panel">
-        <h1 class="logo">Cebulak <span>Express</span></h1>
-        <p class="tagline">Kierunek Polska</p>
-        <label class="field">Mieszkam w
-          <select id="sel-home"></select>
-        </label>
-        <label class="field">Startuję z
-          <select id="sel-from"></select>
-        </label>
-        <label class="field">Lecę do
-          <select id="sel-to"></select>
-        </label>
+      <section id="menu" class="panel panel--menu" aria-label="Menu główne">
+        <h1 class="menu-logo">
+          <img src="assets/brand/logo.png" alt="Cebulak Express — Kierunek Polska" />
+        </h1>
+        <p class="menu-subtitle">Przygoda na jeden palec</p>
+        <img class="menu-car" src="assets/hero/kombi-body.png" alt="" aria-hidden="true" />
+
         <div class="modes" role="radiogroup" aria-label="Tryb gry">
           <button type="button" class="mode" data-mode="ranked" role="radio">Rankingowy</button>
           <button type="button" class="mode" data-mode="cozy" role="radio">Łagodny</button>
         </div>
-        <p class="route" id="route-info"></p>
-        <button type="button" class="btn primary" id="btn-start">Lecimy!</button>
-        <div class="row">
-          <button type="button" class="btn" id="btn-daily">Wyzwanie dnia</button>
-          <button type="button" class="btn" id="btn-league">Liga Polonii</button>
+        <button type="button" class="btn btn--green btn--play" id="btn-start">Lecimy!</button>
+        <div class="menu-action-grid">
+          <button type="button" class="btn btn--blue" id="btn-daily">Wyzwanie dnia</button>
+          <button type="button" class="btn btn--blue" id="btn-league">Liga Polonii</button>
+          <button type="button" class="btn btn--wood" id="btn-garage">Garaż</button>
         </div>
-        <p class="route" id="daily-info"></p>
+        <p class="daily-info" id="daily-info"></p>
+
+        <details class="route-picker" id="route-picker">
+          <summary id="route-toggle">
+            <img id="route-flag" src="assets/ui/flag-be.png" alt="" />
+            <span class="route-picker__text">
+              <strong>Zmień trasę</strong>
+              <small id="route-summary"></small>
+            </span>
+            <span class="route-picker__chevron" aria-hidden="true"></span>
+          </summary>
+          <div class="route-picker__content">
+            <label class="field">Mieszkam w
+              <select id="sel-home"></select>
+            </label>
+            <label class="field">Startuję z
+              <select id="sel-from"></select>
+            </label>
+            <label class="field">Lecę do
+              <select id="sel-to"></select>
+            </label>
+            <p class="route" id="route-info"></p>
+          </div>
+        </details>
       </section>
 
-      <section id="league" class="panel" hidden>
+      <section id="league" class="panel panel--sub" aria-label="Liga Polonii" hidden>
         <div id="league-body"></div>
-        <button type="button" class="btn link" id="btn-league-close">Zamknij</button>
+        <button type="button" class="btn btn--wood btn--sub-close" id="btn-league-close">Powrót do menu</button>
       </section>
 
-      <section id="over" class="panel" hidden>
-        <h2 id="over-title">Koniec trasy!</h2>
-        <p class="big" id="over-km">0 km</p>
+      <!-- Garaż zostanie podpięty do modułu z PR #36 przy integracji. -->
+      <section id="garage" class="panel panel--sub panel--garage" aria-labelledby="garage-title" hidden>
+        <h2 id="garage-title">Garaż</h2>
+        <img src="assets/skins/pan-cebulek/portrait.png" alt="" aria-hidden="true" />
+        <p>Wybór skórki i pseudonimu zostanie udostępniony po integracji garażu.</p>
+        <button type="button" class="btn btn--wood" id="btn-garage-close">Powrót do menu</button>
+      </section>
+
+      <section id="over" class="panel panel--over" aria-labelledby="over-title" hidden>
+        <h2 class="over-ribbon" id="over-title">Koniec trasy!</h2>
+        <div class="over-distance">
+          <img src="assets/ui/icon-km.png" alt="" class="over-icon" />
+          <div>
+            <span class="over-eyebrow">Przejechany dystans</span>
+            <p class="big" id="over-km">0 km</p>
+          </div>
+        </div>
         <p class="sub" id="over-route"></p>
-        <p class="cause" id="over-cause"></p>
+        <div class="over-cause-box">
+          <img src="assets/obstacles/roadworks-end.png" alt="" id="over-cause-icon" />
+          <p class="cause" id="over-cause"></p>
+        </div>
         <p class="joke" id="over-joke"></p>
         <p class="best" id="over-best"></p>
-        <div class="row">
-          <button type="button" class="btn primary" id="btn-again">Jeszcze raz</button>
-          <button type="button" class="btn" id="btn-share">Udostępnij</button>
+
+        <section id="over-mini-league" class="mini-league" aria-label="Pierwsza trójka Ligi Polonii" hidden>
+          <h3><img src="assets/ui/icon-trophy.png" alt="" /> Liga Polonii <span>TOP 3</span></h3>
+          <ol id="over-league-list"></ol>
+        </section>
+
+        <div class="over-actions">
+          <button type="button" class="btn btn--green" id="btn-again">Zagraj ponownie</button>
+          <button type="button" class="btn btn--blue" id="btn-share">Udostępnij</button>
         </div>
         <a class="portal" id="over-portal" target="_blank" rel="noopener noreferrer" hidden></a>
-        <button type="button" class="btn link" id="btn-menu">Zmień trasę</button>
+        <button type="button" class="btn btn--wood btn--return" id="btn-menu">Zmień trasę</button>
       </section>
     </div>
     <script type="module" src="/src/main.ts"></script>

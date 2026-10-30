@@ -17,6 +17,7 @@ import { renderCard, type CardData } from './share/card';
 import { setNativeShareAdapter, shareResult } from './share/share';
 import { parseGameParams } from './net/params';
 import { createRankingApi } from './net/api';
+import { warsawWeekKey } from './net/week';
 import { OfflineRunQueue, submitOrQueue, watchQueueOnline } from './net/queue';
 import { mountLeague } from './ui/league';
 import { configureAnalytics, track, type AnalyticsHome } from './analytics/track';
@@ -65,6 +66,12 @@ const ui = {
   menu: $('menu'),
   over: $('over'),
   league: $('league'),
+  garage: $('garage'),
+  routeSummary: $('route-summary'),
+  routeFlag: $<HTMLImageElement>('route-flag'),
+  overCauseIcon: $<HTMLImageElement>('over-cause-icon'),
+  overMiniLeague: $('over-mini-league'),
+  overLeagueList: $('over-league-list'),
   leagueBody: $('league-body'),
   selHome: $<HTMLSelectElement>('sel-home'),
   selFrom: $<HTMLSelectElement>('sel-from'),
@@ -101,6 +108,7 @@ let lastMilestone = 0;
 let cardImage: Promise<Blob> | null = null;
 let pendingReload: (() => void) | null = null;
 let closeLeague: (() => void) | null = null;
+let overLeagueRequest = 0;
 
 function safeRoute(s: Settings): Route {
   try {
@@ -152,6 +160,8 @@ function option(value: string, label: string): HTMLOptionElement {
 }
 
 function fillMenu(): void {
+  // Poprawiamy nieaktualne ustawienia przed wyrenderowaniem kontrolek.
+  route = safeRoute(settings);
   ui.selHome.replaceChildren(...HOME_COUNTRIES.map((c) => option(c, COUNTRY_NAME[c])));
   ui.selHome.value = settings.home;
   ui.selFrom.replaceChildren(...START_CITIES[settings.home].map((c) => option(c.id, c.name)));
@@ -159,11 +169,14 @@ function fillMenu(): void {
   const sorted = [...PL_CITIES].sort((a, b) => a.name.localeCompare(b.name, 'pl'));
   ui.selTo.replaceChildren(...sorted.map((c) => option(c.id, c.name)));
   ui.selTo.value = settings.to;
+
   for (const b of document.querySelectorAll<HTMLButtonElement>('.mode')) {
     b.setAttribute('aria-checked', String(b.dataset.mode === settings.mode));
   }
-  route = safeRoute(settings);
-  ui.routeInfo.textContent = `${route.from.name} → ${route.to.name}: ${route.totalKm} km`;
+  ui.routeInfo.textContent = route.from.name + ' → ' + route.to.name + ': ' + route.totalKm + ' km';
+  ui.routeSummary.textContent = route.from.name + ' → ' + route.to.name;
+  ui.routeFlag.src = import.meta.env.BASE_URL + 'assets/ui/flag-' + settings.home.toLowerCase() + '.png';
+  ui.routeFlag.alt = COUNTRY_NAME[settings.home];
   ui.dailyInfo.textContent = fill(UI.dailyHint, { title: dailyTitle(dailyKey(new Date())) });
 }
 
@@ -185,6 +198,13 @@ for (const b of document.querySelectorAll<HTMLButtonElement>('.mode')) {
     settings = { ...settings, mode: b.dataset.mode as Mode };
     fillMenu();
   });
+  b.addEventListener('keydown', (event) => {
+    if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
+    event.preventDefault();
+    const other = document.querySelector<HTMLButtonElement>('.mode:not([data-mode="' + b.dataset.mode + '"])');
+    other?.focus();
+    other?.click();
+  });
 }
 
 $('btn-start').addEventListener('click', () => {
@@ -203,6 +223,12 @@ $('btn-league').addEventListener('click', () => {
   track('league_open');
 });
 $('btn-league-close').addEventListener('click', () => showMenu());
+$('btn-garage').addEventListener('click', () => {
+  ui.menu.hidden = true;
+  ui.garage.hidden = false;
+  $('btn-garage-close').focus();
+});
+$('btn-garage-close').addEventListener('click', () => showMenu());
 $('btn-again').addEventListener('click', () => void newRun());
 $('btn-menu').addEventListener('click', () => showMenu());
 $('btn-share').addEventListener('click', () => void share());
@@ -210,6 +236,7 @@ ui.overPortal.addEventListener('click', () => track('portal_click', { placement:
 
 function showMenu(): void {
   if (pendingReload) return pendingReload();
+  const menuWasHidden = ui.menu.hidden;
   game = null;
   music?.stop();
   closeLeague?.();
@@ -217,8 +244,10 @@ function showMenu(): void {
   ui.over.hidden = true;
   ui.hud.hidden = true;
   ui.league.hidden = true;
+  ui.garage.hidden = true;
   ui.menu.hidden = false;
   fillMenu();
+  if (menuWasHidden) $('btn-start').focus();
 }
 
 /** Tryb gry dla rdzenia: wyzwanie dnia zawsze rankingowe. */
@@ -255,6 +284,7 @@ async function newRun(): Promise<void> {
   ui.menu.hidden = true;
   ui.over.hidden = true;
   ui.league.hidden = true;
+  ui.garage.hidden = true;
   ui.hud.hidden = false;
   ui.hint.hidden = false;
   ui.hint.textContent = daily ? dailyTitle(daily) : UI.tapToStart;
@@ -285,11 +315,12 @@ $('stage').addEventListener('pointerdown', (e) => {
   tap();
 });
 window.addEventListener('keydown', (e) => {
-  if (e.code === 'Space' || e.code === 'ArrowUp') {
-    e.preventDefault();
-    if (!ui.menu.hidden || !ui.league.hidden) return;
-    tap();
-  }
+  if (e.code !== 'Space' && e.code !== 'ArrowUp') return;
+  // Spacja musi nadal aktywować przyciski, pola formularza i rozwijanie trasy.
+  if (!ui.menu.hidden || !ui.league.hidden || !ui.garage.hidden) return;
+  if ((e.target as HTMLElement)?.closest('button, select, input, textarea, a, summary, [role="radio"]')) return;
+  e.preventDefault();
+  tap();
 });
 document.addEventListener('visibilitychange', () => {
   if (document.hidden) music?.pause();
@@ -312,6 +343,7 @@ function updateHud(): void {
   ui.remaining.textContent = fill(UI.remaining, { km: game.remainingKm });
   ui.lives.hidden = game.mode !== 'cozy';
   ui.lives.textContent = '🫙'.repeat(Math.max(0, game.lives));
+  ui.lives.setAttribute('aria-label', 'Pozostało żyć: ' + Math.max(0, game.lives));
 }
 
 function toast(text: string): void {
@@ -366,26 +398,31 @@ let lastCard: CardData | null = null;
 
 function showOver(g: Game): void {
   overAt = performance.now();
-  const bestKey = `ce.best.${g.mode}`;
+  const bestKey = 'ce.best.' + g.mode;
   const prevBest = load<{ km: number }>(bestKey, { km: 0 }).km;
   const isBest = g.km > prevBest;
   if (isBest) save(bestKey, { km: g.km });
 
   const arrived = g.phase === 'arrived';
   const seconds = Math.round(g.ticks * TICK);
+  ui.over.classList.toggle('is-arrived', arrived);
   ui.overTitle.textContent = arrived ? UI.arrived : UI.over;
   ui.overKm.textContent = fill(UI.distance, { km: g.km });
-  ui.overRoute.textContent = `${g.route.from.name} → ${g.route.to.name}`;
+  ui.overRoute.textContent = g.route.from.name + ' → ' + g.route.to.name;
+  const cause = g.cause ?? 'ground';
+  const causeIcon = arrived ? 'assets/ui/icon-jar.png'
+    : cause === 'ground' ? 'assets/ui/icon-map.png' : 'assets/obstacles/' + cause + '-end.png';
+  ui.overCauseIcon.src = import.meta.env.BASE_URL + causeIcon;
+  ui.overCauseIcon.alt = '';
   let joke: string;
   if (arrived) {
     joke = pick(ARRIVAL_TEXTS);
     ui.overCause.textContent = joke;
-    ui.overJoke.textContent = `${seconds} s`;
+    ui.overJoke.textContent = seconds + ' s';
   } else {
-    const cause = g.cause ?? 'ground';
     joke = pick(FAIL_JOKES[cause]);
     ui.overCause.textContent = fill(UI.stoppedBy, { what: OBSTACLE_NAME[cause].toLowerCase() });
-    ui.overJoke.textContent = `„${joke}”`;
+    ui.overJoke.textContent = '„' + joke + '”';
   }
   ui.overBest.textContent = isBest ? UI.newBest : fill(UI.best, { km: Math.max(prevBest, g.km) });
 
@@ -397,6 +434,39 @@ function showOver(g: Game): void {
   }
   ui.hud.hidden = true;
   ui.over.hidden = false;
+
+  // Błędy sieci i brak wyników nie powinny zostawiać pustej tabeli.
+  const leagueRequest = ++overLeagueRequest;
+  ui.overMiniLeague.hidden = true;
+  ui.overLeagueList.replaceChildren();
+  void api.getLeague(warsawWeekKey()).then((data) => {
+    if (leagueRequest !== overLeagueRequest || ui.over.hidden) return;
+    const top = HOME_COUNTRIES
+      .map((home) => ({ home, km: data.countries[home]?.km ?? 0 }))
+      .filter((entry) => Number.isFinite(entry.km) && entry.km > 0)
+      .sort((a, b) => b.km - a.km)
+      .slice(0, 3);
+    if (!top.length) return;
+    const rows = top.map(({ home, km }, index) => {
+      const li = document.createElement('li');
+      if (home === g.route.home) li.classList.add('is-home');
+      const place = document.createElement('span');
+      place.className = 'mini-league__place';
+      place.textContent = String(index + 1) + '.';
+      const flag = document.createElement('img');
+      flag.src = import.meta.env.BASE_URL + 'assets/ui/flag-' + home.toLowerCase() + '.png';
+      flag.alt = '';
+      const name = document.createElement('span');
+      name.textContent = COUNTRY_NAME[home];
+      const score = document.createElement('strong');
+      score.className = 'mini-league__score';
+      score.textContent = new Intl.NumberFormat('pl-PL').format(km) + ' km';
+      li.append(place, flag, name, score);
+      return li;
+    });
+    ui.overLeagueList.replaceChildren(...rows);
+    ui.overMiniLeague.hidden = false;
+  }).catch(() => { if (leagueRequest === overLeagueRequest) ui.overMiniLeague.hidden = true; });
 
   // Kartę renderujemy od razu, żeby kliknięcie „Udostępnij” zachowało gest użytkownika.
   lastCard = cardData(g, joke);
