@@ -294,6 +294,28 @@ export function makeRoute(home: HomeCountry, fromId: string, toId: string): Rout
   return { home, from, to, totalKm, waypoints: [...abroad, ...transit, homePoint] };
 }
 
+/**
+ * Tworzy trasę powrotną (Polska → kraj zamieszkania), bez zmiany trasy wejściowej.
+ * `home` pozostaje krajem zamieszkania do przypisania gracza do portalu.
+ *
+ * Kraj punktu trasy oznacza kraj PO minięciu punktu. Dlatego przy zmianie
+ * kierunku granica przejmuje kraj poprzedniego odcinka trasy do Polski.
+ */
+export function reverseRoute(route: Route): Route {
+  const waypoints = [...route.waypoints].reverse().map((point, index) => {
+    const originalIndex = route.waypoints.length - 1 - index;
+    const country = index === 0 ? point.country : route.waypoints[Math.max(0, originalIndex - 1)].country;
+    return {
+      ...point,
+      km: route.totalKm - point.km,
+      country,
+      motifs: [...point.motifs],
+    };
+  });
+
+  return { ...route, from: route.to, to: route.from, waypoints };
+}
+
 /** Kraj, nad którym jest gracz po przejechaniu `km` (wg ostatniego minionego punktu). */
 export function countryAt(route: Route, km: number): CountryCode {
   let country: CountryCode = route.home;
