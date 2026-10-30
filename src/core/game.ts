@@ -20,6 +20,8 @@ export interface GameOptions {
   seed: number;
   mode: Mode;
   route: Route;
+  /** Stały dodatkowy ciężar od startu (0..1), np. słoiki od mamy. */
+  baseWeight?: number;
 }
 
 /**
@@ -32,6 +34,7 @@ export class Game {
   readonly mode: Mode;
   readonly route: Route;
   readonly field: ObstacleField;
+  readonly baseWeight: number;
 
   phase: Phase = 'ready';
   ticks = 0;
@@ -40,7 +43,7 @@ export class Game {
   bonusKm = 0;
   y: number = PLAYER.startY;
   vy = 0;
-  /** Chwilowy ciężar bagażu 0..1 — zwiększa grawitację, zanika z czasem. */
+  /** Chwilowy ciężar bagażu 0..1 — zanika z czasem, nie obejmuje baseWeight. */
   weight = 0;
   lives: number;
   invulnerableTicks = 0;
@@ -60,6 +63,11 @@ export class Game {
     this.seed = opts.seed;
     this.mode = opts.mode;
     this.route = opts.route;
+    const baseWeight = opts.baseWeight ?? 0;
+    if (!Number.isFinite(baseWeight) || baseWeight < 0 || baseWeight > PICKUPS.maxWeight) {
+      throw new RangeError('baseWeight musi być liczbą z przedziału 0..1');
+    }
+    this.baseWeight = baseWeight;
     this.field = new ObstacleField(opts.seed);
     this.lives = opts.mode === 'cozy' ? COZY.lives : 1;
     this.country = countryAt(opts.route, 0);
@@ -76,6 +84,11 @@ export class Game {
 
   get speed(): number {
     return lerp(DIFFICULTY.speed[0], DIFFICULTY.speed[1], this.difficulty);
+  }
+
+  /** Łączny ciężar używany przez fizykę: stały i chwilowy, maksymalnie 1. */
+  get totalWeight(): number {
+    return Math.min(PICKUPS.maxWeight, this.baseWeight + this.weight);
   }
 
   /** Wynik w km: dystans trasy + premie za znajdźki, nie więcej niż cała trasa. */
@@ -117,7 +130,7 @@ export class Game {
       this.events.push({ type: 'flap' });
     }
 
-    const gravity = PLAYER.gravity * (1 + this.weight * PICKUPS.gravityPerWeight);
+    const gravity = PLAYER.gravity * (1 + this.totalWeight * PICKUPS.gravityPerWeight);
     this.vy = Math.min(PLAYER.maxFallSpeed, this.vy + gravity * dt);
     this.y += this.vy * dt;
     if (this.y - PLAYER.hitH / 2 < WORLD.ceilingY) {

@@ -205,6 +205,46 @@ export const ARRIVAL_TEXTS: string[] = [
   "Kluczyki odłożone. Czas usiąść przy stole.",
 ];
 
+/** Zapowiedzi po dojechaniu do Polski; mama pakuje zapasy na powrót. */
+export const RETURN_DEPARTURE_TEXTS: string[] = [
+  'Mama: „Na drogę spakowałam ci tylko 18 słoików”. Dach już skrzypi.',
+  'Mama dołożyła słoiki. Bagażnik zamknięty, ale kombi ma swoje zdanie.',
+  'Mama policzyła słoiki dwa razy. My liczymy kilometry do powrotu.',
+  'Mama: „Słoiki są lekkie!”. Amortyzatory uprzejmie milczą.',
+  'Mama upchnęła słoiki pod sam dach. Zostało miejsce na uśmiech.',
+  'Mama podała ostatni słoik. To już naprawdę ostatni. Chyba.',
+  'Mama zapakowała słoiki na drogę. Walizki zrobiły im przejście.',
+  'Mama wie, że słoiki muszą dojechać całe. Kombi też już wie.',
+  'Mama dopięła torbę ze słoikami. Pora wracać do siebie.',
+  'Mama spakowała słoiki i sprawdziła wieczka. Startujemy ostrożnie!',
+  'Mama dołożyła dwa słoiki na szczęście. Dach przyjął wyzwanie.',
+  'Mama macha na pożegnanie. Słoiki na dachu jeszcze się układają.',
+];
+
+/** Wstaw {city} w miejscowniku: np. „Brukseli”, nie „Bruksela”. */
+export const RETURN_ARRIVAL_TEXTS: string[] = [
+  'Witamy z powrotem w {city}! Słoiki dojechały całe.',
+  'Z powrotem w {city}! Wszystkie słoiki przeszły próbę trasy.',
+  'Kombi wróciło do bazy w {city}. Mama może być spokojna o słoiki.',
+  'W {city} znowu czeka znajomy parking. Na dachu cały zapas.',
+  'Słoiki są już w {city}. Ani jedno wieczko nie puściło.',
+  'W {city} powrót zaliczony! Dach wciąż trzyma fason.',
+  'Meta w {city}. Kombi odpoczywa, a słoiki szukają półki.',
+  'W {city} koniec podróży. Najpierw wyładunek, potem kawa.',
+];
+
+/** Miejscowniki miast startowych dla poprawnej gramatyki komunikatu powrotu. */
+export const RETURN_CITY_LOCATIVE: Record<string, string> = {
+  bruksela: 'Brukseli', antwerpia: 'Antwerpii', gandawa: 'Gandawie',
+  amsterdam: 'Amsterdamie', rotterdam: 'Rotterdamie', eindhoven: 'Eindhoven',
+  berlin: 'Berlinie', monachium: 'Monachium', kolonia: 'Kolonii', hamburg: 'Hamburgu',
+  londyn: 'Londynie', birmingham: 'Birmingham', manchester: 'Manchesterze', edynburg: 'Edynburgu',
+  paryz: 'Paryżu', lyon: 'Lyonie', lille: 'Lille',
+  zurych: 'Zurychu', genewa: 'Genewie', bazylea: 'Bazylei',
+  oslo: 'Oslo', bergen: 'Bergen', stavanger: 'Stavanger',
+  kopenhaga: 'Kopenhadze', aarhus: 'Aarhus', odense: 'Odense',
+};
+
 /** Krótkie komunikaty za minięcie przeszkody o włos. */
 export const NEAR_MISS_TEXTS: string[] = [
   "O włos! Lusterko nawet nie drgnęło.",
@@ -297,6 +337,13 @@ export const UI = {
   over: 'Koniec trasy!',
   arrived: 'Jesteś w domu!',
   arrivedSub: 'Mama już nakrywa do stołu.',
+  returnFlight: 'Lot powrotny',
+  returnFlightHint: 'Dostępny po pierwszym dojechaniu do Polski',
+  returnDeparture: 'Mama spakowała słoiki. Pora wracać!',
+  returnArrived: 'Witamy z powrotem!',
+  returnArrivedSub: 'Słoiki dojechały całe.',
+  returnRemaining: 'do {city}: {km} km',
+  returnAgain: 'Jeszcze raz z Polski',
   stoppedBy: 'Zatrzymał cię: {what}',
   distance: '{km} km',
   best: 'Rekord: {km} km',
