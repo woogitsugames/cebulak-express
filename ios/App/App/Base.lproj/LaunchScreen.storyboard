@@ -4,18 +4,27 @@
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17105"/>
-        <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
-        <!--View Controller-->
         <scene sceneID="EHf-IW-A2E">
             <objects>
                 <viewController id="01J-lp-oVM" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="snD-IY-ifK">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask"/>
-                        <color key="backgroundColor" red="0.105882" green="0.152941" blue="0.200000" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <subviews>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" image="Splash" translatesAutoresizingMaskIntoConstraints="NO" id="ce3-9sp-lsh">
+                                <rect key="frame" x="0.0" y="146" width="375" height="375"/>
+                            </imageView>
+                        </subviews>
+                        <color key="backgroundColor" red="0.078431" green="0.396078" blue="0.309804" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <constraints>
+                            <constraint firstItem="ce3-9sp-lsh" firstAttribute="leading" secondItem="snD-IY-ifK" secondAttribute="leading" id="ce3-lft-spl"/>
+                            <constraint firstAttribute="trailing" secondItem="ce3-9sp-lsh" secondAttribute="trailing" id="ce3-rgt-spl"/>
+                            <constraint firstItem="ce3-9sp-lsh" firstAttribute="centerY" secondItem="snD-IY-ifK" secondAttribute="centerY" id="ce3-cnt-spl"/>
+                            <constraint firstItem="ce3-9sp-lsh" firstAttribute="width" secondItem="ce3-9sp-lsh" secondAttribute="height" multiplier="1:1" id="ce3-sqr-spl"/>
+                        </constraints>
                     </view>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="iYj-Kq-Ea1" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -24,8 +33,6 @@
         </scene>
     </scenes>
     <resources>
-        <systemColor name="systemBackgroundColor">
-            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-        </systemColor>
+        <image name="Splash" width="2732" height="2732"/>
     </resources>
 </document>

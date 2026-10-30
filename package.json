@@ -13,10 +13,11 @@
     "android:sync": "npm run build && cap sync android",
     "android:apk": "npm run android:sync && cd android && ./gradlew assembleDebug",
     "test:firebase": "npm --prefix functions run test",
-    "ios:sync": "npm run build && cap sync ios",
+    "ios:sync": "npm run build && cap sync ios && npm run ios:assets",
     "balance": "tsc --noEmit -p tools/balance/tsconfig.json && node tools/balance/run.mjs",
     "test:e2e": "playwright test",
-    "typecheck:e2e": "tsc --noEmit -p tsconfig.e2e.json"
+    "typecheck:e2e": "tsc --noEmit -p tsconfig.e2e.json",
+    "ios:assets": "npx --yes @capacitor/assets@3.0.5 generate --ios --assetPath assets --splashBackgroundColor '#14654F'"
   },
   "devDependencies": {
     "@capacitor/cli": "^8.5.3",

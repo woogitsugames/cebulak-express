@@ -51,6 +51,12 @@ jobs:
         run: npm run build
       - name: Synchronizacja plików i pluginów iOS (SPM)
         run: npx cap sync ios
+      - name: Generowanie ikony i splash iOS z plików marki
+        run: npm run ios:assets
+      - name: Walidacja manifestu prywatności
+        run: |
+          plutil -lint ios/App/App/PrivacyInfo.xcprivacy
+          grep -q 'CA92.1' ios/App/App/PrivacyInfo.xcprivacy
       - name: Rozwiązanie pakietów Swift
         run: xcodebuild -resolvePackageDependencies -project ios/App/App.xcodeproj -scheme App
       - name: Kompilacja dla symulatora (bez kodu podpisu)
@@ -65,3 +71,5 @@ jobs:
             CODE_SIGNING_ALLOWED=NO \
             CODE_SIGNING_REQUIRED=NO \
             build
+      - name: Manifest prywatności w zbudowanym App.app
+        run: test -f "$RUNNER_TEMP/cebulak-ios-derived/Build/Products/Debug-iphonesimulator/App.app/PrivacyInfo.xcprivacy"
