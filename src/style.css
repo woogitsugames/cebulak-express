@@ -184,6 +184,27 @@ button:focus-visible, select:focus-visible, summary:focus-visible, a:focus-visib
 }
 
 .panel--menu { width: min(94vw, 420px); padding-top: 7px; }
+/* Zębatka ustawień w rogu drewnianego panelu; obrazek dociąga main.ts po pierwszej klatce. */
+.menu-settings {
+  position: absolute;
+  z-index: 2;
+  top: 0;
+  right: 0;
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  padding: 0;
+  border: 3px solid #38616a;
+  border-radius: 14px;
+  background: #fffaf0;
+  box-shadow: 0 3px 0 #16323d40;
+  transition: transform .15s ease, filter .15s ease;
+}
+.menu-settings img { display: block; width: 34px; height: 34px; }
+.menu-settings img:not([src]) { visibility: hidden; }
+.menu-settings:hover { filter: brightness(1.05); }
+.menu-settings:active { transform: translateY(2px); }
 .menu-logo { margin: 0 auto; max-width: 235px; line-height: 0; }
 .menu-logo img { display: block; width: 100%; height: auto; }
 .menu-subtitle {

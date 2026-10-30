@@ -41,6 +41,8 @@ export function hapticForGameEvent(event: GameEvent): HapticName | null {
 /** Na webie Navigator.vibrate; bez niego (także w Node) bezpieczny no-op. */
 export function createHaptics(adapter?: HapticsAdapter): HapticsPlayer {
   let enabled = true;
+  /** Czy cokolwiek już wibrowało — bez tego nie ma czego przerywać (Chrome ostrzega przed vibrate bez gestu). */
+  let played = false;
 
   function vibrate(pattern: number | number[]): void {
     try {
@@ -60,10 +62,11 @@ export function createHaptics(adapter?: HapticsAdapter): HapticsPlayer {
     play(name) {
       if (!enabled || !(HAPTIC_NAMES as readonly string[]).includes(name)) return;
       const pattern = PATTERNS[name];
+      played = true;
       vibrate(Array.isArray(pattern) ? [...pattern] : pattern as number);
     },
     setEnabled(value) {
-      if (enabled && !value) vibrate(0); // Przerwij bieżącą wibrację.
+      if (enabled && !value && played) vibrate(0); // Przerwij bieżącą wibrację.
       enabled = value;
     },
   };
