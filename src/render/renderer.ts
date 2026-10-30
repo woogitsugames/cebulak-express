@@ -47,6 +47,13 @@ export class Renderer {
     ctx.fillStyle = '#4a5157';
     ctx.fillRect(0, groundScreenY, this.canvas.width, this.canvas.height - groundScreenY);
     ctx.setTransform(this.scale, 0, 0, this.scale, this.offsetX, this.offsetY);
+    // Wysokie ekrany: próbkuj brzeg oryginalnego PNG sky/road zamiast
+    // rysować odcinające się pasy jednolitym kolorem palety.
+    this.background.drawOutsideWorld(
+      ctx, game.country, game.distancePx, timeSec,
+      -this.offsetY / this.scale,
+      (this.canvas.height - this.offsetY) / this.scale,
+    );
     ctx.save();
     ctx.beginPath();
     // Przycinamy tylko w poziomie — w pionie świat może wychodzić w pasy na wysokich ekranach.
