@@ -60,7 +60,7 @@ const SUSTAINED_RISE = 300;
  */
 export function reachableShift(
   spacing: number, speed: number,
-  gapH = DIFFICULTY.gap[1], gravity = PLAYER.gravity,
+  gapH: number = DIFFICULTY.gap[1], gravity: number = PLAYER.gravity,
 ): { up: number; down: number } {
   const freePx = Math.max(0, spacing - OBSTACLE.width - PLAYER.hitW);
   const t = freePx / speed;
