@@ -100,11 +100,13 @@ export class ObstacleField {
       const gate = this.nextX >= this.nextGateX;
       if (gate) this.nextGateX += BAGGAGE_GATE.everyKm / KM_PER_PX;
       // Przed bramką i zaraz za nią obliczamy przesunięcie dla najwęższej
-      // szczeliny i pełnego ciężaru: nawet ciężkie kombi ma korytarz lotu.
+      // szczeliny. Do limitu opadania używamy lekkiego auta: przy większym
+      // ciężarze opada szybciej, więc nie pogarsza to dolnej osiągalności.
+      // Dla zwykłych przeszkód zachowujemy parametry starego generatora.
       const corridorGap = gate || this.previousWasGate ? BAGGAGE_GATE.minGapH : DIFFICULTY.gap[1];
       const reach = reachableShift(
         spacing, lerp(DIFFICULTY.speed[0], DIFFICULTY.speed[1], difficulty),
-        corridorGap, PLAYER.gravity * (1 + PICKUPS.gravityPerWeight),
+        corridorGap, PLAYER.gravity,
       );
       const minY = WORLD.ceilingY + EDGE_MARGIN + gapH / 2;
       const maxY = WORLD.groundY - EDGE_MARGIN - gapH / 2;
