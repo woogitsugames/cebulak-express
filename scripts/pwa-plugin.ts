@@ -2,9 +2,9 @@ import { createHash } from 'node:crypto';
 import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { join, relative, sep } from 'node:path';
 import type { Plugin } from 'vite';
-import { createPlaceholderIcon, resizePngIcon } from './png-icon.ts';
+import { createPlaceholderIcon, resizePngIcon } from './png-icon';
 
-export { createPlaceholderIcon, resizePngIcon } from './png-icon.ts';
+export { createPlaceholderIcon, resizePngIcon } from './png-icon';
 
 const ICONS = [
   { path: 'assets/brand/icon-192.png', size: 192 },
