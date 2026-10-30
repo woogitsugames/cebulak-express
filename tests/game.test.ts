@@ -176,8 +176,11 @@ describe('dystans i punktacja', () => {
     }
     expect(passed).toContain('kolonia');
     expect(passed).toContain('berlin');
-    expect(passed).toContain('stacja-swiecko');
+    // Stacja zależy od docelowego miasta: Świecko, Kołbaskowo lub Olszyna.
+    const restId = ROUTE.waypoints.find((waypoint) => waypoint.kind === 'rest')!.id;
+    expect(passed).toContain(restId);
     expect(passed.indexOf('kolonia')).toBeLessThan(passed.indexOf('berlin'));
+    expect(passed.indexOf('berlin')).toBeLessThan(passed.indexOf(restId));
   });
 });
 
