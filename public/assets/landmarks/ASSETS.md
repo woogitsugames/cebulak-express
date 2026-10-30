@@ -182,3 +182,19 @@ Prace obejmują dwie dodatkowe panoramy z motywów zlecenia (Bolonia i Salzburg)
 | `ostrawa.png` | ChatGPT: autorski SVG → CairoSVG/Pillow | Oryginalna ilustracja projektu | CZ; stylizowana sylwetka, 1620×900, RGBA |
 
 Skrypt: `public/assets/countries/es/generate_south.py`. Ta tabela jest suplementem do **istniejącego** `public/assets/landmarks/ASSETS.md` i nie zastępuje wpisów z poprzednich zleceń.
+# Zlecenie 57 — nowe panoramy w `public/assets/landmarks/`
+
+Uzupełnienie istniejącego katalogu `landmarks`. Dokument nie zastępuje współdzielonego `ASSETS.md`; koordynator może przenieść poniższe wiersze do katalogowego manifestu.
+
+| Plik | Rozmiar px | Źródło / narzędzie | Licencja | Autor / uwagi |
+|---|---:|---|---|---|
+| `dublin.png` | 1620×900 | Autorski SVG → CairoSVG/Pillow | Oryginalny zasób projektu | ChatGPT, autorski rysunek wektorowy. Most nad rzeką i szereg kolorowych fasad z kolorowymi drzwiami. Tło przezroczyste; bez tekstów i marek. |
+| `cork.png` | 1620×900 | Autorski SVG → CairoSVG/Pillow | Oryginalny zasób projektu | ChatGPT, autorski rysunek wektorowy. Kamienice i miejska wieża przy nabrzeżu, mały most i łódź. Tło przezroczyste; bez tekstów i marek. |
+| `limerick.png` | 1620×900 | Autorski SVG → CairoSVG/Pillow | Oryginalny zasób projektu | ChatGPT, autorski rysunek wektorowy. Kamienna forteca z basztami nad rzeką. Tło przezroczyste; bez tekstów i marek. |
+| `helsinki.png` | 1620×900 | Autorski SVG → CairoSVG/Pillow | Oryginalny zasób projektu | ChatGPT, autorski rysunek wektorowy. Biała klasycyzująca katedra z zielonymi kopułami, monumentalne schody i port. Tło przezroczyste; bez tekstów i marek. |
+| `tampere.png` | 1620×900 | Autorski SVG → CairoSVG/Pillow | Oryginalny zasób projektu | ChatGPT, autorski rysunek wektorowy. Ceglane fabryki, kominy i most nad wodą. Tło przezroczyste; bez tekstów i marek. |
+| `luksemburg.png` | 1620×900 | Autorski SVG → CairoSVG/Pillow | Oryginalny zasób projektu | ChatGPT, autorski rysunek wektorowy. Wiadukt łukowy nad wąwozem, twierdza i stylizowane kazamaty. Tło przezroczyste; bez tekstów i marek. |
+| `prom-irlandia.png` | 1620×900 | Autorski SVG → CairoSVG/Pillow | Oryginalny zasób projektu | ChatGPT, autorski rysunek wektorowy. Przeprawa Irlandia–Francja: prom bez marki, klify, francuski brzeg. Tło przezroczyste; bez tekstów i marek. |
+| `prom-finlandia.png` | 1620×900 | Autorski SVG → CairoSVG/Pillow | Oryginalny zasób projektu | ChatGPT, autorski rysunek wektorowy. Przeprawa Finlandia–Polska: prom bez marki, lasy i nabrzeże portowe. Tło przezroczyste; bez tekstów i marek. |
+
+Wszystkie obrazy mają przezroczystość, a źródło odtwarza je generator w `../countries/ie/generate_northwest.py`. Renderer dodaje napisy w czasie gry, nie są wtopione w ilustracje.

@@ -1,0 +1,97 @@
+{
+  "id": "kompakt-szwagra",
+  "displayName": "Kompakt od szwagra",
+  "scale": 3,
+  "version": 1,
+  "canvas": {
+    "width": 288,
+    "height": 168
+  },
+  "hitbox": {
+    "width": 40,
+    "height": 20,
+    "anchorX": 144,
+    "anchorY": 106
+  },
+  "logicalVehicleSize": {
+    "width": 72,
+    "height": 44
+  },
+  "wheelCenters": {
+    "rear": {
+      "x": 80,
+      "y": 138
+    },
+    "front": {
+      "x": 223,
+      "y": 138
+    }
+  },
+  "layers": {
+    "body": {
+      "file": "body.png",
+      "anchorX": 144,
+      "anchorY": 106
+    },
+    "wheel": {
+      "file": "wheel.png",
+      "anchorX": 18,
+      "anchorY": 18
+    },
+    "flame-1": {
+      "file": "flame-1.png",
+      "anchorX": 144,
+      "anchorY": 106
+    },
+    "flame-2": {
+      "file": "flame-2.png",
+      "anchorX": 144,
+      "anchorY": 106
+    },
+    "luggage-1": {
+      "file": "luggage-1.png",
+      "anchorX": 144,
+      "anchorY": 106
+    },
+    "luggage-2": {
+      "file": "luggage-2.png",
+      "anchorX": 144,
+      "anchorY": 106
+    },
+    "luggage-3": {
+      "file": "luggage-3.png",
+      "anchorX": 144,
+      "anchorY": 106
+    },
+    "luggage-4": {
+      "file": "luggage-4.png",
+      "anchorX": 144,
+      "anchorY": 106
+    },
+    "crash": {
+      "file": "crash.png",
+      "anchorX": 144,
+      "anchorY": 106
+    },
+    "portrait": {
+      "file": "portrait.png",
+      "anchorX": 192,
+      "anchorY": 192
+    }
+  },
+  "portrait": {
+    "file": "portrait.png",
+    "width": 384,
+    "height": 384,
+    "anchorX": 192,
+    "anchorY": 192
+  },
+  "drawOrder": [
+    "flame-1|flame-2",
+    "body",
+    "wheel:rear",
+    "wheel:front",
+    "luggage-1|luggage-2|luggage-3|luggage-4"
+  ],
+  "notes": "Nakładki bagażowe 1–4 są pełnymi alternatywami (nie sumować). Crash zawiera wrysowane koła, bo renderer nie rysuje ich przy game over. Płótno 288×168 @3x, kotwica (144,106)."
+}
