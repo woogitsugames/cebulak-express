@@ -1,3 +1,4 @@
+/// <reference types="vite/client" />
 import { BAGGAGE_GATE, KM_PER_PX, WORLD } from '../src/core/config';
 import { Game } from '../src/core/game';
 import { makeRoute } from '../src/core/route';
