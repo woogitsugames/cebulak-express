@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="pl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no" />
+    <meta name="theme-color" content="#1b2733" />
+    <meta name="description" content="Polonijna gra na jeden palec: przeładowane kombi leci z Twojego kraju do domu w Polsce." />
+    <title>Cebulak Express — Kierunek Polska</title>
+    <link rel="stylesheet" href="/src/style.css" />
+  </head>
+  <body>
+    <div id="stage">
+      <canvas id="game" aria-label="Gra Cebulak Express"></canvas>
+
+      <div id="hud" hidden>
+        <div class="hud-row">
+          <div class="pill"><span id="hud-km">0 km</span></div>
+          <div class="pill" id="hud-lives" hidden></div>
+        </div>
+        <div class="hud-remaining" id="hud-remaining"></div>
+        <div class="toast" id="toast" hidden></div>
+        <div class="hint" id="hint">Dotknij, aby wystartować</div>
+      </div>
+
+      <section id="menu" class="panel">
+        <h1 class="logo">Cebulak <span>Express</span></h1>
+        <p class="tagline">Kierunek Polska</p>
+        <label class="field">Mieszkam w
+          <select id="sel-home"></select>
+        </label>
+        <label class="field">Startuję z
+          <select id="sel-from"></select>
+        </label>
+        <label class="field">Lecę do
+          <select id="sel-to"></select>
+        </label>
+        <div class="modes" role="radiogroup" aria-label="Tryb gry">
+          <button type="button" class="mode" data-mode="ranked" role="radio">Rankingowy</button>
+          <button type="button" class="mode" data-mode="cozy" role="radio">Łagodny</button>
+        </div>
+        <p class="route" id="route-info"></p>
+        <button type="button" class="btn primary" id="btn-start">Lecimy!</button>
+      </section>
+
+      <section id="over" class="panel" hidden>
+        <h2 id="over-title">Koniec trasy!</h2>
+        <p class="big" id="over-km">0 km</p>
+        <p class="sub" id="over-route"></p>
+        <p class="cause" id="over-cause"></p>
+        <p class="joke" id="over-joke"></p>
+        <p class="best" id="over-best"></p>
+        <div class="row">
+          <button type="button" class="btn primary" id="btn-again">Jeszcze raz</button>
+          <button type="button" class="btn" id="btn-share">Udostępnij</button>
+        </div>
+        <button type="button" class="btn link" id="btn-menu">Zmień trasę</button>
+      </section>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
