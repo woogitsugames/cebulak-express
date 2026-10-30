@@ -9,6 +9,10 @@ const config: CapacitorConfig = {
     // Gra działa offline; ruch sieciowy tylko do backendu rankingu i portali.
     allowMixedContent: false,
   },
+  // SwiftPM: unikamy kolizji tożsamości pakietów przy integracji App Check.
+  experimental: {
+    ios: { spm: { packageOptions: { '@capacitor-firebase/app-check': { symlink: true } } } },
+  },
   plugins: {
     // Capacitor 8: pełny ekran Android/iOS także przed wywołaniem kodu gry.
     SystemBars: {
