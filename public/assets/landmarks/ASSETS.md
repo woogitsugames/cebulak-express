@@ -496,3 +496,60 @@ Wspólny brief dla generatora: *„Szeroka, płaska rysunkowa panorama miasta do
 `docs/art/podglady/panoramy-77.png` — arkusz na jasnoniebieskim tle z pięcioma podpisanymi panoramami; podpisy nie należą do sprite'ów.
 
 **Licencja / użytkowanie:** obrazy wygenerowano na zlecenie właściciela projektu w ChatGPT. Prawa do wyników przysługują zamawiającemu zgodnie z obowiązującymi warunkami usługi. Nie są to zasoby CC0 ani zdjęcia stron trzecich; nie gwarantuje się wyłączności względem podobnych wyników AI.
+
+# Zlecenie 79 — panoramy A+ (Francja i Szwajcaria)
+
+**Data:** 2026-10-30  
+**Zastosowanie:** `Cebulak Express — Kierunek Polska`, poziome panoramy miast (warstwa tła Canvas 2D).  
+**Narzędzia:** wbudowany generator obrazów ChatGPT (GPT Image), Python 3, Pillow, OpenCV.  
+**Przekazanie / prawa:** grafiki wygenerowano na zamówienie właściciela projektu i przekazano do wykorzystania w projekcie zgodnie z warunkami korzystania z OpenAI i właściwym prawem; nie wykorzystano gotowych grafik ani fotografii osób trzecich. Nie należy traktować samych generowanych kadrów jako gwarancji wyłącznej ochrony prawnoautorskiej.
+
+## Wykaz plików
+
+| Plik / ID | Miasto | Główne budowle i elementy | Inspiracja punktem widzenia | Źródło i obróbka | Przekazanie |
+|---|---|---|---|---|---|
+| `paryz.png` / `paryz` | Paryż | Wieża Eiffla w dzień, Łuk Triumfalny, Notre-Dame, kopuła Les Invalides; Sekwana i typowe kamienice | Szeroki, **stylizowany** przegląd miasta z wysokości, z zachodu ku północnemu wschodowi, inspirowany obserwacją z Montparnasse | Osobna generacja GPT Image; zmniejszenie i centrowanie, wyodrębnienie alfa, ujednolicenie linii | Grafika generowana dla właściciela projektu |
+| `lyon.png` / `lyon` | Lyon | Bazylika Notre-Dame de Fourvière, historyczna Tour métallique de Fourvière, Vieux Lyon, kolorowe kamienice nad Saoną | Wschodni brzeg Saony w kierunku wzgórza Fourvière; kompozycja inspirowana panoramą od nabrzeża | Kadr z wygenerowanego arkusza GPT Image; usunięto współczesną Tour Part-Dieu, wybrano wycinek ze starą zabudową | Grafika generowana dla właściciela projektu |
+| `lille.png` / `lille` | Lille | Stylizowany beffroi centrum, historyczne flamandzkie kamienice, zabudowa inspirowana Vieille Bourse / Grand-Place | Szeroka perspektywa starówki, **kompozycja** motywów z Grand-Place i pobliskich ulic, a nie dosłowny widok ze stałego punktu | Kadr z wygenerowanego arkusza GPT Image; wyczyszczenie podpisów, dodatkowe kontury | Grafika generowana dla właściciela projektu |
+| `zurych.png` / `zurych` | Zurych | Grossmünster (dwie wieże), Fraumünster (zielony szpic), stare miasto, rzeka/jezioro i Alpy | Przybliżenie widoku od północnej części Limmat w stronę jeziora, z Alpami w tle | Kadr z wygenerowanego arkusza GPT Image; wyczyszczenie podpisów, dodatkowe kontury | Grafika generowana dla właściciela projektu |
+| `genewa.png` / `genewa` | Genewa | Jet d’Eau nad Jeziorem Genewskim, historyczna zabudowa i **umowna** sylwetka katedry św. Piotra, Alpy (inspiracja Mont Blanc) | Panorama znad jeziora w stronę starego centrum; **artystyczne** rozmieszczenie Alp i zabudowy | Kadr z wygenerowanego arkusza GPT Image; wyczyszczenie podpisów, dodatkowe kontury | Grafika generowana dla właściciela projektu |
+
+Wszystkie powyższe pliki: **PNG RGBA, 1620 × 900 px, profil ICC sRGB, tło przezroczyste, łącznie z obszarem nieba**. Linia terenu / wody przy dolnej krawędzi. Widoczne podpisy znajdują się **wyłącznie** na osobnym arkuszu podglądu `docs/art/podglady/panoramy-79.png`, nie w zasobach gry.
+
+## Opis promptów do odtworzenia
+
+> Wbudowany generator nie udostępnił dosłownego promptu maszynowego. Poniższe opisy oddają zastosowane założenia artystyczne i mogą służyć do odtworzenia ilustracji. Cztery miasta wydzielono z wielomiejskich arkuszy wygenerowanych przez GPT Image; oryginalnych kadrów nie kopiowano ze zdjęć.
+
+### Paryż
+
+„Panorama Paryża w dzień, jako osobny przezroczysty pasek ilustracji do gry, duża Wieża Eiffla po lewej, Łuk Triumfalny oraz katedra Notre-Dame, rzeka, kamienice z mansardami i drzewa; płaski kolor, gruby kontur ciemnogranatowy #1d2f3b, kształty czytelne po pięciokrotnym zmniejszeniu, światło z lewej góry, bez nieba, bez chmur, napisów, flag, marek, ludzi i nocnej iluminacji”.
+
+### Lyon
+
+„Panorama Lyonu od strony Saony: duża bazylika Notre-Dame de Fourvière na zielonym wzgórzu, historyczna metalowa wieża Fourvière, pastelowe domy Vieux Lyon nad nabrzeżem, most i pas rzeki; ciepła uproszczona ilustracja wektorowa, masywne budowle, kontur #1d2f3b, przezroczyste niebo, bez tekstu i nowoczesnych ikon architektury o niejasnych prawach”.
+
+### Lille
+
+„Lille: beffroi, barwne kamienice flamandzkie na Grand-Place, arkadowa historyczna zabudowa Vieille Bourse; rysunkowy styl A+, mało detali, duże bryły, płaskie światło od lewej, ciemny gruby kontur, przezroczyste niebo, bez napisów, logotypów i postaci”.
+
+### Zurych
+
+„Zurych: nad brzegiem Limmat dwie charakterystyczne wieże Grossmünster, zielony szpic Fraumünster, szeregi starych kamienic, niski most, jezioro i Alpy; ciepła wektorowa ilustracja z ciemnogranatowym konturem, przezroczystość, brak napisów i chmur, szeroka panorama do gry”.
+
+### Genewa
+
+„Genewa: wyraźna, wysoka fontanna Jet d’Eau na tafli Jeziora Genewskiego, stare miasto, sylwetka historycznej katedry na wzgórzu, Alpy w tle; uproszczone ciepłe płaskie barwy, grube ciemne obrysy, bez nieba, flag, marek, podpisów i ludzi, 16:9”.
+
+## Obróbka i kontrola techniczna
+
+1. Oddzielono pięć panoram z ilustracji GPT Image; Paryż wykorzystuje generację indywidualną.
+2. Kadrowanie odrzuca podpisy i niepożądane fragmenty sąsiednich paneli. W Lyonie usunięto z kadrów współczesną Tour Part-Dieu, zastępując ją właściwym widokiem historycznej części miasta.
+3. Rozdzielczość przeskalowano filtrem Lanczos do 1620 × 900 px, bez wypełniania nieba. Alfę oczyszczono z pikseli o bardzo małej widoczności; linie pogrubiono subtelną dylatacją ciemnych obrysów (OpenCV 3 × 3), a przy dolnej krawędzi dodano niski pas gruntu / wody.
+4. Grafiki zapisano ze znacznikiem ICC sRGB. Podgląd na jasnoniebieskim tle jest osobnym plikiem i nie wpływa na przezroczystość zasobów.
+
+## Uwagi do akceptacji i praw
+
+- **To kompozycje artystyczne**, a nie fotogrametryczne odwzorowania jednego rzeczywistego punktu. Dla Lyonu, Lille i Genewy wymagana przez zlecenie pełna zgodność przestrzenna może wymagać dalszych poprawek. Należy ocenić je w rzeczywistym kadrze Canvas, po zmniejszeniu ok. 5×.
+- W Lyonie **celowo nie pokazano Tour Part-Dieu**: to rozpoznawalny budynek autorstwa architektów współczesnych, a francuski wyjątek panoramy (CPI art. L122-5, pkt 11) wyłącza wykorzystanie komercyjne. Zamiast tego zachowano historyczną metalową wieżę Fourvière (1894).
+- W Genewie katedra i masyw alpejski są celowo umowne. Jeśli dokładność jej architektury i położenia Mont Blanc jest kluczowa, przygotować korektę ręczną przed publikacją.
+- Materiał źródłowy: własne generacje GPT Image. Żadna fotografia odniesienia nie została skopiowana piksel w piksel; nie umieszczono logotypów ani nocnej iluminacji Wieży Eiffla.

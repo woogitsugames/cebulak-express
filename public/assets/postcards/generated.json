@@ -309,12 +309,12 @@
       "country": "CH",
       "style": 8,
       "sources": {
-        "panorama": "c15e96aa65b07c465a53754cd8457869817d5943ae1fa1264eccaf89c79fab94",
+        "panorama": "fbbd70c5a12b9b655eac395c558901b67d43788b144cbf419085e451d87d9771",
         "sky": "61d64e79f6b0fc25dee1eb6eb2e9e4ce15324ac19987cf44b16ba42513df1c49",
         "far": "82a248941fac7ed50cd441edd713dcc7a528fed0ba6d1344f0a747c7361d6ad8",
         "stamp": "755f94ed8e6ce03df1ee45ce2d4bcb24f7a379e5e58d9887e4c4534c3e592de7"
       },
-      "output": "c54f1fec41aad0c6322c8209eab956ada8f1949008fa815c3669875b5bb35d5f"
+      "output": "fa3940252d46fa197d18ecb2c4ba9637488c78c755232ebafb72dbbfb7880d03"
     },
     "goteborg": {
       "country": "SE",
@@ -472,12 +472,12 @@
       "country": "FR",
       "style": 8,
       "sources": {
-        "panorama": "8a8a6247c23cfa2427de198c014a881bbba856f2519d263e60fe5c599ee853bf",
+        "panorama": "a62f014a0fd6ba13bc5f60ef97b0b31e34e8477db8caad2a94bc364679d367de",
         "sky": "ac2a3deeea40c7fb3ac86a28bec845fa2dd4e9630f2e10dc7a70e6e0911184fc",
         "far": "3f7c7f4f4185924b54bd04f5527c5e8fe283ba31e28e22c9132b8092a8d2eb3a",
         "stamp": "cfcf15242fa5961f5726b41b0c9ab61861f456a97fa9b7ab438ef01f0d138172"
       },
-      "output": "c17932c6465b91928ab5f54fc525937156587c6cffacc276d71df57eb9659309"
+      "output": "92e8b3807028bba87f2274297f812187b32a1ce8403e07f60184f8de44ee49d5"
     },
     "limerick": {
       "country": "IE",
@@ -546,12 +546,12 @@
       "country": "FR",
       "style": 8,
       "sources": {
-        "panorama": "0fe38fa694b09d12adc7c5ef4658174995484cb6117dced94e4c52b79892d0ea",
+        "panorama": "ffa5d7ce45d00bb034dc21434ccb28bbe912a0d5416074f79ebe73d0d42dbf73",
         "sky": "ac2a3deeea40c7fb3ac86a28bec845fa2dd4e9630f2e10dc7a70e6e0911184fc",
         "far": "3f7c7f4f4185924b54bd04f5527c5e8fe283ba31e28e22c9132b8092a8d2eb3a",
         "stamp": "cfcf15242fa5961f5726b41b0c9ab61861f456a97fa9b7ab438ef01f0d138172"
       },
-      "output": "83ed58378a8f5a239c6b41a811d529d0d37f7714172da408cb8b44d0208d96c2"
+      "output": "0e188a4d1c66ab2c92de55cd6656a748b2ea33813884d7d467d5d40b13e4a80a"
     },
     "madryt": {
       "country": "ES",
@@ -686,12 +686,12 @@
       "country": "FR",
       "style": 8,
       "sources": {
-        "panorama": "593230f4e1c5b56458ae23120edc046bdc36139c398e12d2edaad67590b79451",
+        "panorama": "dacbee38a1d2406e800b76a3dff48b68b4935951956a2a641a0659dd065e3c62",
         "sky": "ac2a3deeea40c7fb3ac86a28bec845fa2dd4e9630f2e10dc7a70e6e0911184fc",
         "far": "3f7c7f4f4185924b54bd04f5527c5e8fe283ba31e28e22c9132b8092a8d2eb3a",
         "stamp": "cfcf15242fa5961f5726b41b0c9ab61861f456a97fa9b7ab438ef01f0d138172"
       },
-      "output": "de30ffa4da58ca8ed36d292b0d0280d4d0a9101812bb2746f19cc86f95ddb6ff"
+      "output": "137ad6775976fdd6ce941640e089dbaad3bbcdcfdffe55a792d8918e7f9c6cd1"
     },
     "poznan": {
       "country": "PL",
@@ -868,12 +868,12 @@
       "country": "CH",
       "style": 8,
       "sources": {
-        "panorama": "f0df209421d4b2b69fbc8538ca48949ad0a23f52af54cf6b92da27bbcef5f0ce",
+        "panorama": "8d58c22b12e3b49e81222d621d411f7068dc4b73f95c98bde2b979416d5f3573",
         "sky": "61d64e79f6b0fc25dee1eb6eb2e9e4ce15324ac19987cf44b16ba42513df1c49",
         "far": "82a248941fac7ed50cd441edd713dcc7a528fed0ba6d1344f0a747c7361d6ad8",
         "stamp": "755f94ed8e6ce03df1ee45ce2d4bcb24f7a379e5e58d9887e4c4534c3e592de7"
       },
-      "output": "b7910c7e927142a78f09eb79e905fb06c55010b6d37577d26c4b90a71f2e03fe"
+      "output": "959e36bafecb8223b46964d5c26f85505ca38dd8a184c43dda2d675cfcd99165"
     }
   }
 }
