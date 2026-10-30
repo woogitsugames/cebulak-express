@@ -99,7 +99,8 @@ export function pwaPlugin(): Plugin {
       const version = hash.digest('hex').slice(0, 16);
       const precache = [...new Set([
         'index.html', 'manifest.webmanifest',
-        ...buildFiles.map(([name]) => name),
+        // SDK Firebase (~83 kB gzip) ładujemy tylko online, gdy ranking jest skonfigurowany.
+        ...buildFiles.map(([name]) => name).filter((name) => !name.includes('firebase-client')),
         ...core,
       ])].sort();
       const remaining = [...new Set(deferred)].sort();

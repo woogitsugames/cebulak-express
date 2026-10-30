@@ -24,6 +24,7 @@ import { OfflineRunQueue, submitOrQueue, watchQueueOnline } from './net/queue';
 import { mountLeague } from './ui/league';
 import { configureAnalytics, track, type AnalyticsHome } from './analytics/track';
 import { registerPwa } from './pwa/register';
+import { prefetchPwaAssetsAfterRun } from './pwa/offline';
 import { platform } from './platform';
 
 interface Settings {
@@ -424,6 +425,9 @@ function showOver(g: Game): void {
   }
   ui.hud.hidden = true;
   ui.over.hidden = false;
+
+  // Po pierwszym przejeździe dociągamy w tle grafiki wszystkich krajów (tryb offline).
+  void prefetchPwaAssetsAfterRun();
 
   // Kartę renderujemy od razu, żeby kliknięcie „Udostępnij” zachowało gest użytkownika.
   lastCard = cardData(g, joke);
