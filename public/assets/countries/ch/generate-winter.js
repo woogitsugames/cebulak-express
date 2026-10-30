@@ -94,7 +94,7 @@ function inflateZlib(src,outSize){
       const li=sym-257,len=LBASE[li]+read(LEXTRA[li]),di=dist();
       if(di>29)throw Error('Niepoprawna odleglosc');
       const d=DBASE[di]+read(DEXTRA[di]);
-      if(o+len>out.length||d>o)throw Error('Niepoprawny backref o='+o+' len='+len+' dist='+d+' di='+di+' sym='+sym+' bytepos='+pos+' bits='+bits+' src='+src.length);
+      if(o+len>out.length||d>o)throw Error('Niepoprawny backref o='+o+' len='+len+' dist='+d+' di='+di+' sym='+sym+' bytepos='+pos+' bits='+bits+' src='+src.length+' first='+Array.from(out.subarray(0,18))+' nextRow='+out[4321]);
       for(let j=0;j<len;j++){out[o]=out[o-d];o++;}
     }
   }
