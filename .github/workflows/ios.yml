@@ -1,0 +1,52 @@
+name: iOS (symulator)
+
+on:
+  pull_request:
+  push:
+    branches: [main, zlecenie/25-ios]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ios-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  ios:
+    name: iOS Simulator (bez podpisu)
+    runs-on: macos-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Wersja Xcode (Capacitor 8 wymaga Xcode 26+)
+        run: xcodebuild -version
+      - name: Instalacja z lockfile
+        run: npm ci
+      - name: Kontrola typów
+        run: npm run typecheck
+      - name: Testy
+        run: npm test
+      - name: Build Vite
+        run: npm run build
+      - name: Synchronizacja plików i pluginów iOS (SPM)
+        run: npx cap sync ios
+      - name: Rozwiązanie pakietów Swift
+        run: xcodebuild -resolvePackageDependencies -project ios/App/App.xcodeproj -scheme App
+      - name: Kompilacja dla symulatora (bez kodu podpisu)
+        run: |
+          xcodebuild \
+            -project ios/App/App.xcodeproj \
+            -scheme App \
+            -configuration Debug \
+            -sdk iphonesimulator \
+            -destination 'generic/platform=iOS Simulator' \
+            -derivedDataPath "$RUNNER_TEMP/cebulak-ios-derived" \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            build
