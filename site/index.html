@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#14654f">
+  <title>Cebulak Express — Kierunek Polska | Gra online</title>
+  <meta name="description" content="Z ośmiu krajów do Polski! Steruj przeładowanym kombi jednym dotknięciem. Zagraj bezpośrednio w przeglądarce.">
+  __SITE_META__
+  <link rel="icon" href="__BASE__assets/brand/icon-1024.png" type="image/png">
+  <link rel="stylesheet" href="__BASE__styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Przejdź do treści</a>
+  <header class="site-header">
+    <div class="container nav">
+      <a class="wordmark" href="__BASE__" aria-label="Cebulak Express — strona główna">
+        <img src="__BASE__assets/brand/logo-small.png" width="110" height="65" alt="">
+        <span>Kierunek Polska</span>
+      </a>
+      <nav aria-label="Nawigacja główna">
+        <a href="#jak-grac">Jak grać</a>
+        <a href="#zrzuty">Zrzuty</a>
+        <a href="#dla-portali">Dla portali</a>
+        <a class="nav-cta" href="__BASE__graj/">Zagraj teraz</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="hero">
+      <div class="container hero-grid">
+        <div class="hero-copy">
+          <p class="eyebrow"><span class="dot"></span> Gra przeglądarkowa • Kierunek Polska</p>
+          <h1><span class="display-title">Cebulak Express</span><span class="headline-end">Z zagranicy do domu. Jednym dotknięciem.</span></h1>
+          <p class="lead">Bagaż na dachu, kilometry przed Tobą i jeden cel: dojechać do Polski. Wybierz kraj, leć swoim kombi i sprawdź, jak daleko dotrzesz.</p>
+          <div class="actions">
+            <a class="button button-primary" href="__BASE__graj/">Zagraj teraz <span aria-hidden="true">→</span></a>
+            <button class="button button-muted" type="button" disabled aria-label="Google Play — wkrótce">Google Play <span class="soon">wkrótce</span></button>
+          </div>
+          <p class="small-note">Bez instalacji na komputerze i telefonie • Sterowanie jednym palcem</p>
+        </div>
+        <div class="hero-scene" aria-label="Ilustracja przeładowanego kombi lecącego nad drogą" role="img">
+          <div class="sun" aria-hidden="true"></div><div class="cloud cloud-a" aria-hidden="true"></div><div class="cloud cloud-b" aria-hidden="true"></div>
+          <div class="hill hill-back" aria-hidden="true"></div><div class="hill hill-front" aria-hidden="true"></div>
+          <div class="road" aria-hidden="true"></div>
+          <div class="car-composition" aria-hidden="true">
+            <img class="wheel wheel-rear" src="__BASE__assets/hero/kombi-wheel.png" width="36" height="36" alt="">
+            <img class="wheel wheel-front" src="__BASE__assets/hero/kombi-wheel.png" width="36" height="36" alt="">
+            <img class="car-body" src="__BASE__assets/hero/kombi-body.png" width="288" height="168" alt="">
+            <img class="roof-bags" src="__BASE__assets/hero/luggage-2.png" width="288" height="168" alt="">
+          </div>
+          <div class="route-sign" aria-hidden="true">POLSKA <span>→</span></div>
+          <div class="hero-caption">Ile kilometrów dasz radę przelecieć?</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section steps" id="jak-grac" aria-labelledby="steps-title">
+      <div class="container">
+        <div class="section-heading"><p class="eyebrow">Proste zasady, nieprosta droga</p><h2 id="steps-title">Jedno dotknięcie i lecisz</h2><p>Każdy kilometr przybliża Cię do Polski. Nie daj się zatrzymać na trasie.</p></div>
+        <div class="three-grid">
+          <article class="step-card"><span class="step-number">01</span><div class="step-icon" aria-hidden="true">↗</div><h3>Wybierz trasę</h3><p>Ruszaj z Belgii, Holandii, Niemiec, Wielkiej Brytanii, Francji, Szwajcarii, Norwegii albo Danii.</p></article>
+          <article class="step-card"><span class="step-number">02</span><div class="step-icon" aria-hidden="true">↑</div><h3>Podskakuj jednym dotknięciem</h3><p>Omijaj przeszkody i sprawdzaj, ile kilometrów pokonasz w jednym przejeździe.</p></article>
+          <article class="step-card"><span class="step-number">03</span><div class="step-icon" aria-hidden="true">★</div><h3>Zbieraj po drodze</h3><p>Paczki i słoiki dorzucają kilometrów, ale dodatkowy bagaż nie ułatwia lotu.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section shots" id="zrzuty" aria-labelledby="shots-title">
+      <div class="container">
+        <div class="section-heading"><p class="eyebrow">Zobacz trasę</p><h2 id="shots-title">Kadry z gry</h2><p>Trzy pierwsze ujęcia — gra, wybór kraju i bagaż na dachu.</p></div>
+        <div class="shot-grid">__SCREENSHOTS__</div>
+      </div>
+    </section>
+
+    <section class="section embed-section" id="dla-portali" aria-labelledby="embed-title">
+      <div class="container embed-grid">
+        <div><p class="eyebrow">Dla redakcji i portali</p><h2 id="embed-title">Gra także na Twojej stronie</h2><p>Możesz umieścić rozgrywkę w artykule lub na osobnej podstronie. Wstaw poniższy kod HTML do bloku własnego HTML. Kraj startowy można zmienić parametrem <code>kraj</code>.</p><p class="embed-note">Wymiary ramki są dopasowane do telefonu (9:16). Do osadzania potrzebna jest publiczna domena HTTPS gry.</p></div>
+        <div class="code-panel"><div class="code-panel-header"><span class="code-dots" aria-hidden="true">● ● ●</span><span>Kod iframe</span></div><pre tabindex="0"><code>__EMBED_CODE__</code></pre><p>Po wyborze domeny kod będzie gotowy do wklejenia.</p></div>
+      </div>
+    </section>
+
+    <section class="final-cta">
+      <div class="container cta-inner"><div><p class="eyebrow">Droga czeka</p><h2>Gotowy na kolejny kilometr?</h2><p>Wybierz kraj, kliknij i ruszaj.</p></div><a class="button button-primary" href="__BASE__graj/">Zagraj teraz <span aria-hidden="true">→</span></a></div>
+    </section>
+  </main>
+
+  <footer class="footer"><div class="container footer-content"><div><strong>Cebulak Express — Kierunek Polska</strong><p>Gra o drodze do domu.</p></div><nav aria-label="Informacje"><a href="__BASE__prywatnosc.html">Prywatność</a><a href="__BASE__prywatnosc-en.html" lang="en">Privacy (EN)</a><a href="__BASE__licencje.html">Licencje</a><a href="__BASE__kontakt.html">Kontakt</a></nav></div></footer>
+</body>
+</html>
