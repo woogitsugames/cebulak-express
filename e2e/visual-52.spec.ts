@@ -19,12 +19,26 @@ test('zrzut Canvas: bramka bagażowa i aktywne bonusy', async ({ page }, testInf
   });
   const code = bundled.outputFiles?.[0]?.text;
   expect(code).toBeTruthy();
-  await page.goto('/assets/ui/pickup-boarding.png');
-  await page.setContent(`<!doctype html><html lang="pl"><head><meta charset="UTF-8">
-    <style>
-      body { margin: 0; min-height: 100vh; display: grid; place-items: center; background: #273e52; }
-      canvas { width: 360px; height: 640px; max-width: 100vw; max-height: 100vh; object-fit: contain; }
-    </style></head><body><canvas id="preview"></canvas></body></html>`);
+  // Zachowujemy dokument HTML gry i tworzymy osobny Canvas na wierzchu.
+  // Podmiana treści dokumentu obrazka PNG przez page.setContent zawieszała
+  // Playwright w Chromium i WebKit.
+  await page.goto('/');
+  await page.evaluate(() => {
+    const host = document.createElement('div');
+    host.id = 'powerup-visual-host';
+    host.style.cssText = [
+      'position:fixed', 'inset:0', 'z-index:2147483647',
+      'display:grid', 'place-items:center', 'background:#273e52',
+    ].join(';');
+    const canvas = document.createElement('canvas');
+    canvas.id = 'preview';
+    canvas.style.cssText = [
+      'display:block', 'width:360px', 'height:640px',
+      'max-width:100vw', 'max-height:100vh', 'object-fit:contain',
+    ].join(';');
+    host.appendChild(canvas);
+    document.body.appendChild(host);
+  });
   await page.addScriptTag({ content: code! });
   await page.waitForFunction(() => typeof (window as Window & { drawPowerupPreview?: unknown }).drawPowerupPreview === 'function');
   // Odczekaj na PNG i tło (ładowanie asynchroniczne), potem przerysuj prawdziwy Canvas.
