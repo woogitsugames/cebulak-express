@@ -86,6 +86,7 @@ function encodePNG(img){
 function mix(a,b,t){return Math.round(a*(1-t)+b*t);}
 function snowLayer(img,cc,part){
   const {w,h,pix}=img;
+  const sceneScale=w===2160?2160/1920:1;
   const windows={
     ch:[[105,272,545,643],[542,668,567,641],[1112,1283,546,656],[1640,1758,562,644]],
     no:[[160,271,547,632],[751,891,550,645],[1342,1436,561,633],[1810,1884,561,640]],
@@ -133,7 +134,7 @@ function snowLayer(img,cc,part){
         if(nearPine||farPine){
           r=mix(r,41,0.66);g=mix(g,93,0.60);b=mix(b,105,0.63);
         }else{
-          const light=((Math.sin(x/137+y/69)+1)*0.5);
+          const light=((Math.sin(2*Math.PI*3*x/(w-1)+y/69)+1)*0.5);
           r=219+Math.round(18*light);g=234+Math.round(11*light);b=239+Math.round(9*light);
         }
       }else if(part==='far'&&(cc==='ch'||cc==='no')&&y<530&&!dark&&b>r*1.03&&b>g*0.99&&r>95){
@@ -142,12 +143,14 @@ function snowLayer(img,cc,part){
       }else if(r>80&&r<165&&g>130&&b>g*0.88&&part==='far'&&y>610){
         r=mix(r,83,0.28);g=mix(g,176,0.22);b=mix(b,207,0.23);
       }
-      if(part==='far'&&windows[cc].some(([x0,x1,y0,y1])=>x>=x0&&x<=x1&&y>=y0&&y<=y1)){
+      if(cc==='dk'&&part==='far'&&y>610&&y<810&&r>172&&g>140&&b<181&&r>g*1.03&&!windows[cc].some(([x0,x1,y0,y1])=>x>=x0*sceneScale&&x<=x1*sceneScale&&y>=y0*sceneScale&&y<=y1*sceneScale)){r=230;g=239;b=244;}
+      if(cc==='dk'&&part==='near'&&y>510&&r>180&&g>130&&b<180&&r>g*1.05){r=201;g=221;b=233;}
+      if(part==='far'&&windows[cc].some(([x0,x1,y0,y1])=>x>=x0*sceneScale&&x<=x1*sceneScale&&y>=y0*sceneScale&&y<=y1*sceneScale)){
         const coolBlue=b>r+18&&g>r+12&&r>130&&r<200&&g>170&&b>185;
         if(coolBlue){r=255;g=215;b=125;}
       }
       // Snieg na ciemnych polaciach drzew, przezroczystosc i kontur bez zmian.
-      if(part==='near'&&nearPine&&trees[cc].some(([cx,cy])=>Math.abs(cx-x)<72&&y>cy+17&&y<cy+190&&((y-cy)%67<15))&&!dark){
+      if(part==='near'&&nearPine&&trees[cc].some(([cx,cy])=>Math.abs(cx*sceneScale-x)<72*sceneScale&&y>(cy+17)*sceneScale&&y<(cy+190)*sceneScale&&((y-cy*sceneScale)%(67*sceneScale)<15*sceneScale))&&!dark){
         r=216;g=234;b=241;
       }
       pix[i]=r;pix[i+1]=g;pix[i+2]=b;
@@ -162,7 +165,8 @@ function snowLayer(img,cc,part){
       dk:[[514,645,543,593],[1682,1796,581,623]],
       se:[[127,270,525,584],[892,996,558,609],[1609,1726,555,605]]
     };
-    for(const [x0,x1,y0,y1] of roofs[cc]){
+    for(const [sx0,sx1,sy0,sy1] of roofs[cc]){
+      const x0=Math.round(sx0*sceneScale),x1=Math.round(sx1*sceneScale),y0=Math.round(sy0*sceneScale),y1=Math.round(sy1*sceneScale);
       const mid=(x0+x1)/2;
       for(let y=y0;y<=y1;y++)for(let x=x0;x<=x1;x++){
         const i=(y*w+x)*4;
@@ -181,7 +185,7 @@ function snowLayer(img,cc,part){
           if(dx*dx+dy*dy>5)continue;const xx=x+dx,yy=lightY+dy;
           if(xx>=0&&xx<w&&yy>=0&&yy<h){
             const i=(yy*w+xx)*4;
-            if(pix[i+3]>220){pix[i]=255;pix[i+1]=x%3===0?194:223;pix[i+2]=120;}
+            if(pix[i+3]>220&&pix[i]>150&&pix[i]>pix[i+2]*1.30&&pix[i+1]<230){pix[i]=255;pix[i+1]=x%3===0?194:223;pix[i+2]=120;}
           }
         }
       }
