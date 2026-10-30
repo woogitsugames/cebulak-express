@@ -1,6 +1,6 @@
 import { PLAYER, WORLD } from '../core/config';
 import type { Game } from '../core/game';
-import type { BottomKind, TopKind } from '../core/obstacles';
+import type { BottomKind, PowerupKind, TopKind } from '../core/obstacles';
 
 /** Identyfikatory zapisywane w settings.skin; po publikacji pozostają stałe. */
 export const HERO_SKINS = ['default', 'pan-cebulek', 'pani-cebulka', 'bus-kurierski'] as const;
@@ -145,10 +145,11 @@ function sprite(layout: SkinLayout, name: LayerName): { img: HTMLImageElement; a
 }
 export function preloadSprites(): void {
   for (const item of Object.values(DEFAULT.layers)) if (item) image(item.path);
-  for (const kind of [...TOPS, ...BOTTOMS]) {
+  for (const kind of [...TOPS, ...BOTTOMS, 'baggage-gate'] as const) {
     image(obstaclePath(kind, 'end'));
     image(obstaclePath(kind, 'tile'));
   }
+  for (const kind of ['boarding', 'tailwind', 'mamcall'] as const) image('assets/ui/pickup-' + kind + '.png');
   if (selected !== 'default') void loadSkin(selected);
 }
 function layerDraw(ctx: CanvasRenderingContext2D, asset: { img: HTMLImageElement; anchor: Point }): void {
@@ -199,7 +200,7 @@ const END_H = 192 / SCALE;
 const TILE_H = 96 / SCALE;
 const WIDTH = 240 / SCALE;
 
-function obstaclePath(kind: TopKind | BottomKind, part: 'end' | 'tile'): string {
+function obstaclePath(kind: TopKind | BottomKind | 'baggage-gate', part: 'end' | 'tile'): string {
   return `${OBSTACLES}${kind}-${part}.png`;
 }
 
@@ -225,4 +226,55 @@ export function drawBottomSprite(ctx: CanvasRenderingContext2D, kind: BottomKind
   for (let y = gapBottom + END_H; y < WORLD.groundY; y += TILE_H) ctx.drawImage(tile, left, y, WIDTH, TILE_H);
   ctx.drawImage(end, left, gapBottom, WIDTH, END_H);
   return true;
+}
+
+/** Bramka: ta sama autorska ramka i filary nad i pod szczeliną, dół jest odbiciem. */
+export function drawGateSprite(
+  ctx: CanvasRenderingContext2D, x: number, gapTop: number, gapBottom: number, offscreen: number,
+): boolean {
+  const end = image(obstaclePath('baggage-gate', 'end'));
+  const tile = image(obstaclePath('baggage-gate', 'tile'));
+  if (!end || !tile) return false;
+  const left = x - SIDE;
+  for (let y = gapTop - END_H - TILE_H; y > -offscreen - TILE_H; y -= TILE_H) {
+    ctx.drawImage(tile, left, y, WIDTH, TILE_H);
+  }
+  ctx.drawImage(end, left, gapTop - END_H, WIDTH, END_H);
+  for (let y = gapBottom + END_H; y < WORLD.groundY; y += TILE_H) {
+    ctx.drawImage(tile, left, y, WIDTH, TILE_H);
+  }
+  ctx.save();
+  ctx.translate(0, gapBottom * 2);
+  ctx.scale(1, -1);
+  ctx.drawImage(end, left, gapBottom - END_H, WIDTH, END_H);
+  ctx.restore();
+  return true;
+}
+
+/** Obrazki @3x mają przezroczysty margines wokół strefy kolizji. */
+export function drawPowerupSprite(ctx: CanvasRenderingContext2D, kind: PowerupKind): boolean {
+  const img = image('assets/ui/pickup-' + kind + '.png');
+  if (!img) return false;
+  ctx.drawImage(img, -16, -16, 32, 32);
+  return true;
+}
+
+/** Poświata podkreśla aktywny bonus, bez migania grafiki samochodu. */
+export function drawPowerupAura(ctx: CanvasRenderingContext2D, game: Game, timeSec: number): void {
+  if (!game.activePowerup) return;
+  const pulse = 0.5 + 0.5 * Math.sin(timeSec * 12);
+  const colors: Record<PowerupKind, string> = {
+    boarding: '#ffd55f',
+    tailwind: '#7fe8ec',
+    mamcall: '#e9b6f6',
+  };
+  ctx.save();
+  ctx.translate(PLAYER.x, game.y);
+  ctx.strokeStyle = colors[game.activePowerup];
+  ctx.globalAlpha = 0.68 + 0.24 * pulse;
+  ctx.lineWidth = 3 + pulse * 2;
+  ctx.beginPath();
+  ctx.ellipse(0, -3, 43 + pulse * 2, 30 + pulse * 2, 0, 0, Math.PI * 2);
+  ctx.stroke();
+  ctx.restore();
 }

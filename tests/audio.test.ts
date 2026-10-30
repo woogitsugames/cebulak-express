@@ -134,6 +134,11 @@ describe('Web Audio', () => {
     expect(sfxForGameEvent({ type: 'flap' })).toBe('flap');
     expect(sfxForGameEvent({ type: 'pickup', kind: 'jar', bonusKm: 30 })).toBe('jar');
     expect(sfxForGameEvent({ type: 'pickup', kind: 'parcel', bonusKm: 15 })).toBe('parcel');
+    expect(sfxForGameEvent({ type: 'pickup', kind: 'boarding', bonusKm: 0 })).toBeNull();
+    expect(sfxForGameEvent({ type: 'powerup-start', kind: 'boarding', durationSeconds: 3 })).toBe('border');
+    expect(sfxForGameEvent({ type: 'powerup-start', kind: 'tailwind', durationSeconds: 2 })).toBe('overload');
+    expect(sfxForGameEvent({ type: 'powerup-start', kind: 'mamcall', durationSeconds: 2 })).toBe('jar');
+    expect(sfxForGameEvent({ type: 'powerup-end', kind: 'boarding' })).toBeNull();
     expect(sfxForGameEvent({ type: 'hit', kind: 'ground', livesLeft: 0 })).toBe('hit');
     expect(sfxForGameEvent({ type: 'border', country: 'PL' })).toBe('border');
     expect(sfxForGameEvent({ type: 'over', cause: 'ground' })).toBeNull();
