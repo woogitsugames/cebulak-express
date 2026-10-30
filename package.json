@@ -12,7 +12,7 @@
     "build:artifact": "npm run build && node scripts/build-artifact.mjs",
     "android:sync": "npm run build && cap sync android",
     "android:apk": "npm run android:sync && cd android && ./gradlew assembleDebug",
-    "test:firebase": "npm --prefix firebase run test",
+    "test:firebase": "npm --prefix functions run test",
     "ios:sync": "npm run build && cap sync ios",
     "balance": "tsc --noEmit -p tools/balance/tsconfig.json && node tools/balance/run.mjs",
     "test:e2e": "playwright test"

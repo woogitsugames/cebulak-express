@@ -28,7 +28,7 @@ firebase login
 firebase deploy --only firestore,functions
 ~~~
 
-W firebase.json jest predeploy budujący backend z src/index.ts do firebase/lib/index.js. Jawny punkt wejścia firebase/index.js eksportuje funkcje z bundla dla mechanizmu wykrywania Firebase (CommonJS i import ESM). Użyto esbuild z opcją --packages=external, która pakuje lokalny src/core oraz src/content/waypoints, lecz pozostawia zależności firebase-admin i firebase-functions do instalacji przez środowisko Functions. Firebase deploy uruchom z katalogu głównego repozytorium.
+W firebase.json jest predeploy budujący backend z src/index.ts do functions/lib/index.js. Jawny punkt wejścia functions/index.js eksportuje funkcje z bundla dla mechanizmu wykrywania Firebase (CommonJS i import ESM). Użyto esbuild z opcją --packages=external, która pakuje lokalny src/core oraz src/content/waypoints, lecz pozostawia zależności firebase-admin i firebase-functions do instalacji przez środowisko Functions. Firebase deploy uruchom z katalogu głównego repozytorium.
 
 ## Kontrakt dla klienta (zlecenie 12)
 
@@ -64,7 +64,7 @@ Reguły zezwalają na publiczny odczyt league i leaderboard/entries, odczyt tylk
 
 ## App Check, bezpieczeństwo i sekrety
 
-App Check jest opcjonalny: skopiuj firebase/.env.example do firebase/.env i ustaw REQUIRE_APP_CHECK=true dopiero po skonfigurowaniu App Check dla web/Android iOS. Wymaga to ponownego wdrożenia funkcji. W emulatorze domyślnie false. Anonymous Auth nie dowodzi, że gracz jest człowiekiem; replay dowodzi zgodności wejść z symulacją, lecz nie zapobiega botom samodzielnie grającym poprawne przejazdy. Dodatkowo warto monitorować liczbę nowych anonimowych użytkowników, koszty i nadużycia App Check.
+App Check jest opcjonalny: skopiuj functions/.env.example do functions/.env i ustaw REQUIRE_APP_CHECK=true dopiero po skonfigurowaniu App Check dla web/Android iOS. Wymaga to ponownego wdrożenia funkcji. W emulatorze domyślnie false. Anonymous Auth nie dowodzi, że gracz jest człowiekiem; replay dowodzi zgodności wejść z symulacją, lecz nie zapobiega botom samodzielnie grającym poprawne przejazdy. Dodatkowo warto monitorować liczbę nowych anonimowych użytkowników, koszty i nadużycia App Check.
 
 Konfiguracja webowa Firebase jest publiczna i trafia do klienta. NIE commituj kluczy kont usługowych, plików .env z prawdziwymi danymi, .firebaserc, tokenów CLI, plików Android google-services.json/keystore ani jakichkolwiek poświadczeń. Nie zapisujemy IP ani identyfikatorów urządzeń w Firestore. Patrz PRIVACY.md.
 

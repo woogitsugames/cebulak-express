@@ -1,7 +1,7 @@
 {
   "functions": [
     {
-      "source": "firebase",
+      "source": "functions",
       "codebase": "rankings",
       "runtime": "nodejs22",
       "predeploy": [
@@ -16,8 +16,8 @@
     }
   ],
   "firestore": {
-    "rules": "firebase/firestore.rules",
-    "indexes": "firebase/firestore.indexes.json"
+    "rules": "functions/firestore.rules",
+    "indexes": "functions/firestore.indexes.json"
   },
   "emulators": {
     "auth": {
