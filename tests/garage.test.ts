@@ -21,6 +21,12 @@ describe('wybór skórki', () => {
     expect(normalizeHeroSkin('bus-kurierski')).toBe('bus-kurierski');
     expect(normalizeHeroSkin('niewiadoma')).toBe('default');
     expect(normalizeHeroSkin(null)).toBe('default');
+    expect(normalizeHeroSkin('kompakt-szwagra', 1_499)).toBe('default');
+    expect(normalizeHeroSkin('kompakt-szwagra', 1_500)).toBe('kompakt-szwagra');
+    setHeroSkin('kompakt-szwagra', 1_499);
+    expect(getHeroSkin()).toBe('default');
+    setHeroSkin('kompakt-szwagra', 1_500);
+    expect(getHeroSkin()).toBe('kompakt-szwagra');
     setHeroSkin('default');
     expect(getHeroSkin()).toBe('default');
   });
@@ -70,6 +76,16 @@ describe('wybór skórki', () => {
     const images = ctx.drawImage.mock.calls.map((call) => call[0] as FakeImage);
     expect(images.some((img) => img.src.endsWith('/assets/hero/kombi-body.png'))).toBe(true);
     expect(images.some((img) => img.src.includes('/assets/skins/'))).toBe(false);
+
+    // Nowe samochody z rundy 5 mogą jeszcze nie mieć skin.json.
+    ctx.drawImage.mockClear();
+    select('mala-japonka', 500);
+    await Promise.resolve();
+    await Promise.resolve();
+    expect(drawHeroSprite(ctx as unknown as CanvasRenderingContext2D,
+      game as unknown as Parameters<typeof drawHeroSprite>[1], 0)).toBe(true);
+    expect(ctx.drawImage.mock.calls.some((call) =>
+      (call[0] as FakeImage).src.endsWith('/assets/hero/kombi-body.png'))).toBe(true);
   });
 });
 
