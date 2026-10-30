@@ -66,7 +66,7 @@ function readPng(bytes){
  ofs+=n+12;}
  const bpp={0:1,2:3,3:1,4:2,6:4}[ct];if(depth!==8||!bpp)throw Error("PNG musi mieć 8 bitów na kanał");
  const zipped=new Uint8Array(total);let ptr=0;for(const c of idat){zipped.set(c,ptr);ptr+=c.length;}
- const stride=w*bpp,raw=inflate(zipped,(stride+1)*h),rgba=new Uint8Array(w*h*4),cur=new Uint8Array(stride),prev=new Uint8Array(stride);ptr=0;
+ let stride=w*bpp,raw=inflate(zipped,(stride+1)*h),rgba=new Uint8Array(w*h*4),cur=new Uint8Array(stride),prev=new Uint8Array(stride);ptr=0;
  for(let y=0;y<h;y++){const filter=raw[ptr++];
  for(let x=0;x<stride;x++){let n=raw[ptr++],a=x>=bpp?cur[x-bpp]:0,b=prev[x],c=x>=bpp?prev[x-bpp]:0;
  if(filter===1)n+=a;else if(filter===2)n+=b;else if(filter===3)n+=Math.floor((a+b)/2);
