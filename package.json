@@ -18,7 +18,8 @@
     "test:e2e": "playwright test",
     "typecheck:e2e": "tsc --noEmit -p tsconfig.e2e.json",
     "ios:assets": "npx --yes @capacitor/assets@3.0.5 generate --ios --assetPath assets --splashBackgroundColor '#14654F'",
-    "prebuild": "node tools/licenses.mjs"
+    "prebuild": "node tools/licenses.mjs",
+    "store:shots": "node tools/store-shots/shoot.mjs"
   },
   "devDependencies": {
     "@capacitor/cli": "^8.5.3",
