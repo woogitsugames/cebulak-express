@@ -1,9 +1,14 @@
 import { PLAYER, WORLD } from '../core/config';
 import type { Game } from '../core/game';
 import type { BottomKind, TopKind } from '../core/obstacles';
+import { unlockedSkins } from '../meta/unlocks';
 
 /** Identyfikatory zapisywane w settings.skin; po publikacji pozostają stałe. */
-export const HERO_SKINS = ['default', 'pan-cebulek', 'pani-cebulka', 'bus-kurierski'] as const;
+export const HERO_SKINS = [
+  'default', 'pan-cebulek', 'pani-cebulka', 'bus-kurierski',
+  'mala-japonka', 'kompakt-szwagra', 'dieselek-dziadka', 'pradziak-z-oslo',
+  'furgonetka-pl', 'kamper-wakacje', 'kombi-prezesa',
+] as const;
 export type HeroSkinId = (typeof HERO_SKINS)[number];
 type SkinId = Exclude<HeroSkinId, 'default'>;
 type LayerName = 'body' | 'wheel' | 'crash' | 'flame-1' | 'flame-2' |
@@ -76,8 +81,10 @@ export function parseSkinLayout(id: SkinId, raw: unknown): SkinLayout | null {
   return layers.body ? { id, anchor: bodyAnchor, wheels: [rear, front], layers } : null;
 }
 
-export function normalizeHeroSkin(value: unknown): HeroSkinId {
-  return HERO_SKINS.find((id) => id === value) ?? 'default';
+/** Zapisany identyfikator jest wybieralny dopiero po osiągnięciu progu km. */
+export function normalizeHeroSkin(value: unknown, totalKm = 0): HeroSkinId {
+  const id = HERO_SKINS.find((candidate) => candidate === value);
+  return id && unlockedSkins(totalKm).includes(id) ? id : 'default';
 }
 let selected: HeroSkinId = 'default';
 const loaded = new Map<string, SkinLayout | null>();
@@ -115,8 +122,8 @@ async function loadSkin(id: SkinId): Promise<SkinLayout | null> {
   return promise;
 }
 /** Ustawienie działa od razu; niezaładowane/nieobecne pliki pokazują domyślne kombi. */
-export function setHeroSkin(id: HeroSkinId): void {
-  selected = normalizeHeroSkin(id);
+export function setHeroSkin(id: HeroSkinId, totalKm = 0): void {
+  selected = normalizeHeroSkin(id, totalKm);
   if (selected === 'default') preloadSprites();
   else {
     if (loaded.get(selected) === null) loaded.delete(selected); // retry po zmianie z offline
