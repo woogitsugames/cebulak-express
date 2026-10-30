@@ -4,9 +4,7 @@
   --garage-green: #256843;
   width: 100%;
   max-width: 460px;
-  max-height: min(calc(100dvh - 24px), 780px);
-  overflow-y: auto;
-  overscroll-behavior: contain;
+  /* Przewija się panel (#garage), nie garaż w środku — jedno przewijanie zamiast dwóch. */
   border: 3px solid #4b4d2b;
   border-radius: 23px;
   background: #fff7df;
