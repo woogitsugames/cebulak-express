@@ -9,8 +9,8 @@
   "scripts": {
     "build": "npm run typecheck && esbuild src/index.ts --bundle --platform=node --target=node22 --format=cjs --outfile=lib/index.cjs --packages=external",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "test:unit": "vitest run tests/unit.test.ts",
-    "test:emulator": "vitest run tests/emulator.test.ts tests/rules.test.ts --maxWorkers=1 --no-file-parallelism",
+    "test:unit": "vitest run --config vitest.config.ts tests/unit.test.ts",
+    "test:emulator": "vitest run --config vitest.config.ts tests/emulator.test.ts tests/rules.test.ts --maxWorkers=1 --no-file-parallelism",
     "test": "npm run build && firebase emulators:exec --config ../firebase.json --project demo-cebulak-express --only auth,firestore,functions \"npm run test:emulator\""
   },
   "dependencies": {
