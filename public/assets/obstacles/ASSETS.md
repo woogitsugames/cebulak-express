@@ -46,4 +46,4 @@ python public/assets/obstacles/generate-assets.py
 
 Po wygenerowaniu sprawdź wymiary, kanał alfa, brak prześwitów w `x=[24,216)`, zgodność fazy kafelków i rozmiar `<200 kB`. Generator wykonuje kontrole wymiarów, alfa i rozmiaru; podgląd umożliwia ręczną kontrolę szwów i stylu. Skrypt jest wyłącznie narzędziem do przygotowania assetów, nie jest uruchamiany przez Vite.
 
-**Uwaga integracyjna:** 30.10.2026 zasoby zlecenia 03, bohater (01) i tła (06) były na osobnych gałęziach, nie w `main`. Przed końcowym testem w grze trzeba scalić odpowiednie gałęzie, zwłaszcza implementację `src/render/sprites.ts`. Podgląd 31 jest autorską sceną referencyjną w stylistyce DE, ponieważ wskazany `docs/art/podglady/countries-de-preview.png` nie był w `main`.
+**Stan integracji (30.10.2026):** bazowe zasoby przeszkód, bohatera i `src/render/sprites.ts` zostały w międzyczasie scalone do `main`. Nowe PNG działają w tym samym kontrakcie, bez zmiany renderera. Podgląd 31 jest autorską sceną referencyjną w stylistyce DE; finalną ocenę kolorystyczną warto też przeprowadzić na `docs/art/podglady/countries-de-preview.png` z `main`.
