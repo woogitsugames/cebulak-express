@@ -99,7 +99,12 @@ export function measureAsphaltEdge({ width, height, rgba }) {
       if (lum < 145) darkCount++;
       counted++;
     }
-    if (!counted) throw new Error(`Przezroczysty wiersz ${y} w drodze`);
+    if (!counted) {
+      // Przezroczystość nad barierą nie jest asfaltem; pod obrazem widać tło.
+      medianLum[y] = 255;
+      dark[y] = 0;
+      continue;
+    }
     values.sort((a, b) => a - b);
     medianLum[y] = values[Math.floor(values.length / 2)];
     dark[y] = darkCount / counted;
