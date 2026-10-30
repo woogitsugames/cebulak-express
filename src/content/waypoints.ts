@@ -112,7 +112,7 @@ function dresdenToJedrzychowice(dresdenKm: number): Waypoint[] {
 export const ROUTE_WAYPOINTS: Record<HomeCountry, Waypoint[]> = {
   BE: [
     { id: 'bruksela', name: 'Bruksela', country: 'BE', km: 0, kind: 'city', motifs: ['kamienice ze zdobionymi szczytami wokół rynku', 'ratusz z ażurową wieżą', 'frytki w papierowym rożku'], text: 'Bruksela. Bagażnik po dach, serce już w Polsce.' },
-    { id: 'leuven', name: 'Leuven', country: 'BE', km: 24, kind: 'city', motifs: ['koronkowy gotycki ratusz', 'rowery pod ceglanymi murami'], text: 'Leuven. Ratusz jak koronka, bagażnik jak cegła.' },
+    { id: 'leuven', name: 'Leuven', country: 'BE', km: 30, kind: 'city', motifs: ['koronkowy gotycki ratusz', 'rowery pod ceglanymi murami'], text: 'Leuven. Ratusz jak koronka, bagażnik jak cegła.' },
     { id: 'liege', name: 'Liège', country: 'BE', km: 100, kind: 'city', motifs: ['wzgórze z długimi schodami', 'Moza z barkami'], text: 'Liège. Moza płynie, a my lecimy dalej.' },
     { id: 'akwizgran', name: 'Akwizgran', country: 'DE', km: 147, kind: 'city', motifs: ['ośmioboczna kopuła katedry', 'stara brama miejska'], text: 'Akwizgran. Witamy w Niemczech!' },
     { id: 'kolonia', name: 'Kolonia', country: 'DE', km: 215, kind: 'city', motifs: ['dwie ostre wieże katedry nad Renem', 'most kolejowy nad Renem'], text: 'Kolonia. Katedra widzi, że wieziesz słoiki.' },
