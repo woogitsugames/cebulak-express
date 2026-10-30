@@ -25,15 +25,15 @@ Skróty źródeł: **R** — [Rome2Rio](https://www.rome2rio.com/), **O** — [r
 | UK | Antwerpia | 400 | 415 | jak wyżej |
 | UK | Eindhoven | 490 | 505 | jak wyżej |
 | UK | Venlo | 545 | 560 | jak wyżej |
-| UK | Zagłębie Ruhry | 630 | 645 | jak wyżej |
-| UK | Dortmund | 680 | 695 | jak wyżej |
-| UK | Bielefeld | 760 | 775 | jak wyżej |
-| UK | Hanower | 875 | 890 | jak wyżej |
-| UK | Magdeburg | 1020 | 1035 | jak wyżej |
-| UK | Berlin | 1160 | 1175 | jak wyżej |
-| UK | Frankfurt nad Odrą | 1265 | 1280 | jak wyżej |
-| UK | granica Świecko | 1275 | 1290 | jak wyżej |
-| UK | stacja Świecko | 1283 | 1298 | jak wyżej |
+| UK | Zagłębie Ruhry | 630 | 617 | R, Venlo–Oberhausen 55,5 km; po Venlo 560 km |
+| UK | Dortmund | 680 | 661 | R, Venlo–Dortmund 100,6 km; po Venlo 560 km |
+| UK | Bielefeld | 760 | 741 | korekta odległości do Dortmundu (odcinek +80 km) |
+| UK | Hanower | 875 | 856 | korekta odległości do Dortmundu (+195 km) |
+| UK | Magdeburg | 1020 | 1001 | korekta odległości do Dortmundu (+340 km) |
+| UK | Berlin | 1160 | 1141 | korekta odległości do Dortmundu (+480 km) |
+| UK | Frankfurt nad Odrą | 1265 | 1246 | korekta wspólnego odcinka A2 |
+| UK | granica Świecko | 1275 | 1256 | korekta wspólnego odcinka A2 |
+| UK | stacja Świecko | 1283 | 1264 | korekta wspólnego odcinka A2 |
 | FR | Frankfurt nad Menem | 615 | 585 | O, Paryż–Frankfurt 573 km + przejazd przez Mannheim |
 | FR | Erfurt | 870 | 845 | O, Paryż–Erfurt 824 km + objazd przez poprzednie punkty |
 | FR | Drezno | 1090 | 1065 | O, Paryż–Drezno 1027 km + objazd przez poprzednie punkty |
@@ -55,7 +55,7 @@ Skróty źródeł: **R** — [Rome2Rio](https://www.rome2rio.com/), **O** — [r
 - BE: https://www.rome2rio.com/s/Brussels/Leuven
 - NL: https://routefare.eu/en/amsterdam/
 - DE: https://routefare.eu/en/koeln/ oraz https://maps.adac.de/routenplaner/route-von-koeln-nach-warschau
-- UK: https://autotrasa.pl/trasy/warszawa-londyn/ (prom 42 km); https://www.rac.co.uk/drive/travel/driving-in-europe/driving-from-london-to-paris/
+- UK: https://autotrasa.pl/trasy/warszawa-londyn/ (prom 42 km); https://www.rac.co.uk/drive/travel/driving-in-europe/driving-from-london-to-paris/; https://www.rome2rio.com/s/Venlo/Oberhausen (55,5 km); https://www.rome2rio.com/s/Venlo/Dortmund (100,6 km)
 - FR: https://routefare.eu/en/paris/
 - CH: https://routefare.eu/en/zuerich/
 - NO: https://www.rome2rio.com/s/Norway/Ystad i https://www.directferries.com/ystad_swinoujscie_ferry.htm
@@ -106,7 +106,7 @@ Wartości wejściowe w `tests/trasy-verification.test.ts` są stałymi z publicz
 | Amsterdam → Warszawa | 1188,9 | 1300 | +9,3% |
 | Kolonia → Warszawa | 1113 | 1180 | +6,0% |
 | Hamburg → Warszawa | 841,1 | 880 | +4,6% |
-| Londyn → Warszawa (z promem) | 1636 | 1760 | +7,6% |
+| Londyn → Warszawa (z promem) | 1636 | 1730 | +5,7% |
 | Paryż → Rzeszów | 1664,1 | 1750 | +5,2% |
 | Paryż → Wrocław | 1280,6 | 1330 | +3,9% |
 | Zurych → Wrocław | 920,7 | 1000 | +8,6% |
