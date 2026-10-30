@@ -180,16 +180,16 @@ export class FirebaseRankingApi implements RankingApi {
   async getLeague(week: string): Promise<LeagueData> {
     return this.leagueCache.get(week, async () => {
       const { sdk, db } = await this.connected();
-    const snapshot = await sdk.firestore.getDoc(sdk.firestore.doc(db, 'league', week));
-    const data = snapshot.exists() ? record(snapshot.data()) : null;
-    const countries = record(data?.countries);
-    const result: LeagueData = { week, countries: {}, updatedAt: data?.updatedAt };
-    for (const home of HOME_COUNTRIES) {
-      const stats = record(countries?.[home]);
-      if (stats) result.countries[home] = {
-        km: positiveNumber(stats.km), runs: positiveNumber(stats.runs), players: positiveNumber(stats.players),
-      };
-    }
+      const snapshot = await sdk.firestore.getDoc(sdk.firestore.doc(db, 'league', week));
+      const data = snapshot.exists() ? record(snapshot.data()) : null;
+      const countries = record(data?.countries);
+      const result: LeagueData = { week, countries: {}, updatedAt: data?.updatedAt };
+      for (const home of HOME_COUNTRIES) {
+        const stats = record(countries?.[home]);
+        if (stats) result.countries[home] = {
+          km: positiveNumber(stats.km), runs: positiveNumber(stats.runs), players: positiveNumber(stats.players),
+        };
+      }
       return result;
     });
   }
