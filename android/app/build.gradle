@@ -1,25 +1,62 @@
 apply plugin: 'com.android.application'
 
+// Wydanie CI generuje ten plik z package.json i numeru GitHub Actions.
+// Debug bez tego pliku zachowuje zgodność z dotychczasowym CI.
+def versionProperties = new Properties()
+def versionFile = rootProject.file('version.properties')
+if (versionFile.exists()) {
+    versionFile.withInputStream { versionProperties.load(it) }
+}
+def packageVersion = new groovy.json.JsonSlurper().parse(rootProject.file('../package.json')).version
+def appVersionCode = Integer.parseInt(versionProperties.getProperty('versionCode', '1'))
+def appVersionName = versionProperties.getProperty('versionName', packageVersion)
+
+// Hasła i klucz są dostępne wyłącznie w środowisku joba CI / lokalnym.
+// Brak kompletu danych = release unsigned, nigdy debug-key jako upload key.
+def signingEnv = System.getenv()
+def releaseSigningConfigured = [
+    'ANDROID_KEYSTORE_PATH',
+    'ANDROID_KEYSTORE_PASSWORD',
+    'ANDROID_KEY_ALIAS',
+    'ANDROID_KEY_PASSWORD'
+].every { signingEnv[it] }
+
 android {
     namespace = "com.woogitsugames.cebulakexpress"
     compileSdk = rootProject.ext.compileSdkVersion
+
     defaultConfig {
         applicationId "com.woogitsugames.cebulakexpress"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 1
-        versionName "1.0"
+        versionCode appVersionCode
+        versionName appVersionName
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         aaptOptions {
-             // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.
-             // Default: https://android.googlesource.com/platform/frameworks/base/+/282e181b58cf72b6ca770dc7ca5f91f135444502/tools/aapt/AaptAssets.cpp#61
+             // Wyłączenia plików z web assets zgodne z projektem Capacitor.
             ignoreAssetsPattern = '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
         }
     }
+
+    signingConfigs {
+        if (releaseSigningConfigured) {
+            release {
+                storeFile file(signingEnv['ANDROID_KEYSTORE_PATH'])
+                storePassword signingEnv['ANDROID_KEYSTORE_PASSWORD']
+                keyAlias signingEnv['ANDROID_KEY_ALIAS']
+                keyPassword signingEnv['ANDROID_KEY_PASSWORD']
+            }
+        }
+    }
+
     buildTypes {
         release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            if (releaseSigningConfigured) {
+                signingConfig signingConfigs.release
+            }
         }
     }
 }
@@ -33,7 +70,7 @@ repositories {
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation "androidx.appcompat:appcompat:$androidxAppCompatVersion"
-    implementation "androidx.coordinatorlayout:coordinatorlayout:$androidxCoordinatorLayoutVersion"
+    implementation "androidx.coordinatorlayout:androidx.coordinatorlayout:$androidxCoordinatorLayoutVersion"
     implementation "androidx.core:core-splashscreen:$coreSplashScreenVersion"
     implementation project(':capacitor-android')
     testImplementation "junit:junit:$junitVersion"
