@@ -86,6 +86,37 @@ function dresdenToJedrzychowice(dresdenKm: number): Waypoint[] {
   ];
 }
 
+/**
+ * Dwie odnogi od Berlina do Polski. Kilometry są liczone OD BERLINA (bez
+ * powtórzenia punktu „berlin”), dlatego można je dołączyć do dowolnej trasy
+ * dochodzącej do stolicy Niemiec. Szacunki korytarzy A11 i A13/A15 (30.10.2026).
+ */
+export const BERLIN_ALTERNATIVE_EXITS: Record<'kolbaskowo' | 'olszyna', Waypoint[]> = {
+  kolbaskowo: [
+    { id: 'uckermark', name: 'Uckermark', country: 'DE', km: 80, kind: 'landmark', motifs: ['lasy i jeziora', 'autostrada pośród pól'], text: 'Uckermark. Las mija, dom coraz bliżej.' },
+    { id: 'granica-kolbaskowo', name: 'Granica (Kołbaskowo)', country: 'PL', km: 128, kind: 'border', motifs: BORDER_MOTIFS, text: 'Kołbaskowo. Witamy w Polsce!', lat: 53.34, lon: 14.42 },
+    { id: 'stacja-kolbaskowo', name: 'Stacja przy A6', country: 'PL', km: 135, kind: 'rest', motifs: STATION_MOTIFS, text: 'Kawa, hot dogi i zapiekanka. Jedziemy dalej!', lat: 53.31, lon: 14.45 },
+  ],
+  olszyna: [
+    { id: 'cottbus', name: 'Cottbus', country: 'DE', km: 125, kind: 'city', motifs: ['ceglane wieże', 'zielone parki'], text: 'Cottbus. A15 prowadzi nas na wschód.' },
+    { id: 'forst', name: 'Forst', country: 'DE', km: 152, kind: 'city', motifs: ['lasy łużyckie', 'mosty nad rzeką'], text: 'Forst. Jeszcze chwila i Polska!' },
+    { id: 'granica-olszyna', name: 'Granica (Olszyna)', country: 'PL', km: 159, kind: 'border', motifs: BORDER_MOTIFS, text: 'Olszyna. Polska na horyzoncie!', lat: 51.65, lon: 14.76 },
+    { id: 'stacja-olszyna', name: 'Stacja przy A18', country: 'PL', km: 166, kind: 'rest', motifs: STATION_MOTIFS, text: 'Biało-czerwona stacja, kawa i hot dogi.', lat: 51.64, lon: 14.78 },
+  ],
+};
+
+/**
+ * Monachium: do Drezna przez A9/A72 (Bayreuth, Chemnitz), nie przez Jenę.
+ * Oddzielny szlak pozwala uniknąć objazdu na trasie wzorcowej ze Szwajcarii.
+ */
+export const MUNICH_TO_JEDRZYCHOWICE: Waypoint[] = [
+  { id: 'monachium', name: 'Monachium', country: 'DE', km: 0, kind: 'city', motifs: ['wieże kościołów nad dachami', 'alpejskie wzgórza w oddali'], text: 'Monachium. Bagaże gotowe, do domu!' },
+  { id: 'norymberga', name: 'Norymberga', country: 'DE', km: 170, kind: 'city', motifs: ['zamek na skale', 'kamienice z belkami'], text: 'Norymberga. Zamek na skale, pierniki w kombi.' },
+  { id: 'bayreuth', name: 'Bayreuth', country: 'DE', km: 260, kind: 'city', motifs: ['barokowe kamienice', 'zielone wzgórza'], text: 'Bayreuth. Wzgórza mijają, droga biegnie dalej.' },
+  { id: 'chemnitz', name: 'Chemnitz', country: 'DE', km: 400, kind: 'city', motifs: ['ceglana zabudowa', 'zielone doliny'], text: 'Chemnitz. Jeszcze trochę i Drezno.' },
+  ...dresdenToJedrzychowice(462),
+];
+
 /** Trasy wzorcowe z kraju zamieszkania do pierwszej stacji za granicą Polski. */
 export const ROUTE_WAYPOINTS: Record<HomeCountry, Waypoint[]> = {
   BE: [
@@ -131,9 +162,9 @@ export const ROUTE_WAYPOINTS: Record<HomeCountry, Waypoint[]> = {
     { id: 'metz', name: 'Metz', country: 'FR', km: 335, kind: 'city', motifs: ['katedra z żółtego kamienia', 'most nad Mozelą'], text: 'Metz. Katedra z witrażami, w głowie pierogi.' },
     { id: 'saarbrucken', name: 'Saarbrücken', country: 'DE', km: 405, kind: 'city', motifs: ['most na Saarze', 'dawna huta z kominami'], text: 'Saarbrücken. Witamy w Niemczech!' },
     { id: 'mannheim', name: 'Mannheim', country: 'DE', km: 535, kind: 'city', motifs: ['wieża ciśnień z fontanną', 'barki na Renie'], text: 'Mannheim. Miasto w kratkę, korek okrągły.' },
-    { id: 'frankfurt-main', name: 'Frankfurt nad Menem', country: 'DE', km: 615, kind: 'city', motifs: ['panorama wieżowców', 'Men z mostami'], text: 'Frankfurt. Wieżowce liczą piętra, my km.' },
-    { id: 'erfurt', name: 'Erfurt', country: 'DE', km: 870, kind: 'city', motifs: ['most z kamieniczkami nad rzeką', 'gotyckie wieże'], text: 'Erfurt. Dom na moście, nasz dom na końcu trasy.' },
-    ...dresdenToJedrzychowice(1090),
+    { id: 'frankfurt-main', name: 'Frankfurt nad Menem', country: 'DE', km: 618, kind: 'city', motifs: ['panorama wieżowców', 'Men z mostami'], text: 'Frankfurt. Wieżowce liczą piętra, my km.' },
+    { id: 'erfurt', name: 'Erfurt', country: 'DE', km: 873, kind: 'city', motifs: ['most z kamieniczkami nad rzeką', 'gotyckie wieże'], text: 'Erfurt. Dom na moście, nasz dom na końcu trasy.' },
+    ...dresdenToJedrzychowice(1093),
   ],
   CH: [
     { id: 'zurych', name: 'Zurych', country: 'CH', km: 0, kind: 'city', motifs: ['jezioro z łabędziami', 'Alpy na horyzoncie', 'wieże starego miasta'], text: 'Zurych. Alpy za plecami, bigos przed nosem.' },
