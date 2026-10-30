@@ -145,9 +145,10 @@ describe('renderer warstw: docelowe współrzędne i pasy', () => {
     expect(c.drawImage.mock.calls).toContainEqual([
       layers.sky, 0, 0, 1080, 3, 0, -70, WORLD.width, 70,
     ]);
-    expect(c.drawImage.mock.calls).toContainEqual([
-      layers.road, 0, 327, 1080, 3, 0, WORLD.height, WORLD.width, 70,
-    ]);
+    const roadSample = c.drawImage.mock.calls.find((args) => args[0] === layers.road);
+    expect(roadSample?.slice(1, 5)).toEqual([0, 327, 1080, 3]);
+    expect(roadSample?.[5]).toBeCloseTo(0); // Canvas może zwrócić -0 przy modulo
+    expect(roadSample?.slice(6)).toEqual([WORLD.height, WORLD.width, 70]);
   });
 
   it('po zmianie punktu rysuje tylko poprzedni i nowy, oba na near', () => {
@@ -163,8 +164,10 @@ describe('renderer warstw: docelowe współrzędne i pasy', () => {
     expect(c.drawImage.mock.calls.filter((args) => args[0] === landmarks.get('stacja-swiecko'))).toHaveLength(0);
     expect(assets.getBorderNear).not.toHaveBeenCalled(); // brak zimowego wariantu tej panoramy
 
-    c.drawImage.mockClear();
+    // Zmiana punktu rozpoczyna fade z alfą nowego punktu równą 0.
     renderer.drawBackground(c as unknown as CanvasRenderingContext2D, { ...state, progressKm: 120, timeSec: 5.2 });
+    c.drawImage.mockClear();
+    renderer.drawBackground(c as unknown as CanvasRenderingContext2D, { ...state, progressKm: 120, timeSec: 5.4 });
     const borders = c.drawImage.mock.calls.filter((args) => args[0] === landmarks.get('granica-swiecko'));
     const rests = c.drawImage.mock.calls.filter((args) => args[0] === landmarks.get('stacja-swiecko'));
     expect(borders).toHaveLength(1);
