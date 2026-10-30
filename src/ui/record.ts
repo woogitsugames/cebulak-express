@@ -40,6 +40,12 @@ const RECORD_CSS = `
 .ce-record-control { position:absolute; z-index:40; left:50%; bottom:max(18px, env(safe-area-inset-bottom));
   transform:translateX(-50%); width:min(93vw, 420px); box-sizing:border-box; padding:0;
   font:600 15px/1.35 system-ui,sans-serif; color:#fff; pointer-events:auto; text-align:center; }
+/* Rozłożone składaki i tablety: obok panelu menu zamiast na jego dolnej krawędzi. */
+@media (min-aspect-ratio: 3/4) and (min-width: 640px) {
+  .ce-record-control { left:auto; right:max(18px, env(safe-area-inset-right)); transform:none;
+    width:min(calc((100vw - 400px) / 2 - 24px), 420px); text-align:right; }
+  .ce-record-control .ce-record-start { white-space:nowrap; }
+}
 .ce-record-control [hidden] { display:none !important; }
 .ce-record-control button { font:inherit; cursor:pointer; border:2px solid rgba(255,255,255,.64);
   border-radius:999px; background:#19394a; color:#fff; padding:11px 18px; touch-action:manipulation; }

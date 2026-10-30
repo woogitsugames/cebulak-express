@@ -47,6 +47,11 @@ export class Renderer {
     ctx.fillStyle = '#4a5157';
     ctx.fillRect(0, groundScreenY, this.canvas.width, this.canvas.height - groundScreenY);
     ctx.setTransform(this.scale, 0, 0, this.scale, this.offsetX, this.offsetY);
+    const viewLeft = -this.offsetX / this.scale;
+    const viewRight = (this.canvas.width - this.offsetX) / this.scale;
+    const viewTop = -this.offsetY / this.scale;
+    const viewHeight = this.canvas.height / this.scale;
+    this.background.setHorizontalView(viewLeft, viewRight);
     // Wysokie ekrany: próbkuj brzeg oryginalnego PNG sky/road zamiast
     // rysować odcinające się pasy jednolitym kolorem palety.
     this.background.drawOutsideWorld(
@@ -54,11 +59,6 @@ export class Renderer {
       -this.offsetY / this.scale,
       (this.canvas.height - this.offsetY) / this.scale,
     );
-    ctx.save();
-    ctx.beginPath();
-    // Przycinamy tylko w poziomie — w pionie świat może wychodzić w pasy na wysokich ekranach.
-    ctx.rect(0, -this.offsetY / this.scale, WORLD.width, this.canvas.height / this.scale);
-    ctx.clip();
 
     const worldX = game.distancePx;
     const bg: BackgroundState = {
@@ -69,12 +69,40 @@ export class Renderer {
       timeSec,
       includeRoad: false,
     };
+    // Tło i droga idą na całą szerokość ekranu (rozłożony składak, tablet, poziom),
+    // ale przeszkody i bonusy tylko w kolumnie 360 — szerszy ekran nie daje przewagi w rankingu.
     this.background.drawBackground(this.ctx, bg);
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(0, viewTop, WORLD.width, viewHeight);
+    ctx.clip();
     for (const p of game.field.pickups) if (!p.taken) this.drawPickup(p, p.x - worldX, timeSec);
     for (const o of game.field.obstacles) this.drawObstacle(o, o.x - worldX);
+    ctx.restore();
     this.background.drawRoad(this.ctx, bg);
+    if (viewLeft < 0) this.drawSideVeil(viewLeft, viewRight, viewTop);
     if (!drawHeroSprite(this.ctx, game, timeSec)) this.drawPlayer(game, timeSec);
+  }
 
+  /** Lekkie przyciemnienie boków nad drogą: widać, gdzie jest pole gry. */
+  private drawSideVeil(left: number, right: number, top: number): void {
+    const { ctx } = this;
+    const bottom = WORLD.groundY;
+    const fade = 30;
+    ctx.save();
+    ctx.fillStyle = 'rgba(16, 28, 48, 0.22)';
+    ctx.fillRect(left, top, -left - fade, bottom - top);
+    ctx.fillRect(WORLD.width + fade, top, right - WORLD.width - fade, bottom - top);
+    const l = ctx.createLinearGradient(-fade, 0, 0, 0);
+    l.addColorStop(0, 'rgba(16, 28, 48, 0.22)');
+    l.addColorStop(1, 'rgba(16, 28, 48, 0)');
+    ctx.fillStyle = l;
+    ctx.fillRect(-fade, top, fade, bottom - top);
+    const r = ctx.createLinearGradient(WORLD.width, 0, WORLD.width + fade, 0);
+    r.addColorStop(0, 'rgba(16, 28, 48, 0)');
+    r.addColorStop(1, 'rgba(16, 28, 48, 0.22)');
+    ctx.fillStyle = r;
+    ctx.fillRect(WORLD.width, top, fade, bottom - top);
     ctx.restore();
   }
 
