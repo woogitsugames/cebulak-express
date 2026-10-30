@@ -171,7 +171,9 @@ function snowLayer(img,cc,part){
         if(r<62&&g<105&&b<130)continue;
         // Czapka sniegu wewnatrz istniejącego obrysu dachu.
         const edge=y0+Math.abs(x-mid)/(x1-x0)*2*(y1-y0);
-        if(y<=edge+11&&y>=edge-3){pix[i]=243;pix[i+1]=247;pix[i+2]=248;}
+        const terracotta=cc==='ch'||cc==='dk';
+        const isRoof=terracotta?(r>110&&r>g*1.16&&r>b*1.18&&g<170):(r>56&&r<130&&Math.abs(r-g)<32&&Math.abs(g-b)<32&&b<158);
+        if(isRoof&&y<=edge+13&&y>=edge-9){pix[i]=243;pix[i+1]=247;pix[i+2]=248;}
       }
       const lightY=y1+11;
       for(let x=x0+13;x<x1-13;x+=18){
