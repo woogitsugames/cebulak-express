@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { DIFFICULTY, OBSTACLE, WORLD } from '../src/core/config';
-import { ObstacleField } from '../src/core/obstacles';
+import { BAGGAGE_GATE, DIFFICULTY, KM_PER_PX, OBSTACLE, PLAYER, WORLD } from '../src/core/config';
+import { ObstacleField, effectiveGapH, reachableShift } from '../src/core/obstacles';
 
 describe('generator przeszkód', () => {
   it('ten sam seed = identyczny układ (wyzwanie dnia)', () => {
@@ -42,6 +42,45 @@ describe('generator przeszkód', () => {
       }
     });
   }
+
+  it('co około 300 km pojawia się bramka, z malejącą szczeliną dla wag 0 i 1', () => {
+    const f = new ObstacleField(17);
+    f.ensureAhead(50000, 0.75);
+    const gates = f.obstacles.filter((o) => o.gate);
+    expect(gates.length).toBeGreaterThanOrEqual(3);
+    const intervalPx = BAGGAGE_GATE.everyKm / KM_PER_PX;
+    gates.forEach((gate, index) => {
+      expect(gate.x).toBeGreaterThanOrEqual((index + 1) * intervalPx);
+      expect(gate.x).toBeLessThan((index + 1) * intervalPx + DIFFICULTY.spacing[0] + 1);
+      expect(effectiveGapH(gate, 1)).toBeLessThan(effectiveGapH(gate, 0));
+      for (const weight of [0, 1]) {
+        const h = effectiveGapH(gate, weight);
+        expect(h).toBeGreaterThan(PLAYER.hitH + 90);
+        expect(gate.gapY - h / 2).toBeGreaterThan(WORLD.ceilingY);
+        expect(gate.gapY + h / 2).toBeLessThan(WORLD.groundY);
+      }
+    });
+  });
+
+  it('dopuszczalna zmiana środka szczeliny uwzględnia w pełni ciężką bramkę', () => {
+    for (const difficulty of [0, 0.5, 1]) {
+      const field = new ObstacleField(7);
+      field.ensureAhead(25000, difficulty);
+      const spacing = DIFFICULTY.spacing[0] + (DIFFICULTY.spacing[1] - DIFFICULTY.spacing[0]) * difficulty;
+      const speed = DIFFICULTY.speed[0] + (DIFFICULTY.speed[1] - DIFFICULTY.speed[0]) * difficulty;
+      const safeReach = reachableShift(spacing, speed, BAGGAGE_GATE.minGapH);
+      const obstacles = field.obstacles;
+      for (let i = 1; i < obstacles.length; i++) {
+        if (!obstacles[i].gate && !obstacles[i - 1].gate) continue;
+        const shift = obstacles[i].gapY - obstacles[i - 1].gapY;
+        expect(shift).toBeGreaterThanOrEqual(-safeReach.up - 1e-8);
+        // Cięższy bagaż zwiększa opadanie, więc limit w dół nie jest ostrzejszy.
+        expect(shift).toBeLessThanOrEqual(
+          reachableShift(spacing, speed, BAGGAGE_GATE.minGapH, PLAYER.gravity * 1.45).down + 1e-8,
+        );
+      }
+    }
+  });
 
   it('znajdźki między przeszkodami, nie w nich', () => {
     const f = new ObstacleField(9);

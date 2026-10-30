@@ -129,7 +129,7 @@ describe('dystans i punktacja', () => {
       botStep(g);
       g.tick();
       for (const e of g.drainEvents()) {
-        if (e.type === 'pickup') {
+        if (e.type === 'pickup' && (e.kind === 'parcel' || e.kind === 'jar')) {
           picked = true;
           expect(g.bonusKm).toBeGreaterThan(0);
           expect(g.weight).toBeGreaterThan(0);
@@ -190,6 +190,57 @@ describe('przelotność (gwarancja generatora)', () => {
       if (g.phase !== 'arrived') failures.push(seed);
     }
     expect(failures).toEqual([]);
+  });
+});
+
+describe('bramka bagażowa i bonusy', () => {
+  it('aktywny bonus wysyła start i koniec w czasie mierzonym tickami', () => {
+    const g = newGame(123, 'cozy');
+    g.flap();
+    g.field.pickups.push({ id: -1, x: PLAYER.x + 2, y: PLAYER.startY, kind: 'boarding', taken: false });
+    g.tick();
+    expect(g.activePowerup).toBe('boarding');
+    expect(g.isInvulnerable).toBe(true);
+    expect(g.drainEvents()).toContainEqual({ type: 'powerup-start', kind: 'boarding', durationSeconds: 3 });
+    for (let i = 1; i < Math.round(3 / TICK); i++) {
+      botStep(g);
+      g.tick();
+    }
+    expect(g.activePowerup).toBeNull();
+    expect(g.drainEvents()).toContainEqual({ type: 'powerup-end', kind: 'boarding' });
+  });
+
+  it('wiatr przyspiesza przejazd, a telefon spowalnia fizykę', () => {
+    const wind = newGame(25, 'cozy');
+    wind.flap();
+    wind.field.pickups.push({ id: -1, x: PLAYER.x + 2, y: PLAYER.startY, kind: 'tailwind', taken: false });
+    wind.tick();
+    expect(wind.activePowerup).toBe('tailwind');
+    expect(wind.speed).toBeGreaterThan(200);
+
+    const phone = newGame(25, 'cozy');
+    phone.flap();
+    phone.field.pickups.push({ id: -1, x: PLAYER.x + 2, y: PLAYER.startY, kind: 'mamcall', taken: false });
+    phone.tick();
+    expect(phone.activePowerup).toBe('mamcall');
+    const before = phone.distancePx;
+    phone.tick();
+    expect(phone.distancePx - before).toBeLessThan(wind.speed * TICK);
+  });
+
+  it('replay z bramkami i bonusami daje identyczny wynik dla tych samych tapnięć', () => {
+    let checked = false;
+    for (let seed = 1; seed <= 20 && !checked; seed++) {
+      const g = newGame(seed);
+      playWithBot(g, 120 * 105);
+      if (!g.drainEvents().some((e) => e.type === 'powerup-start')) continue;
+      const r = replay({ seed, mode: 'ranked', route: ROUTE }, g.flapTicks, g.ticks);
+      expect({ km: r.km, distance: r.distancePx, y: r.y, weight: r.weight, phase: r.phase })
+        .toEqual({ km: g.km, distance: g.distancePx, y: g.y, weight: g.weight, phase: g.phase });
+      expect(r.field.obstacles).toEqual(g.field.obstacles);
+      checked = true;
+    }
+    expect(checked).toBe(true);
   });
 });
 

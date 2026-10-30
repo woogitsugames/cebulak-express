@@ -61,6 +61,25 @@ export const PICKUPS = {
   gravityPerWeight: 0.45,
 } as const;
 
+/** Bramki występują co 300 km świata (premie za znajdźki nie przesuwają ich). */
+export const BAGGAGE_GATE = {
+  everyKm: 300,
+  maxShrinkPx: 42,
+  /** Nawet przy maksymalnej wadze nadwozie ma zapas do obu krawędzi. */
+  minGapH: 118,
+} as const;
+
+/** Efekty czasowe mierzymy wyłącznie tickami symulacji. */
+export const POWERUPS = {
+  /** Udział trzech rzadkich bonusów wśród wylosowanych znajdziek. */
+  shareAmongPickups: 0.08,
+  boardingSeconds: 3,
+  tailwindSeconds: 2,
+  tailwindSpeedMultiplier: 1.65,
+  mamcallSeconds: 2,
+  mamcallTimeScale: 0.55,
+} as const;
+
 export const COZY = {
   lives: 3,
   maxLives: 3,
