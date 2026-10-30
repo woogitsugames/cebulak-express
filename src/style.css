@@ -139,7 +139,7 @@ button:focus-visible, select:focus-visible, summary:focus-visible, a:focus-visib
   touch-action: pan-y;
   padding: 11px 12px 16px;
   border: 24px solid transparent;
-  border-image: url('/assets/ui/panel-paper.png') 70 76 70 76 fill / 24px 26px / 0 stretch;
+  border-image: url('/assets/ui/panel-paper.png') 35 38 35 38 fill / 24px 26px / 0 stretch;
   background: var(--paper);
   color: var(--ink);
   text-align: center;

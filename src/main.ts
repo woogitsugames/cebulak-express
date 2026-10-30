@@ -3,10 +3,8 @@ import { dailyKey, dailyRoute, dailySeed, dailyTitle } from './core/daily';
 import { Game, type GameEvent, type Mode } from './core/game';
 import { HOME_COUNTRIES, PL_CITIES, START_CITIES, makeRoute, reverseRoute, type HomeCountry, type Route } from './core/route';
 import { seasonAt } from './core/season';
-import { applyRun, loadProgress, saveProgress, summarizeRun, type Progress } from './meta/progress';
-import { medalToast, mountCollection, postcardToast } from './ui/collection';
-import { ONBOARDING_STORAGE_KEY, mountOnboarding, shouldShowOnboarding } from './ui/onboarding';
-import { COUNTRY_CUE_CODES, type CountryCueCode } from './audio/country-cues';
+import type { Progress } from './meta/progress';
+import type { CountryCueCode } from './audio/country-cues';
 import {
   ARRIVAL_TEXTS, BORDER_TEXTS, COUNTRY_LOCATIVE, COUNTRY_NAME, FAIL_JOKES, MILESTONE_TEXTS,
   OBSTACLE_NAME, PICKUP_TEXTS, UI, WIGILIA_TEXTS, fill,
@@ -16,20 +14,14 @@ import { randomNickChoices } from './content/nicks';
 import { portalLink } from './content/portals';
 import { Renderer } from './render/renderer';
 import { normalizeHeroSkin, preloadSprites, setHeroSkin } from './render/sprites';
-import { mountGarage } from './ui/garage';
-import './ui/language-switcher';
-import { createRecordControl } from './ui/record';
-import { saveRecordedVideo } from './record/recorder';
 import { createSfx, sfxForGameEvent, type SfxPlayer } from './audio/sfx';
 import { createHaptics, hapticForGameEvent } from './audio/haptics';
-import { createMusic, type MusicPlayer } from './audio/music';
-import { renderCard, type CardData } from './share/card';
-import { setNativeShareAdapter, shareResult } from './share/share';
+import type { MusicPlayer } from './audio/music';
+import type { CardData } from './share/card';
 import { parseGameParams } from './net/params';
 import { MockRankingApi, createRankingApi } from './net/api';
 import { warsawWeekKey } from './net/week';
 import { OfflineRunQueue, submitOrQueue, watchQueueOnline } from './net/queue';
-import { mountLeague } from './ui/league';
 import { configureAnalytics, track, type AnalyticsHome } from './analytics/track';
 import { registerPwa } from './pwa/register';
 import { prefetchPwaAssetsAfterRun } from './pwa/offline';
@@ -133,7 +125,8 @@ let progress: Progress | null = null;
 let closeCollection: (() => void) | null = null;
 const winter = seasonAt(new Date(), location.search) === 'winter';
 renderer.winter = winter;
-void loadProgress().then((p) => { progress = p; });
+const progressModule = () => import('./meta/progress');
+void progressModule().then((m) => m.loadProgress()).then((p) => { progress = p; });
 
 function safeRoute(s: Settings): Route {
   try {
@@ -165,9 +158,13 @@ function unlockAudio(): void {
   mix.connect(audioCtx.destination);
   audioMix = mix;
   sfx = createSfx(audioCtx, mix);
-  music = createMusic(audioCtx, { destination: mix, volume: 0.5 });
   void sfx.unlock();
-  void music.unlock();
+  const ctx = audioCtx;
+  void import('./audio/music').then(({ createMusic }) => {
+    music = createMusic(ctx, { destination: mix, volume: 0.5 });
+    void music.unlock();
+    if (game?.phase === 'playing') music.start();
+  });
 }
 
 // --- Ranking (bez konfiguracji Firebase działa na mocku) ---
@@ -247,13 +244,17 @@ $('btn-daily').addEventListener('click', () => {
 $('btn-league').addEventListener('click', () => {
   ui.menu.hidden = true;
   ui.league.hidden = false;
-  closeLeague = mountLeague(ui.leagueBody, api, settings.home);
+  void import('./ui/league').then(({ mountLeague }) => {
+    if (!ui.league.hidden) closeLeague = mountLeague(ui.leagueBody, api, settings.home);
+  });
   track('league_open');
 });
 $('btn-league-close').addEventListener('click', () => showMenu());
 $('btn-garage').addEventListener('click', () => {
   ui.menu.hidden = true;
   ui.garage.hidden = false;
+  void import('./ui/garage').then(({ mountGarage }) => {
+  if (ui.garage.hidden) return;
   closeGarage = mountGarage(ui.garage, {
     home: settings.home,
     skin: normalizeHeroSkin(settings.skin),
@@ -265,14 +266,17 @@ $('btn-garage').addEventListener('click', () => {
     },
     onClose: () => showMenu(),
   });
+  });
 });
 $('btn-album').addEventListener('click', () => {
   ui.menu.hidden = true;
   ui.album.hidden = false;
-  void loadProgress().then((p) => {
+  void progressModule().then((m) => m.loadProgress()).then((p) => {
     progress = p;
-    if (ui.album.hidden) return;
-    closeCollection = mountCollection(ui.album, p, () => showMenu());
+    return import('./ui/collection').then(({ mountCollection }) => {
+      if (ui.album.hidden) return;
+      closeCollection = mountCollection(ui.album, p, () => showMenu());
+    });
   });
 });
 $('btn-again').addEventListener('click', () => void newRun(returnTrip));
@@ -430,7 +434,8 @@ function feedback(e: GameEvent): void {
   if (sound) sfx.play(sound);
   const haptic = hapticForGameEvent(e);
   if (haptic) haptics.play(haptic);
-  if (e.type === 'border' && (COUNTRY_CUE_CODES as readonly string[]).includes(e.country)) music?.playCountryCue(e.country as CountryCueCode);
+  // Kraje bez własnego akcentu (np. tranzytowe) są ignorowane w playCountryCue.
+  if (e.type === 'border') music?.playCountryCue(e.country as CountryCueCode);
   if (e.type === 'arrived') music?.playFinishJingle();
   else if (e.type === 'over') music?.stop();
 }
@@ -497,16 +502,21 @@ function showOver(g: Game): void {
   if (canReturn) save('ce.returnUnlocked', true);
 
   // Medale i pocztówki: liczą się wszystkie przejazdy (także łagodne i powrotne).
-  if (progress) {
+  if (progress) void progressModule().then(({ applyRun, saveProgress, summarizeRun }) => {
+    if (!progress) return;
     // Powrót za granicę to nie „dojazd do domu” — medale za dojazd liczymy tylko w stronę Polski.
     const homeward = g.baseWeight === 0;
     const change = applyRun(progress, summarizeRun({ route: g.route, km: g.km, jars: g.jars, parcels: g.parcels,
       phase: homeward ? g.phase : 'over' }, winter && arrived && homeward));
     progress = change.progress;
     void saveProgress(progress);
-    const news = [...change.newMedals.map(medalToast), ...change.newPostcards.map(postcardToast)];
-    news.slice(0, 3).forEach((text, i) => window.setTimeout(() => toast(text), 700 + i * 1800));
-  }
+    if (change.newMedals.length || change.newPostcards.length) {
+      void import('./ui/collection').then(({ medalToast, postcardToast }) => {
+        const news = [...change.newMedals.map(medalToast), ...change.newPostcards.map(postcardToast)];
+        news.slice(0, 3).forEach((text, i) => window.setTimeout(() => toast(text), 700 + i * 1800));
+      });
+    }
+  });
 
   // Po pierwszym przejeździe dociągamy w tle grafiki wszystkich krajów (tryb offline).
   void prefetchPwaAssetsAfterRun();
@@ -546,7 +556,9 @@ function showOver(g: Game): void {
 
   // Kartę renderujemy od razu, żeby kliknięcie „Udostępnij” zachowało gest użytkownika.
   lastCard = cardData(g, joke);
-  cardImage = renderCard(lastCard, 'story').catch(() => null as unknown as Blob);
+  const card = lastCard;
+  cardImage = import('./share/card').then(({ renderCard }) => renderCard(card, 'story')).catch(() => null as unknown as Blob);
+  void import('./share/share');
 
   track('run_end', {
     km: g.km, seconds, cause: arrived ? 'arrived' : g.cause ?? 'ground', mode: g.mode, home: g.route.home as AnalyticsHome,
@@ -559,17 +571,22 @@ function showOver(g: Game): void {
 
 // Natywnie udostępnia platforma (zlecenie 24); jej wynik mapujemy na wyjątki,
 // których oczekuje shareResult (zlecenie 14), żeby działał łańcuch zapasowy.
-setNativeShareAdapter({
-  async share(file, text, url) {
-    const result = await platform.share(file, text, url);
-    if (result === 'cancelled') throw new DOMException('Anulowano', 'AbortError');
-    if (result === 'unavailable') throw new Error('Udostępnianie natywne niedostępne');
-  },
-});
+let shareAdapterSet = false;
 
 async function share(): Promise<void> {
   if (!lastCard) return;
   const image = (await cardImage) ?? undefined;
+  const { setNativeShareAdapter, shareResult } = await import('./share/share');
+  if (!shareAdapterSet) {
+    shareAdapterSet = true;
+    setNativeShareAdapter({
+      async share(file, text, url) {
+        const result = await platform.share(file, text, url);
+        if (result === 'cancelled') throw new DOMException('Anulowano', 'AbortError');
+        if (result === 'unavailable') throw new Error('Udostępnianie natywne niedostępne');
+      },
+    });
+  }
   const outcome = await shareResult(lastCard, { image });
   if (outcome.method !== 'cancelled') {
     const format = outcome.method === 'native' ? 'native' : outcome.method === 'clipboard' ? 'clipboard' : outcome.method === 'web-link' ? 'link' : 'image';
@@ -614,16 +631,21 @@ setHeroSkin(normalizeHeroSkin(settings.skin));
 preloadSprites();
 
 // Nagrywanie rolki 15 s (przycisk widoczny poza samym lotem; ?redakcja=1 — tryb redakcji).
-const recordControl = createRecordControl({
-  canvas,
-  getAudio: () => (audioCtx && audioMix ? { context: audioCtx, source: audioMix } : undefined),
-  overlay: () => ({ km: game?.km ?? 0, route: `${(game?.route ?? route).from.name} → ${(game?.route ?? route).to.name}` }),
-  portalUrl: () => portalLink(settings.home, 'video'),
-  shareVideo: (file, text, url) => platform.share(file, text, url),
-  saveVideo: (video) => saveRecordedVideo(video),
-});
-$('stage').appendChild(recordControl.element);
+let recordControl: { element: HTMLElement } | null = null;
+// Moduł rolek ładujemy po pierwszej klatce — nie spowalnia startu na słabym internecie.
+window.setTimeout(() => void import('./ui/record').then(({ createRecordControl }) => {
+  recordControl = createRecordControl({
+    canvas,
+    getAudio: () => (audioCtx && audioMix ? { context: audioCtx, source: audioMix } : undefined),
+    overlay: () => ({ km: game?.km ?? 0, route: `${(game?.route ?? route).from.name} → ${(game?.route ?? route).to.name}` }),
+    portalUrl: () => portalLink(settings.home, 'video'),
+    shareVideo: (file, text, url) => platform.share(file, text, url),
+  });
+  $('stage').appendChild(recordControl.element);
+  syncRecordVisibility();
+}), 800);
 function syncRecordVisibility(): void {
+  if (!recordControl) return;
   const playing = game?.phase === 'playing';
   const recording = recordControl.element.getAttribute('data-phase') === 'recording';
   recordControl.element.hidden = (playing && !recording) || !ui.garage.hidden || !ui.league.hidden || !ui.album.hidden;
@@ -631,10 +653,12 @@ function syncRecordVisibility(): void {
 setInterval(syncRecordVisibility, 250);
 fillMenu();
 requestAnimationFrame(frame);
+// Przełącznik języków (i tłumaczenie menu) po pierwszej klatce — nie spowalnia startu.
+requestAnimationFrame(() => void import('./ui/language-switcher'));
 
 // Pierwsze uruchomienie: wybór kraju i miasta. Kto już grał (ma zapisane ustawienia), nie widzi go wcześniej.
-void shouldShowOnboarding(params).then((show) => {
-  if (!show) return;
+void import('./ui/onboarding').then(async ({ ONBOARDING_STORAGE_KEY, mountOnboarding, shouldShowOnboarding }) => {
+  if (!(await shouldShowOnboarding(params))) return;
   if (returningPlayer) {
     void platform.storage.set(ONBOARDING_STORAGE_KEY, '1');
     return;

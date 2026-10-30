@@ -1,9 +1,5 @@
 import { platform } from '../platform';
 import * as pl from './lang/pl';
-import en from './lang/en';
-import nl from './lang/nl';
-import de from './lang/de';
-import fr from './lang/fr';
 import { PL_MENU, type GameLocale } from './lang/schema';
 import type { CountryCode } from '../core/route';
 import type { ObstacleKind } from '../core/obstacles';
@@ -16,16 +12,41 @@ export const LANGUAGE_NAMES: Record<Language, string> = {
 
 export const LANGUAGE_STORAGE_KEY = 'ce.language';
 
-const dictionaries = {
-  pl: {
+const PL_LOCALE = {
     COUNTRY_NAME: pl.COUNTRY_NAME, COUNTRY_LOCATIVE: pl.COUNTRY_LOCATIVE,
     OBSTACLE_NAME: pl.OBSTACLE_NAME, FAIL_JOKES: pl.FAIL_JOKES,
     PICKUP_TOAST: pl.PICKUP_TOAST, BORDER_TEXTS: pl.BORDER_TEXTS,
     ARRIVAL_TEXTS: pl.ARRIVAL_TEXTS, NEAR_MISS_TEXTS: pl.NEAR_MISS_TEXTS,
     PICKUP_TEXTS: pl.PICKUP_TEXTS, MILESTONE_TEXTS: pl.MILESTONE_TEXTS,
     WIGILIA_TEXTS: pl.WIGILIA_TEXTS, UI: pl.UI, MENU: PL_MENU,
-  }, en, nl, de, fr,
-} satisfies Record<Language, GameLocale>;
+} satisfies GameLocale;
+
+/**
+ * Obce języki ładujemy dopiero po wybraniu (osobne pliki JS) — polski start
+ * na słabym internecie nie płaci za cztery słowniki, których prawie nikt nie użyje.
+ */
+const LOADERS: Record<Exclude<Language, 'pl'>, () => Promise<{ default: GameLocale }>> = {
+  en: () => import('./lang/en'),
+  nl: () => import('./lang/nl'),
+  de: () => import('./lang/de'),
+  fr: () => import('./lang/fr'),
+};
+const dictionaries: Partial<Record<Language, GameLocale>> = { pl: PL_LOCALE };
+const pending = new Map<Language, Promise<void>>();
+
+/** Wczytuje słownik języka; po wczytaniu powiadamia subskrybentów, jeśli to bieżący język. */
+export function loadLanguage(language: Language): Promise<void> {
+  if (dictionaries[language]) return Promise.resolve();
+  let job = pending.get(language);
+  if (!job) {
+    job = LOADERS[language as Exclude<Language, 'pl'>]().then((mod) => {
+      dictionaries[language] = mod.default;
+      if (language === current) for (const callback of [...subscribers]) callback(language);
+    }).catch(() => { pending.delete(language); });
+    pending.set(language, job);
+  }
+  return job;
+}
 
 export type UiKey = Extract<keyof GameLocale['UI'], string>;
 export type MenuKey = Extract<keyof GameLocale['MENU'], string>;
@@ -82,6 +103,7 @@ function apply(language: Language): void {
   current = language;
   if (typeof document !== 'undefined') document.documentElement.lang = language;
   for (const callback of [...subscribers]) callback(language);
+  void loadLanguage(language);
 }
 
 /**
@@ -119,7 +141,7 @@ export function onLanguageChange(callback: (language: Language) => void): () => 
 }
 
 export function getTexts(): GameLocale {
-  return dictionaries[current];
+  return dictionaries[current] ?? PL_LOCALE;
 }
 
 export function t(key: TranslationKey, vars?: Record<string, string | number>): string {
@@ -157,3 +179,4 @@ export { fill } from './lang/pl';
 
 // Ładuje zapisany wybór również w aplikacjach natywnych bez zmian w bootstrapie.
 void initializeLanguage();
+void loadLanguage(current);

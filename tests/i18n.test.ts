@@ -2,7 +2,7 @@ import { afterEach, describe, expect, it } from 'vitest';
 import {
   ARRIVAL_TEXTS, BORDER_TEXTS, COUNTRY_NAME, FAIL_JOKES, LANGUAGES,
   MILESTONE_TEXTS, NEAR_MISS_TEXTS, PICKUP_TEXTS, UI, WIGILIA_TEXTS,
-  getLanguage, getTexts, onLanguageChange, setLanguage, t,
+  getLanguage, getTexts, loadLanguage, onLanguageChange, setLanguage, t,
 } from '../src/content/i18n';
 import { cityNameForShare, localizedCityName } from '../src/content/lang/cities';
 import { PL_CITIES, START_CITIES } from '../src/core/route';
@@ -13,8 +13,9 @@ afterEach(() => setLanguage(initial));
 
 describe('Wersje językowe 58', () => {
   for (const language of LANGUAGES) {
-    it(`ma pełne słowniki i poprawne placeholdery: ${language}`, () => {
+    it(`ma pełne słowniki i poprawne placeholdery: ${language}`, async () => {
       setLanguage(language);
+      await loadLanguage(language);
       const dict = getTexts();
       expect(Object.keys(dict.UI).sort()).toEqual(Object.keys(pl.UI).sort());
       expect(Object.keys(dict.COUNTRY_NAME).sort()).toEqual(Object.keys(pl.COUNTRY_NAME).sort());
@@ -41,8 +42,9 @@ describe('Wersje językowe 58', () => {
     });
   }
 
-  it('udostępnia bieżący język również przez dawne obiekty i tablice', () => {
+  it('udostępnia bieżący język również przez dawne obiekty i tablice', async () => {
     setLanguage('en');
+    await loadLanguage('en');
     expect(COUNTRY_NAME.BE).toBe('Belgium');
     expect(UI.over).toBe('End of the road!');
     expect(ARRIVAL_TEXTS[0]).toContain('home');
