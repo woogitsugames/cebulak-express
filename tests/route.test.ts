@@ -80,6 +80,8 @@ describe('korekta korytarzy i realnych kilometrów [42]', () => {
   // Berlin–Kraków: https://maps.adac.de/routenplaner/route-von-berlin-nach-krakau (597 km)
   // Monachium–Kraków: https://maps.adac.de/routenplaner/route-von-muenchen-nach-krakau (912 km, przez Czechy)
   // Monachium–Wrocław: https://autotrasa.pl/trasy/wroclaw-monachium/ (719 km, przez Niemcy)
+  // Monachium–Katowice: https://autotrasa.pl/trasy/katowice-monachium/ (836 km, przez Czechy)
+  // Monachium–Rzeszów: https://autotrasa.pl/trasy/rzeszow-monachium/ (1079 km, przez Czechy)
   const references = [
     { from: 'berlin', to: 'szczecin', realKm: 150, border: 'granica-kolbaskowo' },
     { from: 'berlin', to: 'wroclaw', realKm: 344, border: 'granica-olszyna' },
@@ -88,6 +90,8 @@ describe('korekta korytarzy i realnych kilometrów [42]', () => {
     { from: 'berlin', to: 'krakow', realKm: 597, border: 'granica-olszyna' },
     { from: 'monachium', to: 'wroclaw', realKm: 719, border: 'granica-jedrzychowice' },
     { from: 'monachium', to: 'krakow', realKm: 912, border: 'granica-jedrzychowice' },
+    { from: 'monachium', to: 'katowice', realKm: 836, border: 'granica-jedrzychowice' },
+    { from: 'monachium', to: 'rzeszow', realKm: 1079, border: 'granica-jedrzychowice' },
   ] as const;
 
   for (const { from, to, realKm, border } of references) {
