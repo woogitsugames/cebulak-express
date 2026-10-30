@@ -2,8 +2,20 @@ name: iOS (symulator)
 
 on:
   pull_request:
+    paths:
+      - 'ios/**'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'capacitor.config.ts'
+      - '.github/workflows/ios.yml'
   push:
-    branches: [main, zlecenie/25-ios]
+    branches: [main]
+    paths:
+      - 'ios/**'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'capacitor.config.ts'
+      - '.github/workflows/ios.yml'
   workflow_dispatch:
 
 permissions:
@@ -16,7 +28,7 @@ concurrency:
 jobs:
   ios:
     name: iOS Simulator (bez podpisu)
-    runs-on: macos-latest
+    runs-on: macos-26
     timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
@@ -25,7 +37,10 @@ jobs:
           node-version: 22
           cache: npm
       - name: Wersja Xcode (Capacitor 8 wymaga Xcode 26+)
-        run: xcodebuild -version
+        run: |
+          xcodebuild -version
+          major=$(xcodebuild -version | head -1 | sed -E 's/Xcode ([0-9]+).*/\1/')
+          if [ "$major" -lt 26 ]; then echo "::error::Capacitor 8 wymaga Xcode 26+, jest $major"; exit 1; fi
       - name: Instalacja z lockfile
         run: npm ci
       - name: Kontrola typów

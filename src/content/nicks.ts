@@ -56,7 +56,7 @@ export const NICK_ADJECTIVES: readonly GenderedWord[] = [
   { m: 'Słoneczny', f: 'Słoneczna' },
   { m: 'Deszczowy', f: 'Deszczowa' },
   { m: 'Wietrzny', f: 'Wietrzna' },
-  { m: 'Tęczowy', f: 'Tęczowa' },
+  { m: 'Serdeczny', f: 'Serdeczna' },
   { m: 'Herbaciany', f: 'Herbaciana' },
   { m: 'Plecakowy', f: 'Plecakowa' },
   { m: 'Niezmordowany', f: 'Niezmordowana' },
@@ -116,7 +116,10 @@ const ALL_CITIES: readonly City[] = [...Object.values(START_CITIES).flat(), ...P
 const CITY_BY_ID = new Map(ALL_CITIES.map((city) => [city.id, city]));
 
 // „Ze” przed trudnymi zbitkami spółgłosek; pozostałe miasta wymagają „z”.
-const ZE_CITIES = new Set(['szczecin', 'skarzysko-kamienna', 'strzelce-opolskie', 'slupsk', 'stalowa-wola']);
+const ZE_CITIES = new Set([
+  'szczecin', 'skarzysko-kamienna', 'strzelce-opolskie', 'slupsk', 'stalowa-wola',
+  'zambrow', 'zamosc', 'zakopane', 'zielona-gora', 'zurych', 'stavanger',
+]);
 
 const NICK_ID_PATTERN = /^a(\d{2})-n(\d{2})-c-([a-z][a-z0-9-]*)-g-([mf])-([1-9]\d{2})-h([0-9a-z]{7})$/;
 const NO_ADJECTIVE = 99; // Rezerwacja w dwucyfrowym polu aNN.

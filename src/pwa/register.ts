@@ -4,7 +4,11 @@ import { Capacitor } from '@capacitor/core';
  * Rejestracja tylko na produkcyjnym, bezpiecznym adresie web, poza Capacitor i iframe.
  * Koordynator wywołuje: void registerPwa(); w src/main.ts.
  */
-export async function registerPwa(): Promise<ServiceWorkerRegistration | null> {
+/**
+ * `onUpdateReady` dostaje funkcję przeładowania — gra wywołuje ją dopiero w menu
+ * albo na ekranie wyniku, żeby aktualizacja nie przerwała przejazdu.
+ */
+export async function registerPwa(onUpdateReady: (reload: () => void) => void = (reload) => reload()): Promise<ServiceWorkerRegistration | null> {
   if (
     !import.meta.env.PROD ||
     !window.isSecureContext ||
@@ -21,7 +25,7 @@ export async function registerPwa(): Promise<ServiceWorkerRegistration | null> {
       navigator.serviceWorker.addEventListener('controllerchange', () => {
         if (reloaded) return;
         reloaded = true;
-        window.location.reload();
+        onUpdateReady(() => window.location.reload());
       });
     }
 

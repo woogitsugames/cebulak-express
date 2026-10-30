@@ -200,8 +200,9 @@ function synthesize(voice: Voice, name: SfxName, pitch: number, start: number, g
 /**
  * Nie inicjalizuje urządzenia dźwiękowego do pierwszego `unlock()` lub `play()`.
  * Działa również bez Web Audio (Node, SSR, ograniczone WebView): cichy no-op.
+ * `destination` pozwala podpiąć efekty pod wspólny miks gry (potrzebny do nagrywania rolek).
  */
-export function createSfx(ctx?: AudioContext): SfxPlayer {
+export function createSfx(ctx?: AudioContext, destination?: AudioNode): SfxPlayer {
   let context: AudioContext | undefined = ctx;
   let master: GainNode | undefined;
   let noiseBuffer: AudioBuffer | undefined;
@@ -221,7 +222,8 @@ export function createSfx(ctx?: AudioContext): SfxPlayer {
     if (!master) {
       master = audio.createGain();
       master.gain.value = muted ? 0 : MASTER_LEVEL;
-      master.connect(audio.destination);
+      // Wspólny miks (muzyka + efekty + nagrywanie rolki) albo wprost głośniki.
+      master.connect(destination ?? audio.destination);
     }
     return master;
   }
