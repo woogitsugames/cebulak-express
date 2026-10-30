@@ -80,6 +80,7 @@ interface TextOptions {
   weight?: number;
   minSize?: number;
   align?: CanvasTextAlign;
+  outline?: boolean;
 }
 
 /** Tekst zostaje na kanwie także przy bardzo długich nazwach miast. */
@@ -104,6 +105,12 @@ function fittedText(
   ctx.textAlign = options.align ?? 'center';
   ctx.textBaseline = 'alphabetic';
   ctx.fillStyle = options.color ?? '#fffdf0';
+  if (options.outline) {
+    ctx.strokeStyle = '#145542';
+    ctx.lineWidth = Math.max(8, Math.round(size * 0.045));
+    ctx.lineJoin = 'round';
+    ctx.strokeText(text, x, baseline);
+  }
   ctx.fillText(text, x, baseline);
   ctx.restore();
 }
@@ -235,8 +242,8 @@ function drawLeague(ctx: CardContext, data: CardData, story: boolean): void {
   }
 }
 
-function drawCardContent(ctx: CardContext, data: CardData, story: boolean): void {
-  drawLogo(ctx, currentLogo, story);
+function drawCardContent(ctx: CardContext, data: CardData, story: boolean, logo: HTMLImageElement | null): void {
+  drawLogo(ctx, logo, story);
   const daily = data.daily?.trim();
   if (daily) {
     const y = story ? 308 : 211;
@@ -247,7 +254,7 @@ function drawCardContent(ctx: CardContext, data: CardData, story: boolean): void
   fittedText(ctx, data.arrived ? 'DOLECIAŁEM DO DOMU!' : 'KONIEC TRASY!',
     540, story ? 470 : 297, 920, story ? 65 : 54, { color: '#145240', minSize: 39, weight: 900 });
   fittedText(ctx, formatKilometres(data.km), 540, story ? 778 : 480,
-    950, story ? 255 : 195, { color: '#fffdf2', minSize: 100, weight: 900 });
+    950, story ? 255 : 195, { color: '#fffdf2', minSize: 100, weight: 900, outline: true });
   fittedText(ctx, 'KILOMETRÓW', 540, story ? 857 : 536, 850,
     story ? 64 : 48, { color: '#144c3f', minSize: 34, weight: 900 });
   fittedText(ctx, 'Z ' + data.from.fromName + ' do ' + data.to.toName, 540,
@@ -261,8 +268,6 @@ function drawCardContent(ctx: CardContext, data: CardData, story: boolean): void
   fittedText(ctx, footer, 540, story ? 1804 : 1040, 925, story ? 47 : 32,
     { color: '#ffffff', minSize: 27, weight: 900 });
 }
-
-let currentLogo: HTMLImageElement | null = null;
 
 async function optionalImage(path: string): Promise<HTMLImageElement | null> {
   if (typeof Image === 'undefined') return null;
@@ -327,11 +332,6 @@ export async function renderCard(data: CardData, format: CardFormat): Promise<Bl
   if (background) ctx.drawImage(background, 0, 0, width, height);
   else placeholderBackground(ctx, height);
   // Logo jest dobrowolnym zasobem T10 — po jego wgraniu podmieniamy zaślepkę.
-  currentLogo = logo;
-  try {
-    drawCardContent(ctx, data, format === 'story');
-  } finally {
-    currentLogo = null;
-  }
+  drawCardContent(ctx, data, format === 'story', logo);
   return pngBlob(canvas);
 }
