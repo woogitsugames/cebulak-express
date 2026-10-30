@@ -1,4 +1,4 @@
-import type { ObstacleKind } from '../core/obstacles';
+import type { ObstacleKind, PickupKind } from '../core/obstacles';
 import type { CountryCode } from '../core/route';
 
 /**
@@ -46,19 +46,248 @@ export const OBSTACLE_NAME: Record<ObstacleKind, string> = {
 
 /** Jeden żart na ekranie końca, losowany z puli dla przyczyny. */
 export const FAIL_JOKES: Record<ObstacleKind, string[]> = {
-  viaduct: ['Kombi było jednak trochę za wysokie.', 'Walizki na dachu miały inne zdanie.'],
-  sign: ['Do Polski? Prosto. Podobno.', 'Znak był duży. Za duży.'],
-  crane: ['Budowa trwa. Twoja podróż — już nie.', 'Dźwig nie ustąpił pierwszeństwa.'],
-  roadworks: ['Remont. Objazd 40 km.', 'Pachołki zawsze wygrywają.'],
-  barrier: ['Szlaban był szybszy.', 'Zapomniałeś biletu. I wysokości.'],
-  truck: ['W trasie zawsze znajdzie się większy.', 'Ciężarówka też jechała do domu.'],
-  ground: ['Za dużo słoików, za mało lotu.', 'Lądowanie awaryjne. Słoiki całe!'],
+  viaduct: [
+    "Bagaż na dachu chciał mieć lepszy widok.",
+    "Wiadukt sprawdził wysokość. Bardzo dokładnie.",
+    "Kombi zmieściło się. Bagaż miał inne plany.",
+    "Walizka z dachu pierwsza zauważyła wiadukt.",
+    "Na mapie nie było informacji o centymetrach.",
+    "Wysokość auta: optymistyczna. Wysokość mostu: stała.",
+    "Ostatni słoik na dachu był o jeden za dużo.",
+    "Bagażnik dachowy poprosił o niższą trasę.",
+  ],
+  sign: [
+    "Drogowskaz mówił „prosto”. Auto zrozumiało „w górę”.",
+    "Znak był duży. Plan podróży jeszcze większy.",
+    "Kierunek dobry. Wysokość już nie.",
+    "Znak też chciał zobaczyć te słoiki z bliska.",
+    "Znak ostrzegał. My liczyliśmy słoiki.",
+    "Do domu miało być na skróty. Znak się nie zgodził.",
+    "Ten drogowskaz wskazał koniec trasy aż za dobrze.",
+    "Mapa pokazała drogę. O znaku zapomniała.",
+  ],
+  crane: [
+    "Dźwig miał swój plan. Kombi też.",
+    "Prace na wysokości. Dosłownie.",
+    "Budowa trwa dalej. Ten przejazd już nie.",
+    "Kierowca patrzył na drogę. Dźwig patrzył z góry.",
+    "Na budowie wszystko rośnie. Oprócz zapasu miejsca.",
+    "Kombi spotkało dźwig. Za blisko.",
+    "Ktoś podniósł belkę. My podnieśliśmy tylko brwi.",
+    "Z dźwigiem lepiej spotkać się przy kawie.",
+  ],
+  roadworks: [
+    "Remont. Objazd 40 km.",
+    "Pachołki stały pewnie. My trochę mniej.",
+    "Asfalt w remoncie. Humor jeszcze na miejscu.",
+    "Nowa nawierzchnia? Najpierw trzeba ją znaleźć.",
+    "Wszędzie taśma, a nigdzie drogi na skróty.",
+    "Na mapie autostrada. W praktyce: slalom.",
+    "Kawa się skończyła szybciej niż remont.",
+    "Znów objazd. Słoiki znają już pół Europy.",
+  ],
+  barrier: [
+    "Szlaban wybrał zły moment na zamknięcie.",
+    "Bilet w kieszeni. Odstęp za mały.",
+    "Kombi chciało przejechać. Szlaban chciał zostać.",
+    "Przy szlabanie liczy się cierpliwość. I hamulec.",
+    "Szlaban opadł, zanim skończyła się kawa.",
+    "Plan był prosty: przejazd bez zatrzymywania. Nie wyszło.",
+    "Bagaż na dachu nie zmieścił się w planie przejazdu.",
+    "Wszystko gotowe, tylko szlaban miał inne plany.",
+  ],
+  truck: [
+    "Ciężarówka była bliżej, niż pokazywało lusterko.",
+    "Zapas miejsca: na jedną torbę za mało.",
+    "Kombi i ciężarówka miały ten sam fragment drogi.",
+    "Ciężarówka też wiozła coś od mamy.",
+    "Ciężarówka zajęła pas. My zajęliśmy się restartem.",
+    "Nie każdy skrót mieści całe kombi.",
+    "Na drodze miejsca starczyło. Na manewr już nie.",
+    "Walizki kiwnęły się na pożegnanie.",
+  ],
+  ground: [
+    "Ziemia przyciąga. Zwłaszcza pełne kombi.",
+    "Miękkie lądowanie? Tym razem tylko w planach.",
+    "Grawitacja upomniała się o swoje.",
+    "Słoiki całe! Zawieszenie ma inne zdanie.",
+    "Asfalt był bliżej, niż się wydawało.",
+    "Jeszcze jeden podskok i byłoby pięknie.",
+    "Bagaż jest gotowy na kolejną próbę.",
+    "Kombi wróciło na ziemię. Dosłownie.",
+  ],
 };
 
 export const PICKUP_TOAST = {
   parcel: 'Paczka od mamy! +{km} km',
   jar: 'Słoik ogórków! +{km} km',
 } as const;
+
+/** Powitania po wjeździe do kraju (wybierane losowo przy zdarzeniu granicy). */
+export const BORDER_TEXTS: Record<CountryCode, string[]> = {
+  BE: [
+    "Witamy w Belgii! Walizki trzymają fason.",
+    "Belgia! Kawa na wynos i dalej w drogę.",
+    "Wjeżdżasz do Belgii. Bagaże jadą razem.",
+    "Belgia na trasie! Jeszcze sporo przed nami.",
+  ],
+  NL: [
+    "Witamy w Holandii! Rowery przy kanałach.",
+    "Holandia! Przy kanałach zwolnijmy na chwilę.",
+    "Wjeżdżasz do Holandii. Dach wciąż pełny.",
+    "Holandia na trasie. Kawa nadal ciepła.",
+  ],
+  DE: [
+    "Witamy w Niemczech! Trasa trwa.",
+    "Niemcy! Kolejny kilometr bliżej domu.",
+    "Wjeżdżasz do Niemiec. Słoiki w komplecie.",
+    "Niemcy na trasie. Bagażnik pełen nadziei.",
+  ],
+  UK: [
+    "Witamy w Wielkiej Brytanii! Bagaż nie protestuje.",
+    "Wielka Brytania! Kawa i ruszamy dalej.",
+    "Wjeżdżasz do Wielkiej Brytanii. Uważaj na pasy.",
+    "Wielka Brytania na trasie. Kierunek: dom.",
+  ],
+  FR: [
+    "Witamy we Francji! Słoiki jadą z nami.",
+    "Francja! Kawa smakuje jak krótki postój.",
+    "Wjeżdżasz do Francji. Bagaże dopięte.",
+    "Francja na trasie. Jeszcze chwila widoków.",
+  ],
+  CH: [
+    "Witamy w Szwajcarii! Górskie widoki gratis.",
+    "Szwajcaria! Walizki podziwiają góry.",
+    "Wjeżdżasz do Szwajcarii. Trzymaj kurs.",
+    "Szwajcaria na trasie. Dach dalej zajęty.",
+  ],
+  NO: [
+    "Witamy w Norwegii! Fiordy zostają za oknem.",
+    "Norwegia! Kombi i widoki w jednym kadrze.",
+    "Wjeżdżasz do Norwegii. Kawa się przyda.",
+    "Norwegia na trasie. Bagaże bez zmian.",
+  ],
+  DK: [
+    "Witamy w Danii! Dalej już według mapy.",
+    "Dania! Most za mostem, dom coraz bliżej.",
+    "Wjeżdżasz do Danii. Bagaże nadal na dachu.",
+    "Dania na trasie. Kawa jeszcze nie wystygła.",
+  ],
+  SE: [
+    "Witamy w Szwecji! Droga wśród lasów.",
+    "Szwecja! Słoiki podróżują z widokiem.",
+    "Wjeżdżasz do Szwecji. Mosty już czekają.",
+    "Szwecja na trasie. Licznik nie odpoczywa.",
+  ],
+  PL: [
+    "Polska! Jeszcze tylko do domu.",
+    "Witamy w Polsce! Mama pewnie już czeka.",
+    "Wjeżdżasz do Polski. Słoiki blisko celu.",
+    "Polska na trasie! Pierogi coraz bliżej.",
+  ],
+};
+
+/** Teksty na ekranie mety, losowane zamiast stałego podpisu. */
+export const ARRIVAL_TEXTS: string[] = [
+  "Jesteś w domu! Mama już nakrywa do stołu.",
+  "Koniec trasy. Początek dokładki.",
+  "Walizki jeszcze w kombi, a obiad już na stole.",
+  "Mama pyta: „Zjesz coś?” To nie jest pytanie.",
+  "Na stole pierogi. W bagażniku jeszcze pół domu.",
+  "Na miejscu! Herbata stygnie, wszyscy czekają.",
+  "Kombi odpoczywa. Rodzinny stół dopiero zaczyna.",
+  "Dojazd! Najpierw uściski, potem dokładka.",
+  "Dojazd zaliczony. Mama już niesie dodatkowy talerz.",
+  "W drodze liczyło się kilometry. Teraz liczą się pierogi.",
+  "Na drogę powrotną mama szykuje już słoiki.",
+  "Walizki ledwo rozpakowane, a słoiki na powrót już czekają.",
+  "Jesteś na miejscu. Dom pachnie obiadem.",
+  "Kluczyki odłożone. Czas usiąść przy stole.",
+];
+
+/** Krótkie komunikaty za minięcie przeszkody o włos. */
+export const NEAR_MISS_TEXTS: string[] = [
+  "O włos! Lusterko nawet nie drgnęło.",
+  "Centymetr zapasu. Liczymy jako sukces.",
+  "Blisko! Słoiki wstrzymały oddech.",
+  "O włos! Dach nadal tam, gdzie był.",
+  "Uff! Walizki się nie zorientowały.",
+  "Jeszcze chwila i byłby skrót... do menu.",
+  "Prawie! Kombi przeszło na palcach.",
+  "O włos! Kawa została w kubku.",
+  "Zmieszczone. Nikt nie pyta jak.",
+  "To nie był manewr. To była precyzja.",
+  "Blisko! Nawet mapa przestała mówić.",
+  "O włos! Następny zakręt już spokojniej.",
+];
+
+/** Warianty komunikatów o znajdźce; {km} wypełnia funkcja fill(). */
+export const PICKUP_TEXTS: Record<PickupKind, string[]> = {
+  parcel: [PICKUP_TOAST.parcel,
+    "Paczka wskoczyła na dach! +{km} km",
+    "Jeszcze jedna paczka? +{km} km",
+    "Paczka zabrana. Dach daje radę! +{km} km",
+    "Paczka z domu? Bierzemy! +{km} km",
+    "Nowy bagaż, nowy rekord? +{km} km",
+    "Walizki zrobiły miejsce. +{km} km",
+    "Paczka z niespodzianką! +{km} km",
+  ],
+  jar: [PICKUP_TOAST.jar,
+    "Słoik złapany! +{km} km",
+    "Jeszcze jeden słoik! +{km} km",
+    "Wieczko trzyma. +{km} km",
+    "Słoik do kolekcji! +{km} km",
+    "Domowe zapasy rosną! +{km} km",
+    "Ostrożnie, szkło! +{km} km",
+    "Słoik bez rysy. +{km} km",
+  ],
+};
+
+/** Toasty co 100 km; {km} oznacza osiągnięty dystans. */
+export const MILESTONE_TEXTS: string[] = [
+  "{km} km! Kawa zasłużona.",
+  "{km} km! Dach nadal pełny.",
+  "{km} km! Bagaże nie narzekają.",
+  "{km} km! Jeszcze trochę do obiadu.",
+  "{km} km! Licznik pracuje za nas.",
+  "{km} km! Coraz bliżej domowego stołu.",
+  "{km} km! Kierunek wciąż ten sam.",
+  "{km} km! Słoiki jadą w pierwszej klasie.",
+  "{km} km! Mapa potwierdza postęp.",
+  "{km} km! Nawet walizki są dumne.",
+  "{km} km! Asfalt ucieka pod kołami.",
+  "{km} km! Przerwa? Jeszcze jeden odcinek.",
+  "{km} km! Na dachu komplet.",
+  "{km} km! Zapach pierogów coraz bliżej.",
+  "{km} km! Jeden zakręt po drugim.",
+  "{km} km! Kawa mogłaby już być na miejscu.",
+  "{km} km! Kombi ma dziś dobry dzień.",
+  "{km} km! Bagażnik trzyma fason.",
+  "{km} km! Jeszcze trochę śpiewania w aucie.",
+  "{km} km! Dom rośnie na horyzoncie.",
+];
+
+/** Sezon „Na Wigilię!” — podróż do domu, bez żartów z wiary. */
+export const WIGILIA_TEXTS: string[] = [
+  "Na Wigilię! Jeszcze zdążymy na barszcz.",
+  "Pierogi czekają. Słoiki też jadą.",
+  "Na Wigilię! Nie zapomnij o szaliku.",
+  "Coraz bliżej stołu z uszkami.",
+  "Zimna szyba, ciepłe myśli o domu.",
+  "Świąteczna trasa. Bagażnik po dach.",
+  "Na Wigilię! Ktoś już szykuje dodatkowy talerz.",
+  "Biała droga? Oby tylko na obrazku.",
+  "Jeszcze parę kilometrów do zapachu pierników.",
+  "Kombi wiezie prezenty. I trzy torby „na wszelki”.",
+  "Na Wigilię! Termos już ma ostatnie słowo.",
+  "Zimowa podróż. Ogrzewanie działa, humor też.",
+  "Kapusta z grzybami już pewnie czeka.",
+  "Na Wigilię! Walizki chcą już do domu.",
+  "Najlepszy widok? Światło w rodzinnym oknie.",
+  "Podróż długa, lista potraw jeszcze dłuższa.",
+  "Śnieg za oknem, pierogi w planach.",
+  "Na Wigilię! Bez objazdów byłoby za łatwo.",
+];
 
 export const UI = {
   tapToStart: 'Dotknij, aby wystartować',
@@ -78,6 +307,12 @@ export const UI = {
   modeCozy: 'Łagodny',
   shareText: 'Przeleciałem {km} km z {from} w stronę {to}! Dasz radę dalej?',
   shareArrivedText: 'Doleciałem z {from} do {to} w {sec} s! A Ty?',
+  daily: 'Wyzwanie dnia',
+  dailyHint: 'Ta sama trasa dla wszystkich: {title}',
+  league: 'Liga Polonii',
+  close: 'Zamknij',
+  portal: 'Co słychać u Polonii {where}?',
+  updateReady: 'Nowa wersja gry gotowa — wczyta się w menu.',
 } as const;
 
 export function fill(template: string, vars: Record<string, string | number>): string {

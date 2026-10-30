@@ -4,6 +4,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no" />
     <meta name="theme-color" content="#1b2733" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <link rel="apple-touch-icon" href="assets/brand/icon-1024.png" />
     <meta name="description" content="Polonijna gra na jeden palec: przeładowane kombi leci z Twojego kraju do domu w Polsce." />
     <title>Cebulak Express</title>
     <link rel="stylesheet" href="/src/style.css" />
@@ -40,6 +42,16 @@
         </div>
         <p class="route" id="route-info"></p>
         <button type="button" class="btn primary" id="btn-start">Lecimy!</button>
+        <div class="row">
+          <button type="button" class="btn" id="btn-daily">Wyzwanie dnia</button>
+          <button type="button" class="btn" id="btn-league">Liga Polonii</button>
+        </div>
+        <p class="route" id="daily-info"></p>
+      </section>
+
+      <section id="league" class="panel" hidden>
+        <div id="league-body"></div>
+        <button type="button" class="btn link" id="btn-league-close">Zamknij</button>
       </section>
 
       <section id="over" class="panel" hidden>
@@ -53,6 +65,7 @@
           <button type="button" class="btn primary" id="btn-again">Jeszcze raz</button>
           <button type="button" class="btn" id="btn-share">Udostępnij</button>
         </div>
+        <a class="portal" id="over-portal" target="_blank" rel="noopener noreferrer" hidden></a>
         <button type="button" class="btn link" id="btn-menu">Zmień trasę</button>
       </section>
     </div>

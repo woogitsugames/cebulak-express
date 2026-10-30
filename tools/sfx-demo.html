@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Odsłuch efektów — Cebulak Express</title>
+  <style>
+    :root { color-scheme: dark; font-family: system-ui, sans-serif; background: #111827; color: #f8fafc; }
+    * { box-sizing: border-box; }
+    body { max-width: 860px; margin: 0 auto; padding: 28px 20px 60px; }
+    h1 { font-size: clamp(1.5rem, 4vw, 2.2rem); margin-bottom: 8px; }
+    p { color: #cbd5e1; line-height: 1.6; }
+    .controls { display: flex; flex-wrap: wrap; gap: 20px; padding: 20px; border: 1px solid #475569; border-radius: 12px; margin: 24px 0; }
+    label { display: flex; align-items: center; gap: 9px; cursor: pointer; }
+    input[type="range"] { width: 130px; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; }
+    button { width: 100%; min-height: 90px; border: 1px solid #64748b; background: #1e293b; color: white; border-radius: 12px; font: inherit; cursor: pointer; text-align: left; padding: 15px; }
+    button:hover, button:focus-visible { border-color: #fbbf24; background: #334155; }
+    button:active { transform: translateY(2px); }
+    button strong { display: block; font-size: 1.05rem; }
+    button span { display: block; color: #cbd5e1; font-size: 0.88rem; margin-top: 5px; }
+    footer { margin-top: 26px; font-size: 0.87rem; color: #94a3b8; }
+    code { color: #fde68a; }
+  </style>
+</head>
+<body>
+  <h1>Efekty dźwiękowe — odsłuch</h1>
+  <p>Wszystkie dźwięki powstają na żywo w Web Audio. Naciśnij dowolny przycisk, aby odblokować audio i posłuchać efektu. Na telefonie można sprawdzić także wibracje.</p>
+  <div class="controls" role="group" aria-label="Ustawienia odtwarzania">
+    <label><input id="muted" type="checkbox" /> Wycisz dźwięki</label>
+    <label><input id="haptics" type="checkbox" checked /> Wibracje</label>
+    <label>Głośność <input id="volume" type="range" min="0" max="1" step="0.05" value="1" /></label>
+    <label>Wysokość <input id="pitch" type="range" min="0.75" max="1.25" step="0.05" value="1" /></label>
+  </div>
+  <div class="grid" id="sounds"></div>
+  <footer>Uruchom <code>npm run dev</code> w katalogu projektu, a następnie otwórz <code>/tools/sfx-demo.html</code>. Przeglądarki bez Web Audio lub obsługi wibracji pomijają niedostępne efekty.</footer>
+  <script type="module">
+    import { createSfx, SFX_NAMES, SFX_DURATION_MS } from '../src/audio/sfx.ts';
+    import { createHaptics } from '../src/audio/haptics.ts';
+
+    const sfx = createSfx();
+    const haptics = createHaptics();
+    const $ = (id) => document.getElementById(id);
+    const labels = {
+      flap: ['Podskok', 'Lekki, klaksonowy pyk'],
+      jar: ['Słoik', 'Szklane stuknięcie'],
+      parcel: ['Paczka', 'Szelest kartonu i papieru'],
+      overload: ['Przeciążenie', 'Sprężyna zawieszenia: boing!'],
+      hit: ['Kolizja', 'Blacha i rozsypane walizki'],
+      border: ['Granica', 'Podwójny dzwonek'],
+      arrived: ['Dotarcie do domu', 'Krótka fanfara'],
+      click: ['Kliknięcie', 'Przycisk interfejsu'],
+    };
+
+    for (const name of SFX_NAMES) {
+      const button = document.createElement('button');
+      const title = document.createElement('strong');
+      const description = document.createElement('span');
+      title.textContent = labels[name][0];
+      description.textContent = `${labels[name][1]} · ${SFX_DURATION_MS[name]} ms`;
+      button.append(title, description);
+      button.addEventListener('click', () => {
+        void sfx.unlock();
+        sfx.play(name, { volume: Number($('volume').value), pitch: Number($('pitch').value) });
+        if (name === 'jar' || name === 'parcel') haptics.play('pickup');
+        else haptics.play(name);
+      });
+      $('sounds').append(button);
+    }
+    $('muted').addEventListener('change', (event) => sfx.setMuted(event.target.checked));
+    $('haptics').addEventListener('change', (event) => haptics.setEnabled(event.target.checked));
+  </script>
+</body>
+</html>

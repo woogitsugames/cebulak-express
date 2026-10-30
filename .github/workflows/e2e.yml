@@ -1,0 +1,43 @@
+name: E2E i budzet wydajnosci
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: e2e-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  playwright:
+    name: Playwright - mobile, desktop, Slow 4G
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Instalacja zaleznosci
+        run: npm ci
+      - name: Kontrola typow, testy i build
+        run: |
+          npm run typecheck
+          npm test
+          npm run build
+      - name: Instalacja przegladarek Playwright i bibliotek systemowych
+        run: npx playwright install --with-deps
+      - name: Testy E2E i budzet wydajnosci
+        run: npx playwright test
+      - name: Raporty, zrzuty, trace i wideo
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-e2e
+          path: |
+            e2e/.results/
+            e2e/.report/
+          if-no-files-found: warn
+          include-hidden-files: true
+          retention-days: 30
