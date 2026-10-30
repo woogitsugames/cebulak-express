@@ -155,23 +155,23 @@ function playStep(ctx: AudioContext, output: AudioNode, step: number, at: number
   const position = step % STEPS_PER_BAR;
   const chord = HARMONY[SCORE[bar][1]];
   const note = MELODY[bar][position];
-  const step = stepSeconds(season);
+  const stepDuration = stepSeconds(season);
 
   if (note !== '_') {
     if (season === 'holiday') {
       // Własna melodia pozostaje, lecz instrument jest cieplejszy i subtelnie dzwoni.
-      tone(ctx, output, note, at, step * 0.85, 'triangle', position === 0 ? 0.069 : 0.052);
+      tone(ctx, output, note, at, stepDuration * 0.85, 'triangle', position === 0 ? 0.069 : 0.052);
       if (position % 2 === 0) bell(ctx, output, note, at, 0.032);
     } else {
-      tone(ctx, output, note, at, step * 0.79, 'square', position === 0 ? 0.077 : 0.061);
+      tone(ctx, output, note, at, stepDuration * 0.79, 'square', position === 0 ? 0.077 : 0.061);
     }
   }
 
   if (position % 2 === 0) {
-    tone(ctx, output, chord.bass[position / 2], at, step * 0.87, 'triangle', season === 'holiday' ? 0.14 : 0.17);
+    tone(ctx, output, chord.bass[position / 2], at, stepDuration * 0.87, 'triangle', season === 'holiday' ? 0.14 : 0.17);
   } else {
     for (const pitch of chord.notes) {
-      tone(ctx, output, pitch, at, step * 0.67, season === 'holiday' ? 'sine' : 'triangle',
+      tone(ctx, output, pitch, at, stepDuration * 0.67, season === 'holiday' ? 'sine' : 'triangle',
         season === 'holiday' ? 0.028 : 0.031);
     }
     if (season === 'holiday') bell(ctx, output, position === 1 ? 'E5' : 'G5', at, 0.024);
