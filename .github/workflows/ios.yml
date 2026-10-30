@@ -1,0 +1,67 @@
+name: iOS (symulator)
+
+on:
+  pull_request:
+    paths:
+      - 'ios/**'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'capacitor.config.ts'
+      - '.github/workflows/ios.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'ios/**'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'capacitor.config.ts'
+      - '.github/workflows/ios.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ios-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  ios:
+    name: iOS Simulator (bez podpisu)
+    runs-on: macos-26
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Wersja Xcode (Capacitor 8 wymaga Xcode 26+)
+        run: |
+          xcodebuild -version
+          major=$(xcodebuild -version | head -1 | sed -E 's/Xcode ([0-9]+).*/\1/')
+          if [ "$major" -lt 26 ]; then echo "::error::Capacitor 8 wymaga Xcode 26+, jest $major"; exit 1; fi
+      - name: Instalacja z lockfile
+        run: npm ci
+      - name: Kontrola typów
+        run: npm run typecheck
+      - name: Testy
+        run: npm test
+      - name: Build Vite
+        run: npm run build
+      - name: Synchronizacja plików i pluginów iOS (SPM)
+        run: npx cap sync ios
+      - name: Rozwiązanie pakietów Swift
+        run: xcodebuild -resolvePackageDependencies -project ios/App/App.xcodeproj -scheme App
+      - name: Kompilacja dla symulatora (bez kodu podpisu)
+        run: |
+          xcodebuild \
+            -project ios/App/App.xcodeproj \
+            -scheme App \
+            -configuration Debug \
+            -sdk iphonesimulator \
+            -destination 'generic/platform=iOS Simulator' \
+            -derivedDataPath "$RUNNER_TEMP/cebulak-ios-derived" \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            build
