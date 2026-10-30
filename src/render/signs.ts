@@ -1,4 +1,5 @@
 import { WORLD } from '../core/config';
+import { localized } from '../content/i18n';
 import type { CountryCode } from '../core/route';
 import type { Waypoint } from '../content/waypoints';
 import { FUNNY_PLACES, type FunnyPlace, type FunnyPlaceKind } from '../content/funny-places';
@@ -234,7 +235,8 @@ export class SignsRenderer {
     const sign = selectNearestSign(this.signs, state.progressKm, state.waypoints);
     if (sign) drawRoadSign(ctx, sign, signScreenX(sign.km, state.progressKm));
     if (sign && this.previousKm !== null && this.previousKm < sign.km && state.progressKm >= sign.km) {
-      this.jokeText = sign.joke;
+      // Polski żart słowny nie przekłada się na inne języki — tam krótki, ciepły dymek ze słownika.
+      this.jokeText = localized('FUNNY_PLACES')?.[sign.id] ?? sign.joke;
       this.jokeUntil = state.timeSec + SIGN_JOKE_SECONDS;
     }
     this.previousKm = state.progressKm;

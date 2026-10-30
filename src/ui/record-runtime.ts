@@ -1,5 +1,5 @@
 /** Cienki adapter zgodności T37 -> jeden silnik MediaRecorder w src/record/recorder.ts. */
-import { UI } from '../content/pl';
+import { UI } from '../content/i18n';
 import {
   VerticalVideoRecorder,
   VIDEO_WIDTH,

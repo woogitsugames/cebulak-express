@@ -1,7 +1,7 @@
 import { PLAYER, WORLD } from '../core/config';
 import { Game } from '../core/game';
 import { renderNick } from '../content/nicks';
-import { GHOST_TEXTS, fill } from '../content/lang/pl';
+import { GHOST_TEXTS, fill } from '../content/i18n';
 import type { GhostChallenge } from '../share/ghost';
 import { drawHeroSprite } from './sprites';
 
