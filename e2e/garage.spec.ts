@@ -58,6 +58,13 @@ test('garaż na telefonie: skórki, nicki i zrzut ekranu', async ({ page }, test
     const image = document.querySelector<HTMLImageElement>('.ce-garage__image');
     return Boolean(image && !image.hidden && image.complete && image.naturalWidth > 0);
   });
+  // Kwadratowy portret nie może zasłaniać nazwy skórki ani przycisków pod podglądem.
+  await expect.poll(() => page.locator('.ce-garage__image').evaluate((image) => {
+    const rect = image.getBoundingClientRect();
+    const frame = image.parentElement!.getBoundingClientRect();
+    return rect.left >= frame.left - 1 && rect.right <= frame.right + 1 &&
+      rect.top >= frame.top - 1 && rect.bottom <= frame.bottom + 1;
+  })).toBe(true);
   await screenshot(page, testInfo, '36-garaz-pixel7-pan-cebulek');
 
   await page.getByRole('button', { name: 'Kierowczyni' }).click();
