@@ -31,6 +31,8 @@ Odległości 140 km i 50 km ze zgłoszenia nie występowały już w odczytanym
 | Berlin → Kraków | 660 | 600 | 597 | +0,5% | A13/A15 → Olszyna, A18/A4 |
 | Monachium → Wrocław | 840 | 720 | 719 | +0,1% | A9/A72 → Drezno → Zgorzelec |
 | Monachium → Kraków | 1110 | 990 | 912 | +8,6% | uproszczony szlak niemiecki; realna najkrótsza trasa przez Czechy |
+| Monachium → Katowice | 1030 | 870 | 836 | +4,1% | uproszczony szlak niemiecki; realna trasa przez Czechy |
+| Monachium → Rzeszów | 1280 | 1030 | 1079 | −4,5% | uproszczony szlak niemiecki; realna trasa przez Czechy |
 
 **Odniesienia drogowe (odczyt 30.10.2026):**
 - [ADAC — Berlin–Szczecin](https://maps.adac.de/routenplaner/route-von-berlin-nach-stettin)
@@ -42,6 +44,8 @@ Odległości 140 km i 50 km ze zgłoszenia nie występowały już w odczytanym
 - [ADAC — Monachium–Kraków](https://maps.adac.de/routenplaner/route-von-muenchen-nach-krakau)
 - [ADAC — Monachium–Drezno](https://maps.adac.de/routenplaner/route-von-muenchen-nach-dresden)
 - [ADAC — Norymberga–Drezno](https://maps.adac.de/routenplaner/route-von-nuernberg-nach-dresden)
+- [AutoTrasa — Katowice–Monachium](https://autotrasa.pl/trasy/katowice-monachium/)
+- [AutoTrasa — Rzeszów–Monachium](https://autotrasa.pl/trasy/rzeszow-monachium/)
 
 Wartości „przed” to `makeRoute` na powyższym `main`:
 od stacji Świecko / Jędrzychowice do miasta w PL liczona była odległość
@@ -77,5 +81,5 @@ Haversine × 1,2, zaokrąglana do 10 km.
   niemieckich punktów, kalibrując km do wariantów przez Czechy. W przyszłości
   można wprowadzić punkty CZ i tła, jeżeli koordynator uzna je za konieczne.
 - Nie wprowadzono nowych zależności, grafik ani modyfikacji rankingu.
-- Testy regresyjne: `tests/route.test.ts`, w tym siedem tras z referencjami,
+- Testy regresyjne: `tests/route.test.ts`, w tym dziewięć tras z referencjami,
   wybór przejścia dla innych krajów i obie wskazane poprawki DE/FR/CH.
