@@ -191,19 +191,95 @@ export function makeRoute(home: HomeCountry, fromId: string, toId: string): Rout
     throw new Error(`Trasa ${home} nie kończy się stacją za granicą`);
   }
   const restPos = { lat: rest.lat, lon: rest.lon };
-  const direct = haversineKm(restPos, to);
-  const totalKm = Math.round((rest.km + direct * ROAD_FACTOR) / 10) * 10;
 
-  // Polskie miasta po drodze: blisko linii stacja → cel.
-  const transit = PL_TRANSIT.filter((c) => {
-    if (c.id === to.id || c.lat === undefined || c.lon === undefined) return false;
-    const a = haversineKm(restPos, { lat: c.lat, lon: c.lon });
-    const b = haversineKm({ lat: c.lat, lon: c.lon }, to);
-    return a < direct && a + b <= direct * 1.12;
-  })
-    .map((c) => ({ ...c, km: Math.round(rest.km + haversineKm(restPos, { lat: c.lat!, lon: c.lon! }) * ROAD_FACTOR) }))
-    .filter((c) => c.km < totalKm - 20)
-    .sort((a, b) => a.km - b.km);
+  /**
+   * Kalibracja od stacji do centrum miasta (km, po drogach). Wartości zaokrąglone
+   * względem przejść Świecko / Jędrzychowice / Świnoujście; patrz raport w docs.
+   * Dla mniejszych miast, których nie ma w tabeli, używamy lokalnego przybliżenia.
+   * Odcinki promowe są już ujęte w zagranicznych punktach trasy.
+   */
+  const roadKmByRest: Record<string, Record<string, number>> = {
+    'stacja-swiecko': {
+      'zielona-gora': 108, 'poznan': 175, 'szczecin': 205, 'bydgoszcz': 325,
+      'wroclaw': 335, 'lodz': 365, 'opole': 410, 'slupsk': 395,
+      'warszawa': 465, 'katowice': 475, 'gdansk': 485, 'krakow': 550,
+      'kielce': 565, 'olsztyn': 550, 'lublin': 635, 'bialystok': 655,
+      'rzeszow': 715,
+    },
+    'stacja-jedrzychowice': {
+      'legnica': 80, 'zielona-gora': 170, 'wroclaw': 155, 'opole': 250,
+      'poznan': 290, 'katowice': 330, 'lodz': 390, 'krakow': 415,
+      'bydgoszcz': 455, 'szczecin': 440, 'kielce': 520, 'warszawa': 510,
+      'gdansk': 605, 'slupsk': 570, 'rzeszow': 580, 'lublin': 640,
+      'olsztyn': 640, 'bialystok': 735,
+    },
+    'stacja-swinoujscie': {
+      'szczecin': 90, 'slupsk': 235, 'gdansk': 340, 'poznan': 380,
+      'bydgoszcz': 420, 'zielona-gora': 375, 'wroclaw': 510,
+      'lodz': 535, 'olsztyn': 580, 'warszawa': 635, 'opole': 620,
+      'katowice': 690, 'kielce': 745, 'krakow': 795, 'lublin': 785,
+      'bialystok': 795, 'rzeszow': 940,
+    },
+  };
+  const distanceFromRest = (point: { id: string; lat?: number; lon?: number }): number => {
+    const calibrated = roadKmByRest[rest.id]?.[point.id];
+    if (calibrated !== undefined) return calibrated;
+    if (point.lat === undefined || point.lon === undefined) {
+      throw new Error(`Brak współrzędnych punktu ${point.id}`);
+    }
+    // Obszary przygraniczne i góry mają różny stosunek drogi do linii prostej.
+    const factor = rest.id === 'stacja-swinoujscie' ? 1.34
+      : rest.id === 'stacja-jedrzychowice' ? 1.28 : 1.31;
+    return Math.round(haversineKm(restPos, { lat: point.lat, lon: point.lon }) * factor);
+  };
+
+  const totalKm = Math.round((rest.km + distanceFromRest(to)) / 10) * 10;
+
+  // Korytarz A2, A4 lub S3/S6 wybieramy po położeniu celu, a nie odległości
+  // miasta od prostej łączącej granicę z celem (to dawało Poznań + Legnicę).
+  const balticDestinations = new Set(['slupsk', 'gdansk', 'bytow', 'kartuzy']);
+  const baltic = balticDestinations.has(to.id);
+  const southeast = to.lat <= 50.95 && to.lon >= 17.35;
+  const beyondWarsaw = to.lon >= 21.15 && to.lat >= 51.0;
+  const northCentral = to.lat >= 52.7 && to.lon >= 17.0 && to.lon <= 20.8;
+  let candidateIds: string[];
+
+  if (rest.id === 'stacja-swinoujscie') {
+    // Nad morzem bez zbędnego zawracania przez Szczecin; w głębi lądu S3.
+    candidateIds = baltic ? ['slupsk', 'gdansk']
+      : southeast ? ['szczecin', 'wroclaw', 'katowice']
+        : beyondWarsaw ? ['szczecin', 'poznan', 'warszawa']
+          : ['szczecin', 'poznan', 'bydgoszcz'];
+  } else if (rest.id === 'stacja-jedrzychowice') {
+    // A4 na południowy wschód; S8/A1 do centrum i A4/S5 na północ.
+    candidateIds = southeast
+      ? (to.lon >= 20.7 ? ['wroclaw', 'krakow'] : ['wroclaw', 'katowice'])
+      : baltic || northCentral ? ['poznan', 'bydgoszcz', 'gdansk']
+        : ['wroclaw', 'lodz', 'warszawa'];
+  } else {
+    // Świecko: S3/S6 na Pomorze, A4 przez Dolny Śląsk na południe, A2 na wschód.
+    candidateIds = baltic ? ['szczecin', 'slupsk', 'gdansk']
+      : southeast
+        ? (to.lon >= 20.7 ? ['wroclaw', 'krakow'] : ['wroclaw', 'katowice'])
+        : beyondWarsaw ? ['poznan', 'warszawa']
+          : northCentral ? ['poznan', 'bydgoszcz']
+            : to.lon < 16.4 ? ['szczecin']
+              : ['poznan', 'lodz', 'warszawa'];
+  }
+
+  const transit: Waypoint[] = [];
+  for (const id of candidateIds) {
+    if (transit.length === 2) break;
+    if (id === to.id) continue;
+    const candidate = PL_TRANSIT.find((city) => city.id === id);
+    if (!candidate) continue;
+    const km = rest.km + distanceFromRest(candidate);
+    const lastKm = transit.length > 0 ? transit[transit.length - 1].km : rest.km;
+    // Dla czytelnego renderingu zostawiamy ≥ 60 km pomiędzy miastami
+    // tranzytowymi oraz od stacji i do mety.
+    if (km - lastKm < 60 || totalKm - km < 60) continue;
+    transit.push({ ...candidate, km });
+  }
 
   const homePoint: Waypoint = {
     ...HOME_WAYPOINT,
