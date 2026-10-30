@@ -1,11 +1,12 @@
-# ASSETS — materiały sklepu (zlecenie 29)
+# ASSETS — zrzuty sklepowe (zlecenie 50)
 
 | plik | źródło/narzędzie | licencja | autor/uwagi |
 |---|---|---|---|
-| *Brak gotowych PNG w tej gałęzi* | — | — | 30.10.2026: grafiki zleceń 05–10 nie są jeszcze scalone z `main`; nie tworzymy fikcyjnych „zrzutów z gry” |
+| `screenshot-01.png` … `screenshot-08.png` | Playwright Chromium, `npm run store:shots` | własny materiał projektu | **Do wygenerowania** z aktualnego buildu, rozdzielczość 1080×1920, realne kadry aplikacji |
+| `app-store/screenshot-01.png` … `screenshot-08.png` | Playwright Chromium, osobny viewport | własny materiał projektu | **Do wygenerowania** z aktualnego buildu, rozdzielczość 1242×2688, bez rozciągania wersji Play |
 
-## Zasada uzupełniania
+Wpisy powyżej opisują **plan**, nie potwierdzają obecności obrazów. Po pomyślnym uruchomieniu generator zastępuje tabelę osobnymi wpisami dla każdego z 16 PNG, wraz z SHA-256 i informacją o przebiegu.
 
-Każdy docelowy `01-jeden-dotyk.png` … `08-udostepnij-wynik.png` musi powstać ze **zrzutu autentycznego builda** z osobną ręcznie nałożoną typografią. Uzupełnij tabelę o: plik, wersję aplikacji / commit / urządzenie, nazwę narzędzia, autora kompozycji i licencję własnej nakładki. Jeśli elementy AI są wykorzystywane w zawartości gry, ich szczegółowe pochodzenie dokumentuje właściwy folder źródłowy (brand/tło/bohater).
+**Warunek publikacji:** rzeczywisty ranking, bez wyników pokazowych, potwierdzony build mobilny oraz wizualna kontrola podglądu `docs/art/podglady/store-shots.png`. Bez konfiguracji Firebase ekran Ligi Polonii jest oznaczony jako demonstracyjny. `npm run store:shots -- --release` odrzuca taki komplet.
 
-Zrzuty nie mogą przedstawiać funkcji niezintegrowanych. Dokładny storyboard: `docs/sklep/zrzuty.md`.
+Dokumentacja scenariuszy: `tools/store-shots/README.md` oraz `docs/sklep/zrzuty.md`.
