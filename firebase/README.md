@@ -28,7 +28,7 @@ firebase login
 firebase deploy --only firestore,functions
 ~~~
 
-W firebase.json jest predeploy budujący backend z src/index.ts do firebase/lib/index.js. Użyto esbuild z opcją --packages=external, która pakuje lokalny src/core oraz src/content/waypoints, lecz pozostawia zależności firebase-admin i firebase-functions do instalacji przez środowisko Functions. Firebase deploy uruchom z katalogu głównego repozytorium.
+W firebase.json jest predeploy budujący backend z src/index.ts do firebase/lib/index.js. Jawny punkt wejścia firebase/index.js eksportuje funkcje z bundla dla mechanizmu wykrywania Firebase (CommonJS i import ESM). Użyto esbuild z opcją --packages=external, która pakuje lokalny src/core oraz src/content/waypoints, lecz pozostawia zależności firebase-admin i firebase-functions do instalacji przez środowisko Functions. Firebase deploy uruchom z katalogu głównego repozytorium.
 
 ## Kontrakt dla klienta (zlecenie 12)
 
