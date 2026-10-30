@@ -87,10 +87,10 @@ function mix(a,b,t){return Math.round(a*(1-t)+b*t);}
 function snowLayer(img,cc,part){
   const {w,h,pix}=img;
   const windows={
-    ch:[[97,278],[530,678],[1090,1295],[1620,1772]],
-    no:[[145,277],[737,902],[1320,1458],[1780,1918]],
-    dk:[[501,658],[1672,1802]],
-    se:[[122,278],[872,1005],[1598,1740]]
+    ch:[[105,272,545,643],[542,668,567,641],[1112,1283,546,656],[1640,1758,562,644]],
+    no:[[160,271,547,632],[751,891,550,645],[1342,1436,561,633],[1810,1884,561,640]],
+    dk:[[521,640,587,675],[1685,1792,605,684]],
+    se:[[139,269,581,680],[898,994,605,683],[1625,1724,605,685]]
   };
   const trees={
     ch:[[38,279],[530,353],[1025,295],[1555,350],[1953,270]],
@@ -142,8 +142,8 @@ function snowLayer(img,cc,part){
       }else if(r>80&&r<165&&g>130&&b>g*0.88&&part==='far'&&y>610){
         r=mix(r,83,0.28);g=mix(g,176,0.22);b=mix(b,207,0.23);
       }
-      if(part==='far'&&y>500&&y<683&&windows[cc].some(([x0,x1])=>x>=x0&&x<=x1)){
-        const coolBlue=b>r+14&&g>r+7&&r<195&&r>80;
+      if(part==='far'&&windows[cc].some(([x0,x1,y0,y1])=>x>=x0&&x<=x1&&y>=y0&&y<=y1)){
+        const coolBlue=b>r+18&&g>r+12&&r>130&&r<200&&g>170&&b>185;
         if(coolBlue){r=255;g=215;b=125;}
       }
       // Snieg na ciemnych polaciach drzew, przezroczystosc i kontur bez zmian.
@@ -173,7 +173,7 @@ function snowLayer(img,cc,part){
         const edge=y0+Math.abs(x-mid)/(x1-x0)*2*(y1-y0);
         const terracotta=cc==='ch'||cc==='dk';
         const isRoof=terracotta?(r>110&&r>g*1.16&&r>b*1.18&&g<170):(r>56&&r<130&&Math.abs(r-g)<32&&Math.abs(g-b)<32&&b<158);
-        if(isRoof&&y<=edge+13&&y>=edge-9){pix[i]=243;pix[i+1]=247;pix[i+2]=248;}
+        if(isRoof&&y<=edge+29&&y>=edge-9){pix[i]=243;pix[i+1]=247;pix[i+2]=248;}
       }
       const lightY=y1+11;
       for(let x=x0+13;x<x1-13;x+=18){
