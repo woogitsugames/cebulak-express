@@ -194,7 +194,7 @@ export function makeRoute(home: HomeCountry, fromId: string, toId: string): Rout
   // Dla pozostałych miast zachowujemy dotychczasowy deterministyczny szacunek.
   const polishRoadKm: Record<string, Record<string, number>> = {
     'stacja-swiecko': { poznan: 160, warszawa: 470 },
-    'stacja-kolbaskowo': { szczecin: 15, gdansk: 375 },
+    'stacja-kolbaskowo': { szczecin: 25, gdansk: 375 },
     'stacja-olszyna': { wroclaw: 178, krakow: 431, katowice: 350, rzeszow: 596 },
   };
   const distanceFromRest = (station: Waypoint): number => {
