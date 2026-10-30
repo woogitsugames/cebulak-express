@@ -31,6 +31,12 @@ import { configureAnalytics, track, type AnalyticsHome } from './analytics/track
 import { registerPwa } from './pwa/register';
 import { prefetchPwaAssetsAfterRun } from './pwa/offline';
 import { platform } from './platform';
+import {
+  DEFAULT_SETTINGS as DEFAULT_PREFERENCES, applyPreferences, applyReducedMotion, loadSettings as loadPreferences,
+  saveSettings as savePreferences, watchReducedMotion, type Settings as Preferences,
+} from './meta/preferences';
+import { savePerformanceMode, storedPerformanceMode } from './render/performance';
+import type { TutorialControl } from './ui/tutorial';
 
 interface Settings {
   home: HomeCountry;
@@ -99,6 +105,7 @@ const ui = {
   overGhost: $('over-ghost'),
   ghostInfo: $('ghost-info'),
   album: $('album'),
+  btnSettings: $<HTMLButtonElement>('btn-settings'),
 };
 ui.btnChallenge.textContent = GHOST_TEXTS.challengeButton;
 
@@ -132,6 +139,9 @@ const RETURN_WEIGHT = 0.25;
 let returnTrip = false;
 let progress: Progress | null = null;
 let closeCollection: (() => void) | null = null;
+let closeSettings: (() => void) | null = null;
+/** Samouczek z dłonią (zlecenie 64) — ładowany po pierwszej klatce, poza testami i trybem redakcji. */
+let tutorial: TutorialControl | null = null;
 // --- Duch znajomego (zlecenie 59): wyzwanie z linku ?g= ---
 // Dekodowanie odtwarza cały przejazd nadawcy, więc moduł i replay ruszają dopiero po pierwszej klatce.
 type GhostModule = typeof import('./share/ghost-session');
@@ -176,6 +186,18 @@ let sfx: SfxPlayer = createSfx();
 let music: MusicPlayer | undefined;
 const haptics = createHaptics({ vibrate: (pattern) => platform.vibrate(pattern) });
 
+// --- Preferencje (ekran ustawień): dźwięk, muzyka, wibracje, mniej animacji ---
+let preferences: Preferences = { ...DEFAULT_PREFERENCES };
+function applyAudioPreferences(): void {
+  applyPreferences(preferences, { sfx, music, haptics });
+}
+void loadPreferences(platform.storage).then((loaded) => {
+  preferences = loaded;
+  applyAudioPreferences();
+  applyReducedMotion(preferences, document.documentElement);
+});
+watchReducedMotion(() => preferences, document.documentElement);
+
 function unlockAudio(): void {
   if (audioCtx) return;
   const Ctor = window.AudioContext ?? (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
@@ -189,10 +211,11 @@ function unlockAudio(): void {
   mix.connect(audioCtx.destination);
   audioMix = mix;
   sfx = createSfx(audioCtx, mix);
+  sfx.setMuted(!preferences.soundEffects);
   void sfx.unlock();
   const ctx = audioCtx;
   void import('./audio/music').then(({ createMusic }) => {
-    music = createMusic(ctx, { destination: mix, volume: 0.5 });
+    music = createMusic(ctx, { destination: mix, volume: preferences.musicVolume, enabled: preferences.music });
     void music.unlock();
     if (game?.phase === 'playing') music.start();
   });
@@ -256,6 +279,8 @@ function fillMenu(): void {
   ui.routeFlag.src = import.meta.env.BASE_URL + 'assets/ui/flag-' + settings.home.toLowerCase() + '.png';
   ui.routeFlag.alt = COUNTRY_NAME[settings.home];
   ui.dailyInfo.textContent = fill(UI.dailyHint, { title: dailyTitle(dailyKey(new Date())) });
+  ui.btnSettings.setAttribute('aria-label', UI.settingsOpen);
+  ui.btnSettings.title = UI.settingsTitle;
 }
 // Menu jest jedynym właścicielem pól trasy: po zmianie języka (także po dociągnięciu
 // słownika) przerysowuje je samo, zamiast pozwalać modułom leniwym poprawiać opcje.
@@ -345,12 +370,42 @@ $('btn-album').addEventListener('click', () => {
     });
   });
 });
+ui.btnSettings.addEventListener('click', () => void openSettings());
 $('btn-again').addEventListener('click', () => void newRun(returnTrip));
 $('btn-return-flight').addEventListener('click', () => void newRun(true));
 $('btn-menu').addEventListener('click', () => showMenu());
 $('btn-share').addEventListener('click', () => void share());
 ui.btnChallenge.addEventListener('click', () => void shareChallenge());
 ui.overPortal.addEventListener('click', () => track('portal_click', { placement: 'result', home: settings.home as AnalyticsHome }));
+
+/** Ekran ustawień: modalny panel nad menu, moduł ładowany dopiero po kliknięciu. */
+async function openSettings(): Promise<void> {
+  if (closeSettings) return;
+  const { mountSettings } = await import('./ui/settings');
+  if (closeSettings || ui.menu.hidden) return;
+  closeSettings = mountSettings($('stage'), {
+    get: () => preferences,
+    set: (next) => {
+      preferences = next;
+      applyAudioPreferences();
+      void savePreferences(platform.storage, next);
+    },
+    performance: {
+      get: storedPerformanceMode,
+      set: (mode) => {
+        savePerformanceMode(mode);
+        renderer.background.setPerformanceMode(mode);
+      },
+    },
+    onClose: () => { closeSettings = null; },
+  });
+}
+
+function hideSettings(): void {
+  const close = closeSettings;
+  closeSettings = null;
+  close?.();
+}
 
 function showMenu(): void {
   if (pendingReload) return pendingReload();
@@ -365,6 +420,7 @@ function showMenu(): void {
   closeGarage = null;
   closeCollection?.();
   closeCollection = null;
+  tutorial?.hide();
   ui.album.hidden = true;
   ui.over.hidden = true;
   ui.hud.hidden = true;
@@ -429,6 +485,9 @@ async function newRun(reverse = false): Promise<void> {
   ui.hud.hidden = false;
   ui.hint.hidden = false;
   ui.hint.textContent = returnTrip ? pick(RETURN_DEPARTURE_TEXTS) : daily ? dailyTitle(daily) : UI.tapToStart;
+  hideSettings();
+  tutorial?.resetRun();
+  syncTutorialHint();
   ui.toast.hidden = true;
   // Po kliknięciu „Start” fokus zostaje na ukrytym przycisku — spacja ma sterować autem,
   // a nie ponownie „klikać” niewidoczny start (keyup na fokusowanym przycisku w WebKit).
@@ -449,7 +508,13 @@ function tap(): void {
     track('run_start', { mode: game.mode, home: game.route.home as AnalyticsHome });
   }
   game.flap();
+  tutorial?.onTap();
   ui.hint.hidden = true;
+}
+
+/** Dłoń samouczka zastępuje zwykłą podpowiedź startu (dwie dłonie naraz to za dużo). */
+function syncTutorialHint(): void {
+  if (tutorial?.visible && game?.phase === 'ready' && ui.hint.textContent === UI.tapToStart) ui.hint.hidden = true;
 }
 
 $('stage').addEventListener('pointerdown', (e) => {
@@ -488,6 +553,10 @@ document.addEventListener('visibilitychange', () => {
 
 // Przycisk wstecz (Android) / Escape: z gry do menu, z menu wyjście z aplikacji.
 platform.onBack(() => {
+  if (closeSettings) {
+    hideSettings();
+    return true;
+  }
   if (ui.menu.hidden) {
     showMenu();
     return true;
@@ -515,7 +584,10 @@ function toast(text: string): void {
 function handleEvents(g: Game): void {
   for (const e of g.drainEvents()) {
     feedback(e);
-    if (e.type === 'pickup') toast(fill(pick(PICKUP_TEXTS[e.kind]), { km: e.bonusKm }));
+    if (e.type === 'pickup') {
+      toast(fill(pick(PICKUP_TEXTS[e.kind]), { km: e.bonusKm }));
+      track('pickup', { kind: e.kind, mode: g.mode });
+    }
     else if (e.type === 'border') toast(pick(BORDER_TEXTS[e.country]) ?? fill(UI.welcome, { where: COUNTRY_LOCATIVE[e.country] }));
     else if (e.type === 'waypoint') toast(e.waypoint.text);
     else if (e.type === 'over' || e.type === 'arrived') showOver(g);
@@ -566,6 +638,8 @@ function showOver(g: Game): void {
 
   const arrived = g.phase === 'arrived';
   const seconds = Math.round(g.ticks * TICK);
+  // Samouczek wraca po trzech szybkich wypadkach z rzędu (dojazd liczy się jak długi lot).
+  tutorial?.onCrash(g.ticks * TICK);
   ui.over.classList.toggle('is-arrived', arrived);
   ui.overTitle.textContent = arrived ? UI.arrived : UI.over;
   ui.overKm.textContent = fill(UI.distance, { km: g.km });
@@ -825,6 +899,27 @@ if (params.has('g')) {
 }
 // Przełącznik języków (i tłumaczenie menu) po pierwszej klatce — nie spowalnia startu.
 requestAnimationFrame(() => void import('./ui/language-switcher'));
+// Ikona zębatki też po pierwszej klatce: na wolnym internecie nie konkuruje z kodem gry.
+requestAnimationFrame(() => {
+  const icon = ui.btnSettings.querySelector('img');
+  if (icon) icon.src = import.meta.env.BASE_URL + 'assets/ui/icon-settings.png';
+});
+
+// Samouczek bez słów: dłoń przy pierwszych lotach. Testy i redakcja mają go wyłączony (chyba że ?tutorial=1).
+const TUTORIAL_STORAGE_KEY = 'ce.tutorial.v1.done';
+const tutorialAllowed = params.get('tutorial') === '1' || (params.get('test') !== '1' && params.get('redakcja') !== '1');
+if (tutorialAllowed) {
+  requestAnimationFrame(() => void Promise.all([import('./ui/tutorial'), platform.storage.get(TUTORIAL_STORAGE_KEY)])
+    .then(([{ mountTutorial }, done]) => {
+      tutorial = mountTutorial(ui.hud, {
+        dismissed: done === '1' && params.get('tutorial') !== '1',
+        onDismiss: () => void platform.storage.set(TUTORIAL_STORAGE_KEY, '1'),
+      });
+      if (game?.phase === 'ready') syncTutorialHint();
+      else tutorial.hide();
+    })
+    .catch(() => undefined));
+}
 
 // Pierwsze uruchomienie: wybór kraju i miasta. Kto już grał (ma zapisane ustawienia), nie widzi go wcześniej.
 void import('./ui/onboarding').then(async ({ ONBOARDING_STORAGE_KEY, mountOnboarding, shouldShowOnboarding }) => {

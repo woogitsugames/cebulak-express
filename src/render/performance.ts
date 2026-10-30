@@ -32,14 +32,31 @@ export function devicePerformanceProfile(
 
 export type PerformanceMode = 'auto' | 'always' | 'off';
 
-/** Nie wprowadzamy nowego UI: ustawienia zlecenia 49 nie są jeszcze na main. */
+export const PERFORMANCE_MODES: readonly PerformanceMode[] = ['auto', 'always', 'off'];
+export const PERFORMANCE_STORAGE_KEY = 'ce.performanceMode';
+
+/**
+ * Odczyt synchroniczny: renderer tła potrzebuje trybu już w konstruktorze (przed pierwszą klatką).
+ * localStorage działa także w WebView Capacitora; wybór zmienia ekran ustawień.
+ */
 export function storedPerformanceMode(): PerformanceMode {
   if (typeof localStorage === 'undefined') return 'auto';
   try {
-    const value = localStorage.getItem('ce.performanceMode');
+    const value = localStorage.getItem(PERFORMANCE_STORAGE_KEY);
     return value === 'always' || value === 'off' ? value : 'auto';
   } catch {
     return 'auto';
+  }
+}
+
+/** „auto” to brak wpisu — domyślne zachowanie wraca też po wyczyszczeniu pamięci. */
+export function savePerformanceMode(mode: PerformanceMode): void {
+  if (typeof localStorage === 'undefined') return;
+  try {
+    if (mode === 'auto') localStorage.removeItem(PERFORMANCE_STORAGE_KEY);
+    else localStorage.setItem(PERFORMANCE_STORAGE_KEY, mode);
+  } catch {
+    /* brak pamięci — tryb działa do końca sesji */
   }
 }
 

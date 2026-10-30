@@ -40,7 +40,7 @@ button:focus-visible, select:focus-visible, summary:focus-visible, a:focus-visib
   display: flex;
   justify-content: space-between;
   gap: 8px;
-  padding: max(12px, env(safe-area-inset-top)) 12px 0;
+  padding: max(12px, var(--safe-area-inset-top, env(safe-area-inset-top))) 12px 0;
 }
 .pill {
   display: inline-flex;
@@ -90,7 +90,7 @@ button:focus-visible, select:focus-visible, summary:focus-visible, a:focus-visib
 }
 .hint {
   position: absolute;
-  bottom: max(14%, env(safe-area-inset-bottom));
+  bottom: max(14%, var(--safe-area-inset-bottom, env(safe-area-inset-bottom)));
   left: 50%;
   transform: translateX(-50%);
   width: min(90vw, 390px);
@@ -132,7 +132,7 @@ button:focus-visible, select:focus-visible, summary:focus-visible, a:focus-visib
   transform: translate(-50%, -50%);
   width: min(94vw, 430px);
   max-height: min(96dvh, 850px);
-  max-height: min(calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 12px), 850px);
+  max-height: min(calc(100dvh - var(--safe-area-inset-top, env(safe-area-inset-top)) - var(--safe-area-inset-bottom, env(safe-area-inset-bottom)) - 12px), 850px);
   overflow-x: hidden;
   overflow-y: auto;
   overscroll-behavior: contain;
@@ -184,6 +184,27 @@ button:focus-visible, select:focus-visible, summary:focus-visible, a:focus-visib
 }
 
 .panel--menu { width: min(94vw, 420px); padding-top: 7px; }
+/* Zębatka ustawień w rogu drewnianego panelu; obrazek dociąga main.ts po pierwszej klatce. */
+.menu-settings {
+  position: absolute;
+  z-index: 2;
+  top: 0;
+  right: 0;
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  padding: 0;
+  border: 3px solid #38616a;
+  border-radius: 14px;
+  background: #fffaf0;
+  box-shadow: 0 3px 0 #16323d40;
+  transition: transform .15s ease, filter .15s ease;
+}
+.menu-settings img { display: block; width: 34px; height: 34px; }
+.menu-settings img:not([src]) { visibility: hidden; }
+.menu-settings:hover { filter: brightness(1.05); }
+.menu-settings:active { transform: translateY(2px); }
 .menu-logo { margin: 0 auto; max-width: 235px; line-height: 0; }
 .menu-logo img { display: block; width: 100%; height: auto; }
 .menu-subtitle {
@@ -338,7 +359,17 @@ button:focus-visible, select:focus-visible, summary:focus-visible, a:focus-visib
   font-weight: 700;
 }
 .route { margin: 10px 0 0; color: #4d5e5f; font-size: 13px; font-weight: 800; }
-.panel--sub { width: min(94vw, 530px); }
+.panel--sub {
+  width: min(94vw, 530px);
+  /* Ekrany pomocnicze (garaż, album, Liga): przyklejone do góry i dołu widocznego obszaru,
+     zamiast centrowania — na Androidzie 16 (edge-to-edge) i składakach środek ekranu bywa przesunięty. */
+  top: calc(var(--safe-area-inset-top, env(safe-area-inset-top, 0px)) + 6px);
+  bottom: calc(var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px)) + 6px);
+  transform: translateX(-50%);
+  max-height: none;
+  height: auto;
+  animation-name: panel-arrive-sub;
+}
 .btn--sub-close { min-height: 52px; margin-top: 12px; }
 .panel--garage h2 { margin: 0 0 5px; color: #224b46; font-size: 30px; }
 .panel--garage > img { display: block; height: 150px; max-width: 90%; object-fit: contain; margin: 0 auto 6px; }
@@ -491,6 +522,10 @@ button:focus-visible, select:focus-visible, summary:focus-visible, a:focus-visib
 @keyframes panel-arrive {
   from { opacity: 0; transform: translate(-50%, -47%) scale(.97); }
   to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+}
+@keyframes panel-arrive-sub {
+  from { opacity: 0; transform: translate(-50%, 12px) scale(.98); }
+  to { opacity: 1; transform: translate(-50%, 0) scale(1); }
 }
 @keyframes hint-arrive {
   from { opacity: 0; transform: translate(-50%, 12px); }
