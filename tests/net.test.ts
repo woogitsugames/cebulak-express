@@ -4,7 +4,7 @@ import { randomNickChoices } from '../src/content/nicks';
 import { Game } from '../src/core/game';
 import { makeRoute } from '../src/core/route';
 import { seedFromString } from '../src/core/rng';
-import { MockRankingApi, createRankingApi, type SubmitRunRequest } from '../src/net/api';
+import { LeagueReadCache, MockRankingApi, createRankingApi, type SubmitRunRequest } from '../src/net/api';
 
 const validNickId = randomNickChoices(() => 0.12, 1, 'BE')[0];
 
@@ -71,5 +71,42 @@ describe('MockRankingApi', () => {
     expect((await api.submitRun({ ...run, nickId: 'dowolne imię gracza' })).reason).toBe('bad_nick');
     expect((await api.submitRun({ ...run, km: run.km + 500 } satisfies SubmitRunRequest)).reason).toBe('replay_mismatch');
     expect((await api.submitRun(run)).accepted).toBe(true);
+  });
+});
+
+describe('cache Ligi', () => {
+  it('scala równoległe odczyty, chroni dane i wygasa po 60 s', async () => {
+    let now = 10_000;
+    let reads = 0;
+    const cache = new LeagueReadCache(() => now);
+    const load = async () => ({
+      week: '2026-W44',
+      countries: { BE: { km: ++reads, runs: 1, players: 1 } },
+    });
+    const [a, b] = await Promise.all([
+      cache.get('2026-W44', load),
+      cache.get('2026-W44', load),
+    ]);
+    expect(reads).toBe(1);
+    expect(a.countries.BE?.km).toBe(1);
+    a.countries.BE!.km = 999;
+    expect(b.countries.BE?.km).toBe(1);
+    expect((await cache.get('2026-W44', load)).countries.BE?.km).toBe(1);
+    now += 60_001;
+    expect((await cache.get('2026-W44', load)).countries.BE?.km).toBe(2);
+    cache.invalidate('2026-W44');
+    expect((await cache.get('2026-W44', load)).countries.BE?.km).toBe(3);
+  });
+
+  it('po błędzie pobiera ponownie zamiast zapamiętać odrzucenie', async () => {
+    const cache = new LeagueReadCache();
+    let tries = 0;
+    const load = async () => {
+      if (++tries === 1) throw new Error('temporary');
+      return { week: '2026-W44', countries: {} };
+    };
+    await expect(cache.get('2026-W44', load)).rejects.toThrow('temporary');
+    expect((await cache.get('2026-W44', load)).week).toBe('2026-W44');
+    expect(tries).toBe(2);
   });
 });

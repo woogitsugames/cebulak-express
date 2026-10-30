@@ -55,15 +55,15 @@ describe('wyzwanie dnia', () => {
     expect(a.obstacles.length).toBeGreaterThan(5);
   });
 
-  it('rotuje wszystkie 8 krajów, miasta startowe i polskie cele', () => {
-    const keys = Array.from({ length: 32 }, (_, i) =>
+  it('rotuje wszystkie 15 krajów, miasta startowe i polskie cele', () => {
+    const keys = Array.from({ length: 45 }, (_, i) =>
       new Date(Date.UTC(2026, 10, 1 + i)).toISOString().slice(0, 10),
     );
     const routes = keys.map(dailyRoute);
-    expect(new Set(routes.slice(0, 8).map((r) => r.home))).toEqual(new Set(HOME_COUNTRIES));
-    expect(routes[0].home).toBe(routes[8].home);
-    expect(routes[0].from.id).not.toBe(routes[8].from.id);
-    expect(new Set(routes.map((r) => r.to.id)).size).toBe(32);
+    expect(new Set(routes.slice(0, 15).map((r) => r.home))).toEqual(new Set(HOME_COUNTRIES));
+    expect(routes[0].home).toBe(routes[15].home);
+    expect(routes[0].from.id).not.toBe(routes[15].from.id);
+    expect(new Set(routes.map((r) => r.to.id)).size).toBe(45);
     for (const route of routes) {
       expect(START_CITIES[route.home].some((city) => city.id === route.from.id)).toBe(true);
       expect(PL_CITIES.some((city) => city.id === route.to.id)).toBe(true);

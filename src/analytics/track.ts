@@ -3,9 +3,11 @@
  * nigdy nie opuszczają urządzenia. Moduł nie używa ciasteczek ani API reklamowych.
  */
 
-export type AnalyticsHome = 'BE' | 'NL' | 'DE' | 'UK' | 'FR' | 'CH' | 'NO' | 'DK';
+import { HOME_COUNTRIES, type HomeCountry } from '../core/route';
+
+export type AnalyticsHome = HomeCountry;
 export type AnalyticsMode = 'ranked' | 'cozy';
-export type RunEndCause = 'arrived' | 'ground' | 'viaduct' | 'sign' | 'crane' | 'roadworks' | 'barrier' | 'truck';
+export type RunEndCause = 'arrived' | 'ground' | 'viaduct' | 'sign' | 'crane' | 'roadworks' | 'barrier' | 'truck' | 'baggage-gate';
 export type ShareFormat = 'native' | 'clipboard' | 'image' | 'link';
 export type PortalPlacement = 'menu' | 'result' | 'league' | 'footer';
 
@@ -52,10 +54,10 @@ export interface AnalyticsTracker {
 }
 
 const STORAGE_KEY = 'ce.analytics.install.v1';
-const HOMES: readonly AnalyticsHome[] = ['BE', 'NL', 'DE', 'UK', 'FR', 'CH', 'NO', 'DK'];
+const HOMES: readonly AnalyticsHome[] = HOME_COUNTRIES;
 const MODES: readonly AnalyticsMode[] = ['ranked', 'cozy'];
 const CAUSES: readonly RunEndCause[] = [
-  'arrived', 'ground', 'viaduct', 'sign', 'crane', 'roadworks', 'barrier', 'truck',
+  'arrived', 'ground', 'viaduct', 'sign', 'crane', 'roadworks', 'barrier', 'truck', 'baggage-gate',
 ];
 const FORMATS: readonly ShareFormat[] = ['native', 'clipboard', 'image', 'link'];
 const PLACEMENTS: readonly PortalPlacement[] = ['menu', 'result', 'league', 'footer'];

@@ -12,7 +12,8 @@ export interface PortalInfo {
 
 /** Wyłącznie adresy przypisane do krajów obsługiwanych przez rdzeń gry.
  * Niepotwierdzonych kont Facebook nie dodajemy na podstawie samego sluga.
- * Źródła i status weryfikacji: docs/portale.md.
+ * Brak publicznej weryfikacji (IE/AT/FI/LU) oznacza samą etykietę, bez URL.
+ * Źródła i status weryfikacji: docs/portale.md i docs/trasy-nowe-kraje.md.
  */
 export const PORTALS: Readonly<Record<HomeCountry, Readonly<PortalInfo>>> = {
   BE: { label: 'Belgia', news: 'https://aktualnosci.be/', guides: 'https://popolsku.be/' },
@@ -23,6 +24,13 @@ export const PORTALS: Readonly<Record<HomeCountry, Readonly<PortalInfo>>> = {
   CH: { label: 'Szwajcaria', guides: 'https://popolsku.ch/' },
   NO: { label: 'Norwegia', guides: 'https://popolsku.no/' },
   DK: { label: 'Dania', guides: 'https://popolsku.dk/' },
+  IE: { label: 'Irlandia' },
+  ES: { label: 'Hiszpania', guides: 'https://popolsku.es/' },
+  IT: { label: 'Włochy', guides: 'https://popolsku.it/' },
+  AT: { label: 'Austria' },
+  SE: { label: 'Szwecja', guides: 'https://popolsku.se/' },
+  FI: { label: 'Finlandia' },
+  LU: { label: 'Luksemburg' },
 };
 
 export type PortalChannel = 'news' | 'guides' | 'facebook';

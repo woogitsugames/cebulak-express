@@ -1,28 +1,27 @@
 import { TICK } from './core/config';
 import { dailyKey, dailyRoute, dailySeed, dailyTitle } from './core/daily';
 import { Game, type GameEvent, type Mode } from './core/game';
-import { HOME_COUNTRIES, PL_CITIES, START_CITIES, makeRoute, type HomeCountry, type Route } from './core/route';
+import { HOME_COUNTRIES, PL_CITIES, START_CITIES, makeRoute, reverseRoute, type HomeCountry, type Route } from './core/route';
+import { seasonAt } from './core/season';
+import type { Progress } from './meta/progress';
+import type { CountryCueCode } from './audio/country-cues';
 import {
   ARRIVAL_TEXTS, BORDER_TEXTS, COUNTRY_LOCATIVE, COUNTRY_NAME, FAIL_JOKES, MILESTONE_TEXTS,
   OBSTACLE_NAME, PICKUP_TEXTS, UI, WIGILIA_TEXTS, fill,
-} from './content/pl';
+} from './content/i18n';
+import { RETURN_ARRIVAL_TEXTS, RETURN_CITY_LOCATIVE, RETURN_DEPARTURE_TEXTS } from './content/pl';
 import { randomNickChoices } from './content/nicks';
 import { portalLink } from './content/portals';
 import { Renderer } from './render/renderer';
 import { normalizeHeroSkin, preloadSprites, setHeroSkin } from './render/sprites';
-import { mountGarage } from './ui/garage';
-import { createRecordControl } from './ui/record';
-import { saveRecordedVideo } from './record/recorder';
 import { createSfx, sfxForGameEvent, type SfxPlayer } from './audio/sfx';
 import { createHaptics, hapticForGameEvent } from './audio/haptics';
-import { createMusic, type MusicPlayer } from './audio/music';
-import { renderCard, type CardData } from './share/card';
-import { setNativeShareAdapter, shareResult } from './share/share';
+import type { MusicPlayer } from './audio/music';
+import type { CardData } from './share/card';
 import { parseGameParams } from './net/params';
 import { MockRankingApi, createRankingApi } from './net/api';
 import { warsawWeekKey } from './net/week';
 import { OfflineRunQueue, submitOrQueue, watchQueueOnline } from './net/queue';
-import { mountLeague } from './ui/league';
 import { configureAnalytics, track, type AnalyticsHome } from './analytics/track';
 import { registerPwa } from './pwa/register';
 import { prefetchPwaAssetsAfterRun } from './pwa/offline';
@@ -90,9 +89,13 @@ const ui = {
   overJoke: $('over-joke'),
   overBest: $('over-best'),
   overPortal: $<HTMLAnchorElement>('over-portal'),
+  btnReturnFlight: $<HTMLButtonElement>('btn-return-flight'),
+  album: $('album'),
 };
 
 const params = new URLSearchParams(location.search);
+/** Gracz, który już kiedyś grał, nie dostaje ekranu pierwszego uruchomienia. */
+const returningPlayer = (() => { try { return localStorage.getItem('ce.settings') !== null; } catch { return false; } })();
 let settings = load<Settings>('ce.settings', DEFAULTS);
 // Link z karty wyniku lub osadzenia w portalu ustawia kraj i miasto startu.
 const prefill = parseGameParams(params);
@@ -115,6 +118,15 @@ let pendingReload: (() => void) | null = null;
 let closeLeague: (() => void) | null = null;
 let closeGarage: (() => void) | null = null;
 let overLeagueRequest = 0;
+/** Lot powrotny: auto cięższe od startu (słoiki od mamy); bez rankingu, dopóki serwer nie zna tych zasad. */
+const RETURN_WEIGHT = 0.25;
+let returnTrip = false;
+let progress: Progress | null = null;
+let closeCollection: (() => void) | null = null;
+const winter = seasonAt(new Date(), location.search) === 'winter';
+renderer.winter = winter;
+const progressModule = () => import('./meta/progress');
+void progressModule().then((m) => m.loadProgress()).then((p) => { progress = p; });
 
 function safeRoute(s: Settings): Route {
   try {
@@ -146,9 +158,13 @@ function unlockAudio(): void {
   mix.connect(audioCtx.destination);
   audioMix = mix;
   sfx = createSfx(audioCtx, mix);
-  music = createMusic(audioCtx, { destination: mix, volume: 0.5 });
   void sfx.unlock();
-  void music.unlock();
+  const ctx = audioCtx;
+  void import('./audio/music').then(({ createMusic }) => {
+    music = createMusic(ctx, { destination: mix, volume: 0.5 });
+    void music.unlock();
+    if (game?.phase === 'playing') music.start();
+  });
 }
 
 // --- Ranking (bez konfiguracji Firebase działa na mocku) ---
@@ -228,13 +244,17 @@ $('btn-daily').addEventListener('click', () => {
 $('btn-league').addEventListener('click', () => {
   ui.menu.hidden = true;
   ui.league.hidden = false;
-  closeLeague = mountLeague(ui.leagueBody, api, settings.home);
+  void import('./ui/league').then(({ mountLeague }) => {
+    if (!ui.league.hidden) closeLeague = mountLeague(ui.leagueBody, api, settings.home);
+  });
   track('league_open');
 });
 $('btn-league-close').addEventListener('click', () => showMenu());
 $('btn-garage').addEventListener('click', () => {
   ui.menu.hidden = true;
   ui.garage.hidden = false;
+  void import('./ui/garage').then(({ mountGarage }) => {
+  if (ui.garage.hidden) return;
   closeGarage = mountGarage(ui.garage, {
     home: settings.home,
     skin: normalizeHeroSkin(settings.skin),
@@ -246,8 +266,21 @@ $('btn-garage').addEventListener('click', () => {
     },
     onClose: () => showMenu(),
   });
+  });
 });
-$('btn-again').addEventListener('click', () => void newRun());
+$('btn-album').addEventListener('click', () => {
+  ui.menu.hidden = true;
+  ui.album.hidden = false;
+  void progressModule().then((m) => m.loadProgress()).then((p) => {
+    progress = p;
+    return import('./ui/collection').then(({ mountCollection }) => {
+      if (ui.album.hidden) return;
+      closeCollection = mountCollection(ui.album, p, () => showMenu());
+    });
+  });
+});
+$('btn-again').addEventListener('click', () => void newRun(returnTrip));
+$('btn-return-flight').addEventListener('click', () => void newRun(true));
 $('btn-menu').addEventListener('click', () => showMenu());
 $('btn-share').addEventListener('click', () => void share());
 ui.overPortal.addEventListener('click', () => track('portal_click', { placement: 'result', home: settings.home as AnalyticsHome }));
@@ -261,6 +294,9 @@ function showMenu(): void {
   closeLeague = null;
   closeGarage?.();
   closeGarage = null;
+  closeCollection?.();
+  closeCollection = null;
+  ui.album.hidden = true;
   ui.over.hidden = true;
   ui.hud.hidden = true;
   ui.league.hidden = true;
@@ -275,9 +311,10 @@ function currentMode(): Mode {
   return daily ? 'ranked' : settings.mode;
 }
 
-async function newRun(): Promise<void> {
-  const runRoute = daily ? dailyRoute(daily) : route;
-  const mode = currentMode();
+async function newRun(reverse = false): Promise<void> {
+  returnTrip = reverse && !daily;
+  const runRoute = returnTrip ? reverseRoute(route) : daily ? dailyRoute(daily) : route;
+  const mode = returnTrip ? 'cozy' : currentMode();
   let seed = (Math.random() * 2 ** 32) >>> 0;
   if (daily) seed = dailySeed(daily);
   // Hak testowy dla E2E: stałe ziarno tylko z ?test=1.
@@ -297,17 +334,18 @@ async function newRun(): Promise<void> {
     }
   }
 
-  game = new Game({ seed, mode, route: runRoute });
+  game = new Game({ seed, mode, route: runRoute, ...(returnTrip ? { baseWeight: RETURN_WEIGHT } : {}) });
   lastMilestone = 0;
   cardImage = null;
-  music?.setSeason(daily && dailyTitle(daily) === 'Na Wigilię!' ? 'holiday' : 'regular');
+  music?.setSeason(winter || (daily && dailyTitle(daily) === 'Na Wigilię!') ? 'holiday' : 'regular');
   ui.menu.hidden = true;
   ui.over.hidden = true;
   ui.league.hidden = true;
   ui.garage.hidden = true;
+  ui.album.hidden = true;
   ui.hud.hidden = false;
   ui.hint.hidden = false;
-  ui.hint.textContent = daily ? dailyTitle(daily) : UI.tapToStart;
+  ui.hint.textContent = returnTrip ? pick(RETURN_DEPARTURE_TEXTS) : daily ? dailyTitle(daily) : UI.tapToStart;
   ui.toast.hidden = true;
   updateHud();
 }
@@ -317,7 +355,7 @@ function tap(): void {
   unlockAudio();
   if (!game) return;
   if (game.phase === 'over' || game.phase === 'arrived') {
-    if (performance.now() - overAt > 600) void newRun();
+    if (performance.now() - overAt > 600) void newRun(returnTrip);
     return;
   }
   if (game.phase === 'ready') {
@@ -337,7 +375,7 @@ $('stage').addEventListener('pointerdown', (e) => {
 window.addEventListener('keydown', (e) => {
   if (e.code !== 'Space' && e.code !== 'ArrowUp') return;
   // Spacja musi nadal aktywować przyciski, pola formularza i rozwijanie trasy.
-  if (!ui.menu.hidden || !ui.league.hidden || !ui.garage.hidden) return;
+  if (!ui.menu.hidden || !ui.league.hidden || !ui.garage.hidden || !ui.album.hidden) return;
   if ((e.target as HTMLElement)?.closest('button, select, input, textarea, a, summary, [role="radio"]')) return;
   e.preventDefault();
   tap();
@@ -396,6 +434,8 @@ function feedback(e: GameEvent): void {
   if (sound) sfx.play(sound);
   const haptic = hapticForGameEvent(e);
   if (haptic) haptics.play(haptic);
+  // Kraje bez własnego akcentu (np. tranzytowe) są ignorowane w playCountryCue.
+  if (e.type === 'border') music?.playCountryCue(e.country as CountryCueCode);
   if (e.type === 'arrived') music?.playFinishJingle();
   else if (e.type === 'over') music?.stop();
 }
@@ -436,7 +476,9 @@ function showOver(g: Game): void {
   ui.overCauseIcon.alt = '';
   let joke: string;
   if (arrived) {
-    joke = pick(ARRIVAL_TEXTS);
+    joke = g.baseWeight > 0
+      ? fill(pick(RETURN_ARRIVAL_TEXTS), { city: RETURN_CITY_LOCATIVE[g.route.to.id] ?? g.route.to.name })
+      : pick(ARRIVAL_TEXTS);
     ui.overCause.textContent = joke;
     ui.overJoke.textContent = seconds + ' s';
   } else {
@@ -454,6 +496,27 @@ function showOver(g: Game): void {
   }
   ui.hud.hidden = true;
   ui.over.hidden = false;
+  // Lot powrotny: po dojechaniu do Polski (nie po samym powrocie) można od razu ruszyć z powrotem.
+  const canReturn = arrived && g.baseWeight === 0 && !daily;
+  ui.btnReturnFlight.hidden = !canReturn;
+  if (canReturn) save('ce.returnUnlocked', true);
+
+  // Medale i pocztówki: liczą się wszystkie przejazdy (także łagodne i powrotne).
+  if (progress) void progressModule().then(({ applyRun, saveProgress, summarizeRun }) => {
+    if (!progress) return;
+    // Powrót za granicę to nie „dojazd do domu” — medale za dojazd liczymy tylko w stronę Polski.
+    const homeward = g.baseWeight === 0;
+    const change = applyRun(progress, summarizeRun({ route: g.route, km: g.km, jars: g.jars, parcels: g.parcels,
+      phase: homeward ? g.phase : 'over' }, winter && arrived && homeward));
+    progress = change.progress;
+    void saveProgress(progress);
+    if (change.newMedals.length || change.newPostcards.length) {
+      void import('./ui/collection').then(({ medalToast, postcardToast }) => {
+        const news = [...change.newMedals.map(medalToast), ...change.newPostcards.map(postcardToast)];
+        news.slice(0, 3).forEach((text, i) => window.setTimeout(() => toast(text), 700 + i * 1800));
+      });
+    }
+  });
 
   // Po pierwszym przejeździe dociągamy w tle grafiki wszystkich krajów (tryb offline).
   void prefetchPwaAssetsAfterRun();
@@ -493,7 +556,9 @@ function showOver(g: Game): void {
 
   // Kartę renderujemy od razu, żeby kliknięcie „Udostępnij” zachowało gest użytkownika.
   lastCard = cardData(g, joke);
-  cardImage = renderCard(lastCard, 'story').catch(() => null as unknown as Blob);
+  const card = lastCard;
+  cardImage = import('./share/card').then(({ renderCard }) => renderCard(card, 'story')).catch(() => null as unknown as Blob);
+  void import('./share/share');
 
   track('run_end', {
     km: g.km, seconds, cause: arrived ? 'arrived' : g.cause ?? 'ground', mode: g.mode, home: g.route.home as AnalyticsHome,
@@ -506,17 +571,22 @@ function showOver(g: Game): void {
 
 // Natywnie udostępnia platforma (zlecenie 24); jej wynik mapujemy na wyjątki,
 // których oczekuje shareResult (zlecenie 14), żeby działał łańcuch zapasowy.
-setNativeShareAdapter({
-  async share(file, text, url) {
-    const result = await platform.share(file, text, url);
-    if (result === 'cancelled') throw new DOMException('Anulowano', 'AbortError');
-    if (result === 'unavailable') throw new Error('Udostępnianie natywne niedostępne');
-  },
-});
+let shareAdapterSet = false;
 
 async function share(): Promise<void> {
   if (!lastCard) return;
   const image = (await cardImage) ?? undefined;
+  const { setNativeShareAdapter, shareResult } = await import('./share/share');
+  if (!shareAdapterSet) {
+    shareAdapterSet = true;
+    setNativeShareAdapter({
+      async share(file, text, url) {
+        const result = await platform.share(file, text, url);
+        if (result === 'cancelled') throw new DOMException('Anulowano', 'AbortError');
+        if (result === 'unavailable') throw new Error('Udostępnianie natywne niedostępne');
+      },
+    });
+  }
   const outcome = await shareResult(lastCard, { image });
   if (outcome.method !== 'cancelled') {
     const format = outcome.method === 'native' ? 'native' : outcome.method === 'clipboard' ? 'clipboard' : outcome.method === 'web-link' ? 'link' : 'image';
@@ -561,23 +631,48 @@ setHeroSkin(normalizeHeroSkin(settings.skin));
 preloadSprites();
 
 // Nagrywanie rolki 15 s (przycisk widoczny poza samym lotem; ?redakcja=1 — tryb redakcji).
-const recordControl = createRecordControl({
-  canvas,
-  getAudio: () => (audioCtx && audioMix ? { context: audioCtx, source: audioMix } : undefined),
-  overlay: () => ({ km: game?.km ?? 0, route: `${(game?.route ?? route).from.name} → ${(game?.route ?? route).to.name}` }),
-  portalUrl: () => portalLink(settings.home, 'video'),
-  shareVideo: (file, text, url) => platform.share(file, text, url),
-  saveVideo: (video) => saveRecordedVideo(video),
-});
-$('stage').appendChild(recordControl.element);
+let recordControl: { element: HTMLElement } | null = null;
+// Moduł rolek ładujemy po pierwszej klatce — nie spowalnia startu na słabym internecie.
+window.setTimeout(() => void import('./ui/record').then(({ createRecordControl }) => {
+  recordControl = createRecordControl({
+    canvas,
+    getAudio: () => (audioCtx && audioMix ? { context: audioCtx, source: audioMix } : undefined),
+    overlay: () => ({ km: game?.km ?? 0, route: `${(game?.route ?? route).from.name} → ${(game?.route ?? route).to.name}` }),
+    portalUrl: () => portalLink(settings.home, 'video'),
+    shareVideo: (file, text, url) => platform.share(file, text, url),
+  });
+  $('stage').appendChild(recordControl.element);
+  syncRecordVisibility();
+}), 800);
 function syncRecordVisibility(): void {
+  if (!recordControl) return;
   const playing = game?.phase === 'playing';
   const recording = recordControl.element.getAttribute('data-phase') === 'recording';
-  recordControl.element.hidden = (playing && !recording) || !ui.garage.hidden || !ui.league.hidden;
+  recordControl.element.hidden = (playing && !recording) || !ui.garage.hidden || !ui.league.hidden || !ui.album.hidden;
 }
 setInterval(syncRecordVisibility, 250);
 fillMenu();
 requestAnimationFrame(frame);
+// Przełącznik języków (i tłumaczenie menu) po pierwszej klatce — nie spowalnia startu.
+requestAnimationFrame(() => void import('./ui/language-switcher'));
+
+// Pierwsze uruchomienie: wybór kraju i miasta. Kto już grał (ma zapisane ustawienia), nie widzi go wcześniej.
+void import('./ui/onboarding').then(async ({ ONBOARDING_STORAGE_KEY, mountOnboarding, shouldShowOnboarding }) => {
+  if (!(await shouldShowOnboarding(params))) return;
+  if (returningPlayer) {
+    void platform.storage.set(ONBOARDING_STORAGE_KEY, '1');
+    return;
+  }
+  const close = mountOnboarding($('stage'), {
+    onDone(home, from, to) {
+      close();
+      settings = { ...settings, home, from, to };
+      save('ce.settings', settings);
+      route = safeRoute(settings);
+      fillMenu();
+    },
+  });
+}).catch(() => undefined);
 void platform.initialize();
 // Aktualizacja PWA przeładowuje grę dopiero przy powrocie do menu.
 void registerPwa((reload) => {

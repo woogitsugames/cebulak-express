@@ -68,7 +68,7 @@ test('r=be-antwerpia ma pierwszeństwo przed zapisaną trasą', async ({ page },
       home: 'NL', from: 'rotterdam', to: 'poznan', mode: 'cozy',
     }));
   });
-  await page.goto('/?test=1&seed=20261030&r=be-antwerpia');
+  await page.goto('/?test=1&seed=20261030&lang=pl&r=be-antwerpia');
   await expect(page.locator('#menu')).toBeVisible();
   await expect(page.locator('#sel-home')).toHaveValue('BE');
   await expect(page.locator('#sel-from')).toHaveValue('antwerpia');

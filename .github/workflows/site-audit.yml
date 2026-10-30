@@ -1,0 +1,84 @@
+name: Strona gry / Lighthouse i podglądy
+
+on:
+  pull_request:
+    paths:
+      - 'site/**'
+      - 'scripts/build-site.mjs'
+      - 'scripts/site-markdown.mjs'
+      - 'scripts/site-check.mjs'
+      - 'scripts/site-smoke.mjs'
+      - 'src/content/portals.ts'
+      - 'docs/prawo/polityka-prywatnosci.md'
+      - '**/ASSETS.md'
+      - 'firebase.json'
+      - 'package.json'
+      - '.github/workflows/site-audit.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    name: Build, responsywność, bezpieczeństwo, Lighthouse
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm test
+      - name: Zbuduj stronę i grę pod /graj/
+        run: npm run build:site
+      - name: Chromium do zrzutów
+        run: npx playwright install --with-deps chromium
+      - name: Uruchom lokalny podgląd
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m http.server 4321 --bind 127.0.0.1 --directory dist-site > /tmp/ce-site-server.log 2>&1 &
+          for i in $(seq 1 40); do
+            if curl -fsS http://127.0.0.1:4321/ >/dev/null; then break; fi
+            sleep 0.5
+          done
+          curl -fsS http://127.0.0.1:4321/graj/ >/dev/null
+      - name: Desktop, telefon i rozgrywka
+        env:
+          SITE_TEST_URL: http://127.0.0.1:4321
+        run: node scripts/site-smoke.mjs
+      - name: Lighthouse / mobile
+        shell: bash
+        run: |
+          set -euo pipefail
+          export CHROME_PATH="$(command -v google-chrome-stable || command -v google-chrome || command -v chromium)"
+          npm exec --yes --package=lighthouse@13.5.0 -- lighthouse http://127.0.0.1:4321/ \
+            --chrome-flags='--headless --no-sandbox --disable-dev-shm-usage' \
+            --only-categories=performance,accessibility,best-practices,seo \
+            --output=json --output-path="$RUNNER_TEMP/lighthouse-site.json" --quiet
+          node --input-type=module -e '
+            import {readFileSync,appendFileSync} from "node:fs";
+            const r=JSON.parse(readFileSync(process.env.RUNNER_TEMP+"/lighthouse-site.json","utf8"));
+            const scores=Object.entries(r.categories).map(([k,v])=>[k,Math.round(v.score*100)]);
+            for (const [k,v] of scores) console.log("Lighthouse "+k+": "+v+"/100");
+            appendFileSync(process.env.GITHUB_STEP_SUMMARY,"## Lighthouse landing (mobile)\n\n"+scores.map(([k,v])=>"- "+k+": "+v+"/100").join("\n")+"\n");
+            if (scores.some(([,v])=>v<90)) process.exitCode=1;
+          '
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: strona-gry-zrzuty-desktop-mobile
+          path: site-audit/*.png
+          retention-days: 30
+          if-no-files-found: ignore
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: strona-gry-lighthouse
+          path: ${{ runner.temp }}/lighthouse-site.json
+          retention-days: 30
+          if-no-files-found: ignore

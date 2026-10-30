@@ -1,0 +1,1016 @@
+# Wszystkie teksty widoczne dla gracza — do przeczytania
+
+> Plik generowany przez `node tools/qa/teksty.mjs`. Nie edytować ręcznie — poprawki zgłaszać w źródłach.
+> Zawiera statyczne literały tekstowe, nazwy miast, nicki, warianty komunikatów,
+> etykiety dostępności, teksty karty wyniku oraz napisy w HTML. `{…}` oznacza dane dynamiczne.
+> Nie obejmuje tekstów pobieranych z serwera, zawartości portali ani tekstów rasteryzowanych w grafikach.
+
+**Unikalnych wpisów (plik + tekst):** 975. **Naruszeń:** 0.
+
+## `index.html`
+
+- L9 (opis meta): Polonijna gra na jeden palec: przeładowane kombi leci z Twojego kraju do domu w Polsce.
+- L10 (tytuł strony): Cebulak Express
+- L15 (atrybut aria-label <canvas>): Gra Cebulak Express
+- L19 (HTML <span>): 0 km
+- L24 (HTML <div>): Dotknij, aby wystartować
+- L27 (atrybut aria-label <section>): Menu główne
+- L29 (atrybut alt <img>): Cebulak Express — Kierunek Polska
+- L31 (HTML <p>): Przygoda na jeden palec
+- L39 (atrybut aria-label <div>): Tryb gry
+- L40 (HTML <button>): Rankingowy
+- L41 (HTML <button>): Łagodny
+- L43 (HTML <button>): Lecimy!
+- L45 (HTML <button>): Wyzwanie dnia
+- L46 (HTML <button>): Liga Polonii
+- L47 (HTML <button>): Garaż
+- L55 (HTML <strong>): Zmień trasę
+- L61 (HTML <label>): Mieszkam w
+- L64 (HTML <label>): Startuję z
+- L67 (HTML <label>): Lecę do
+- L75 (atrybut aria-label <section>): Liga Polonii
+- L77 (HTML <button>): Powrót do menu
+- L80 (atrybut aria-label <section>): Garaż
+- L83 (HTML <h2>): Koniec trasy!
+- L87 (HTML <span>): Przejechany dystans
+- L88 (HTML <p>): 0 km
+- L99 (atrybut aria-label <section>): Pierwsza trójka Ligi Polonii
+- L100 (HTML <h3>): Liga Polonii
+- L100 (HTML <span>): TOP 3
+- L105 (HTML <button>): Zagraj ponownie
+- L106 (HTML <button>): Udostępnij
+- L109 (HTML <button>): Zmień trasę
+## `src/content/nicks.ts`
+
+- L14 (nicki NICK_ADJECTIVES): Zaradna
+- L14 (nicki NICK_ADJECTIVES): Zaradny
+- L15 (nicki NICK_ADJECTIVES): Szybka
+- L15 (nicki NICK_ADJECTIVES): Szybki
+- L16 (nicki NICK_ADJECTIVES): Pogodna
+- L16 (nicki NICK_ADJECTIVES): Pogodny
+- L17 (nicki NICK_ADJECTIVES): Słoikowa
+- L17 (nicki NICK_ADJECTIVES): Słoikowy
+- L18 (nicki NICK_ADJECTIVES): Nocna
+- L18 (nicki NICK_ADJECTIVES): Nocny
+- L19 (nicki NICK_ADJECTIVES): Wigilijna
+- L19 (nicki NICK_ADJECTIVES): Wigilijny
+- L20 (nicki NICK_ADJECTIVES): Wesoła
+- L20 (nicki NICK_ADJECTIVES): Wesoły
+- L21 (nicki NICK_ADJECTIVES): Radosna
+- L21 (nicki NICK_ADJECTIVES): Radosny
+- L22 (nicki NICK_ADJECTIVES): Dzielna
+- L22 (nicki NICK_ADJECTIVES): Dzielny
+- L23 (nicki NICK_ADJECTIVES): Sprytna
+- L23 (nicki NICK_ADJECTIVES): Sprytny
+- L24 (nicki NICK_ADJECTIVES): Pomysłowa
+- L24 (nicki NICK_ADJECTIVES): Pomysłowy
+- L25 (nicki NICK_ADJECTIVES): Uśmiechnięta
+- L25 (nicki NICK_ADJECTIVES): Uśmiechnięty
+- L26 (nicki NICK_ADJECTIVES): Cierpliwa
+- L26 (nicki NICK_ADJECTIVES): Cierpliwy
+- L27 (nicki NICK_ADJECTIVES): Wytrwała
+- L27 (nicki NICK_ADJECTIVES): Wytrwały
+- L28 (nicki NICK_ADJECTIVES): Odważna
+- L28 (nicki NICK_ADJECTIVES): Odważny
+- L29 (nicki NICK_ADJECTIVES): Śmiała
+- L29 (nicki NICK_ADJECTIVES): Śmiały
+- L30 (nicki NICK_ADJECTIVES): Żwawa
+- L30 (nicki NICK_ADJECTIVES): Żwawy
+- L31 (nicki NICK_ADJECTIVES): Energiczna
+- L31 (nicki NICK_ADJECTIVES): Energiczny
+- L32 (nicki NICK_ADJECTIVES): Skoczna
+- L32 (nicki NICK_ADJECTIVES): Skoczny
+- L33 (nicki NICK_ADJECTIVES): Zwinna
+- L33 (nicki NICK_ADJECTIVES): Zwinny
+- L34 (nicki NICK_ADJECTIVES): Czujna
+- L34 (nicki NICK_ADJECTIVES): Czujny
+- L35 (nicki NICK_ADJECTIVES): Bystra
+- L35 (nicki NICK_ADJECTIVES): Bystry
+- L36 (nicki NICK_ADJECTIVES): Rześka
+- L36 (nicki NICK_ADJECTIVES): Rześki
+- L37 (nicki NICK_ADJECTIVES): Przebojowa
+- L37 (nicki NICK_ADJECTIVES): Przebojowy
+- L38 (nicki NICK_ADJECTIVES): Drogowa
+- L38 (nicki NICK_ADJECTIVES): Drogowy
+- L39 (nicki NICK_ADJECTIVES): Szlakowa
+- L39 (nicki NICK_ADJECTIVES): Szlakowy
+- L40 (nicki NICK_ADJECTIVES): Walizkowa
+- L40 (nicki NICK_ADJECTIVES): Walizkowy
+- L41 (nicki NICK_ADJECTIVES): Bagażowa
+- L41 (nicki NICK_ADJECTIVES): Bagażowy
+- L42 (nicki NICK_ADJECTIVES): Kompasowa
+- L42 (nicki NICK_ADJECTIVES): Kompasowy
+- L43 (nicki NICK_ADJECTIVES): Objazdowa
+- L43 (nicki NICK_ADJECTIVES): Objazdowy
+- L44 (nicki NICK_ADJECTIVES): Powrotna
+- L44 (nicki NICK_ADJECTIVES): Powrotny
+- L45 (nicki NICK_ADJECTIVES): Świąteczna
+- L45 (nicki NICK_ADJECTIVES): Świąteczny
+- L46 (nicki NICK_ADJECTIVES): Domowa
+- L46 (nicki NICK_ADJECTIVES): Domowy
+- L47 (nicki NICK_ADJECTIVES): Rodzinna
+- L47 (nicki NICK_ADJECTIVES): Rodzinny
+- L48 (nicki NICK_ADJECTIVES): Weekendowa
+- L48 (nicki NICK_ADJECTIVES): Weekendowy
+- L49 (nicki NICK_ADJECTIVES): Poranna
+- L49 (nicki NICK_ADJECTIVES): Poranny
+- L50 (nicki NICK_ADJECTIVES): Wieczorna
+- L50 (nicki NICK_ADJECTIVES): Wieczorny
+- L51 (nicki NICK_ADJECTIVES): Jesienna
+- L51 (nicki NICK_ADJECTIVES): Jesienny
+- L52 (nicki NICK_ADJECTIVES): Zimowa
+- L52 (nicki NICK_ADJECTIVES): Zimowy
+- L53 (nicki NICK_ADJECTIVES): Wiosenna
+- L53 (nicki NICK_ADJECTIVES): Wiosenny
+- L54 (nicki NICK_ADJECTIVES): Letni
+- L54 (nicki NICK_ADJECTIVES): Letnia
+- L55 (nicki NICK_ADJECTIVES): Gwiezdna
+- L55 (nicki NICK_ADJECTIVES): Gwiezdny
+- L56 (nicki NICK_ADJECTIVES): Słoneczna
+- L56 (nicki NICK_ADJECTIVES): Słoneczny
+- L57 (nicki NICK_ADJECTIVES): Deszczowa
+- L57 (nicki NICK_ADJECTIVES): Deszczowy
+- L58 (nicki NICK_ADJECTIVES): Wietrzna
+- L58 (nicki NICK_ADJECTIVES): Wietrzny
+- L59 (nicki NICK_ADJECTIVES): Serdeczna
+- L59 (nicki NICK_ADJECTIVES): Serdeczny
+- L60 (nicki NICK_ADJECTIVES): Herbaciana
+- L60 (nicki NICK_ADJECTIVES): Herbaciany
+- L61 (nicki NICK_ADJECTIVES): Plecakowa
+- L61 (nicki NICK_ADJECTIVES): Plecakowy
+- L62 (nicki NICK_ADJECTIVES): Niezmordowana
+- L62 (nicki NICK_ADJECTIVES): Niezmordowany
+- L63 (nicki NICK_ADJECTIVES): Niestrudzona
+- L63 (nicki NICK_ADJECTIVES): Niestrudzony
+- L64 (nicki NICK_ADJECTIVES): Punktualna
+- L64 (nicki NICK_ADJECTIVES): Punktualny
+- L65 (nicki NICK_ADJECTIVES): Przyjazna
+- L65 (nicki NICK_ADJECTIVES): Przyjazny
+- L66 (nicki NICK_ADJECTIVES): Uczynna
+- L66 (nicki NICK_ADJECTIVES): Uczynny
+- L67 (nicki NICK_ADJECTIVES): Kreatywna
+- L67 (nicki NICK_ADJECTIVES): Kreatywny
+- L68 (nicki NICK_ADJECTIVES): Życzliwa
+- L68 (nicki NICK_ADJECTIVES): Życzliwy
+- L69 (nicki NICK_ADJECTIVES): Uważna
+- L69 (nicki NICK_ADJECTIVES): Uważny
+- L70 (nicki NICK_ADJECTIVES): Spokojna
+- L70 (nicki NICK_ADJECTIVES): Spokojny
+- L71 (nicki NICK_ADJECTIVES): Dobroduszna
+- L71 (nicki NICK_ADJECTIVES): Dobroduszny
+- L72 (nicki NICK_ADJECTIVES): Ciekawska
+- L72 (nicki NICK_ADJECTIVES): Ciekawski
+- L73 (nicki NICK_ADJECTIVES): Zorganizowana
+- L73 (nicki NICK_ADJECTIVES): Zorganizowany
+- L74 (nicki NICK_ADJECTIVES): Rozważna
+- L74 (nicki NICK_ADJECTIVES): Rozważny
+- L75 (nicki NICK_ADJECTIVES): Błyskawiczna
+- L75 (nicki NICK_ADJECTIVES): Błyskawiczny
+- L79 (nicki NICK_NOUNS): Kierowca
+- L79 (nicki NICK_NOUNS): Kierowczyni
+- L80 (nicki NICK_NOUNS): Bocian
+- L80 (nicki NICK_NOUNS): Bocianica
+- L81 (nicki NICK_NOUNS): Pilot
+- L81 (nicki NICK_NOUNS): Pilotka
+- L82 (nicki NICK_NOUNS): Kurier
+- L82 (nicki NICK_NOUNS): Kurierka
+- L83 (nicki NICK_NOUNS): Pasażer
+- L83 (nicki NICK_NOUNS): Pasażerka
+- L84 (nicki NICK_NOUNS): Podróżniczka
+- L84 (nicki NICK_NOUNS): Podróżnik
+- L85 (nicki NICK_NOUNS): Wędrowiec
+- L85 (nicki NICK_NOUNS): Wędrowniczka
+- L86 (nicki NICK_NOUNS): Turysta
+- L86 (nicki NICK_NOUNS): Turystka
+- L87 (nicki NICK_NOUNS): Zwiadowca
+- L87 (nicki NICK_NOUNS): Zwiadowczyni
+- L88 (nicki NICK_NOUNS): Odkrywca
+- L88 (nicki NICK_NOUNS): Odkrywczyni
+- L89 (nicki NICK_NOUNS): Nawigator
+- L89 (nicki NICK_NOUNS): Nawigatorka
+- L90 (nicki NICK_NOUNS): Mechaniczka
+- L90 (nicki NICK_NOUNS): Mechanik
+- L91 (nicki NICK_NOUNS): Mistrz
+- L91 (nicki NICK_NOUNS): Mistrzyni
+- L92 (nicki NICK_NOUNS): Skoczek
+- L92 (nicki NICK_NOUNS): Skoczkini
+- L93 (nicki NICK_NOUNS): Poszukiwacz
+- L93 (nicki NICK_NOUNS): Poszukiwaczka
+- L94 (nicki NICK_NOUNS): Marzyciel
+- L94 (nicki NICK_NOUNS): Marzycielka
+- L95 (nicki NICK_NOUNS): Optymista
+- L95 (nicki NICK_NOUNS): Optymistka
+- L96 (nicki NICK_NOUNS): Zawodniczka
+- L96 (nicki NICK_NOUNS): Zawodnik
+- L97 (nicki NICK_NOUNS): Sprinter
+- L97 (nicki NICK_NOUNS): Sprinterka
+- L98 (nicki NICK_NOUNS): Organizator
+- L98 (nicki NICK_NOUNS): Organizatorka
+- L99 (nicki NICK_NOUNS): Strażniczka
+- L99 (nicki NICK_NOUNS): Strażnik
+- L100 (nicki NICK_NOUNS): Planista
+- L100 (nicki NICK_NOUNS): Planistka
+- L101 (nicki NICK_NOUNS): Kolekcjoner
+- L101 (nicki NICK_NOUNS): Kolekcjonerka
+- L102 (nicki NICK_NOUNS): Pakowacz
+- L102 (nicki NICK_NOUNS): Pakowaczka
+- L103 (nicki NICK_NOUNS): Dostawca
+- L103 (nicki NICK_NOUNS): Dostawczyni
+- L104 (nicki NICK_NOUNS): Pomocniczka
+- L104 (nicki NICK_NOUNS): Pomocnik
+- L105 (nicki NICK_NOUNS): Przewodniczka
+- L105 (nicki NICK_NOUNS): Przewodnik
+- L106 (nicki NICK_NOUNS): Wczasowicz
+- L106 (nicki NICK_NOUNS): Wczasowiczka
+- L107 (nicki NICK_NOUNS): Rekordzista
+- L107 (nicki NICK_NOUNS): Rekordzistka
+- L108 (nicki NICK_NOUNS): Entuzjasta
+- L108 (nicki NICK_NOUNS): Entuzjastka
+- L109 (nicki NICK_NOUNS): Znawca
+- L109 (nicki NICK_NOUNS): Znawczyni
+- L110 (nicki NICK_NOUNS): Majsterkowicz
+- L110 (nicki NICK_NOUNS): Majsterkowiczka
+- L111 (nicki NICK_NOUNS): Przyjaciel
+- L111 (nicki NICK_NOUNS): Przyjaciółka
+- L112 (nicki NICK_NOUNS): Bohater
+- L112 (nicki NICK_NOUNS): Bohaterka
+- L178 (komunikat błędu): Nieprawidłowy nickId
+## `src/content/portals.ts`
+
+- L19 (nazwa kraju portalu): Belgia
+- L20 (nazwa kraju portalu): Holandia
+- L21 (nazwa kraju portalu): Niemcy
+- L22 (nazwa kraju portalu): Wielka Brytania
+- L23 (nazwa kraju portalu): Francja
+- L24 (nazwa kraju portalu): Szwajcaria
+- L25 (nazwa kraju portalu): Norwegia
+- L26 (nazwa kraju portalu): Dania
+- L27 (nazwa kraju portalu): Irlandia
+- L28 (nazwa kraju portalu): Hiszpania
+- L29 (nazwa kraju portalu): Włochy
+- L30 (nazwa kraju portalu): Austria
+- L31 (nazwa kraju portalu): Szwecja
+- L32 (nazwa kraju portalu): Finlandia
+- L33 (nazwa kraju portalu): Luksemburg
+- L44 (komunikat błędu): Niepoprawny identyfikator miejsca linku
+## `src/content/waypoints.ts`
+
+- L34 (punkt trasy: name): Poznań
+- L35 (punkt trasy: text): Poznań. Koziołki stukają: jeszcze trochę!
+- L38 (punkt trasy: name): Łódź
+- L39 (punkt trasy: text): Łódź. Cegła, kominy i obiad czeka na stole.
+- L42 (punkt trasy: name): Warszawa
+- L43 (punkt trasy: text): Warszawa. Stolica wita, słoiki gotowe!
+- L46 (punkt trasy: name): Szczecin
+- L47 (punkt trasy: text): Szczecin. Zamek, port i Odra na powitanie.
+- L50 (punkt trasy: name): Wrocław
+- L51 (punkt trasy: text): Wrocław. Krasnale wskazują drogę do domu.
+- L54 (punkt trasy: name): Legnica
+- L55 (punkt trasy: text): Legnica. Rynek, kamienice i już prawie Wrocław.
+- L60 (punkt trasy: name): Kraków
+- L61 (punkt trasy: text): Kraków. Jeszcze jeden zakręt i będzie obiad.
+- L64 (punkt trasy: name): Katowice
+- L65 (punkt trasy: text): Katowice. W drogę, bo w domu czeka rosół.
+- L68 (punkt trasy: name): Gdańsk
+- L69 (punkt trasy: text): Gdańsk. Mewy też wracają do domu.
+- L72 (punkt trasy: name): Słupsk
+- L73 (punkt trasy: text): Słupsk. Jeszcze chwila i słoiki na stole.
+- L76 (punkt trasy: name): Bydgoszcz
+- L77 (punkt trasy: text): Bydgoszcz. Rzeka płynie, kilometrów ubywa.
+- L82 (punkt trasy: name): Białystok
+- L83 (punkt trasy: text): Białystok. Coraz bliżej rodzinnego stołu.
+- L86 (punkt trasy: name): Łomża
+- L87 (punkt trasy: text): Łomża. Jeszcze trochę do obiadu.
+- L90 (punkt trasy: name): Olsztyn
+- L91 (punkt trasy: text): Olsztyn. Jeziora mijają, dom coraz bliżej.
+- L98 (punkt trasy: name): Dortmund
+- L98 (punkt trasy: text): Dortmund. Stadion ryczy, kombi cicho jedzie dalej.
+- L99 (punkt trasy: name): Bielefeld
+- L99 (punkt trasy: text): Bielefeld. Podobno go nie ma, ale korek jest.
+- L100 (punkt trasy: name): Hanower
+- L100 (punkt trasy: text): Hanower. Kopuła ratusza kiwa na do widzenia.
+- L101 (punkt trasy: name): Magdeburg
+- L101 (punkt trasy: text): Magdeburg. Most wodny nad Łabą, a my górą.
+- L109 (punkt trasy: name): Berlin
+- L109 (punkt trasy: text): Berlin. Wieża TV macha, do Polski coraz bliżej!
+- L110 (punkt trasy: name): Frankfurt nad Odrą
+- L110 (punkt trasy: text): Frankfurt nad Odrą. Za rzeką już Słubice.
+- L111 (punkt trasy: name): Granica (Świecko)
+- L111 (punkt trasy: text): Rzeczpospolita Polska. Słoiki wracają do domu!
+- L112 (punkt trasy: text): Hot dog, kawa, zapiekanka. Pełny bak i brzuch.
+- L112, 165, 330 (punkt trasy: name): Stacja za granicą
+- L119 (punkt trasy: name): Drezno
+- L119 (punkt trasy: text): Drezno. Barokowa panorama, granica tuż-tuż.
+- L120 (punkt trasy: name): Granica (Zgorzelec)
+- L120 (punkt trasy: text): Zgorzelec. Rzeczpospolita Polska wita!
+- L121 (punkt trasy: text): Hot dogi i kawa przy A4. Zapiekanka na deser.
+- L121 (punkt trasy: name): Stacja przy A4
+- L132 (punkt trasy: name): Uckermark
+- L132 (punkt trasy: text): Uckermark. Las mija, dom coraz bliżej.
+- L133 (punkt trasy: name): Granica (Kołbaskowo)
+- L133 (punkt trasy: text): Kołbaskowo. Witamy w Polsce!
+- L134 (punkt trasy: text): Kawa, hot dogi i zapiekanka. Jedziemy dalej!
+- L134 (punkt trasy: name): Stacja przy A6
+- L137 (punkt trasy: name): Cottbus
+- L137 (punkt trasy: text): Cottbus. A15 prowadzi nas na wschód.
+- L138 (punkt trasy: name): Forst
+- L138 (punkt trasy: text): Forst. Jeszcze chwila i Polska!
+- L139 (punkt trasy: name): Granica (Olszyna)
+- L139 (punkt trasy: text): Olszyna. Polska na horyzoncie!
+- L140 (punkt trasy: text): Biało-czerwona stacja, kawa i hot dogi.
+- L140 (punkt trasy: name): Stacja przy A18
+- L149 (punkt trasy: name): Monachium
+- L149 (punkt trasy: text): Monachium. Bagaże gotowe, do domu!
+- L150, 233, 285 (punkt trasy: name): Norymberga
+- L150, 233 (punkt trasy: text): Norymberga. Zamek na skale, pierniki w kombi.
+- L151 (punkt trasy: name): Bayreuth
+- L151 (punkt trasy: text): Bayreuth. Wzgórza mijają, droga biegnie dalej.
+- L152 (punkt trasy: name): Chemnitz
+- L152 (punkt trasy: text): Chemnitz. Jeszcze trochę i Drezno.
+- L160 (punkt trasy: name): Brno
+- L160 (punkt trasy: text): Brno. Termos trzyma ciepło, mapa kierunek.
+- L161 (punkt trasy: name): Ołomuniec
+- L161 (punkt trasy: text): Ołomuniec. Jeszcze jeden postój na kawę.
+- L162 (punkt trasy: name): Ostrawa
+- L162 (punkt trasy: text): Ostrawa. Ostatnia prosta przed granicą.
+- L163 (punkt trasy: text): Cieszyn za rzeką. Już pachnie domowym obiadem.
+- L163 (punkt trasy: name): Czeski Cieszyn
+- L164 (punkt trasy: text): Cieszyn. Polska na trasie, obiad coraz bliżej!
+- L164 (punkt trasy: name): Granica (Cieszyn)
+- L165 (punkt trasy: text): Kawa na stacji i jedziemy dalej.
+- L173, 243 (punkt trasy: name): Ystad
+- L173 (punkt trasy: text): Ystad. Walizki też chcą na pokład.
+- L174, 244, 252 (punkt trasy: name): Prom przez Bałtyk
+- L174 (punkt trasy: text): Prom. Kawa w dłoni, słoiki zabezpieczone.
+- L175, 245 (punkt trasy: name): Świnoujście
+- L175 (punkt trasy: text): Świnoujście. Po promie już polski brzeg!
+- L176 (punkt trasy: text): Stacja po rejsie. Kawa i w drogę.
+- L176, 246 (punkt trasy: name): Stacja przy S3
+- L183 (punkt trasy: name): Bruksela
+- L183 (punkt trasy: text): Bruksela. Bagażnik po dach, serce już w Polsce.
+- L184 (punkt trasy: name): Leuven
+- L184 (punkt trasy: text): Leuven. Ratusz jak koronka, bagażnik jak cegła.
+- L185 (punkt trasy: name): Liège
+- L185 (punkt trasy: text): Liège. Moza płynie, a my lecimy dalej.
+- L186 (punkt trasy: name): Akwizgran
+- L186 (punkt trasy: text): Akwizgran. Witamy w Niemczech!
+- L187, 200 (punkt trasy: name): Kolonia
+- L187, 200 (punkt trasy: text): Kolonia. Katedra widzi, że wieziesz słoiki.
+- L188, 201 (punkt trasy: name): Düsseldorf
+- L188, 201 (punkt trasy: text): Düsseldorf. Wieża nad Renem odlicza do domu.
+- L189, 196, 202, 216 (punkt trasy: name): Zagłębie Ruhry
+- L189, 202, 216 (punkt trasy: text): Zagłębie Ruhry. Kominy kopcą, kombi sapie.
+- L193 (punkt trasy: name): Amsterdam
+- L193 (punkt trasy: text): Amsterdam. Rowery wszędzie, miejsca w kombi brak.
+- L194 (punkt trasy: name): Utrecht
+- L194 (punkt trasy: text): Utrecht. Wieża wysoka, bagażnik jeszcze wyższy.
+- L195 (punkt trasy: name): Arnhem
+- L195 (punkt trasy: text): Arnhem. Most nad Renem i jazda na całego.
+- L196 (punkt trasy: text): Gazometr jak wielki słoik bez wieczka.
+- L206 (punkt trasy: name): Londyn
+- L206 (punkt trasy: text): Londyn. Lewa strona drogi pożegnana!
+- L207 (punkt trasy: name): Dover
+- L207 (punkt trasy: text): Dover. Klify białe jak serwetka pod zapiekanką.
+- L208 (punkt trasy: name): Prom przez kanał
+- L208 (punkt trasy: text): Prom! Kawa, mewy i 90 minut bez korka.
+- L209 (punkt trasy: name): Calais
+- L209 (punkt trasy: text): Calais. Znów po prawej stronie drogi.
+- L210 (punkt trasy: name): Dunkierka
+- L210 (punkt trasy: text): Dunkierka. Wielka plaża, wielka trasa.
+- L211 (punkt trasy: name): Brugia
+- L211 (punkt trasy: text): Brugia. Kanały jak z bajki, bagażnik jak magazyn.
+- L212 (punkt trasy: name): Gandawa
+- L212 (punkt trasy: text): Gandawa. Zamek na wodzie, w kombi pół spiżarni.
+- L213 (punkt trasy: name): Antwerpia
+- L213 (punkt trasy: text): Antwerpia. Dźwigi portowe liczą nasze słoiki.
+- L214 (punkt trasy: name): Eindhoven
+- L214 (punkt trasy: text): Eindhoven. Rowery nad drogą, my pod chmurami.
+- L215 (punkt trasy: name): Venlo
+- L215 (punkt trasy: text): Venlo. Szklarnie i Niemcy tuż-tuż.
+- L220 (punkt trasy: name): Paryż
+- L220 (punkt trasy: text): Paryż. Wieża żegna kombi z pełnym bagażnikiem.
+- L221, 265 (punkt trasy: name): Reims
+- L221 (punkt trasy: text): Reims. Katedra, wzgórza i pierwsza kawa.
+- L222, 266 (punkt trasy: name): Metz
+- L222 (punkt trasy: text): Metz. Katedra z witrażami, w głowie pierogi.
+- L223, 267 (punkt trasy: name): Saarbrücken
+- L223 (punkt trasy: text): Saarbrücken. Witamy w Niemczech!
+- L224, 268 (punkt trasy: name): Mannheim
+- L224 (punkt trasy: text): Mannheim. Miasto w kratkę, korek okrągły.
+- L225, 269, 336 (punkt trasy: name): Frankfurt nad Menem
+- L225 (punkt trasy: text): Frankfurt. Wieżowce liczą piętra, my km.
+- L226, 270, 337 (punkt trasy: name): Erfurt
+- L226 (punkt trasy: text): Erfurt. Dom na moście, nasz dom na końcu trasy.
+- L230 (punkt trasy: name): Zurych
+- L230 (punkt trasy: text): Zurych. Alpy za plecami, bigos przed nosem.
+- L231 (punkt trasy: name): Wodospad Reński
+- L231 (punkt trasy: text): Wodospad. Woda w dół, my w górę mapy.
+- L232 (punkt trasy: name): Stuttgart
+- L232 (punkt trasy: text): Stuttgart. Witamy w Niemczech!
+- L234, 286 (punkt trasy: name): Jena
+- L234 (punkt trasy: text): Jena. Okrągła wieża i drogowskaz na wschód.
+- L238 (punkt trasy: name): Oslo
+- L238 (punkt trasy: text): Oslo. Fiord żegna, słoiki pakują się same.
+- L239 (punkt trasy: text): Most na granicy, łoś macha z lasu.
+- L239 (punkt trasy: name): Svinesund
+- L240 (punkt trasy: name): Göteborg
+- L240 (punkt trasy: text): Göteborg. Port, tramwaje i dalej na południe.
+- L241, 312 (punkt trasy: name): Helsingborg
+- L241 (punkt trasy: text): Helsingborg. Za cieśniną już Dania.
+- L242, 313 (punkt trasy: name): Malmö
+- L242 (punkt trasy: text): Malmö. Most na horyzoncie, prom przed nami.
+- L243 (punkt trasy: text): Ystad. Wjeżdżamy na prom. Trzymaj się!
+- L244 (punkt trasy: text): Na promie: kawa, mewy i cisza. Rzadkość!
+- L245 (punkt trasy: text): Świnoujście. Polska wita po rejsie!
+- L246 (punkt trasy: text): Hot dog po rejsie smakuje podwójnie.
+- L249 (punkt trasy: name): Kopenhaga
+- L249 (punkt trasy: text): Kopenhaga. Rowery mkną, kombi się turla.
+- L250 (punkt trasy: name): Roskilde
+- L250 (punkt trasy: text): Roskilde. Wikingowie pływali, my lecimy z kawą.
+- L251 (punkt trasy: text): Długi most, mewy z boku, hot dog w głowie.
+- L251 (punkt trasy: name): Most nad cieśniną
+- L252 (punkt trasy: text): Na promie: kawa i mewy. 45 minut ciszy.
+- L253 (punkt trasy: name): Lubeka
+- L253 (punkt trasy: text): Lubeka. Brama z dwiema wieżami wita z daleka.
+- L254 (punkt trasy: name): Hamburg
+- L254 (punkt trasy: text): Hamburg. Mewy robią zdjęcia kombi.
+- L258 (punkt trasy: name): Dublin
+- L258 (punkt trasy: text): Dublin. Bagaże gotowe, kierunek: dom.
+- L259 (punkt trasy: name): Wicklow
+- L259 (punkt trasy: text): Wicklow. Zieleń za oknem i torby na dachu.
+- L260 (punkt trasy: name): Rosslare
+- L260 (punkt trasy: text): Rosslare. Na promie miejsca na słoiki nie brak.
+- L261 (punkt trasy: name): Prom do Francji
+- L261 (punkt trasy: text): Prom. Spokojna chwila, zanim wrócą zakręty.
+- L262 (punkt trasy: name): Cherbourg
+- L262 (punkt trasy: text): Cherbourg. Ląd pod kołami, mapa znów pracuje.
+- L263 (punkt trasy: name): Caen
+- L263 (punkt trasy: text): Caen. Pierwszy odcinek po rejsie zaliczony.
+- L264 (punkt trasy: name): Rouen
+- L264 (punkt trasy: text): Rouen. Katedra wysoka, dach jeszcze wyższy.
+- L265 (punkt trasy: text): Reims. Kawa się skończyła, kilometry nie.
+- L266 (punkt trasy: text): Metz. W bagażniku wszystko, oprócz wolnego miejsca.
+- L267 (punkt trasy: text): Saarbrücken. Nowy kraj, ten sam pełny dach.
+- L268 (punkt trasy: text): Mannheim. Termos dostał kolejne zadanie.
+- L269 (punkt trasy: text): Frankfurt. Piętra rosną, kilometrów ubywa.
+- L270 (punkt trasy: text): Erfurt. Jeszcze trochę i pora na obiad.
+- L274 (punkt trasy: name): Barcelona
+- L274 (punkt trasy: text): Barcelona. Walizki gotowe na długą drogę.
+- L275 (punkt trasy: name): Girona
+- L275 (punkt trasy: text): Girona. Jeszcze chwila słońca do bagażnika.
+- L276 (punkt trasy: text): Granica. Przed nami kolejny rozdział trasy.
+- L276 (punkt trasy: name): La Jonquera
+- L277 (punkt trasy: name): Perpignan
+- L277 (punkt trasy: text): Perpignan. Wjechaliśmy do Francji.
+- L278 (punkt trasy: name): Narbonne
+- L278 (punkt trasy: text): Narbonne. Kanał płynie, kombi też.
+- L279 (punkt trasy: name): Montpellier
+- L279 (punkt trasy: text): Montpellier. Bagażnik nadal trzyma fason.
+- L280 (punkt trasy: name): Lyon
+- L280 (punkt trasy: text): Lyon. Most za mostem i bliżej domu.
+- L281 (punkt trasy: name): Besançon
+- L281 (punkt trasy: text): Besançon. Jeszcze miejsce na jedną torbę?
+- L282 (punkt trasy: name): Mulhouse
+- L282 (punkt trasy: text): Mulhouse. Termos wie, że droga jeszcze długa.
+- L283 (punkt trasy: name): Fryburg Bryzgowijski
+- L283 (punkt trasy: text): Fryburg. Znów nowy kraj i nowa kawa.
+- L284 (punkt trasy: name): Karlsruhe
+- L284 (punkt trasy: text): Karlsruhe. Torby siedzą, licznik biegnie.
+- L285 (punkt trasy: text): Norymberga. Dom coraz bliżej.
+- L286 (punkt trasy: text): Jena. Zapas kawy już policzony.
+- L290 (punkt trasy: name): Mediolan
+- L290 (punkt trasy: text): Mediolan. Walizki po dach i jedziemy.
+- L291 (punkt trasy: name): Werona
+- L291 (punkt trasy: text): Werona. Bagażnik dostał owacje.
+- L292 (punkt trasy: name): Padwa
+- L292 (punkt trasy: text): Padwa. Jeszcze chwila i góry w oknie.
+- L293 (punkt trasy: name): Mestre
+- L293 (punkt trasy: text): Mestre. W drogę na północ.
+- L294 (punkt trasy: name): Udine
+- L294 (punkt trasy: text): Udine. Alpy już zaglądają do kabiny.
+- L295 (punkt trasy: name): Tarvisio
+- L295 (punkt trasy: text): Tarvisio. Góry za oknem, słoiki przypięte.
+- L296 (punkt trasy: name): Villach
+- L296 (punkt trasy: text): Villach. Alpy zostają za nami.
+- L297 (punkt trasy: name): Graz
+- L297 (punkt trasy: text): Graz. Zegar tyka, my liczymy kilometry.
+- L298, 303 (punkt trasy: name): Wiedeń
+- L298 (punkt trasy: text): Wiedeń. Jeszcze parę godzin do pierogów.
+- L299, 304 (punkt trasy: name): Mikulov
+- L299 (punkt trasy: text): Mikulov. Zmieniamy kraj, nie kierunek.
+- L303 (punkt trasy: text): Wiedeń. Pakujemy wspomnienia i ruszamy.
+- L304 (punkt trasy: text): Mikulov. Przez Czechy coraz bliżej domu.
+- L308 (punkt trasy: name): Sztokholm
+- L308 (punkt trasy: text): Sztokholm. Bagażnik gotowy do podróży.
+- L309 (punkt trasy: name): Nyköping
+- L309 (punkt trasy: text): Nyköping. Pierwsza kawa zaliczona.
+- L310 (punkt trasy: name): Norrköping
+- L310 (punkt trasy: text): Norrköping. Walizki się nie nudzą.
+- L311 (punkt trasy: name): Jönköping
+- L311 (punkt trasy: text): Jönköping. Jezioro mija, kombi jedzie dalej.
+- L312 (punkt trasy: text): Helsingborg. Mewy znają już nasz bagażnik.
+- L313 (punkt trasy: text): Malmö. Port coraz bliżej.
+- L317 (punkt trasy: name): Helsinki
+- L317 (punkt trasy: text): Helsinki. W drogę, najpierw prom!
+- L318 (punkt trasy: name): Port w Helsinkach
+- L318 (punkt trasy: text): Port. Bagaże też mają bilety.
+- L319 (punkt trasy: name): Prom przez Zatokę Fińską
+- L319 (punkt trasy: text): Prom. Kawa i krótka przerwa od drogi.
+- L320 (punkt trasy: name): Tallinn
+- L320 (punkt trasy: text): Tallinn. Wysiadamy z promu. Kierunek: Polska.
+- L321 (punkt trasy: name): Pärnu
+- L321 (punkt trasy: text): Pärnu. Las za oknem, termos wciąż pełny.
+- L322 (punkt trasy: name): Granica Estonii i Łotwy
+- L322 (punkt trasy: text): Łotwa. Na mapie coraz bliżej domu.
+- L323 (punkt trasy: name): Ryga
+- L323 (punkt trasy: text): Ryga. Miasto mija, pierogi czekają.
+- L324 (punkt trasy: name): Bauska
+- L324 (punkt trasy: text): Bauska. Kawa już trochę chłodniejsza.
+- L325 (punkt trasy: name): Granica Łotwy i Litwy
+- L325 (punkt trasy: text): Litwa. Jeszcze trochę asfaltu i granica.
+- L326 (punkt trasy: name): Poniewież
+- L326 (punkt trasy: text): Poniewież. Słoiki nadal w komplecie.
+- L327 (punkt trasy: name): Kowno
+- L327 (punkt trasy: text): Kowno. Już tylko pół termosu drogi.
+- L328 (punkt trasy: name): Mariampol
+- L328 (punkt trasy: text): Mariampol. Polska już niedaleko.
+- L329 (punkt trasy: text): Budzisko. Polska! Słoiki prawie u celu.
+- L329 (punkt trasy: name): Granica (Budzisko)
+- L330 (punkt trasy: text): Na stacji gorąca kawa. Do domu!
+- L333 (punkt trasy: name): Luksemburg
+- L333 (punkt trasy: text): Luksemburg. Torby na dach i ruszamy.
+- L334 (punkt trasy: name): Trewir
+- L334 (punkt trasy: text): Trewir. Granica minęła, trasa trwa.
+- L335 (punkt trasy: name): Koblencja
+- L335 (punkt trasy: text): Koblencja. Dwie rzeki, jeden cel.
+- L336 (punkt trasy: text): Frankfurt. Kombi nie liczy pięter.
+- L337 (punkt trasy: text): Erfurt. Walizki proszą o krótszy objazd.
+## `src/core/route.ts`
+
+- L29 (miasto: name): Bruksela
+- L29 (miasto: fromName): Brukseli
+- L29 (miasto: toName): Brukseli
+- L30 (miasto: name): Antwerpia
+- L30 (miasto: fromName): Antwerpii
+- L30 (miasto: toName): Antwerpii
+- L31 (miasto: name): Gandawa
+- L31 (miasto: fromName): Gandawy
+- L31 (miasto: toName): Gandawy
+- L34 (miasto: name): Amsterdam
+- L34 (miasto: fromName): Amsterdamu
+- L34 (miasto: toName): Amsterdamu
+- L35 (miasto: name): Rotterdam
+- L35 (miasto: fromName): Rotterdamu
+- L35 (miasto: toName): Rotterdamu
+- L36 (miasto: name): Eindhoven
+- L36 (miasto: fromName): Eindhoven
+- L36 (miasto: toName): Eindhoven
+- L39 (miasto: name): Berlin
+- L39 (miasto: fromName): Berlina
+- L39 (miasto: toName): Berlina
+- L40 (miasto: name): Monachium
+- L40 (miasto: fromName): Monachium
+- L40 (miasto: toName): Monachium
+- L41 (miasto: name): Kolonia
+- L41 (miasto: fromName): Kolonii
+- L41 (miasto: toName): Kolonii
+- L42 (miasto: name): Hamburg
+- L42 (miasto: fromName): Hamburga
+- L42 (miasto: toName): Hamburga
+- L45 (miasto: name): Londyn
+- L45 (miasto: fromName): Londynu
+- L45 (miasto: toName): Londynu
+- L46 (miasto: name): Birmingham
+- L46 (miasto: fromName): Birmingham
+- L46 (miasto: toName): Birmingham
+- L47 (miasto: name): Manchester
+- L47 (miasto: fromName): Manchesteru
+- L47 (miasto: toName): Manchesteru
+- L48 (miasto: name): Edynburg
+- L48 (miasto: fromName): Edynburga
+- L48 (miasto: toName): Edynburga
+- L51 (miasto: name): Paryż
+- L51 (miasto: fromName): Paryża
+- L51 (miasto: toName): Paryża
+- L52 (miasto: name): Lyon
+- L52 (miasto: fromName): Lyonu
+- L52 (miasto: toName): Lyonu
+- L53 (miasto: name): Lille
+- L53 (miasto: fromName): Lille
+- L53 (miasto: toName): Lille
+- L56 (miasto: name): Zurych
+- L56 (miasto: fromName): Zurychu
+- L56 (miasto: toName): Zurychu
+- L57 (miasto: name): Genewa
+- L57 (miasto: fromName): Genewy
+- L57 (miasto: toName): Genewy
+- L58 (miasto: name): Bazylea
+- L58 (miasto: fromName): Bazylei
+- L58 (miasto: toName): Bazylei
+- L61 (miasto: name): Oslo
+- L61 (miasto: fromName): Oslo
+- L61 (miasto: toName): Oslo
+- L62 (miasto: name): Bergen
+- L62 (miasto: fromName): Bergen
+- L62 (miasto: toName): Bergen
+- L63 (miasto: name): Stavanger
+- L63 (miasto: fromName): Stavanger
+- L63 (miasto: toName): Stavanger
+- L66 (miasto: name): Kopenhaga
+- L66 (miasto: fromName): Kopenhagi
+- L66 (miasto: toName): Kopenhagi
+- L67 (miasto: name): Aarhus
+- L67 (miasto: fromName): Aarhus
+- L67 (miasto: toName): Aarhus
+- L68 (miasto: name): Odense
+- L68 (miasto: fromName): Odense
+- L68 (miasto: toName): Odense
+- L71 (miasto: name): Dublin
+- L71 (miasto: fromName): Dublina
+- L71 (miasto: toName): Dublina
+- L72 (miasto: name): Cork
+- L72 (miasto: fromName): Cork
+- L72 (miasto: toName): Cork
+- L73 (miasto: name): Limerick
+- L73 (miasto: fromName): Limerick
+- L73 (miasto: toName): Limerick
+- L76 (miasto: name): Barcelona
+- L76 (miasto: fromName): Barcelony
+- L76 (miasto: toName): Barcelony
+- L77 (miasto: name): Madryt
+- L77 (miasto: fromName): Madrytu
+- L77 (miasto: toName): Madrytu
+- L78 (miasto: name): Walencja
+- L78 (miasto: fromName): Walencji
+- L78 (miasto: toName): Walencji
+- L81 (miasto: name): Mediolan
+- L81 (miasto: fromName): Mediolanu
+- L81 (miasto: toName): Mediolanu
+- L82 (miasto: name): Rzym
+- L82 (miasto: fromName): Rzymu
+- L82 (miasto: toName): Rzymu
+- L83 (miasto: name): Bolonia
+- L83 (miasto: fromName): Bolonii
+- L83 (miasto: toName): Bolonii
+- L86 (miasto: name): Wiedeń
+- L86 (miasto: fromName): Wiednia
+- L86 (miasto: toName): Wiednia
+- L87 (miasto: name): Linz
+- L87 (miasto: fromName): Linzu
+- L87 (miasto: toName): Linzu
+- L88 (miasto: name): Salzburg
+- L88 (miasto: fromName): Salzburga
+- L88 (miasto: toName): Salzburga
+- L91 (miasto: name): Sztokholm
+- L91 (miasto: fromName): Sztokholmu
+- L91 (miasto: toName): Sztokholmu
+- L92 (miasto: name): Göteborg
+- L92 (miasto: fromName): Göteborga
+- L92 (miasto: toName): Göteborga
+- L93 (miasto: name): Malmö
+- L93 (miasto: fromName): Malmö
+- L93 (miasto: toName): Malmö
+- L96 (miasto: fromName): Helsinek
+- L96 (miasto: toName): Helsinek
+- L96 (miasto: name): Helsinki
+- L97 (miasto: name): Tampere
+- L97 (miasto: fromName): Tampere
+- L97 (miasto: toName): Tampere
+- L98 (miasto: name): Turku
+- L98 (miasto: fromName): Turku
+- L98 (miasto: toName): Turku
+- L101 (miasto: name): Luksemburg
+- L101 (miasto: fromName): Luksemburga
+- L101 (miasto: toName): Luksemburga
+- L102 (miasto: name): Esch-sur-Alzette
+- L102 (miasto: fromName): Esch-sur-Alzette
+- L102 (miasto: toName): Esch-sur-Alzette
+- L103 (miasto: name): Differdange
+- L103 (miasto: fromName): Differdange
+- L103 (miasto: toName): Differdange
+- L109 (miasto: name): Warszawa
+- L109 (miasto: fromName): Warszawy
+- L109 (miasto: toName): Warszawy
+- L110 (miasto: fromName): Krakowa
+- L110 (miasto: toName): Krakowa
+- L110 (miasto: name): Kraków
+- L111 (miasto: name): Wrocław
+- L111 (miasto: fromName): Wrocławia
+- L111 (miasto: toName): Wrocławia
+- L112 (miasto: fromName): Poznania
+- L112 (miasto: toName): Poznania
+- L112 (miasto: name): Poznań
+- L113 (miasto: name): Gdańsk
+- L113 (miasto: fromName): Gdańska
+- L113 (miasto: toName): Gdańska
+- L114 (miasto: name): Szczecin
+- L114 (miasto: fromName): Szczecina
+- L114 (miasto: toName): Szczecina
+- L115 (miasto: fromName): Łodzi
+- L115 (miasto: toName): Łodzi
+- L115 (miasto: name): Łódź
+- L116 (miasto: fromName): Katowic
+- L116 (miasto: toName): Katowic
+- L116 (miasto: name): Katowice
+- L117 (miasto: name): Lublin
+- L117 (miasto: fromName): Lublina
+- L117 (miasto: toName): Lublina
+- L118 (miasto: fromName): Rzeszowa
+- L118 (miasto: toName): Rzeszowa
+- L118 (miasto: name): Rzeszów
+- L119 (miasto: fromName): Białegostoku
+- L119 (miasto: toName): Białegostoku
+- L119 (miasto: name): Białystok
+- L120 (miasto: name): Bydgoszcz
+- L120 (miasto: fromName): Bydgoszczy
+- L120 (miasto: toName): Bydgoszczy
+- L121 (miasto: name): Olsztyn
+- L121 (miasto: fromName): Olsztyna
+- L121 (miasto: toName): Olsztyna
+- L122 (miasto: fromName): Kielc
+- L122 (miasto: toName): Kielc
+- L122 (miasto: name): Kielce
+- L123 (miasto: fromName): Opola
+- L123 (miasto: toName): Opola
+- L123 (miasto: name): Opole
+- L124 (miasto: name): Zielona Góra
+- L124 (miasto: fromName): Zielonej Góry
+- L124 (miasto: toName): Zielonej Góry
+- L127 (miasto: fromName): Siemiatycz
+- L127 (miasto: toName): Siemiatycz
+- L127 (miasto: name): Siemiatycze
+- L128 (miasto: fromName): Moniek
+- L128 (miasto: toName): Moniek
+- L128 (miasto: name): Mońki
+- L129 (miasto: name): Bielsk Podlaski
+- L129 (miasto: fromName): Bielska Podlaskiego
+- L129 (miasto: toName): Bielska Podlaskiego
+- L130 (miasto: name): Hajnówka
+- L130 (miasto: fromName): Hajnówki
+- L130 (miasto: toName): Hajnówki
+- L131 (miasto: name): Sokółka
+- L131 (miasto: fromName): Sokółki
+- L131 (miasto: toName): Sokółki
+- L132 (miasto: name): Łomża
+- L132 (miasto: fromName): Łomży
+- L132 (miasto: toName): Łomży
+- L133 (miasto: fromName): Grajewa
+- L133 (miasto: toName): Grajewa
+- L133 (miasto: name): Grajewo
+- L134 (miasto: fromName): Kolna
+- L134 (miasto: toName): Kolna
+- L134 (miasto: name): Kolno
+- L135 (miasto: name): Wysokie Mazowieckie
+- L135 (miasto: fromName): Wysokiego Mazowieckiego
+- L135 (miasto: toName): Wysokiego Mazowieckiego
+- L136 (miasto: fromName): Zambrowa
+- L136 (miasto: toName): Zambrowa
+- L136 (miasto: name): Zambrów
+- L137 (miasto: name): Strzelce Opolskie
+- L137 (miasto: fromName): Strzelec Opolskich
+- L137 (miasto: toName): Strzelec Opolskich
+- L138 (miasto: name): Kędzierzyn-Koźle
+- L138 (miasto: fromName): Kędzierzyna-Koźla
+- L138 (miasto: toName): Kędzierzyna-Koźla
+- L139 (miasto: fromName): Krapkowic
+- L139 (miasto: toName): Krapkowic
+- L139 (miasto: name): Krapkowice
+- L140 (miasto: name): Głogówek
+- L140 (miasto: fromName): Głogówka
+- L140 (miasto: toName): Głogówka
+- L141 (miasto: name): Prudnik
+- L141 (miasto: fromName): Prudnika
+- L141 (miasto: toName): Prudnika
+- L142 (miasto: fromName): Olesna
+- L142 (miasto: toName): Olesna
+- L142 (miasto: name): Olesno
+- L143 (miasto: fromName): Nowego Targu
+- L143 (miasto: toName): Nowego Targu
+- L143 (miasto: name): Nowy Targ
+- L144 (miasto: name): Zakopane
+- L144 (miasto: fromName): Zakopanego
+- L144 (miasto: toName): Zakopanego
+- L145 (miasto: name): Ełk
+- L145 (miasto: fromName): Ełku
+- L145 (miasto: toName): Ełku
+- L146 (miasto: fromName): Olecka
+- L146 (miasto: toName): Olecka
+- L146 (miasto: name): Olecko
+- L147 (miasto: name): Gołdap
+- L147 (miasto: fromName): Gołdapi
+- L147 (miasto: toName): Gołdapi
+- L148 (miasto: fromName): Bartoszyc
+- L148 (miasto: toName): Bartoszyc
+- L148 (miasto: name): Bartoszyce
+- L149 (miasto: name): Kętrzyn
+- L149 (miasto: fromName): Kętrzyna
+- L149 (miasto: toName): Kętrzyna
+- L150 (miasto: fromName): Bytowa
+- L150 (miasto: toName): Bytowa
+- L150 (miasto: name): Bytów
+- L151 (miasto: name): Słupsk
+- L151 (miasto: fromName): Słupska
+- L151 (miasto: toName): Słupska
+- L152 (miasto: fromName): Chojnic
+- L152 (miasto: toName): Chojnic
+- L152 (miasto: name): Chojnice
+- L153 (miasto: fromName): Kartuz
+- L153 (miasto: toName): Kartuz
+- L153 (miasto: name): Kartuzy
+- L154 (miasto: name): Stalowa Wola
+- L154 (miasto: fromName): Stalowej Woli
+- L154 (miasto: toName): Stalowej Woli
+- L155 (miasto: fromName): Mielca
+- L155 (miasto: toName): Mielca
+- L155 (miasto: name): Mielec
+- L156 (miasto: fromName): Jasła
+- L156 (miasto: toName): Jasła
+- L156 (miasto: name): Jasło
+- L157 (miasto: name): Przemyśl
+- L157 (miasto: fromName): Przemyśla
+- L157 (miasto: toName): Przemyśla
+- L158 (miasto: name): Sanok
+- L158 (miasto: fromName): Sanoka
+- L158 (miasto: toName): Sanoka
+- L159 (miasto: fromName): Lubaczowa
+- L159 (miasto: toName): Lubaczowa
+- L159 (miasto: name): Lubaczów
+- L160 (miasto: name): Biała Podlaska
+- L160 (miasto: fromName): Białej Podlaskiej
+- L160 (miasto: toName): Białej Podlaskiej
+- L161 (miasto: fromName): Zamościa
+- L161 (miasto: toName): Zamościa
+- L161 (miasto: name): Zamość
+- L162 (miasto: fromName): Tomaszowa Lubelskiego
+- L162 (miasto: toName): Tomaszowa Lubelskiego
+- L162 (miasto: name): Tomaszów Lubelski
+- L163 (miasto: fromName): Ostrowca Świętokrzyskiego
+- L163 (miasto: toName): Ostrowca Świętokrzyskiego
+- L163 (miasto: name): Ostrowiec Świętokrzyski
+- L164 (miasto: fromName): Skarżyska-Kamiennej
+- L164 (miasto: toName): Skarżyska-Kamiennej
+- L164 (miasto: name): Skarżysko-Kamienna
+- L165 (miasto: fromName): Raciborza
+- L165 (miasto: toName): Raciborza
+- L165 (miasto: name): Racibórz
+- L166 (miasto: name): Wałbrzych
+- L166 (miasto: fromName): Wałbrzycha
+- L166 (miasto: toName): Wałbrzycha
+- L167 (miasto: name): Legnica
+- L167 (miasto: fromName): Legnicy
+- L167 (miasto: toName): Legnicy
+- L204 (komunikat błędu): Brak punktu {…} na trasie {…}
+- L222 (komunikat błędu): Nieznane miasto: {fromId} / {toId}
+- L255 (komunikat błędu): Brak współrzędnych stacji {…}
+- L283 (komunikat błędu): Trasa {home} nie kończy się stacją za granicą
+- L339 (komunikat błędu): Brak współrzędnych punktu {…}
+## `src/main.ts`
+
+- L71 (pole hint): hint
+- L186, 487 (ustawienie textContent): km
+- L367 (atrybut dostępności): Pozostało żyć:
+- L442 (ustawienie textContent): s
+- L487 (ustawienie textContent): pl-PL
+- L514 (komunikat błędu): Udostępnianie natywne niedostępne
+## `src/share/card.ts`
+
+- L170 (napis na karcie): CEBULAK EXPRESS
+- L172 (napis na karcie): KIERUNEK POLSKA
+- L218 (zmienna title): CEL OSIĄGNIĘTY!
+- L218 (zmienna title): CO MNIE ZATRZYMAŁO?
+- L222 (zmienna detail): Mama już nakrywa do stołu.
+- L223 (zmienna detail): Kombi chciało lecieć, ale droga miała inne plany.
+- L232 (zmienna league): LIGA POLONII ·
+- L237, 240 (napis na karcie): . miejsce
+- L237 (napis na karcie): Pozycja wkrótce
+- L251 (napis na karcie): WYZWANIE DNIA ·
+- L254 (napis na karcie): DOLECIAŁEM DO DOMU!
+- L254 (napis na karcie): KONIEC TRASY!
+- L258 (napis na karcie): KILOMETRÓW
+- L260 (napis na karcie): do
+- L260 (napis na karcie): Z
+- L266 (zmienna footer): s! · Spróbuj mnie pobić
+- L266 (zmienna footer): W
+- L267 (zmienna footer): Jeszcze raz? · Spróbuj mnie pobić
+- L294 (komunikat błędu): Brak obsługi eksportu PNG
+- L299, 327 (komunikat błędu): Brak kontekstu Canvas 2D
+- L303 (komunikat błędu): Nie udało się utworzyć PNG
+- L310 (komunikat błędu): Nieznany format karty wyniku
+- L320 (komunikat błędu): Canvas 2D jest niedostępny
+## `src/share/ghost.ts`
+
+- L54 (komunikat błędu): Niekompletny varint
+- L56 (komunikat błędu): Przepełniony varint
+- L59 (komunikat błędu): Nadmiarowe bajty varint
+- L64 (komunikat błędu): Varint dłuższy niż 5 bajtów
+- L88, 99 (komunikat błędu): Nieprawidłowy identyfikator miasta
+- L96 (komunikat błędu): Długość identyfikatora miasta
+- L110 (komunikat błędu): Nieprawidłowy base64url
+- L113 (komunikat błędu): Niekanoniczny base64url
+- L119 (komunikat błędu): Przejazd musi zaczynać się od tapnięcia w ticku 0
+- L123 (komunikat błędu): Tapnięcia muszą być rosnące i należeć do przejazdu
+- L131 (komunikat błędu): Nieznany kraj
+- L157 (komunikat błędu): Wyzwanie wymaga zakończonego przejazdu
+- L162 (komunikat błędu): Niespójne dane trasy
+- L163 (komunikat błędu): Nieznany tryb
+- L170 (komunikat błędu): Nieodtwarzalny przejazd
+- L173 (komunikat błędu): Wynik różni się od odtworzonego
+- L175 (komunikat błędu): Niepoprawny prefiks przejazdu
+- L196 (komunikat błędu): Nagłówek wyzwania przekracza limit URL
+- L267 (komunikat błędu): Nieprawidłowy nickId
+## `src/share/share.ts`
+
+- L102 (atrybut dostępności): Zapisz kartę wyniku
+- L111 (zmienna heading): h2
+- L112 (ustawienie textContent): Zapisz kartę wyniku
+- L114 (zmienna hint): p
+- L115 (ustawienie textContent): Zapisz PNG lub przytrzymaj obraz na iPhonie, aby zachować go w Zdjęciach.
+- L119 (ustawienie alt): Karta z wynikiem przejazdu
+- L126 (ustawienie textContent): Pobierz PNG
+- L132 (ustawienie textContent): Kopiuj tekst i link
+- L136 (ustawienie textContent): Skopiowano
+- L136 (ustawienie textContent): Wybierz tekst poniżej
+- L141 (ustawienie textContent): Zamknij
+- L146 (atrybut dostępności): Tekst i link do skopiowania
+- L203, 211 (pole title): Kierunek Polska
+## `src/ui/collection-text.ts`
+
+- L5 (pole title): Album podróżnika
+- L7 (pole subtitle): Każde nowe miasto to pocztówka. Medale zdobywasz wyłącznie za grę.
+- L22 (pole description): Zakończ pierwszy przejazd.
+- L23 (pole description): Przekrocz pierwszą granicę.
+- L24 (pole description): Odwiedź łącznie 3 różne kraje.
+- L25 (pole description): Odwiedź łącznie 5 różnych krajów.
+- L26 (pole description): Dotrzyj do domu w Polsce.
+- L27 (pole description): Dotrzyj do domu 5 razy.
+- L28 (pole description): Dotrzyj do domu w zimowym wyzwaniu.
+- L29 (pole description): Zdobądź 10 słoików w jednym przejeździe.
+- L30 (pole description): Zbierz łącznie 50 słoików.
+- L31 (pole description): Zbierz łącznie 10 paczek.
+- L32 (pole description): Przejedź łącznie 100 km.
+- L33 (pole description): Przejedź łącznie 1000 km.
+- L34 (pole description): Przejedź łącznie 10 000 km.
+- L35 (pole description): Odkryj 10 różnych pocztówek.
+- L36 (pole description): Odkryj 30 różnych pocztówek.
+## `src/ui/collection.ts`
+
+- L64 (zmienna info): ce-collection__medal-info
+- L64 (zmienna info): div
+- L86 (zmienna heading): ce-collection__heading
+- L86 (zmienna heading): div
+## `src/ui/garage.ts`
+
+- L69 (zmienna heading): ce-garage__heading
+- L69 (zmienna heading): div
+## `src/ui/language-switcher.ts`
+
+- L24, 57 (zmienna label): label
+- L35 (atrybut dostępności): menu.modeLabel
+- L49 (atrybut dostępności): menu.gameLabel
+- L60 (zmienna title): span
+- L138 (ustawienie textContent): {fromText} → {toText}: {…}
+## `src/ui/league.ts`
+
+- L9 (pole title): Kraje
+- L10 (pole title): Gracze
+- L11 (pole title): Wyzwanie dnia
+- L49 (element UI): Polonia przejechała razem
+- L50 (nagłówek UI): Każdy przejazd rankingowy dodaje kilometry do kraju.
+- L50 (nagłówek UI): Liga krajów
+- L51 (wywołanie emptyMessage): Jeszcze nie ma wyników w tym tygodniu.
+- L52, 70 (wywołanie table): Kilometry
+- L52, 70 (wywołanie table): Kraj
+- L52 (wywołanie table): Przejazdy
+- L58 (atrybut dostępności): {…}, Twój kraj
+- L60 (zmienna title): ce-league__country
+- L61 (element UI): Twój kraj
+- L70 (wywołanie table): Gracz
+- L86 (nagłówek UI): Najdłuższy zweryfikowany przejazd każdego gracza.
+- L86 (nagłówek UI): Najlepsi w tygodniu
+- L87 (wywołanie emptyMessage): Brak wyników graczy w tym tygodniu.
+- L93 (nagłówek UI): Ten sam układ trasy dla wszystkich. Liczy się najlepszy wynik dnia.
+- L93 (nagłówek UI): Wyzwanie dnia · {date}
+- L94 (wywołanie emptyMessage): Dziś nikt jeszcze nie zgłosił wyniku.
+- L103 (atrybut dostępności): Liga Polonii
+- L105 (element UI): Liga Polonii
+- L105 (element UI): Razem bliżej domu
+- L109 (element UI): Wersja pokazowa · wyniki tylko w tej sesji
+- L112 (atrybut dostępności): Kategorie rankingu
+- L140 (ustawienie textContent): daily
+- L140 (ustawienie textContent): Dziś · {date} · czas polski
+- L140 (ustawienie textContent): Tydzień {week} · czas polski
+- L141 (element UI): Pobieranie wyników…
+- L155 (element UI): Nie udało się pobrać wyników. Sprawdź połączenie z internetem.
+- L156 (element UI): Spróbuj ponownie
+## `src/ui/record.ts`
+
+- L100 (pole title): Cebulak Express
+- L156 (zmienna message): ce-record-message
+- L156 (zmienna message): span
+- L232 (ustawienie info): VIDEO
+- L283 (ustawienie info): gallery
+- L284 (ustawienie info): download
+## `src/ui/settings.ts`
+
+- L120 (zmienna title): h2
+- L148 (element UI): 50%

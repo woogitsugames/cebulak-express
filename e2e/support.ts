@@ -22,9 +22,9 @@ export const test = base.extend<{ runtimeErrors: string[] }>({
 export { expect };
 
 export async function openMenu(page: Page): Promise<void> {
-  await page.goto('/?test=1&seed=20261030');
+  await page.goto('/?test=1&seed=20261030&lang=pl');
   await expect(page.locator('#menu')).toBeVisible();
-  await expect(page.locator('#sel-home option')).toHaveCount(8);
+  await expect(page.locator('#sel-home option')).toHaveCount(15);
   await expect(page.locator('#route-info')).toContainText('km');
 }
 

@@ -89,6 +89,49 @@ function checkedLimit(value: number): number {
   return Number.isFinite(value) ? Math.max(1, Math.min(100, Math.floor(value))) : 30;
 }
 
+/** Cache 60 s na odczyt dokumentu Ligi; scala równoczesne zapytania. */
+export class LeagueReadCache {
+  private readonly entries = new Map<string, { expiresAt: number; data: LeagueData }>();
+  private readonly pending = new Map<string, Promise<LeagueData>>();
+
+  constructor(private readonly now: () => number = Date.now, private readonly ttlMs = 60_000) {}
+
+  private clone(data: LeagueData): LeagueData {
+    const countries: LeagueData['countries'] = {};
+    for (const home of HOME_COUNTRIES) {
+      const stats = data.countries[home];
+      if (stats) countries[home] = { ...stats };
+    }
+    return { ...data, countries };
+  }
+
+  async get(week: string, load: () => Promise<LeagueData>): Promise<LeagueData> {
+    const cached = this.entries.get(week);
+    if (cached && this.now() < cached.expiresAt) return this.clone(cached.data);
+    const ongoing = this.pending.get(week);
+    if (ongoing) return this.clone(await ongoing);
+    const task = Promise.resolve().then(load);
+    this.pending.set(week, task);
+    try {
+      const data = await task;
+      // Przejazd mógł unieważnić cache, gdy żądanie było jeszcze w toku.
+      if (this.pending.get(week) === task) {
+        this.entries.delete(week);
+        if (this.entries.size >= 16) this.entries.delete(this.entries.keys().next().value!);
+        this.entries.set(week, { data: this.clone(data), expiresAt: this.now() + this.ttlMs });
+      }
+      return this.clone(data);
+    } finally {
+      if (this.pending.get(week) === task) this.pending.delete(week);
+    }
+  }
+
+  invalidate(week: string): void {
+    this.entries.delete(week);
+    this.pending.delete(week);
+  }
+}
+
 export interface FirebaseWebConfig {
   apiKey: string;
   authDomain: string;
@@ -101,13 +144,15 @@ export interface FirebaseWebConfig {
 export class FirebaseRankingApi implements RankingApi {
   readonly kind = 'firebase' as const;
   private connection?: Promise<FirebaseConnection>;
-  constructor(private readonly config: FirebaseWebConfig) {}
+  private readonly leagueCache = new LeagueReadCache();
+  constructor(private readonly config: FirebaseWebConfig, private readonly recaptchaSiteKey = '') {}
 
   private connected(): Promise<FirebaseConnection> {
     if (!this.connection) {
       this.connection = (async () => {
         const sdk = await loadSdk();
         const app = sdk.app.initializeApp(this.config);
+        await sdk.initAppCheck(app, this.recaptchaSiteKey);
         const auth = sdk.auth.getAuth(app);
         await auth.authStateReady();
         if (!auth.currentUser) await sdk.auth.signInAnonymously(auth);
@@ -129,21 +174,24 @@ export class FirebaseRankingApi implements RankingApi {
   async submitRun(request: SubmitRunRequest): Promise<SubmitRunResponse> {
     const { sdk, functions } = await this.connected();
     const response = await sdk.functions.httpsCallable<SubmitRunRequest, SubmitRunResponse>(functions, 'submitRun')(request);
+    if (response.data.accepted) this.leagueCache.invalidate(response.data.week);
     return response.data;
   }
   async getLeague(week: string): Promise<LeagueData> {
-    const { sdk, db } = await this.connected();
-    const snapshot = await sdk.firestore.getDoc(sdk.firestore.doc(db, 'league', week));
-    const data = snapshot.exists() ? record(snapshot.data()) : null;
-    const countries = record(data?.countries);
-    const result: LeagueData = { week, countries: {}, updatedAt: data?.updatedAt };
-    for (const home of HOME_COUNTRIES) {
-      const stats = record(countries?.[home]);
-      if (stats) result.countries[home] = {
-        km: positiveNumber(stats.km), runs: positiveNumber(stats.runs), players: positiveNumber(stats.players),
-      };
-    }
-    return result;
+    return this.leagueCache.get(week, async () => {
+      const { sdk, db } = await this.connected();
+      const snapshot = await sdk.firestore.getDoc(sdk.firestore.doc(db, 'league', week));
+      const data = snapshot.exists() ? record(snapshot.data()) : null;
+      const countries = record(data?.countries);
+      const result: LeagueData = { week, countries: {}, updatedAt: data?.updatedAt };
+      for (const home of HOME_COUNTRIES) {
+        const stats = record(countries?.[home]);
+        if (stats) result.countries[home] = {
+          km: positiveNumber(stats.km), runs: positiveNumber(stats.runs), players: positiveNumber(stats.players),
+        };
+      }
+      return result;
+    });
   }
   async getLeaderboard(week: string, limit: number): Promise<PlayerEntry[]> {
     const { sdk, db } = await this.connected();
@@ -197,7 +245,7 @@ export class MockRankingApi implements RankingApi {
     const countries = {} as Partial<Record<HomeCountry, CountryStats>>;
     const kms = [184_250, 162_480, 145_120, 131_900, 116_500, 98_000, 81_200, 65_900];
     HOME_COUNTRIES.forEach((home, i) => {
-      countries[home] = { km: kms[i], runs: 1200 - i * 120, players: 310 - i * 27 };
+      countries[home] = { km: kms[i] ?? 0, runs: Math.max(0, 1200 - i * 120), players: Math.max(0, 310 - i * 27) };
     });
     this.leagues.set(week, { week, countries });
     this.leaders.set(week, new Map<string, PlayerEntry>([
@@ -298,5 +346,5 @@ export function createRankingApi(env: Record<string, unknown> = import.meta.env)
     storageBucket: value('VITE_FIREBASE_STORAGE_BUCKET'),
   };
   return config.apiKey && config.authDomain && config.projectId && config.appId
-    ? new FirebaseRankingApi(config) : new MockRankingApi();
+    ? new FirebaseRankingApi(config, value('VITE_RECAPTCHA_SITE_KEY')) : new MockRankingApi();
 }

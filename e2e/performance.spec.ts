@@ -48,9 +48,9 @@ test('budżet pierwszej klatki < 2 s przy Slow 4G i CPU 4x', async ({ page }, te
     });
     await cdp.send('Emulation.setCPUThrottlingRate', { rate: 4 });
 
-    await page.goto('/?test=1&seed=20261030', { waitUntil: 'domcontentloaded' });
+    await page.goto('/?test=1&seed=20261030&lang=pl', { waitUntil: 'domcontentloaded' });
     await page.waitForFunction(() => window.__ceFirstCanvasFrame !== undefined);
-    await expect(page.locator('#sel-home option')).toHaveCount(8);
+    await expect(page.locator('#sel-home option')).toHaveCount(15);
 
     await page.locator('#btn-start').click();
     await page.waitForFunction(() => window.__ceFirstGameplayFrame !== undefined);

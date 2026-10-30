@@ -1,0 +1,25 @@
+default_platform(:android)
+
+platform :android do
+  desc 'Prześlij podpisany AAB i metadane PL/EN do Google Play internal testing'
+  lane :internal do
+    bundle_path = File.expand_path('../android/app/build/outputs/bundle/release/app-release.aab', __dir__)
+    UI.user_error!('Brak podpisanego AAB') unless File.file?(bundle_path)
+    UI.user_error!('Brak PLAY_SERVICE_ACCOUNT_PATH') unless ENV['PLAY_SERVICE_ACCOUNT_PATH']
+    UI.user_error!('Brak PLAY_METADATA_PATH') unless ENV['PLAY_METADATA_PATH']
+
+    upload_to_play_store(
+      package_name: 'com.woogitsugames.cebulakexpress',
+      json_key: ENV.fetch('PLAY_SERVICE_ACCOUNT_PATH'),
+      aab: bundle_path,
+      track: 'internal',
+      release_status: 'completed',
+      metadata_path: ENV.fetch('PLAY_METADATA_PATH'),
+      skip_upload_apk: true,
+      skip_upload_metadata: false,
+      skip_upload_images: false,
+      skip_upload_screenshots: false,
+      skip_upload_changelogs: false
+    )
+  end
+end

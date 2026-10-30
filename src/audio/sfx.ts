@@ -42,7 +42,10 @@ function clamp(value: number | undefined, fallback: number, min: number, max: nu
 export function sfxForGameEvent(event: GameEvent): SfxName | null {
   switch (event.type) {
     case 'flap': return 'flap';
-    case 'pickup': return event.kind === 'jar' ? 'jar' : 'parcel';
+    case 'pickup': return event.kind === 'jar' ? 'jar' : event.kind === 'parcel' ? 'parcel' : null;
+    case 'powerup-start':
+      return event.kind === 'boarding' ? 'border' : event.kind === 'tailwind' ? 'overload' : 'jar';
+    case 'powerup-end': return null;
     case 'hit': return 'hit';
     case 'border': return 'border';
     case 'arrived': return 'arrived';

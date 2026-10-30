@@ -1,0 +1,497 @@
+import type { GameLocale } from './schema';
+
+/** Teksty gry: angielski. */
+export default {
+  "ARRIVAL_TEXTS": [
+    "You're home! Mum is already setting the table.",
+    "Journey over. Second helpings begin.",
+    "The bags are still in the car, but dinner's ready.",
+    "Mum asks, 'Hungry?' It's not really a question.",
+    "Dumplings on the table, half your life in the boot.",
+    "You made it! Tea's cooling and everyone's waiting.",
+    "The car can rest. Family dinner is just warming up.",
+    "Arrival! Hugs first, seconds later.",
+    "Trip complete. Mum has fetched another plate.",
+    "We counted kilometres. Now we count dumplings.",
+    "Mum is already packing jars for your trip back.",
+    "Bags barely unpacked; return jars already lined up.",
+    "You're here. Home smells like dinner.",
+    "Keys down. Time to sit at the table."
+  ],
+  "BORDER_TEXTS": {
+    "BE": [
+      "Welcome to Belgium! Suitcases still look sharp.",
+      "Belgium! Coffee to go, then off we go.",
+      "Entering Belgium. The bags are coming too.",
+      "Belgium on the route! Plenty of road ahead."
+    ],
+    "NL": [
+      "Welcome to the Netherlands! Bikes by the canals.",
+      "The Netherlands! A moment to admire the canals.",
+      "Entering the Netherlands. Roof still packed.",
+      "Netherlands ahead. Coffee's still warm."
+    ],
+    "DE": [
+      "Welcome to Germany! The journey continues.",
+      "Germany! Another kilometre closer to home.",
+      "Entering Germany. All jars accounted for.",
+      "Germany on the map. Luggage full of hope."
+    ],
+    "UK": [
+      "Welcome to the UK! Luggage isn't complaining.",
+      "The UK! One coffee and we're off.",
+      "Entering the UK. Mind the lanes.",
+      "UK on the route. Next stop: home."
+    ],
+    "FR": [
+      "Welcome to France! The jars are on board.",
+      "France! A coffee tastes like a mini-break.",
+      "Entering France. Bags all secured.",
+      "France on the route. Enjoy the scenery."
+    ],
+    "CH": [
+      "Welcome to Switzerland! Mountain views included.",
+      "Switzerland! Even the suitcases admire the peaks.",
+      "Entering Switzerland. Stay on course.",
+      "Switzerland on the route. Roof still occupied."
+    ],
+    "NO": [
+      "Welcome to Norway! Fjords outside the window.",
+      "Norway! Estate car and views in one frame.",
+      "Entering Norway. Coffee might help.",
+      "Norway on the route. All bags present."
+    ],
+    "DK": [
+      "Welcome to Denmark! Follow the map from here.",
+      "Denmark! Bridge after bridge, closer to home.",
+      "Entering Denmark. Luggage still on the roof.",
+      "Denmark on the route. Coffee's not cold yet."
+    ],
+    "SE": [
+      "Welcome to Sweden! Forest roads ahead.",
+      "Sweden! The jars get a scenic ride.",
+      "Entering Sweden. The bridges await.",
+      "Sweden on the route. The odometer keeps going."
+    ],
+    "IE": [
+      "Welcome to Ireland! Suitcases on board.",
+      "Ireland! Off we go, towards home.",
+      "Ireland on the route. Coffee and on we go.",
+      "You're entering Ireland. The roof is still full."
+    ],
+    "ES": [
+      "Welcome to Spain! A long road ahead.",
+      "Spain! The suitcases are ready to roll.",
+      "You're entering Spain. The jars are ready.",
+      "Spain on the route. Map unfolded."
+    ],
+    "IT": [
+      "Welcome to Italy! The roof is still full.",
+      "Italy! Luggage ready for mountain views.",
+      "You're entering Italy. The estate car holds its course.",
+      "Italy on the route. Home is waiting at the end."
+    ],
+    "AT": [
+      "Welcome to Austria! Mountains outside the window.",
+      "Austria! The flask is still full.",
+      "You're entering Austria. All the luggage is here.",
+      "Austria on the route. The jars are safe."
+    ],
+    "FI": [
+      "Welcome to Finland! Checking the ferry timetable.",
+      "Finland! Coffee ready for the crossing.",
+      "You're entering Finland. The suitcases are waiting.",
+      "Finland on the route. A ferry ahead."
+    ],
+    "LU": [
+      "Welcome to Luxembourg! Off we go, homewards.",
+      "Luxembourg! We've got the map, and the luggage.",
+      "You're entering Luxembourg. Roof full to the brim.",
+      "Luxembourg on the route. Another kilometre down."
+    ],
+    "CZ": [
+      "Welcome to Czechia! Home is getting closer.",
+      "Czechia! The road leads north.",
+      "You're entering Czechia. All the jars present.",
+      "Czechia on the route. The coffee is still warm."
+    ],
+    "EE": [
+      "Welcome to Estonia! The ferry is behind us.",
+      "Estonia! A few more borders to home.",
+      "You're entering Estonia. Suitcases in place.",
+      "Estonia on the route. Time to move on."
+    ],
+    "LV": [
+      "Welcome to Latvia! Counting the kilometres.",
+      "Latvia! Another stop behind us.",
+      "You're entering Latvia. The roof is still full.",
+      "Latvia on the route. Time for a sip of coffee."
+    ],
+    "LT": [
+      "Welcome to Lithuania! Poland is getting closer.",
+      "Lithuania! Check that the jars are intact.",
+      "You're entering Lithuania. The finish is near.",
+      "Lithuania on the route. The map is almost home."
+    ],
+    "PL": [
+      "Poland! Just a little further home.",
+      "Welcome to Poland! Mum is probably waiting.",
+      "Entering Poland. Jars nearing their destination.",
+      "Poland on the route! Dumplings getting closer."
+    ]
+  },
+  "COUNTRY_LOCATIVE": {
+    "BE": "in Belgium",
+    "NL": "in the Netherlands",
+    "DE": "in Germany",
+    "UK": "in the UK",
+    "FR": "in France",
+    "CH": "in Switzerland",
+    "NO": "in Norway",
+    "DK": "in Denmark",
+    "SE": "in Sweden",
+    "IE": "in Ireland",
+    "ES": "in Spain",
+    "IT": "in Italy",
+    "AT": "in Austria",
+    "FI": "in Finland",
+    "LU": "in Luxembourg",
+    "CZ": "in Czechia",
+    "EE": "in Estonia",
+    "LV": "in Latvia",
+    "LT": "in Lithuania",
+    "PL": "in Poland"
+  },
+  "COUNTRY_NAME": {
+    "BE": "Belgium",
+    "NL": "Netherlands",
+    "DE": "Germany",
+    "UK": "United Kingdom",
+    "FR": "France",
+    "CH": "Switzerland",
+    "NO": "Norway",
+    "DK": "Denmark",
+    "SE": "Sweden",
+    "IE": "Ireland",
+    "ES": "Spain",
+    "IT": "Italy",
+    "AT": "Austria",
+    "FI": "Finland",
+    "LU": "Luxembourg",
+    "CZ": "Czechia",
+    "EE": "Estonia",
+    "LV": "Latvia",
+    "LT": "Lithuania",
+    "PL": "Poland"
+  },
+  "FAIL_JOKES": {
+    "viaduct": [
+      "The roof luggage wanted a better view.",
+      "The bridge measured our height. Thoroughly.",
+      "The car made it. The suitcases had other plans.",
+      "The top suitcase spotted the bridge first.",
+      "The map forgot to mention centimetres.",
+      "Car height: optimistic. Bridge height: fixed.",
+      "One jar too many on the roof.",
+      "The roof rack requested a lower route."
+    ],
+    "sign": [
+      "The sign said straight ahead. The car heard up.",
+      "Big sign. Even bigger travel plans.",
+      "Right direction. Wrong altitude.",
+      "Even the sign wanted a closer look at those jars.",
+      "The sign was warning us. We were counting jars.",
+      "Our shortcut didn't get the sign's approval.",
+      "That sign pointed to the end of the trip.",
+      "The map showed the road, not the sign."
+    ],
+    "crane": [
+      "The crane had a plan. So did our estate car.",
+      "Working at height. Quite literally.",
+      "Construction goes on. This trip doesn't.",
+      "We watched the road. The crane watched from above.",
+      "Everything on site was rising, except our clearance.",
+      "The car met a crane. A little too closely.",
+      "Someone raised a beam. We raised our eyebrows.",
+      "Better to meet cranes over coffee."
+    ],
+    "roadworks": [
+      "Roadworks. Detour: another 40 km.",
+      "The cones stood firm. We didn't.",
+      "The road's under repair. At least our humour isn't.",
+      "Fresh tarmac? First you have to find it.",
+      "Tape everywhere, shortcuts nowhere.",
+      "The map said motorway. Reality said slalom.",
+      "The coffee ran out before the roadworks did.",
+      "Another detour. The jars have toured half of Europe."
+    ],
+    "barrier": [
+      "The barrier picked quite a moment to close.",
+      "Ticket ready. Clearance not so much.",
+      "The car wanted through. The barrier wanted to stay.",
+      "At a barrier you need patience. And brakes.",
+      "The barrier dropped before we'd finished our coffee.",
+      "Plan A: cruise straight through. Plan B: restart.",
+      "Roof luggage wasn't on the barrier's guest list.",
+      "All set to go. Except the barrier."
+    ],
+    "truck": [
+      "The truck was closer than the mirror suggested.",
+      "Not enough space for one last bag.",
+      "The car and the truck chose the same patch of road.",
+      "Maybe the truck had a parcel from Mum too.",
+      "The truck took the lane. We took a restart.",
+      "Not every shortcut fits a loaded estate car.",
+      "Room on the road, but none for that manoeuvre.",
+      "The suitcases waved goodbye."
+    ],
+    "baggage-gate": [
+      "The gate counted the suitcases. We were a centimetre short.",
+      "Too much luggage? The calipers never lie.",
+      "The suitcases had tickets, but there was no room.",
+      "Hand luggage. But which hand?",
+      "The estate car wasn't expecting a size check.",
+      "One jar fewer and we'd have fitted perfectly.",
+      "The gate was narrower than our plans.",
+      "Next time we'll ask for a bit more clearance."
+    ],
+    "ground": [
+      "Gravity loves a fully loaded car.",
+      "A soft landing? Only in the itinerary.",
+      "Gravity came to collect its dues.",
+      "Jars intact! Suspension disagrees.",
+      "The tarmac was closer than expected.",
+      "One more hop and we might have made it.",
+      "The luggage is ready for round two.",
+      "Back down to earth. Literally."
+    ]
+  },
+  "MILESTONE_TEXTS": [
+    "{km} km! Coffee well earned.",
+    "{km} km! Roof still packed.",
+    "{km} km! No complaints from the bags.",
+    "{km} km! Dinner gets closer.",
+    "{km} km! The odometer is on duty.",
+    "{km} km! Closer to the family table.",
+    "{km} km! Still heading home.",
+    "{km} km! Jars in first class.",
+    "{km} km! Map confirms progress.",
+    "{km} km! Even the bags are proud.",
+    "{km} km! Tarmac flying by.",
+    "{km} km! A break? One more stretch.",
+    "{km} km! Full house on the roof.",
+    "{km} km! You can almost smell dumplings.",
+    "{km} km! One bend at a time.",
+    "{km} km! Coffee should be waiting at home.",
+    "{km} km! Good day for the estate car.",
+    "{km} km! The boot's holding up.",
+    "{km} km! Still time for a car singalong.",
+    "{km} km! Home on the horizon."
+  ],
+  "NEAR_MISS_TEXTS": [
+    "That was close! Not even the mirror moved.",
+    "A centimetre to spare. We'll count it.",
+    "Close one! The jars held their breath.",
+    "So close! The roof's still where it belongs.",
+    "Phew! The bags didn't even notice.",
+    "Another second and it's a shortcut... to the menu.",
+    "Almost! The car tiptoed through.",
+    "Close one! Coffee stayed in the cup.",
+    "Made it fit. Don't ask how.",
+    "That wasn't a manoeuvre. That was precision.",
+    "Close! Even the map went quiet.",
+    "Just missed! Take the next turn gently."
+  ],
+  "OBSTACLE_NAME": {
+    "viaduct": "Low overpass",
+    "sign": "Giant road sign",
+    "crane": "Construction crane",
+    "roadworks": "Roadworks",
+    "barrier": "Barrier",
+    "truck": "Truck",
+    "baggage-gate": "Baggage gate",
+    "ground": "Tarmac"
+  },
+  "PICKUP_TEXTS": {
+    "parcel": [
+      "Parcel from Mum! +{km} km",
+      "Parcel on the roof! +{km} km",
+      "Another parcel? +{km} km",
+      "Parcel secured. Roof can take it! +{km} km",
+      "A parcel from home? Yes please! +{km} km",
+      "New bag, new record? +{km} km",
+      "Suitcases made room. +{km} km",
+      "Mystery parcel! +{km} km"
+    ],
+    "jar": [
+      "Jar of pickles! +{km} km",
+      "Jar caught! +{km} km",
+      "Yet another jar! +{km} km",
+      "Lid's holding. +{km} km",
+      "One for the collection! +{km} km",
+      "Homemade supplies up! +{km} km",
+      "Careful, it's glass! +{km} km",
+      "Not a scratch on it. +{km} km"
+    ],
+    "boarding": [
+      "Priority Boarding! 3 seconds of protection!",
+      "Priority lane! Safe for 3 seconds.",
+      "Priority ticket! Nothing can stop us now.",
+      "Luggage strapped in? We're protected for a moment!",
+      "Golden pass! Three seconds without a worry.",
+      "Clear road! Protection for three seconds."
+    ],
+    "tailwind": [
+      "Tailwind! 2 seconds of speed!",
+      "The wind helps! Two seconds of faster travel.",
+      "A gust straight towards home! Obstacles skipped.",
+      "The estate car grew wings. Quick flight!",
+      "A boost from the weather! Two seconds ahead.",
+      "Racing with the wind! A clear road for a moment."
+    ],
+    "mamcall": [
+      "A call from Mum: Take care of yourself!",
+      "Mum is calling: Take care of yourself!",
+      "Take care of yourself! Mum is waiting at home.",
+      "A call from home. Take care of yourself!",
+      "Easy does it, no rush. Take care of yourself!",
+      "Mum reminds you: Take care of yourself!"
+    ]
+  },
+  "PICKUP_TOAST": {
+    "parcel": "Parcel from Mum! +{km} km",
+    "jar": "Jar of pickles! +{km} km",
+    "boarding": "Priority Boarding! 3 seconds of protection!",
+    "tailwind": "Tailwind! 2 seconds of speed!",
+    "mamcall": "A call from Mum: Take care of yourself!"
+  },
+  "UI": {
+    "tapToStart": "Tap to start",
+    "tapToFly": "Tap to hop",
+    "remaining": "home in {km} km",
+    "welcome": "Welcome! You're {where}!",
+    "over": "End of the road!",
+    "arrived": "You're home!",
+    "arrivedSub": "Mum is setting the table.",
+    "returnFlight": "Return flight",
+    "returnFlightHint": "Unlocked after your first arrival in Poland",
+    "returnDeparture": "Mum packed the jars. Time to head back!",
+    "returnArrived": "Welcome back!",
+    "returnArrivedSub": "The jars arrived in one piece.",
+    "returnRemaining": "to {city}: {km} km",
+    "returnAgain": "Again from Poland",
+    "stoppedBy": "Stopped by: {what}",
+    "distance": "{km} km",
+    "best": "Best: {km} km",
+    "newBest": "New record!",
+    "again": "Try again",
+    "share": "Share",
+    "modeRanked": "Ranked",
+    "modeCozy": "Relaxed",
+    "shareText": "I flew {km} km from {from} towards {to}! Beat that?",
+    "shareArrivedText": "I got from {from} to {to} in {sec} s! Your turn?",
+    "daily": "Daily challenge",
+    "dailyHint": "Same route for everyone: {title}",
+    "league": "Polish Community League",
+    "close": "Close",
+    "portal": "What's new in the Polish community {where}?",
+    "settingsTitle": "Settings",
+    "settingsSound": "Sound effects",
+    "settingsMusic": "Music",
+    "settingsMusicVolume": "Music volume",
+    "settingsVibrations": "Vibration",
+    "settingsLessMotion": "Reduce motion",
+    "settingsMotionHint": "Follows your device by default. Your choice takes priority.",
+    "settingsMotionSystem": "Use device settings",
+    "settingsLinks": "Legal information",
+    "settingsPrivacy": "Privacy policy",
+    "settingsLicenses": "Graphics licences",
+    "updateReady": "Game update ready — it'll load in the menu.",
+    "recordControlLabel": "Reel recording",
+    "recordStart": "Record a reel",
+    "recordEditorialHint": "Tap the game to start recording",
+    "recordCancel": "Cancel",
+    "recordPreviewTitle": "Reel ready",
+    "recordPreviewLabel": "Preview of the recorded video",
+    "recordSave": "Save",
+    "recordShare": "Share",
+    "recordNew": "New reel",
+    "recordCountdown": "Recording · {seconds} s left",
+    "recordReady": "Ready: {size} MB · {format}",
+    "recordSaved": "Video file saved",
+    "recordSavedGallery": "Video saved to your gallery",
+    "recordDownloadStarted": "Video download started",
+    "recordSaveError": "Could not save the video",
+    "recordError": "Could not record the reel",
+    "recordStartError": "Could not start recording",
+    "recordHidden": "Recording stopped when the app was hidden",
+    "recordShareFallback": "File sharing is not available. Download started.",
+    "recordShared": "Share sheet opened",
+    "recordCopied": "Link copied. Save the video file separately.",
+    "recordShareCancelled": "Sharing cancelled",
+    "recordShareError": "Sharing failed",
+    "recordShareText": "A reel from the road trip to Poland",
+    "recordAlreadyRecording": "Already recording",
+    "recordCanvasSizeInvalid": "The source canvas has invalid dimensions",
+    "recordDurationInvalid": "Invalid recording length",
+    "recordUnsupported": "MediaRecorder is not available in this browser",
+    "recordCanvasUnsupported": "This browser does not support canvas.captureStream",
+    "recordCanvasContextMissing": "Canvas 2D is not available",
+    "recordAudioContextMismatch": "The audio source belongs to a different AudioContext",
+    "recordTooLarge": "The video exceeded the 15 MB limit",
+    "recordEncodingError": "Video encoding error (MediaRecorder)",
+    "recordCancelled": "Recording cancelled",
+    "recordEmpty": "The recording produced no video data",
+    "recordOutroPlay": "Play:",
+    "recordOutroMore": "More news:",
+    "recordOutroMissing": "Destination: Poland!",
+    "garage": "Garage",
+    "garageClose": "Close garage",
+    "garageEyebrow": "Choose your road crew",
+    "garageSkin": "Choose your ride",
+    "garageDefaultSkin": "Estate car driver",
+    "garagePanCebulek": "Mr Cebulek",
+    "garagePaniCebulka": "Ms Cebulka",
+    "garageBusKurierski": "Delivery van",
+    "garagePrevious": "Previous skin",
+    "garageNext": "Next skin",
+    "garageNick": "Your league nickname",
+    "garageGender": "Nickname grammar",
+    "garageMale": "Driver (he)",
+    "garageFemale": "Driver (she)",
+    "garageNickHint": "Pick a suggested nickname. No personal details.",
+    "garageNickChoices": "Nickname ideas",
+    "garageShuffle": "Shuffle suggestions"
+  },
+  "WIGILIA_TEXTS": [
+    "Home for Christmas Eve! Soup's nearly ready.",
+    "Dumplings await. The jars are coming too.",
+    "Christmas Eve trip! Don't forget your scarf.",
+    "Closer to the table and little dumplings.",
+    "Cold windows, warm thoughts of home.",
+    "Holiday drive. Luggage piled high.",
+    "Christmas Eve! Someone's setting an extra place.",
+    "Snowy road? Better keep it in the picture.",
+    "Just a few more kilometres to gingerbread.",
+    "Presents on board. And three spare bags.",
+    "Christmas Eve! The thermos gets the last word.",
+    "Winter drive. Heating works, spirits too.",
+    "Cabbage and mushrooms are probably waiting.",
+    "Home for Christmas Eve! The bags agree.",
+    "Best view? A light in the family window.",
+    "Long drive, even longer dinner menu.",
+    "Snow outside, dumplings on the mind.",
+    "Christmas Eve! Would be too easy without a detour."
+  ],
+  "MENU": {
+    "tagline": "Destination: Poland",
+    "homeLabel": "Country of residence",
+    "fromLabel": "Departing from",
+    "toLabel": "Flying to",
+    "modeLabel": "Game mode",
+    "start": "Let's go!",
+    "garageButton": "Garage",
+    "backToMenu": "Change route",
+    "gameLabel": "Cebulak Express game"
+  }
+} satisfies GameLocale;

@@ -58,7 +58,8 @@ async function checkPage(expectedQuery) {
 
 try {
   let port;
-  for (let i = 0; i < 100; i++) {
+  // Zimny start Chromium na runnerze CI potrafi trwać ponad 10 s.
+  for (let i = 0; i < 300; i++) {
     const path = join(profileDir, 'DevToolsActivePort');
     if (existsSync(path)) {
       port = readFileSync(path, 'utf8').split('\n')[0];

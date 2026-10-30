@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { replay } from '../../src/core/game';
+import { ANALYTICS_RATE_LIMIT, analyticsRateLimited, originPermitted, regularTapRhythm } from '../src/abuse';
 import { isValidNickId, randomNickChoices } from '../../src/content/nicks';
 import { makeRoute } from '../../src/core/route';
 import { isCalendarDay, verifyReplay, warsawDay, warsawWeek } from '../src/validation';
@@ -43,5 +44,32 @@ describe('strefa Warszawy i format nicków', () => {
     expect(isValidNickId('Ala ma kota!')).toBe(false);
     expect(isValidNickId('../other')).toBe(false);
     expect(isValidNickId(validId.slice(0, -1) + (validId.endsWith('0') ? '1' : '0'))).toBe(false);
+  });
+});
+
+describe('sygnały antybotowe i ruch analityki', () => {
+  it('wykrywa regularność dopiero po wielu tapnięciach', () => {
+    expect(regularTapRhythm(Array.from({ length: 20 }, (_, i) => i * 12))).toBe(true);
+    expect(regularTapRhythm(Array.from({ length: 10 }, (_, i) => i * 12))).toBe(false);
+    expect(regularTapRhythm([0, 12, 35, 50, 85, 112, 140, 175, 190, 222, 240, 275, 301, 338, 358, 393])).toBe(false);
+    expect(regularTapRhythm([0, 8, 16, 16, 24, 32, 40, 48, 56, 64, 72, 80, 88, 96, 104, 112])).toBe(false);
+  });
+
+  it('limit liczy osobno IP-hash i wygasa po minucie', () => {
+    const ip = '198.51.100.196';
+    for (let i = 0; i < ANALYTICS_RATE_LIMIT; i++) {
+      expect(analyticsRateLimited(ip, 100_000)).toBe(false);
+    }
+    expect(analyticsRateLimited(ip, 100_000)).toBe(true);
+    expect(analyticsRateLimited('198.51.100.197', 100_000)).toBe(false);
+    expect(analyticsRateLimited(ip, 160_001)).toBe(false);
+  });
+
+  it('w produkcji wymaga poprawnego Origin, także gdy nagłówka brak', () => {
+    const allowlist = ['https://example.test', 'capacitor://localhost'];
+    expect(originPermitted('https://example.test', allowlist)).toBe(true);
+    expect(originPermitted('https://evil.test', allowlist)).toBe(false);
+    expect(originPermitted(undefined, allowlist)).toBe(false);
+    expect(originPermitted(undefined, [])).toBe(true);
   });
 });

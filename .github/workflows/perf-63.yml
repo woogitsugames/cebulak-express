@@ -1,0 +1,74 @@
+name: Zlecenie 63 - wydajnosc Canvas
+
+on:
+  push:
+    branches:
+      - zlecenie/63-wydajnosc-slabe-telefony
+    paths:
+      - 'src/render/**'
+      - 'tests/performance-mode.test.ts'
+      - 'tools/perf/**'
+      - 'docs/wydajnosc.md'
+      - '.github/workflows/perf-63.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: performance-63-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  benchmark:
+    name: Przed/po - CPU 4x i 6x
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Instalacja projektu
+        run: npm ci
+      - name: TypeScript, Vitest i build po zmianach
+        run: npm run typecheck && npm test && npm run build
+      - name: Chromium do pomiaru
+        run: npx playwright install --with-deps chromium
+      - name: Przygotowanie wersji bazowej
+        shell: bash
+        run: |
+          set -euo pipefail
+          git worktree add "$RUNNER_TEMP/cebulak-base" 5ce599b8486a57fb36556e494d9d0e5a7d1141bb
+          cd "$RUNNER_TEMP/cebulak-base"
+          npm ci
+          npm run build
+      - name: Baseline z main - 30 s CPU 4x i 6x
+        shell: bash
+        run: |
+          set -euo pipefail
+          node tools/perf/run.mjs --app="$RUNNER_TEMP/cebulak-base" --label=main-5ce599b --port=4173 --out="$GITHUB_WORKSPACE/perf-before.json"
+      - name: Gałąź 63 - 30 s CPU 4x i 6x
+        shell: bash
+        run: |
+          set -euo pipefail
+          node tools/perf/run.mjs --app="$GITHUB_WORKSPACE" --label=po-63 --port=4174 --out="$GITHUB_WORKSPACE/perf-after.json"
+      - name: Porównanie tabelaryczne
+        shell: bash
+        run: |
+          set -euo pipefail
+          node tools/perf/compare.mjs perf-before.json perf-after.json --out=perf-comparison.md
+          cat perf-comparison.md >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: zlecenie-63-pomiary
+          path: |
+            perf-before.json
+            perf-after.json
+            perf-comparison.md
+          if-no-files-found: warn
+          retention-days: 30

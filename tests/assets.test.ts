@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { AssetLoader, BACKGROUND_LAYERS, ASSET_SIZES, countryLayerPath, landmarkPaths } from '../src/render/assets';
+import { AssetLoader, BACKGROUND_LAYERS, ASSET_SIZES, countryLayerPath, landmarkPaths, drawableWidth, drawableHeight } from '../src/render/assets';
 import type { Waypoint } from '../src/content/waypoints';
 
 class FakeImage {
@@ -30,7 +30,7 @@ describe('assets: HiDPI, preload i warianty', () => {
     expect(countryLayerPath('PL', 'far', 'winter')).toBe('assets/countries/pl/pl-far-zima.png');
     expect(countryLayerPath('PL', 'near', 'winter')).toBe('assets/countries/pl/pl-near-zima.png');
     expect(countryLayerPath('PL', 'road', 'winter')).toBe('assets/countries/pl/pl-road.png');
-    expect(countryLayerPath('DE', 'sky', 'winter')).toBe('assets/countries/de/de-sky.png');
+    expect(countryLayerPath('DE', 'sky', 'winter')).toBe('assets/countries/de/de-sky-zima.png');
     expect(BACKGROUND_LAYERS).toEqual(['sky', 'clouds', 'far', 'near', 'road']);
     expect(ASSET_SIZES.sky).toEqual({ width: 360, height: 640 });
     const city = { id: 'leuven', kind: 'city' as const };
@@ -71,8 +71,8 @@ describe('assets: HiDPI, preload i warianty', () => {
     FakeImage.requested[0].succeed();
     const image = assets.getCountryLayer('PL', 'sky');
     expect(image).toBe(FakeImage.requested[0]);
-    expect(image?.naturalWidth).toBe(1080);
-    expect(image?.naturalHeight).toBe(1920);
+    expect(image && drawableWidth(image)).toBe(1080);
+    expect(image && drawableHeight(image)).toBe(1920);
     expect(FakeImage.requested).toHaveLength(1);
   });
 

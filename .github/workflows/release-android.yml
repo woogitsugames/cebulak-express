@@ -1,0 +1,227 @@
+name: Android - wydanie Google Play
+
+on:
+  workflow_dispatch:
+    inputs:
+      test_signing:
+        description: 'Podpisz tymczasowym kluczem CI (NIGDY nie wysyłaj do Play)'
+        type: boolean
+        default: false
+      publish_internal:
+        description: 'Wyślij produkcyjnie podpisany AAB i metadane do internal testing'
+        type: boolean
+        default: false
+  push:
+    tags:
+      - 'v*'
+  pull_request:
+    paths:
+      - 'android/**'
+      - '.github/workflows/release-android.yml'
+      - 'scripts/android-version*'
+      - 'scripts/prepare-play-metadata*'
+      - 'docs/sklep/**'
+      - 'public/assets/store/**'
+      - 'fastlane/**'
+      - 'Gemfile'
+      - 'package.json'
+      - 'package-lock.json'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-android-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Android release (R8, AAB/APK)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+          cache: gradle
+
+      - name: Android SDK 36
+        run: |
+          yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses > /dev/null || true
+          "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "platforms;android-36" "build-tools;36.0.0"
+
+      - name: Zależności, kontrola typów i testy
+        run: |
+          npm ci
+          npm run typecheck
+          npm test
+          node --test scripts/android-version.test.mjs scripts/prepare-play-metadata.test.mjs
+
+      - name: Build web i synchronizacja Android
+        run: |
+          npm run build
+          npx cap sync android
+
+      - name: Generowanie versionCode/versionName i kontrola taga
+        run: node scripts/android-version.mjs "$GITHUB_RUN_NUMBER"
+
+      - name: Tryb wydania (bez sekretów / test / prawdziwy podpis)
+        id: mode
+        env:
+          HAS_SIGNING: ${{ secrets.ANDROID_KEYSTORE_BASE64 != '' && secrets.ANDROID_KEYSTORE_PASSWORD != '' && secrets.ANDROID_KEY_ALIAS != '' && secrets.ANDROID_KEY_PASSWORD != '' }}
+          TEST_SIGNING: ${{ inputs.test_signing || false }}
+          WANT_PUBLISH: ${{ inputs.publish_internal || false }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ "$GITHUB_EVENT_NAME" == "pull_request" || "$TEST_SIGNING" == "true" ]]; then
+            mode=test
+            echo "::notice::Podpis testowy wygenerowany wyłącznie na potrzeby CI."
+          elif [[ "$HAS_SIGNING" == "true" ]]; then
+            mode=production
+          else
+            mode=unsigned
+            echo "::notice::Brak kompletu czterech sekretów Android. Build unsigned i debug APK; podpis i publikacja pominięte."
+          fi
+          if [[ "$WANT_PUBLISH" == "true" && "$mode" != "production" ]]; then
+            echo "::error::Wybrano publish_internal, ale nie ma kompletu produkcyjnych sekretów albo włączono test_signing."
+            exit 1
+          fi
+          echo "mode=$mode" >> "$GITHUB_OUTPUT"
+          echo "Tryb: $mode" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Debug APK do testów
+        working-directory: android
+        run: ./gradlew assembleDebug --no-daemon
+
+      - name: Build release unsigned i weryfikacja R8 (brak sekretów)
+        if: steps.mode.outputs.mode == 'unsigned'
+        working-directory: android
+        run: ./gradlew assembleRelease --no-daemon
+
+      - name: Klucz jednorazowy testowy - NIE do sklepu
+        if: steps.mode.outputs.mode == 'test'
+        shell: bash
+        run: |
+          set -euo pipefail
+          keyfile="$RUNNER_TEMP/cebulak-ci-test.jks"
+          password="$(openssl rand -hex 20)"
+          echo "::add-mask::$password"
+          keytool -genkeypair -noprompt -storetype PKCS12 -keystore "$keyfile" \
+            -alias ci-test -keyalg RSA -keysize 3072 -validity 30 \
+            -dname "CN=CI TEST ONLY,O=CI,C=BE" \
+            -storepass "$password" -keypass "$password"
+          chmod 600 "$keyfile"
+          echo "ANDROID_KEYSTORE_PATH=$keyfile" >> "$GITHUB_ENV"
+          echo "ANDROID_KEYSTORE_PASSWORD=$password" >> "$GITHUB_ENV"
+          echo "ANDROID_KEY_ALIAS=ci-test" >> "$GITHUB_ENV"
+          echo "ANDROID_KEY_PASSWORD=$password" >> "$GITHUB_ENV"
+
+      - name: Odtworzenie produkcyjnego klucza z GitHub Secrets
+        if: steps.mode.outputs.mode == 'production'
+        env:
+          KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          KEYSTORE_PASSWORD_SECRET: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          KEY_ALIAS_SECRET: ${{ secrets.ANDROID_KEY_ALIAS }}
+          KEY_PASSWORD_SECRET: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          keyfile="$RUNNER_TEMP/cebulak-upload.jks"
+          printf '%s' "$KEYSTORE_BASE64" | base64 --decode > "$keyfile"
+          test -s "$keyfile" || { echo "::error::Pusty keystore."; exit 1; }
+          chmod 600 "$keyfile"
+          echo "ANDROID_KEYSTORE_PATH=$keyfile" >> "$GITHUB_ENV"
+          echo "ANDROID_KEYSTORE_PASSWORD=$KEYSTORE_PASSWORD_SECRET" >> "$GITHUB_ENV"
+          echo "ANDROID_KEY_ALIAS=$KEY_ALIAS_SECRET" >> "$GITHUB_ENV"
+          echo "ANDROID_KEY_PASSWORD=$KEY_PASSWORD_SECRET" >> "$GITHUB_ENV"
+
+      - name: Release AAB i APK z R8 oraz podpisem
+        if: steps.mode.outputs.mode != 'unsigned'
+        working-directory: android
+        run: ./gradlew bundleRelease assembleRelease --no-daemon
+
+      - name: Sprawdzenie podpisu obu artefaktów release
+        if: steps.mode.outputs.mode != 'unsigned'
+        shell: bash
+        run: |
+          set -euo pipefail
+          jarsigner -verify android/app/build/outputs/bundle/release/app-release.aab > /dev/null
+          "$ANDROID_HOME/build-tools/36.0.0/apksigner" verify \
+            android/app/build/outputs/apk/release/app-release.apk
+          echo "Podpis AAB i APK zweryfikowany." >> "$GITHUB_STEP_SUMMARY"
+
+      - name: APK debug (artefakt zawsze)
+        uses: actions/upload-artifact@v4
+        with:
+          name: cebulak-express-debug-apk
+          path: android/app/build/outputs/apk/debug/*.apk
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Podpisane AAB i APK (artefakty)
+        if: steps.mode.outputs.mode != 'unsigned'
+        uses: actions/upload-artifact@v4
+        with:
+          name: cebulak-express-${{ steps.mode.outputs.mode }}-android
+          path: |
+            android/app/build/outputs/bundle/release/*.aab
+            android/app/build/outputs/apk/release/*.apk
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Metadane PL/EN i kontrola zrzutów przed uploadem
+        if: github.event_name == 'workflow_dispatch' && inputs.publish_internal && steps.mode.outputs.mode == 'production'
+        run: node scripts/prepare-play-metadata.mjs --out "$RUNNER_TEMP/play-metadata" --require-screenshots
+
+      - name: Ruby dla Fastlane
+        if: github.event_name == 'workflow_dispatch' && inputs.publish_internal && steps.mode.outputs.mode == 'production'
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.3'
+          bundler-cache: false
+
+      - name: Instalacja przypiętej wersji Fastlane
+        if: github.event_name == 'workflow_dispatch' && inputs.publish_internal && steps.mode.outputs.mode == 'production'
+        run: bundle install --jobs 4 --retry 3
+
+      - name: Konto serwisowe Play tylko w pliku tymczasowym
+        if: github.event_name == 'workflow_dispatch' && inputs.publish_internal && steps.mode.outputs.mode == 'production'
+        env:
+          PLAY_ACCOUNT_JSON: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ -z "$PLAY_ACCOUNT_JSON" ]]; then
+            echo "::error::Brak sekretu PLAY_SERVICE_ACCOUNT_JSON - nie można wysłać do Play."
+            exit 1
+          fi
+          keyfile="$RUNNER_TEMP/cebulak-play-service-account.json"
+          printf '%s' "$PLAY_ACCOUNT_JSON" > "$keyfile"
+          chmod 600 "$keyfile"
+          python3 -m json.tool "$keyfile" > /dev/null || {
+            echo "::error::PLAY_SERVICE_ACCOUNT_JSON nie jest poprawnym JSON."
+            exit 1
+          }
+          echo "PLAY_SERVICE_ACCOUNT_PATH=$keyfile" >> "$GITHUB_ENV"
+          echo "PLAY_METADATA_PATH=$RUNNER_TEMP/play-metadata" >> "$GITHUB_ENV"
+
+      - name: Fastlane - Google Play internal testing
+        if: github.event_name == 'workflow_dispatch' && inputs.publish_internal && steps.mode.outputs.mode == 'production'
+        run: bundle exec fastlane android internal
+
+      - name: Usuwanie tymczasowych materiałów wydawniczych
+        if: always()
+        shell: bash
+        run: |
+          rm -f "$RUNNER_TEMP/cebulak-ci-test.jks" \
+            "$RUNNER_TEMP/cebulak-upload.jks" \
+            "$RUNNER_TEMP/cebulak-play-service-account.json"

@@ -1,0 +1,57 @@
+/* Nie blokuje dotyku ani myszki: zdarzenia trafiają do #stage. */
+.ce-tutorial {
+  position: absolute;
+  z-index: 9;
+  top: 57%;
+  left: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: min(90vw, 285px);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  user-select: none;
+  text-align: center;
+}
+.ce-tutorial[hidden] { display: none !important; }
+.ce-tutorial__hand {
+  position: relative;
+  width: 116px;
+  height: 116px;
+  object-fit: contain;
+  filter: drop-shadow(2px 4px 1px #183c5760);
+  animation: ce-tutorial-tap 1.15s ease-in-out infinite;
+}
+.ce-tutorial__pulse {
+  position: absolute;
+  top: 9px;
+  left: 50%;
+  width: 65px;
+  height: 65px;
+  margin-left: -53px;
+  border: 5px solid #fff9df;
+  border-radius: 50%;
+  box-shadow: 0 0 0 3px #294b67;
+  animation: ce-tutorial-pulse 1.15s ease-out infinite;
+}
+.ce-tutorial__caption {
+  margin-top: 2px;
+  padding: 7px 13px;
+  border: 3px solid #1b344d;
+  border-radius: 999px;
+  background: #fff9e8;
+  color: #1b344d;
+  font: 900 16px/1.25 system-ui, sans-serif;
+  box-shadow: 0 3px 0 #4f798d;
+}
+@keyframes ce-tutorial-tap {
+  0%, 100% { transform: translateY(5px) scale(.96); }
+  45% { transform: translateY(-7px) scale(1.04); }
+}
+@keyframes ce-tutorial-pulse {
+  0% { opacity: 1; transform: scale(.65); }
+  70%, 100% { opacity: 0; transform: scale(1.45); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ce-tutorial__hand, .ce-tutorial__pulse { animation: none; }
+}

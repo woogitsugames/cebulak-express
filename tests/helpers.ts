@@ -1,5 +1,6 @@
 import { OBSTACLE, PLAYER } from '../src/core/config';
 import { Game, type Mode } from '../src/core/game';
+import { effectiveGapH } from '../src/core/obstacles';
 import { makeRoute } from '../src/core/route';
 
 export const ROUTE = makeRoute('BE', 'bruksela', 'rzeszow');
@@ -20,13 +21,17 @@ export function botStep(game: Game): void {
   const [first, second] = ahead;
   let targetY = 300;
   if (first && first.x - worldX < right && second) {
-    const lo = first.gapY - first.gapH / 2 + 95;
-    const hi = first.gapY + first.gapH / 2 - 12;
+    const h = effectiveGapH(first, game.weight);
+    // Zwykłe przeszkody używają dotychczasowego celu (przetestowany
+    // autopilot). Tylko bramka wymaga uwzględnienia aktualnej szerokości.
+    const lo = first.gapY - h / 2 + (first.gate ? h * 0.72 : 95);
+    const hi = first.gapY + h / 2 - 12;
     targetY = second.gapY > first.gapY ? hi : Math.min(hi, Math.max(lo, second.gapY));
   } else if (first) {
-    targetY = first.gapY + first.gapH * 0.2;
+    const h = effectiveGapH(first, game.weight);
+    targetY = first.gapY + h * 0.2;
   }
-  // Patrzy chwilę naprzód, bo przy dużej prędkości opadania reakcja „na styk” jest za późna.
+  // Zachowujemy zachowanie sprzed nowych mechanik dla zwykłych przeszkód.
   const predictedY = game.y + game.vy * 0.06;
   if (game.vy >= 0 && predictedY > targetY) game.flap();
 }

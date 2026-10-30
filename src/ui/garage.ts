@@ -1,5 +1,5 @@
 import { isValidNickId, randomNickChoices, renderNick, type NickGender, type NickRng } from '../content/nicks';
-import { UI } from '../content/pl';
+import { UI } from '../content/i18n';
 import type { HomeCountry } from '../core/route';
 import { HERO_SKINS, normalizeHeroSkin, type HeroSkinId } from '../render/sprites';
 import './garage.css';
