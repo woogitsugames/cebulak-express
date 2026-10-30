@@ -5,6 +5,7 @@ import {
   HOME_COUNTRIES, PL_CITIES, START_CITIES, countryAt, makeRoute, reverseRoute, type Route,
 } from '../src/core/route';
 import { playWithBot, ROUTE } from './helpers';
+import { RETURN_ARRIVAL_TEXTS, RETURN_CITY_LOCATIVE, RETURN_DEPARTURE_TEXTS, UI, fill } from '../src/content/pl';
 
 const RETURN_WEIGHT = 0.4;
 
@@ -134,4 +135,25 @@ describe('Lot powrotny — przelotność generatora', () => {
     }
     expect(failures).toEqual([]);
   }, 180_000);
+});
+
+describe('Lot powrotny — polskie teksty', () => {
+  it('ma co najmniej 10 zapowiedzi z mamą i słoikami', () => {
+    expect(RETURN_DEPARTURE_TEXTS.length).toBeGreaterThanOrEqual(10);
+    for (const line of RETURN_DEPARTURE_TEXTS) {
+      expect(line.toLowerCase()).toContain('mama');
+      expect(line.toLowerCase()).toContain('słoik');
+    }
+    expect(UI.returnFlight).toBe('Lot powrotny');
+  });
+
+  it('ma poprawne miejscowniki wszystkich miast startowych', () => {
+    for (const home of HOME_COUNTRIES) {
+      for (const city of START_CITIES[home]) {
+        expect(RETURN_CITY_LOCATIVE[city.id], city.name).toBeTruthy();
+      }
+    }
+    const arrival = fill(RETURN_ARRIVAL_TEXTS[0], { city: RETURN_CITY_LOCATIVE.bruksela });
+    expect(arrival).toBe('Witamy z powrotem w Brukseli! Słoiki dojechały całe.');
+  });
 });
