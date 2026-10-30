@@ -61,7 +61,7 @@ export function tilePositions(distancePx: number, parallax: number, tileWidth: n
   return positions;
 }
 
-export function waypointScreenX(waypointKm: number, progressKm: number, parallax = PARALLAX.far): number {
+export function waypointScreenX(waypointKm: number, progressKm: number, parallax: number = PARALLAX.far): number {
   return WORLD.width / 2 + ((waypointKm - progressKm) / KM_PER_PX) * parallax;
 }
 
