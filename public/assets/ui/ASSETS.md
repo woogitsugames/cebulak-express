@@ -54,3 +54,8 @@ Każdy nowy plik jest PNG **96×96 px, sRGB z przezroczystością**, z mocnym gr
 | `pickup-mamcall.png` | Jak wyżej | Jak wyżej | 96×96, telefon z sercem, bez znaków operatorów |
 
 Grafiki mają przezroczyste marginesy; kolizja odbywa się na dotychczasowym promieniu `PICKUPS.radius = 12` px logicznych. W renderze obrazy @3x są skalowane do 32×32 px logicznych.
+## Zlecenie 64 — pierwsze uruchomienie
+
+| Plik | Źródło / narzędzie | Licencja | Autor / uwagi |
+|---|---|---|---|
+| `hand-tap.png` | ChatGPT GPT Image (koncepcja), ręczny redrawing SVG oraz Python/CairoSVG (finalny PNG) | własne opracowanie, do użycia w projekcie | 192×192 px, kanał alpha, sRGB; prosta dłoń z ciemnogranatowym konturem i łukami tapnięcia; bez napisów i obcych logotypów. |
