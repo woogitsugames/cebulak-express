@@ -285,7 +285,7 @@ async function captureScenario(context, number) {
         goal = (s) => s.jars > 0 || /słoik.*\+\s*30\s*km|\+\s*30\s*km.*słoik/i.test(s.toast);
         seconds = 16;
       } else if (number === 5) {
-        goal = (s) => !s.over && (s.country === 'PL' || /Rzeczpospolita Polska|Witamy w Polsce/i.test(s.toast));
+        goal = (s) => !s.over && (s.country === 'PL' || /^(?:Polska!|Polska na trasie!|Witamy w Polsce!|Wjeżdżasz do Polski\.|Rzeczpospolita Polska\.)/i.test(s.toast));
         seconds = 48;
       } else {
         goal = (s) => s.km >= cfg.threshold;
@@ -363,7 +363,7 @@ async function main() {
   if (!suppliedURL) {
     server = spawn(process.platform === 'win32' ? 'npm.cmd' : 'npm',
       ['run', 'preview', '--', '--host', '127.0.0.1', '--port', '4173', '--strictPort'],
-      { cwd: root, stdio: 'pipe', shell: false });
+      { cwd: root, stdio: 'pipe', shell: process.platform === 'win32' });
     server.on('error', (error) => log(`Błąd startu serwera: ${error.message}`));
   }
   await awaitServer(baseURL);
