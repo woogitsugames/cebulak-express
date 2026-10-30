@@ -1,4 +1,5 @@
 import type { Waypoint } from '../content/waypoints';
+import { devicePerformanceProfile, type DevicePerformanceProfile } from './performance';
 import type { CountryCode, Route } from '../core/route';
 
 export const BACKGROUND_LAYERS = ['sky', 'clouds', 'far', 'near', 'road'] as const;
@@ -15,8 +16,14 @@ export const ASSET_SIZES = {
   landmark: { width: 540, height: 300 },
 } as const;
 
-/** Nie tworzymy miniatur Canvas 1x: przeglądarka próbuje od razu z PNG 3x. */
-export type DrawableAsset = HTMLImageElement;
+/** Po przeskalowaniu obrazu używamy ImageBitmap; pozostałe przeglądarki zachowują HTMLImageElement. */
+export type DrawableAsset = HTMLImageElement | ImageBitmap;
+export function drawableWidth(asset: DrawableAsset): number {
+  return 'naturalWidth' in asset ? asset.naturalWidth : asset.width;
+}
+export function drawableHeight(asset: DrawableAsset): number {
+  return 'naturalHeight' in asset ? asset.naturalHeight : asset.height;
+}
 type Priority = 0 | 1 | 2;
 type AssetStatus = 'queued' | 'loading' | 'ready' | 'missing';
 
@@ -26,6 +33,7 @@ interface AssetRecord {
   status: AssetStatus;
   image?: DrawableAsset;
   lastUsed: number;
+  retired?: boolean;
 }
 
 export interface AssetLoaderOptions {
@@ -34,6 +42,8 @@ export interface AssetLoaderOptions {
   maxConcurrent?: number;
   /** Limit źródłowych pikseli bitmap; obejmuje rzeczywiste PNG @3x. */
   maxCachedPixels?: number;
+  /** Wstrzyknięcie profilu dla testów i narzędzia pomiarowego. */
+  profile?: DevicePerformanceProfile;
 }
 
 const countryPathCache = new Map<string, string>();
@@ -89,13 +99,20 @@ export class AssetLoader {
   private readonly maxConcurrent: number;
   private readonly maxCachedPixels: number;
   private readonly baseUrl: string;
+  private readonly decodedScale: number;
+  private readonly limitedPreload: boolean;
+  private routeCountries: CountryCode[] = [];
+  private visibleKey = '';
   private active = 0;
   private clock = 0;
   private cachedPixels = 0;
 
   constructor(options: AssetLoaderOptions = {}) {
-    this.maxConcurrent = Math.max(1, Math.floor(options.maxConcurrent ?? 3));
-    this.maxCachedPixels = Math.max(1, options.maxCachedPixels ?? 48_000_000);
+    const profile = options.profile ?? devicePerformanceProfile();
+    this.maxConcurrent = Math.max(1, Math.floor(options.maxConcurrent ?? profile.maxConcurrent));
+    this.maxCachedPixels = Math.max(1, options.maxCachedPixels ?? profile.maxCachedPixels);
+    this.decodedScale = profile.decodedScale;
+    this.limitedPreload = profile.limitedPreload;
     this.baseUrl = options.baseUrl ?? import.meta.env?.BASE_URL ?? './';
   }
 
@@ -110,6 +127,12 @@ export class AssetLoader {
     const countries = new Set<CountryCode>([startCountry]);
     const points = route ? ('waypoints' in route ? route.waypoints : route) : [];
     for (const point of points) countries.add(point.country);
+    this.routeCountries = [...countries];
+    if (this.limitedPreload) {
+      this.visibleKey = '';
+      this.setVisibleCountries(startCountry, null, season);
+      return;
+    }
     for (const country of countries) {
       const priority: Priority = country === startCountry ? 0 : 1;
       for (const layer of BACKGROUND_LAYERS) {
@@ -118,7 +141,52 @@ export class AssetLoader {
     }
   }
 
-  /** Oryginalne piksele @3x; współrzędne docelowe nadaje renderer w drawImage. */
+  /**
+   * Na słabym urządzeniu utrzymujemy maksymalnie dwa kraje:
+   * w czasie przejścia poprzedni + bieżący, po przejściu bieżący + następny.
+   */
+  setVisibleCountries(country: CountryCode, fadingFrom: CountryCode | null = null, season: Season = 'summer'): void {
+    if (!this.limitedPreload) return;
+    const index = this.routeCountries.indexOf(country);
+    const next = index >= 0 ? this.routeCountries[index + 1] : undefined;
+    const other = fadingFrom && fadingFrom !== country ? fadingFrom : next;
+    const key = country + ':' + (other ?? '') + ':' + season;
+    if (key === this.visibleKey) return;
+    this.visibleKey = key;
+    const keep = new Set<string>([country.toLowerCase()]);
+    if (other) keep.add(other.toLowerCase());
+    for (const record of this.records.values()) {
+      const match = /^assets\/countries\/([a-z]{2})\//.exec(record.path);
+      if (!match || keep.has(match[1])) continue;
+      record.retired = true;
+      if (record.status === 'ready') this.release(record);
+      else this.records.delete(record.path);
+    }
+    for (let i = this.pending.length - 1; i >= 0; i--) {
+      if (this.pending[i].retired) this.pending.splice(i, 1);
+    }
+    for (const code of [country, other]) {
+      if (!code) continue;
+      for (const layer of BACKGROUND_LAYERS) {
+        this.request(countryLayerPath(code, layer, season), code === country ? 0 : 1);
+      }
+    }
+  }
+
+  /** Statystyki dekodowanych obrazów bez skanowania DOM. */
+  getStats(): { decodedImages: number; decodedPixels: number; estimatedRgbaBytes: number; queued: number; loading: number } {
+    let decodedImages = 0;
+    for (const record of this.records.values()) if (record.status === 'ready' && record.image) decodedImages++;
+    return {
+      decodedImages,
+      decodedPixels: this.cachedPixels,
+      estimatedRgbaBytes: this.cachedPixels * 4,
+      queued: this.pending.length,
+      loading: this.active,
+    };
+  }
+
+  /** Współrzędne docelowe nadaje renderer w drawImage. */
   getCountryLayer(country: CountryCode, layer: BackgroundLayer, season: Season = 'summer'): DrawableAsset | undefined {
     const path = countryLayerPath(country, layer, season);
     const record = this.request(path, 0);
@@ -191,37 +259,85 @@ export class AssetLoader {
     }
     const image = new Image();
     let finished = false;
-    const done = (success: boolean): void => {
+    const done = (asset: DrawableAsset | null): void => {
       if (finished) return;
       finished = true;
       image.onload = null;
       image.onerror = null;
-      record.image = success ? image : undefined;
-      record.status = success ? 'ready' : 'missing';
-      if (success) {
-        this.cachedPixels += image.naturalWidth * image.naturalHeight;
-        this.trimCache(record.path);
+      if (record.retired) {
+        if (asset && 'close' in asset) asset.close();
+      } else {
+        record.image = asset ?? undefined;
+        record.status = asset ? 'ready' : 'missing';
+        if (asset) {
+          this.cachedPixels += drawableWidth(asset) * drawableHeight(asset);
+          this.trimCache(record.path);
+        }
       }
       this.active--;
       this.pump();
     };
-    image.onload = () => done(image.naturalWidth > 0 && image.naturalHeight > 0);
-    image.onerror = () => done(false);
+    image.onload = () => {
+      if (!(image.naturalWidth > 0 && image.naturalHeight > 0)) {
+        done(null);
+        return;
+      }
+      if (this.decodedScale >= 3 || typeof createImageBitmap !== 'function') {
+        done(image);
+        return;
+      }
+      const targetWidth = Math.max(1, Math.round(image.naturalWidth * this.decodedScale / 3));
+      const targetHeight = Math.max(1, Math.round(image.naturalHeight * this.decodedScale / 3));
+      if (targetWidth >= image.naturalWidth && targetHeight >= image.naturalHeight) {
+        done(image);
+        return;
+      }
+      void createImageBitmap(image, {
+        resizeWidth: targetWidth,
+        resizeHeight: targetHeight,
+        resizeQuality: 'high',
+      }).then((bitmap) => {
+        // Źródłowe PNG @3x nie może pozostać drugim zdekodowanym obrazem.
+        image.onload = null;
+        image.onerror = null;
+        image.removeAttribute('src');
+        done(bitmap);
+      }).catch(() => done(image));
+    };
+    image.onerror = () => done(null);
     image.decoding = 'async';
     image.src = this.baseUrl.replace(/\/?$/, '/') + record.path;
   }
 
-  /** LRU tylko po załadowaniu obrazu, nigdy wewnątrz klatki animacji. */
+  private release(record: AssetRecord): void {
+    const asset = record.image;
+    if (asset) {
+      this.cachedPixels -= drawableWidth(asset) * drawableHeight(asset);
+      if ('close' in asset) asset.close();
+      else if ('removeAttribute' in asset) asset.removeAttribute('src');
+    }
+    this.records.delete(record.path);
+  }
+
+  /** LRU przy ładowaniu, z limitem dwóch panoram dla słabych urządzeń. */
   private trimCache(protectedPath: string): void {
-    if (this.cachedPixels <= this.maxCachedPixels) return;
+    if (this.cachedPixels <= this.maxCachedPixels && !this.limitedPreload) return;
     const ready = [...this.records.values()]
-      .filter((record) => record.status === 'ready' && record.path !== protectedPath)
+      .filter((record) => record.status === 'ready' && record.image && record.path !== protectedPath)
       .sort((a, b) => a.lastUsed - b.lastUsed);
+    if (this.limitedPreload) {
+      let landmarks = ready.filter((record) => record.path.startsWith('assets/landmarks/')).length +
+        Number(protectedPath.startsWith('assets/landmarks/'));
+      for (const record of ready) {
+        if (landmarks <= 2) break;
+        if (!record.path.startsWith('assets/landmarks/')) continue;
+        this.release(record);
+        landmarks--;
+      }
+    }
     for (const record of ready) {
       if (this.cachedPixels <= this.maxCachedPixels) break;
-      if (!record.image) continue;
-      this.cachedPixels -= record.image.naturalWidth * record.image.naturalHeight;
-      this.records.delete(record.path);
+      if (this.records.has(record.path)) this.release(record);
     }
   }
 }
