@@ -29,3 +29,17 @@ Wczytaj grafiki z `/assets/ui/<nazwa>`. Do UI rysuj element przez `CanvasRenderi
 ## Uwaga dot. praw
 
 Tekstury i ilustracje powstały z wygenerowanego od podstaw atlasu GPT Image; maski, konwersje, poprawki barw i eksport wykonywano ręcznie/programistycznie. Nie wykorzystano zasobów firm trzecich ani chronionych symboli poza prostymi, zwyczajowymi wzorami flag. W razie potrzeby weryfikacji praw autorskich do assetów AI przed komercyjną publikacją koordynator może zamówić retusz ilustratora.
+
+## Uzupełnienie — zlecenie 43 (ikony garażu i menu)
+
+| Plik | Źródło / narzędzie | Licencja | Autor / uwagi |
+|---|---|---|---|
+| `icon-garage.png` | Autorska ilustracja SVG → CairoSVG/Pillow, ręczne ścieżki | CC0-1.0 | ChatGPT; front garażu i złoty klucz |
+| `icon-league.png` | Autorska ilustracja SVG → CairoSVG/Pillow, ręczne ścieżki | CC0-1.0 | ChatGPT; złoty puchar z miniaturami zwykłych flag PL i BE, bez symboli UE |
+| `icon-daily.png` | Autorska ilustracja SVG → CairoSVG/Pillow, ręczne ścieżki | CC0-1.0 | ChatGPT; kalendarz i miniaturowe kremowo-czerwone kombi |
+| `icon-camera.png` | Autorska ilustracja SVG → CairoSVG/Pillow, ręczne ścieżki | CC0-1.0 | ChatGPT; kamera z czerwoną kontrolką nagrywania |
+| `icon-music-on.png` | Autorska ilustracja SVG → CairoSVG/Pillow, ręczne ścieżki | CC0-1.0 | ChatGPT; nuta z zielonymi falami dźwięku |
+| `icon-music-off.png` | Autorska ilustracja SVG → CairoSVG/Pillow, ręczne ścieżki | CC0-1.0 | ChatGPT; nuta przekreślona czerwonym ukośnikiem |
+| `icon-vibration.png` | Autorska ilustracja SVG → CairoSVG/Pillow, ręczne ścieżki | CC0-1.0 | ChatGPT; telefon z falami drgań |
+
+Każdy nowy plik jest PNG **96×96 px, sRGB z przezroczystością**, z mocnym granatowym obrysem, bez tekstu. Piktogramy zaprojektowane i obejrzane w rozmiarze 32×32 px. Paleta skwantyzowana bez ditheringu do 256 kolorów z zachowaniem alpha. Wczytywać pod `/assets/ui/icon-*.png`; żadne istniejące ikony nie są nadpisywane. Arkusz poglądowy: `docs/art/podglady/ui-icons-preview.png`.
