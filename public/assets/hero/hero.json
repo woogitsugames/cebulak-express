@@ -1,0 +1,121 @@
+{
+  "kombi-body": {
+    "file": "kombi-body.png",
+    "anchorX": 144,
+    "anchorY": 90,
+    "width": 288,
+    "height": 168
+  },
+  "kombi-wheel": {
+    "file": "kombi-wheel.png",
+    "anchorX": 18,
+    "anchorY": 18,
+    "width": 36,
+    "height": 36
+  },
+  "kombi-flame-1": {
+    "file": "kombi-flame-1.png",
+    "anchorX": 144,
+    "anchorY": 90,
+    "width": 288,
+    "height": 168
+  },
+  "kombi-flame-2": {
+    "file": "kombi-flame-2.png",
+    "anchorX": 144,
+    "anchorY": 90,
+    "width": 288,
+    "height": 168
+  },
+  "luggage-1": {
+    "file": "luggage-1.png",
+    "anchorX": 144,
+    "anchorY": 90,
+    "width": 288,
+    "height": 168
+  },
+  "luggage-2": {
+    "file": "luggage-2.png",
+    "anchorX": 144,
+    "anchorY": 90,
+    "width": 288,
+    "height": 168
+  },
+  "luggage-3": {
+    "file": "luggage-3.png",
+    "anchorX": 144,
+    "anchorY": 90,
+    "width": 288,
+    "height": 168
+  },
+  "luggage-4": {
+    "file": "luggage-4.png",
+    "anchorX": 144,
+    "anchorY": 90,
+    "width": 288,
+    "height": 168
+  },
+  "kombi-crash": {
+    "file": "kombi-crash.png",
+    "anchorX": 144,
+    "anchorY": 90,
+    "width": 288,
+    "height": 168
+  },
+  "driver-react-1": {
+    "file": "driver-react-1.png",
+    "anchorX": 144,
+    "anchorY": 90,
+    "width": 288,
+    "height": 168
+  },
+  "driver-react-2": {
+    "file": "driver-react-2.png",
+    "anchorX": 144,
+    "anchorY": 90,
+    "width": 288,
+    "height": 168
+  },
+  "meta": {
+    "scale": 3,
+    "unit": "physical pixels @3x",
+    "worldLogicalWidth": 360,
+    "worldLogicalHeight": 640,
+    "playerHitboxLogical": {
+      "width": 40,
+      "height": 20
+    },
+    "commonAnchor": {
+      "x": 144,
+      "y": 90
+    },
+    "wheelCenters": [
+      {
+        "x": 91,
+        "y": 133
+      },
+      {
+        "x": 207,
+        "y": 133
+      }
+    ],
+    "wheelOffsetFromAnchorPx": [
+      {
+        "x": -53,
+        "y": 43
+      },
+      {
+        "x": 63,
+        "y": 43
+      }
+    ],
+    "front": "right",
+    "drawOrder": [
+      "kombi-flame-X",
+      "kombi-wheel (2x)",
+      "kombi-body",
+      "luggage-X",
+      "driver-react-X (optional)"
+    ]
+  }
+}
