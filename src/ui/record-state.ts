@@ -39,6 +39,4 @@ export class RecordingState {
   }
 }
 
-export function isEditorialMode(search: string): boolean {
-  return new URLSearchParams(search).get('redakcja') === '1';
-}
+export { isEditorialMode } from '../record/recorder';

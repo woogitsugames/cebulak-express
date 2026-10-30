@@ -1,3 +1,5 @@
+import { UI, fill } from '../content/pl';
+import { saveRecordedVideo } from '../record/recorder';
 import { RecordingState, isEditorialMode } from './record-state';
 import {
   createCanvasRecordingBackend,
@@ -84,18 +86,6 @@ function safePortalUrl(value: string | undefined): string {
   return new URL(value).toString();
 }
 
-function downloadVideo(video: RecordedVideo): void {
-  const url = URL.createObjectURL(video.blob);
-  const anchor = makeElement('a');
-  anchor.href = url;
-  anchor.download = video.filename;
-  document.body.appendChild(anchor);
-  anchor.click();
-  anchor.remove();
-  // Odroczenie jest konieczne na wolnych telefonach i przy zapisie z iframe.
-  window.setTimeout(() => URL.revokeObjectURL(url), 60_000);
-}
-
 async function shareOnWeb(video: RecordedVideo, url: string): Promise<ShareOutcome> {
   if (typeof navigator.share !== 'function') return 'unavailable';
   const file = new File([video.blob], video.filename, { type: video.mimeType });
@@ -123,38 +113,38 @@ export function createRecordControl(opts: RecordControlOptions): RecordControl {
   let timer: number | undefined;
   let info = '';
   const root = makeElement('section', 'ce-record-control');
-  root.setAttribute('aria-label', 'Nagrywanie rolki');
+  root.setAttribute('aria-label', UI.recordControlLabel);
   const style = makeElement('style');
   style.textContent = RECORD_CSS;
   root.appendChild(style);
 
-  const startButton = makeButton('Nagraj rolkę', 'ce-record-start');
+  const startButton = makeButton(UI.recordStart, 'ce-record-start');
   // Ikona SVG jest własna; na obecnym main brak public/assets/ui/.
-  startButton.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h13a2 2 0 0 1 2 2v2.3l3-2V17l-3-2v1a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2Zm0 2v8h13V8H3Z"/></svg> Nagraj rolkę';
+  startButton.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h13a2 2 0 0 1 2 2v2.3l3-2V17l-3-2v1a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2Zm0 2v8h13V8H3Z"/></svg> ' + UI.recordStart;
   const editorialHint = makeElement('div', 'ce-record-editorial-hint');
-  editorialHint.textContent = 'Dotknij gry, aby rozpocząć nagrywanie';
+  editorialHint.textContent = UI.recordEditorialHint;
   const live = makeElement('div', 'ce-record-live');
   live.setAttribute('role', 'status');
   live.setAttribute('aria-live', 'polite');
   const dot = makeElement('span', 'ce-record-dot');
   dot.setAttribute('aria-hidden', 'true');
   const countdown = makeElement('span');
-  const cancelButton = makeButton('Anuluj');
+  const cancelButton = makeButton(UI.recordCancel);
   live.append(dot, countdown, makeElement('div'));
   live.appendChild(cancelButton);
 
   const preview = makeElement('div', 'ce-record-preview');
   const previewHeading = makeElement('strong');
-  previewHeading.textContent = 'Rolka gotowa';
+  previewHeading.textContent = UI.recordPreviewTitle;
   const player = makeElement('video');
   player.controls = true;
   player.playsInline = true;
   player.preload = 'metadata';
-  player.setAttribute('aria-label', 'Podgląd nagranego filmu');
+  player.setAttribute('aria-label', UI.recordPreviewLabel);
   const actions = makeElement('div', 'ce-record-actions');
-  const saveButton = makeButton('Zapisz');
-  const shareButton = makeButton('Udostępnij');
-  const resetButton = makeButton('Nowa rolka');
+  const saveButton = makeButton(UI.recordSave);
+  const shareButton = makeButton(UI.recordShare);
+  const resetButton = makeButton(UI.recordNew);
   actions.append(saveButton, shareButton, resetButton);
   preview.append(previewHeading, player, actions);
   const message = makeElement('span', 'ce-record-message');
@@ -200,7 +190,7 @@ export function createRecordControl(opts: RecordControlOptions): RecordControl {
     message.textContent = info;
     if (phase === 'recording') {
       const remaining = Math.max(0, Math.ceil((RECORD_DURATION_MS - (performance.now() - startedAt)) / 1000));
-      countdown.textContent = `Nagrywanie · pozostało ${remaining} s`;
+      countdown.textContent = fill(UI.recordCountdown, { seconds: remaining });
     }
   }
 
@@ -233,20 +223,20 @@ export function createRecordControl(opts: RecordControlOptions): RecordControl {
         currentVideo = video;
         videoUrl = URL.createObjectURL(video.blob);
         player.src = videoUrl;
-        info = `Gotowe: ${(video.blob.size / 1_000_000).toFixed(1)} MB · ${video.filename.split('.').pop()?.toUpperCase() ?? 'VIDEO'}`;
+        info = fill(UI.recordReady, { size: (video.blob.size / 1_000_000).toFixed(1), format: video.filename.split('.').pop()?.toUpperCase() ?? 'VIDEO' });
         render();
       }).catch((error: unknown) => {
         if (disposed || generation !== thisGeneration || !state.cancel()) return;
         clearTimer();
         backend = undefined;
-        info = error instanceof Error ? error.message : 'Nie udało się nagrać rolki';
+        info = error instanceof Error ? error.message : UI.recordError;
         render();
       });
     } catch (error) {
       state.cancel();
       backend = undefined;
       clearTimer();
-      info = error instanceof Error ? error.message : 'Błąd rozpoczęcia nagrywania';
+      info = error instanceof Error ? error.message : UI.recordStartError;
       render();
     }
   }
@@ -264,7 +254,7 @@ export function createRecordControl(opts: RecordControlOptions): RecordControl {
 
   const onVisibility = (): void => {
     if (document.hidden && state.phase === 'recording') {
-      abortRecording('Nagrywanie przerwane po ukryciu aplikacji');
+      abortRecording(UI.recordHidden);
     }
   };
   document.addEventListener('visibilitychange', onVisibility);
@@ -282,11 +272,13 @@ export function createRecordControl(opts: RecordControlOptions): RecordControl {
     saveButton.disabled = true;
     const id = generation;
     try {
-      if (opts.saveVideo) await opts.saveVideo(video);
-      else downloadVideo(video);
-      if (!disposed && id === generation) info = opts.saveVideo ? 'Zapisano plik wideo' : 'Rozpoczęto pobieranie wideo';
+      const saved = opts.saveVideo ? await opts.saveVideo(video) : await saveRecordedVideo(video);
+      if (!disposed && id === generation) {
+        info = saved === 'gallery' ? UI.recordSavedGallery
+          : saved === 'download' || !opts.saveVideo ? UI.recordDownloadStarted : UI.recordSaved;
+      }
     } catch (error) {
-      if (!disposed && id === generation) info = error instanceof Error ? error.message : 'Błąd zapisu filmu';
+      if (!disposed && id === generation) info = error instanceof Error ? error.message : UI.recordSaveError;
     } finally {
       saveButton.disabled = false;
       render();
@@ -300,17 +292,17 @@ export function createRecordControl(opts: RecordControlOptions): RecordControl {
     try {
       const url = safePortalUrl(opts.portalUrl());
       const outcome = opts.shareVideo
-        ? await opts.shareVideo(video.blob, `Rolka z gry Cebulak Express`, url)
+        ? await opts.shareVideo(video.blob, UI.recordShareText, url)
         : await shareOnWeb(video, url);
       if (disposed || id !== generation) return;
       if (outcome === 'unavailable') {
-        downloadVideo(video);
-        info = 'Udostępnianie pliku jest niedostępne. Rozpoczęto pobieranie.';
-      } else if (outcome === 'shared') info = 'Otwarto okno udostępniania';
-      else if (outcome === 'copied') info = 'Skopiowano link. Plik wideo zapisz osobno.';
-      else info = 'Udostępnianie anulowane';
+        await saveRecordedVideo(video);
+        info = UI.recordShareFallback;
+      } else if (outcome === 'shared') info = UI.recordShared;
+      else if (outcome === 'copied') info = UI.recordCopied;
+      else info = UI.recordShareCancelled;
     } catch (error) {
-      if (!disposed && id === generation) info = error instanceof Error ? error.message : 'Błąd udostępniania';
+      if (!disposed && id === generation) info = error instanceof Error ? error.message : UI.recordShareError;
     } finally {
       shareButton.disabled = false;
       render();

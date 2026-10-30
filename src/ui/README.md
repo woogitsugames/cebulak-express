@@ -1,57 +1,44 @@
-# T37 — kontrolka „Nagraj rolkę”
+# Nagrywanie rolki — wspólny silnik (T44)
 
-Moduł `src/ui/record.ts` dostarcza `createRecordControl({ canvas, getAudio, overlay, portalUrl })`, zwracające `element`, `start()`, `stop()`, `dispose()`. Element należy dodać do `#stage`. Nie modyfikujemy plików koordynatora (`src/main.ts`, `index.html`, `src/style.css`). CSS kontrolki jest lokalny; w trybie `?redakcja=1` ukrywa `#menu`, `#hud`, `#over`. Tryb redakcyjny automatycznie zaczyna nagrywać po pierwszym tapnięciu canvasu. Koordynator musi dodatkowo uruchomić przejazd bez menu, aby tapnięcie uruchamiało rozgrywkę.
+`src/record/recorder.ts` jest **jedynym silnikiem MediaRecorder**. `src/ui/record-runtime.ts` utrzymuje API zgodne z T37, ale deleguje wyłącznie do `VerticalVideoRecorder`. Kontrolka nie tworzy własnego strumienia ani nie implementuje osobno pobierania; używa `saveRecordedVideo`.
 
-## Integracja w `src/main.ts` (po scaleniu zależności)
+## API publiczne (bez zmian)
 
-~~~ts
-import { createRecordControl } from './ui/record';
-import { portalLink } from './content/portals';
-import { platform } from './platform';
-import { VerticalVideoRecorder, saveRecordedVideo } from './record/recorder';
-import { isEditorialMode } from './ui/record';
-
-const recordControl = createRecordControl({
+```ts
+const control = createRecordControl({
   canvas,
-  getAudio: () => audioContext && mix ? { context: audioContext, source: mix } : undefined,
-  overlay: () => ({ km: game?.km ?? 0, route: `${route.from.name} → ${route.to.name}` }),
+  getAudio: () => audioCtx && audioMix ? { context: audioCtx, source: audioMix } : undefined,
+  overlay: () => ({ km: game?.km ?? 0, route: route.from.name + ' → ' + route.to.name }),
   portalUrl: () => portalLink(settings.home, 'record'),
-  shareVideo: platform.share,
-  saveVideo: (video) => saveRecordedVideo(video), // native: dopiąć MediaStore/Photos adapter, gdy będzie dostępny
-  recorderFactory: (input) => {
-    // Opcjonalne: zamiast samodzielnego engine T37 użyj rejestratora z T23.
-    const recorder = new VerticalVideoRecorder({
-      sourceCanvas: input.canvas,
-      routeName: input.overlay().route,
-      portalName: new URL(input.portalUrl() ?? location.origin).hostname,
-      playUrl: new URL('/', location.href).toString(),
-      getKm: () => input.overlay().km,
-      audio: input.getAudio(),
-    });
-    return { start: () => recorder.start(), cancel: () => recorder.cancel() };
-  },
+  shareVideo: (file, text, url) => platform.share(file, text, url),
+  saveVideo: (video) => saveRecordedVideo(video),
 });
-document.getElementById('stage')!.appendChild(recordControl.element);
+document.getElementById('stage')!.appendChild(control.element);
+// control.start(), control.stop(), control.dispose()
+```
 
-// W main.ts: init audio przed startem nagrywania, udostępnij AudioContext oraz mix.
-// W trybie redakcyjnym utwórz run na starcie bez menu. Pierwszy tap uruchomi
-// zarówno game.flap(), jak i nagrywanie (listener canvasu ma capture=true).
-if (isEditorialMode(location.search)) newRun();
-// Gdy gra zostanie zdemontowana / zmieniony widok, wywołaj recordControl.dispose().
-~~~
+`recorderFactory?: (input) => RecordingBackend` pozostaje dla zgodności i testów, lecz standardowy backend już korzysta z T23. **Nie należy tworzyć kolejnego MediaRecorder w adapterze.** API `canvas`, `getAudio`, `overlay`, `portalUrl`, `shareVideo`, `saveVideo` nie zmieniło się.
 
-**Ważne:** przy rozpoczęciu T37 gałąź `main` nie zawierała jeszcze `src/record/recorder.ts`, `src/platform/index.ts` ani `src/content/portals.ts` (osobne T23/T24/T16). Podczas realizacji moduły te zostały scalone do `main`; samodzielny silnik MediaRecorder wciąż działa bez nich, ale przy integracji zalecane jest użycie pokazanych adapterów i istniejącego `VerticalVideoRecorder`. `getAudio` musi otrzymać istniejący miks gry (GainNode podpięty do efektów i muzyki) odblokowany po interakcji. Dla `shareVideo` natywne `platform.share(file,text,url)` z T24 udostępnia plik, ale **nie oznacza zapisu do galerii**. Natychmiastowy zapis do galerii wymaga osobnego adaptera MediaStore/Photos; T24 obecnie go nie udostępnia.
+## Zachowanie
 
-## Działanie i ograniczenia
+- 1080 × 1920, docelowo 60 FPS, domyślnie 15 s (13,5 s rozgrywki + 1,5 s planszy końcowej).
+- Plansza końcowa pokazuje adres portalu (host oraz ścieżkę bez UTM); przy braku poprawnego HTTP(S) nie zgadujemy portalu. W T23 można nadal używać osobnego tekstu „Zagraj”.
+- Format dobierany w jednym miejscu: preferowane MP4/H.264 (z audio AAC, jeśli dostępne), w przeciwnym razie WebM. Format podawany w metadanych jest rzeczywistym `MediaRecorder.mimeType`.
+- Podłączony miks Web Audio nie jest rozłączany od głośników; po nagraniu usuwana jest tylko gałąź `MediaStreamDestination`.
+- Limit 15 MB jest sprawdzany na fragmentach i pliku końcowym. Zanik widoczności karty lub anulowanie odrzuca wynik i usuwa strumień, więc nie pojawia się ucięty podgląd.
+- Pobranie w przeglądarce wykorzystuje `saveRecordedVideo`; sam adapter galerii Android/iOS nadal wymaga integracji natywnej. Funkcja `platform.share` to udostępnianie, nie zapis w galerii.
+- Napisy i komunikaty kontrolki pochodzą z `UI` w `src/content/pl.ts`.
 
-- 1080×1920, docelowe 60 FPS, 15 s: 13,5 s gry i 1,5 s planszy z adresem portalu. Canvas źródłowy przycinany 9:16 bez rozciągania; DOM/HUD nie trafia do filmu.
-- Najpierw próbujemy MP4/H.264 + AAC, potem WebM/VP9/Opus; ogólny MP4 jest ostatnią opcją (Chromium bywa w stanie zapisać VP9/Opus w kontenerze MP4, trudnym do publikacji).
-- Limit pliku 15 MB; brak nieograniczonego bufora surowych klatek. `visibilitychange` przerywa, a przerwany film nie trafia do podglądu.
-- W trybie web: Web Share z `File`, jeśli `canShare` pozwala; w innym przypadku pobieranie. Dla osadzonego iframe sprawdzić `allow="web-share"`, `sandbox="allow-downloads ..."`.
-- Bez dodatkowych paczek npm, bez ikon firm trzecich. Ikona kamery jest lokalnym inline SVG; na `main` nie ma `public/assets/ui/`.
+## Uruchomienie testów
 
-## Weryfikacja
+```sh
+npm ci
+npm run typecheck
+npm test
+npm run build
+npx playwright test e2e/recording.spec.ts --project="Desktop 1280x800 (Chromium)"
+```
 
-- `tsc --strict --noEmit` dla dodanych plików przechodzi lokalnie (TypeScript 5.8.3). Pełna ścieżka `npm ci && npm run typecheck && npm test && npm run build` przeszła na GitHub Actions CI w PR #39 (30.10.2026). Lokalnie pełnego zestawu npm nie uruchomiono ze względu na brak dostępu do rejestru.
-- **Rzeczywisty Chromium na desktopie (headless, 30.10.2026)**: nagrano demonstracyjny animowany canvas wraz z tonem Web Audio podłączonym do miksu. WebM VP9/Opus, 1080×1920, 1 678 766 bajtów. Ostatnia klatka 14,984 s, ostatni pakiet audio 14,967 s. Test `ffprobe` potwierdził osobne strumienie wideo i audio, `ffmpeg volumedetect` zmierzył średnio −13,5 dB. Plansza końcowa wyświetlała `aktualnosci.be`.
-- **Nie sprawdzono** produkcyjnej gry z docelowymi efektami, Chrome na fizycznym Androidzie, natywnego udostępniania przez Capacitor, pobierania z iframe ani zapisu do galerii. Rozmiar 1,68 MB dotyczy prostej animacji testowej, a nie pełnego renderera gry.
+Test Playwright kompiluje produkcyjny `VerticalVideoRecorder` przez Vite do pamięci, uruchamia go w rzeczywistym Chromium na animowanym canvasie przez `canvas.captureStream`, zapisuje **3 s** i sprawdza MIME, nagłówek MP4/WebM, rozmiar pliku i czas nagrania. Parametr `durationMs` jest opcjonalnym skróceniem czasu na potrzeby testu (limit 15 s); standardowy przycisk go nie używa. Nie jest to dowód działania na fizycznym telefonie, w natywnym WebView ani w osadzonym iframe.
+
+**Integracja:** T44 opiera się na oczekującym PR #42, który dodaje `record.ts` do `main.ts` i montuje kontrolkę. Po jego scaleniu T44 nie wymaga zmiany `src/main.ts`. Obecny przycisk zachowuje istniejące zachowanie, a jego domyślny backend wybiera jeden silnik.
