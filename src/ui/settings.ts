@@ -217,7 +217,7 @@ export function mountSettings(container: HTMLElement, opts: SettingsOptions): ()
     if (disposed) return;
     disposed = true;
     query?.removeEventListener?.('change', onMediaChange);
-    document.removeEventListener('keydown', onKeyDown, true);
+    root.removeEventListener('keydown', onKeyDown);
     root.remove();
     if (previousFocus?.isConnected) previousFocus.focus({ preventScroll: true });
   }
@@ -244,7 +244,7 @@ export function mountSettings(container: HTMLElement, opts: SettingsOptions): ()
       first.focus();
     }
   }
-  document.addEventListener('keydown', onKeyDown, true);
+  root.addEventListener('keydown', onKeyDown);
   closeButton.addEventListener('click', close);
   done.addEventListener('click', close);
   sync();
