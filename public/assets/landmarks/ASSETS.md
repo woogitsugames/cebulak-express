@@ -1568,3 +1568,50 @@ Wygenerowane obrazy pochodziły z kontekstu zlecenia w ChatGPT, nie z osobno zap
 1. Kontrola techniczna PNG: 5 × 1620 × 900, RGBA z przezroczystym obszarem nad panoramą; arkusz podglądu osobno. Podczas transformacji usunięto napisowe artefakty generacji połączonej.
 2. Jako grafiki A+ są to stylizowane panoramy, nie modele geodezyjne. Najsilniejsze przybliżenie relacji budynków dotyczy Czeskiego Cieszyna i Bydgoszczy; potrzebne zatwierdzenie koordynatora pod kątem rozpoznawalności przez mieszkańców.
 3. Nie weryfikowano lokalnie integracji w Canvas i w aplikacji ani zestawu `npm ci && npm run typecheck && npm test && npm run build`, ponieważ pełne repozytorium nie dało się sklonować w środowisku plikowym. Obrazy są gotowe do umieszczenia w repozytorium w ścieżkach wymienionych wyżej.
+
+
+<!-- Zlecenie 99 (runda 7) z ZIP-a GPT; PNG skwantyzowane do 256 kolorów przez koordynatora. -->
+
+# Zlecenie 99 — panoramy A+ (2026-10-31)
+
+**Projekt:** Cebulak Express — Kierunek Polska  
+**Zastosowanie:** warstwa panoramy w Canvas 2D (bez nieba; tło gry generuje osobna warstwa).  
+**Format:** wszystkie obrazy PNG RGBA, 1620 × 900 px, przezroczyste tło, dolna linia ilustracji 23–46 px nad dolną krawędzią.  
+**Styl:** ciepłe, płaskie kolory; uproszczone bryły; ciemnogranatowy obrys `#1d2f3b`; światło z lewej góry.  
+**Narzędzia:** natywne generowanie obrazów ChatGPT (GPT Image) oraz techniczna obróbka w Pythonie (Pillow, OpenCV): kadrowanie wygenerowanych kompozycji, skalowanie, usuwanie podpisów i niepożądanych pikseli alfa, ujednolicenie obrysu, osadzenie na płótnie RGBA. Nie wykorzystano pikseli fotografii ze stron zewnętrznych.
+
+| Plik / miasto | Dominujące motywy (2–4) | Zamierzona perspektywa | Powstanie | Status weryfikacji |
+|---|---|---|---|---|
+| `lomza.png` — Łomża | ceglana katedra św. Michała Archanioła (sylwetka stylizowana), ratusz w zabudowie Starego Miasta, most nad Narwią, nadrzeczna skarpa | z przeciwległego brzegu Narwi w kierunku zabudowy centrum; widok kompozycyjny | osobna generacja AI + obróbka | architektura schematyczna; układ katedry i ratusza **nie jest rekonstrukcją jednej fotografii** |
+| `olsztyn.png` — Olsztyn | Zamek Kapituły Warmińskiej z okrągłą wieżą, ceglana wieża starej zabudowy, jezioro z przystanią | artystyczny widok zza wody w kierunku starówki | kadr z wygenerowanej kompozycji AI + obróbka | **kompozycja syntetyczna:** zamek i pokazana przystań nad jeziorem nie odpowiadają jednemu rzeczywistemu punktowi obserwacji |
+| `bialystok.png` — Białystok | ratusz z centralną wieżą zegarową, archikatedra z parą strzelistych wież, pierzeje Rynku Kościuszki, drzewa | wzdłuż Rynku Kościuszki w stronę wschodniej zabudowy (orientacyjnie) | kadr z kompozycji AI + obróbka | sylwetki stylizowane i nie w pełni wierne odległościom |
+| `gdansk.png` — Gdańsk | Żuraw nad Motławą, hanzeatyckie kamienice Długiego Pobrzeża, wieże Głównego Miasta, historyczny żaglowiec | z Ołowianki przez Motławę w kierunku Długiego Pobrzeża | kadr z kompozycji AI + obróbka | zgodne motywy, uproszczona i skondensowana kolejność fasad |
+| `tallinn.png` — Tallinn | wieża kościoła św. Olafa, średniowieczny mur i baszty starego miasta, nabrzeże z terminalem i promem | od północy, od strony portu w kierunku średniowiecznej starówki | kadr z kompozycji AI + obróbka | stylizowana panorama, nie służy do ustalania dokładnej geografii |
+
+## Prompty źródłowe
+
+### Łomża (osobna ilustracja)
+
+> Panoramic vector-style sticker illustration on a transparent background, showing a colorful historic European riverside town with no people, text, or vehicles. A Gothic red-brick church crowns the leafy hill at left, pastel town buildings and a towered civic hall stretch across the skyline, and a broad arched bridge crosses the glossy blue river in front, all rendered with bold dark outlines, flat saturated colors, simple shading, and crisp cutout-style shapes.
+
+### Olsztyn, Białystok, Gdańsk, Tallinn (wspólna generacja źródłowa; finalne pliki są odrębnymi wycinkami)
+
+> A polished vector collage on a pale sky-blue background presents five labeled cityscape panoramas in a crisp, postcard-like style, using bold outlines, flat colors, simplified architecture, greenery, water, bridges, and harbors, with no people. The top row features Łomża’s river and arched bridge, Olsztyn’s red-brick castle and boats, and Białystok’s clock-towered civic buildings and twin-spired church; below are Gdańsk’s colorful waterfront, cathedral, crane, and sailing ship, plus Tallinn’s medieval towers, church spire, and cruise harbor.
+
+**Zmiany w finalnych PNG:** wycięto napisy z wygenerowanego zbiorczego obrazu, usunięto tło i artefakty krawędzi, osobno przeskalowano panoramy do 1620 × 900, wzmocniono ciemnogranatowe kontury i sprawdzono kanał alfa. Arkusz `docs/art/podglady/panoramy-99.png` zawiera **wyłącznie podgląd** na jasnoniebieskim tle i etykiety miast. Etykiet nie ma w zasobach gry.
+
+## Weryfikacja obiektów i perspektyw
+
+Zewnętrzne zdjęcia i opracowania służyły wyłącznie do sprawdzenia charakterystycznych motywów (bez kopiowania):
+
+- Łomża — katedra: https://zabytek.pl/pl/obiekty/lomza-katedra ; ratusz i Stary Rynek: https://www.lomza.pl/index.php/zalaczniki/index.php?wiad=151 ; most Hubala: https://historialomzy.pl/lomza-ulica-gen-wladyslawa-sikorskiego/
+- Olsztyn — zamek: https://www.zalesiemazury.pl/en/old-town-in-olsztyn ; jezioro Długie: https://natura.olsztyn.eu/jezioro-dlugie-punkt-widokowy/
+- Białystok — ratusz Rynek Kościuszki: https://historia3d.pl/3462/ratusz-na-rynku-kosciuszki-w-bialymstoku/ ; przestrzeń Rynku: https://bip.bialystok.pl/
+- Gdańsk — Żuraw i wieże widoczne z Ołowianki: https://muzeumpomorza.pl/resource/4849_gdansk-zuraw.html
+- Tallinn — wieże Starego Miasta i panoramy: https://www.visittallinn.ee/eng/visitor/ideas-tips/tips-and-guides/unforgettable-views-of-tallinn ; wieża kościoła św. Olafa: https://www.visittallinn.ee/eng/visitor/see-do/things-to-do/attractions-museums/314/st-olav-s-church-and-tower
+
+## Licencja i pochodzenie
+
+**Źródło:** grafika wygenerowana w ChatGPT (GPT Image), następnie technicznie przetworzona na potrzeby projektu. **Dysponent plików:** właściciel projektu. Przeznaczone do komercyjnego wykorzystania w grze zgodnie z obowiązującymi warunkami używania treści wygenerowanych przez OpenAI. Nie wykorzystano zewnętrznych fotografii jako elementów bitmapowych, marek ani logotypów.
+
+**Ważna uwaga akceptacyjna:** wymóg „prawdziwe proporcje i kolejność z jednego rzeczywistego punktu widzenia” nie został w pełni spełniony, zwłaszcza dla Olsztyna (zamek + jezioro). To propozycje koncepcyjne A+ do kontroli redakcyjno-geograficznej przez koordynatora, a nie wierne odwzorowania topograficzne. Nie akceptować bez sprawdzenia w kadrze gry i zatwierdzenia tej interpretacji.
