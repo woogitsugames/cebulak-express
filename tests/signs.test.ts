@@ -125,7 +125,10 @@ describe('tablice: wyglad i czas dymka', () => {
     expect(ctx.translate).toHaveBeenCalledWith(180, 0);
     expect(ctx.stroke).toHaveBeenCalled();
     expect(ctx.measureText).toHaveBeenCalled();
-    expect(ctx.fillText).toHaveBeenCalledWith('Deurne', 0, SIGN_TOP_Y + 23);
+    // Belgia: tablica z sylwetką miasta jest wyższa (rośnie w górę), nazwa nad sylwetką.
+    expect(ctx.fillText).toHaveBeenCalledWith('Deurne', 0, SIGN_TOP_Y - 2);
+    expect(signColors('town', 'BE').silhouette).toBe(true);
+    expect(signColors('town', 'NL').silhouette).toBeUndefined();
     expect(SIGN_TOP_Y + SIGN_HEIGHT).toBeLessThan(WORLD.groundY);
     expect(ctx.fillRect.mock.calls.some(([x, y, w, h]) => x === -4 && y === SIGN_TOP_Y + 36 && w === 8 && y + h === WORLD.groundY)).toBe(true);
   });

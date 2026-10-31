@@ -167,6 +167,8 @@ export interface SignColors {
   accent: string;
   /** Kształt: tablica prostokątna albo strzałka zjazdu. */
   shape: 'rect' | 'arrow';
+  /** Czarna sylwetka miasta pod nazwą (Belgia: tablica obszaru zabudowanego F1). */
+  silhouette?: boolean;
 }
 
 const WHITE = '#ffffff';
@@ -177,7 +179,7 @@ const TOWN_SIGNS: Readonly<Record<CountryCode, Omit<SignColors, 'shape'>>> = {
   PL: { face: '#00923f', text: WHITE, accent: WHITE }, // E-17a: zielona, biała ramka
   DE: { face: '#f7d117', text: BLACK, accent: BLACK }, // Ortstafel: żółta, czarna ramka
   NL: { face: '#1f5ea8', text: WHITE, accent: WHITE }, // plaatsnaambord: niebieska
-  BE: { face: WHITE, text: BLACK, accent: BLACK },     // biała, czarna ramka
+  BE: { face: WHITE, text: BLACK, accent: BLACK, silhouette: true }, // F1: biała, czarna ramka, sylwetka miasta
   LU: { face: WHITE, text: BLACK, accent: BLACK },
   FR: { face: WHITE, text: BLACK, accent: RED },       // EB10: biała, czerwona ramka
   CH: { face: '#1f5ea8', text: WHITE, accent: WHITE }, // Ortstafel: niebieska
@@ -229,12 +231,70 @@ function arrowPath(ctx: CanvasRenderingContext2D, x: number, y: number, w: numbe
   ctx.closePath();
 }
 
+/** Dodatkowa wysokość tablicy z sylwetką miasta (rośnie w górę, słupki bez zmian). */
+const SILHOUETTE_EXTRA = 20;
+
+/**
+ * Uproszczona sylwetka miasta jak na belgijskiej tablicy F1: domy ze szczytami,
+ * kościół z iglicą i baszta. Wypełnienie jednym kolorem, skala do szerokości tablicy.
+ */
+function drawTownSilhouette(ctx: CanvasRenderingContext2D, left: number, right: number, baseY: number, h: number): void {
+  const w = right - left;
+  const X = (f: number): number => left + w * f;
+  ctx.beginPath();
+  ctx.moveTo(X(0), baseY);
+  // Niskie domy ze szczytami po lewej.
+  ctx.lineTo(X(0), baseY - h * 0.45);
+  ctx.lineTo(X(0.06), baseY - h * 0.7);
+  ctx.lineTo(X(0.12), baseY - h * 0.45);
+  ctx.lineTo(X(0.12), baseY - h * 0.55);
+  ctx.lineTo(X(0.18), baseY - h * 0.8);
+  ctx.lineTo(X(0.24), baseY - h * 0.55);
+  // Baszta z blankami.
+  ctx.lineTo(X(0.26), baseY - h * 0.55);
+  ctx.lineTo(X(0.26), baseY - h * 0.95);
+  ctx.lineTo(X(0.28), baseY - h * 0.95);
+  ctx.lineTo(X(0.28), baseY - h * 0.85);
+  ctx.lineTo(X(0.31), baseY - h * 0.85);
+  ctx.lineTo(X(0.31), baseY - h * 0.95);
+  ctx.lineTo(X(0.34), baseY - h * 0.95);
+  ctx.lineTo(X(0.34), baseY - h * 0.85);
+  ctx.lineTo(X(0.36), baseY - h * 0.85);
+  ctx.lineTo(X(0.36), baseY - h * 0.95);
+  ctx.lineTo(X(0.38), baseY - h * 0.95);
+  ctx.lineTo(X(0.38), baseY - h * 0.5);
+  // Nawa kościoła i wieża z iglicą.
+  ctx.lineTo(X(0.44), baseY - h * 0.5);
+  ctx.lineTo(X(0.5), baseY - h * 0.72);
+  ctx.lineTo(X(0.55), baseY - h * 0.72);
+  ctx.lineTo(X(0.55), baseY - h * 1.0);
+  ctx.lineTo(X(0.585), baseY - h * 1.4);
+  ctx.lineTo(X(0.62), baseY - h * 1.0);
+  ctx.lineTo(X(0.62), baseY - h * 0.6);
+  // Domy po prawej, różne wysokości.
+  ctx.lineTo(X(0.68), baseY - h * 0.6);
+  ctx.lineTo(X(0.73), baseY - h * 0.85);
+  ctx.lineTo(X(0.78), baseY - h * 0.6);
+  ctx.lineTo(X(0.78), baseY - h * 0.45);
+  ctx.lineTo(X(0.86), baseY - h * 0.45);
+  ctx.lineTo(X(0.86), baseY - h * 0.65);
+  ctx.lineTo(X(0.93), baseY - h * 0.65);
+  ctx.lineTo(X(0.93), baseY - h * 0.4);
+  ctx.lineTo(X(1), baseY - h * 0.4);
+  ctx.lineTo(X(1), baseY);
+  ctx.closePath();
+  ctx.fill();
+}
+
 /** Rysuje jeden znak: kształt i barwy jak prawdziwa tablica, kontur A+ dookoła. */
 export function drawRoadSign(ctx: CanvasRenderingContext2D, sign: RoadSign, x: number): void {
   const width = signPanelWidth(sign.name);
   const left = -width / 2;
   const colors = signColors(sign.kind, sign.country);
   const path = colors.shape === 'arrow' ? arrowPath : roundedRect;
+  const extra = colors.silhouette ? SILHOUETTE_EXTRA : 0;
+  const top = SIGN_TOP_Y - extra;
+  const height = SIGN_HEIGHT + extra;
   ctx.save();
   ctx.translate(x, 0);
 
@@ -252,21 +312,21 @@ export function drawRoadSign(ctx: CanvasRenderingContext2D, sign: RoadSign, x: n
 
   // Rzucany cień w prawo i w dół.
   ctx.fillStyle = '#16323d55';
-  path(ctx, left + 4, SIGN_TOP_Y + 5, width, SIGN_HEIGHT, 5);
+  path(ctx, left + 4, top + 5, width, height, 5);
   ctx.fill();
   // Tablica: biały brzeg, kontur A+, potem pole w kolorze kraju i wewnętrzna ramka.
   ctx.fillStyle = WHITE;
   ctx.strokeStyle = NAVY;
   ctx.lineWidth = 3;
-  path(ctx, left, SIGN_TOP_Y, width, SIGN_HEIGHT, 5);
+  path(ctx, left, top, width, height, 5);
   ctx.fill();
   ctx.stroke();
   ctx.fillStyle = colors.face;
-  path(ctx, left + 2.5, SIGN_TOP_Y + 2.5, width - 5, SIGN_HEIGHT - 5, 4);
+  path(ctx, left + 2.5, top + 2.5, width - 5, height - 5, 4);
   ctx.fill();
   ctx.strokeStyle = colors.accent;
   ctx.lineWidth = 2;
-  path(ctx, left + 5.5, SIGN_TOP_Y + 5.5, width - 11, SIGN_HEIGHT - 11, 3);
+  path(ctx, left + 5.5, top + 5.5, width - 11, height - 11, 3);
   ctx.stroke();
 
   const arrowRoom = colors.shape === 'arrow' ? ARROW_TIP : 0;
@@ -286,7 +346,12 @@ export function drawRoadSign(ctx: CanvasRenderingContext2D, sign: RoadSign, x: n
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
   ctx.fillStyle = colors.text;
-  ctx.fillText(label, arrowRoom ? -arrowRoom / 2 : 0, SIGN_TOP_Y + 23);
+  ctx.fillText(label, arrowRoom ? -arrowRoom / 2 : 0, colors.silhouette ? top + 18 : SIGN_TOP_Y + 23);
+  if (colors.silhouette) {
+    // Szeroka tablica: sylwetka nie rozciąga się w płaski pas, tylko stoi pośrodku (maks. 120 px).
+    const half = Math.min(width - 24, 120) / 2;
+    drawTownSilhouette(ctx, -half, half, top + height - 8, 18);
+  }
   ctx.restore();
 }
 
