@@ -824,3 +824,81 @@ Create a crisp, sticker-like vector panorama of a Verona-inspired riverside town
 - W panoramie Werony nie umieszczono dużej sylwetki Areny: przy ujęciu Ponte Pietra w pierwszym planie groziłoby to nieprawdziwą perspektywą i skalą. Jeżeli Arena ma być obowiązkowa, zalecana jest odrębna panorama/alternatywne ujęcie miasta.
 - Miniatury 1:5 służą ocenie czytelności na ekranie gry. Obwódki mają ciemnogranatowy kolor; szczegółowość ornamentyki wygenerowanej przez model jest miejscami wyższa niż w wymaganiach stylu A+ i wymaga akceptacji koordynatora.
 - **QA techniczne:** sprawdzenie formatów PNG RGBA, rozdzielczości, kanału alfa i podglądu. Nie sprawdzono faktycznego kadru gry ani builda aplikacji, bo w środowisku generującym nie był dostępny kod projektu.
+
+
+<!-- Zlecenie 86 (runda 7) z ZIP-a GPT; PNG skwantyzowane do 256 kolorów przez koordynatora. -->
+
+# Zlecenie 86 — panoramy A+ (Padwa, Mestre, Udine, Rzym, Bolonia)
+
+**Data przygotowania:** 31.10.2026  
+**Projekt:** Cebulak Express — Kierunek Polska  
+**Przeznaczenie:** tła/panoramy miast w grze, z prawem użycia przez właściciela projektu.  
+**Format wszystkich plików:** 1620 × 900 px, PNG RGBA, przezroczyste niebo, profil sRGB (ICC), grunt przy dolnej krawędzi.  
+**Technika:** generacja koncepcji wbudowanym generatorem ChatGPT (GPT Image), oddzielenie poszczególnych scen z wygenerowanych kompozycji, autorskie retusze wektorowe (SVG/CairoSVG), przeskalowanie, usunięcie napisów, podkreślenie zewnętrznych konturów (Pillow/OpenCV). Kolory płaskie/ciepłe, ciemnogranatowy kontur `#1d2f3b`. Zdjęcia źródłowe służyły tylko do weryfikacji obiektów i nie zostały skopiowane do plików.
+
+## Zasoby
+
+| Plik | Miasto | Dominujące obiekty | Punkt widzenia / charakter kompozycji | Narzędzie | Licencja i uwagi |
+|---|---|---|---|---|---|
+| `padwa.png` | Padwa / Padova | Torre dell'Orologio (tarcza astronomiczna), Palazzo del Capitanio, Palazzo dei Camerlenghi i arkady | Piazza dei Signori, widok na zachodnią pierzeję z wieżą pośrodku (stylizowany) | ChatGPT GPT Image + Pillow/OpenCV | Oryginalna generacja i korekta na potrzeby projektu, bez treści obcych |
+| `mestre.png` | Mestre | motyw historycznej Torre Civica z zegarem i blankami, arkadowe kamienice, most i kanał w mieście | **Kompozycja motywów**, nie dokładny widok z jednego miejsca: Torre Civica należy do Piazza Ferretto, a kanał odwołuje się do Marzenego | ChatGPT GPT Image + retusz SVG/CairoSVG/Pillow | Oryginalna generacja i korekta na potrzeby projektu; **do akceptacji koordynatora pod kątem autentyczności układu** |
+| `udine.png` | Udine | Castello di Udine na wzgórzu, wieżowe akcenty Piazza della Libertà (Torre dell'Orologio / Loggia di San Giovanni), widok Alp | **Kompozycja motywów** z centrum i krajobrazu Friuli, nie dosłowne zdjęcie z jednego punktu | ChatGPT GPT Image + Pillow/OpenCV | Oryginalna generacja i korekta na potrzeby projektu; kompresja perspektywy |
+| `rzym.png` | Rzym / Roma | Koloseum (Colosseo), łuk Konstantyna (Arco di Costantino) | Rejon Via di San Gregorio, zabytki są rzeczywiście sąsiadujące; łuk dorysowany niezależnie, zamiast nierealistycznego zestawienia z Watykanem | ChatGPT GPT Image + autorski SVG/CairoSVG/Pillow | Oryginalna generacja i korekta na potrzeby projektu, budowle starożytne |
+| `bolonia.png` | Bolonia / Bologna | Torre degli Asinelli (wyższa), Torre Garisenda (niższa), historyczne arkady i kościelna bryła okolicy Piazza di Porta Ravegnana | Stylizowany widok rejonu Via Rizzoli / Piazza di Porta Ravegnana, w kierunku Due Torri | ChatGPT GPT Image + Pillow/OpenCV | Oryginalna generacja i korekta na potrzeby projektu, budowle historyczne |
+| `../../../../docs/art/podglady/panoramy-86.png` | Arkusz pięciu panoram | Wszystkie pięć prac z podpisami **poza** grafikami przeznaczonymi do gry | Podgląd na jasnoniebieskim tle | Pillow | Oryginalna kompozycja pomocnicza |
+
+**Warunki wykorzystania:** zasoby wygenerowano dla właściciela projektu do komercyjnego wykorzystania w grze i materiałach promocyjnych, zgodnie z właściwymi warunkami korzystania z narzędzi. Nie użyto cudzych zdjęć, logotypów, nazw handlowych, flag, herbów ani prawnie zastrzeżonych współczesnych ikon architektury. Generacja AI sama w sobie nie gwarantuje wyłączności ochrony prawnoautorskiej.
+
+## Prompty koncepcyjne i poprawki
+
+Poniższe opisy odtwarzają założenia generacji i retuszu konkretnych scen (automatyczny generator nie udostępnił w metadanych pełnego tekstu własnego promptu).
+
+**Padwa — `padwa.png`**
+
+> Panorama A+, płaska ciepła ilustracja wektorowa; Piazza dei Signori w Padwie z zachodnią pierzeją, centralna wieża Torre dell'Orologio ze złoto-niebieskim zegarem astronomicznym, po bokach renesansowe pałace arkadowe; rozpoznawalna proporcja wieży do kamienic, bardzo grube ciemnogranatowe kontury, duże bryły, bez ludzi, napisów, logotypów, flag, nieba i chmur; PNG przezroczyste.
+
+Retusz: jeden duży wycinek z wygenerowanego obrazu, skala do 1620 × 900, usunięcie drobnych artefaktów, silniejsza obwódka sylwetek, linia gruntu.
+
+**Mestre — `mestre.png`**
+
+> Panorama A+, historyczne Mestre w ciepłych kolorach; motyw czerwonej wieży zegarowej Torre Civica i zabudowy centrum, kanał miejski z łukowym mostem w pierwszym planie; duże bryły, ciemnogranatowe grube obrysy, brak nieba i chmur, bez osób, napisów, marek i flag; przezroczyste tło.
+
+Retusz: wycięcie kompozycji miejskiej, zastąpienie fantazyjnego dachu głównej wieży blankami i dorysowanie tarczy zegara; usunięcie podpisu. **Uwaga:** kanał i Piazza Ferretto nie są tu faktycznym pojedynczym kadrem — to wizualny skrót; jeśli priorytetem jest jeden realny punkt widzenia, należy zamienić wersję na ujęcie samej Piazza Ferretto.
+
+**Udine — `udine.png`**
+
+> Panorama A+, widok na zamek Castello di Udine dominujący na wzgórzu i tradycyjne budynki Piazza della Libertà u podnóża, arkady i wieże zegarowe, zarys alpejskich grzbietów w tle; płaska paleta terakota, krem, oliwkowa zieleń; mocne granatowe linie, prostsze okna; brak tekstu, nieba, ludzi i logotypów; PNG alpha.
+
+Retusz: oddzielenie sylwetki z wygenerowanego arkusza, usunięcie etykiety, wzmocnienie granic koloru i dolna linia gruntu. **Uwaga:** góry i zamek nie muszą być widoczne dokładnie w takiej relacji z Piazza della Libertà z jednego punktu.
+
+**Rzym — `rzym.png`**
+
+> Monumentalna panorama A+ z rejonu Koloseum: wielkie Colosseo po lewej, Arco di Costantino po prawej, prawidłowe sąsiedztwo zabytków; wyraźne wielopiętrowe arkady amfiteatru, trzy prześwity łuku, piaskowcowo-terakotowe kolory, grube kontury granatowe, płaskie plamy światła z lewej, bez nieba, ludzi, tekstu i szyldów, PNG alpha.
+
+Retusz: wykorzystano tylko wygenerowany fragment Koloseum; odrzucono fantazyjny widok Watykanu nad Tybrem; łuk Konstantyna wykonano od nowa jako uproszczoną ilustrację SVG w celu zachowania poprawnego sąsiedztwa i czytelności w grze.
+
+**Bolonia — `bolonia.png`**
+
+> Panorama A+ historycznego centrum Bolonii: Torre degli Asinelli znacznie wyższa niż Torre Garisenda, czerwone cegły, kamienice z arkadami, zabytkowy kościół i kopuła rejonu Piazza di Porta Ravegnana, widok od Via Rizzoli; ciepłe płaskie barwy, ciemnogranatowy gruby kontur, bez nieba, napisów, flag i ludzi; PNG z alfą.
+
+Retusz: wycinek wygenerowanej sceny, korekta geometrii płótna i konturów, usunięcie podpisu, dodanie linii gruntu.
+
+## Weryfikacja architektury (fotografie jako referencje, nie użyte w plikach)
+
+- Padwa: [Turismo Padova — Piazza dei Signori](https://www.turismopadova.it/luogo/piazza-dei-signori/) i [Padova Cultura — The Clock Tower](https://padovacultura.padovanet.it/en/musei/clock-tower-0).
+- Mestre: [Comune di Venezia — historia Torre Civica](https://www.comune.venezia.it/it/node/25388), [Venezia Unica — Piazza Erminio Ferretto](https://www.veneziaunica.it/it/cosa-fare-a-venezia/spazi-pubblici/piazza-erminio-ferretto).
+- Udine: [Italia.it — Piazza della Libertà](https://www.italia.it/it/friuli-venezia-giulia/udine/piazza-della-liberta), [Italia.it — Castello i Alpy](https://www.italia.it/it/friuli-venezia-giulia/cosa-fare/udine-cosa-vedere-nella-venezia-del-friuli).
+- Rzym: [Parco archeologico del Colosseo — oficjalna strona](https://colosseo.it/).
+- Bolonia: [Bologna Welcome — Due Torri](https://www.bolognawelcome.com/en/places/towers-historic-buildings/the-two-towers-garisenda-and-degli-asinelli-eng?gttd_currency=EUR&gttd_lang=it-IT), [Palazzo Strazzaroli — widok na wieże i pobliską bazylikę](https://www.palazzostrazzaroli.com/en/location).
+
+## Kontrola techniczna
+
+- [x] Pięć osobnych plików PNG 1620×900, RGBA.
+- [x] sRGB ICC w każdym PNG.
+- [x] Alfa (bez nieba/chmur); linia podłoża przy dolnej krawędzi.
+- [x] Grube zewnętrzne kontury z kolorem `#1d2f3b`.
+- [x] Nazwy miast wyłącznie na arkuszu podglądu.
+- [x] Arkusz `docs/art/podglady/panoramy-86.png`.
+- [ ] Ostateczna akceptacja autentyczności kompozycji Mestre i Udine przez koordynatora.
+- [ ] Weryfikacja panoram w kadrze gry przez koordynatora.
+- [ ] Testy repo (`npm ci`, `typecheck`, `test`, `build`) — brak dostępu Git z kontenera wykonawczego; nie zmieniano kodu.
