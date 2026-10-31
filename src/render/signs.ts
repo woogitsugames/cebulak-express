@@ -13,6 +13,8 @@ export interface RoadSign {
   readonly kind: FunnyPlaceKind;
   readonly km: number;
   readonly joke: string;
+  /** Klucz tłumaczenia żartu (FUNNY_PLACES w słownikach); domyślnie id. */
+  readonly jokeKey?: string;
 }
 
 export interface SignsState {
@@ -34,7 +36,6 @@ export const SIGN_HEIGHT = 44;
 export const SIGN_PANORAMA_GAP = 7;
 
 const NAVY = '#16323d';
-const BORDER = '#fff2d5';
 const MIN_WIDTH = 100;
 const MAX_WIDTH = 196;
 const PANORAMA_NEAR_WIDTH = 180;
@@ -54,7 +55,47 @@ export function signsForWaypoints(
     if (!place.name.trim() || !place.joke.trim()) continue;
     signs.push({ id: place.id, name: place.name, country: place.country, kind: place.sign, km, joke: place.joke });
   }
+  signs.push(...ausfahrtSigns(waypoints, signs));
   return signs.sort((a, b) => a.km - b.km || a.id.localeCompare(b.id));
+}
+
+/** Żart właściciela: „Ausfahrt” to największe miasto w Niemczech — zjazdy do niego są wszędzie. */
+export const AUSFAHRT_JOKES: readonly string[] = [
+  'Ausfahrt — największe miasto w Niemczech. Zjazdy do niego są co kawałek!',
+  'Znowu Ausfahrt? To miasto ma chyba więcej zjazdów niż mieszkańców.',
+  'Ausfahrt: jedyne miasto, do którego można zjechać z każdej autostrady.',
+];
+/** Odległość znaku za miastem i minimalny odstęp od innych tablic (km trasy). */
+const AUSFAHRT_AFTER_KM = 35;
+const AUSFAHRT_CLEAR_KM = 12;
+
+/**
+ * Niebieskie „Ausfahrt” co jakiś czas na niemieckim odcinku: za co drugim miastem DE,
+ * tylko gdy do następnego punktu trasy jest daleko i nie stoi tam inna tablica.
+ */
+export function ausfahrtSigns(waypoints: readonly Waypoint[], existing: readonly RoadSign[] = []): RoadSign[] {
+  const out: RoadSign[] = [];
+  let cityIndex = 0;
+  for (let i = 0; i < waypoints.length; i++) {
+    const w = waypoints[i];
+    if (w.country !== 'DE' || w.kind !== 'city') continue;
+    if (cityIndex++ % 2 !== 0) continue;
+    const km = w.km + AUSFAHRT_AFTER_KM;
+    const next = waypoints[i + 1];
+    if (!next || next.country !== 'DE' || next.km - km < AUSFAHRT_CLEAR_KM + 8) continue;
+    if (existing.some((sign) => Math.abs(sign.km - km) < AUSFAHRT_CLEAR_KM)) continue;
+    const n = out.length;
+    out.push({
+      id: 'de-ausfahrt-' + w.id,
+      name: 'Ausfahrt',
+      country: 'DE',
+      kind: 'exit',
+      km,
+      joke: AUSFAHRT_JOKES[n % AUSFAHRT_JOKES.length],
+      jokeKey: 'de-ausfahrt-' + (n % AUSFAHRT_JOKES.length),
+    });
+  }
+  return out;
 }
 
 /** Ta sama paralaksa co near; progi i renderer uzywaja jednej funkcji. */
@@ -66,6 +107,9 @@ export function signScreenX(signKm: number, progressKm: number): number {
 export function signPanelWidth(name: string): number {
   return Math.max(MIN_WIDTH, Math.min(MAX_WIDTH, 32 + Array.from(name).length * 11));
 }
+
+/** Szpic strzałki znaku zjazdu (część szerokości panelu). */
+const ARROW_TIP = 18;
 
 /**
  * Bez nakladania sie ze stacja lub granica przy drodze: wolimy ukryc znak
@@ -114,40 +158,87 @@ export function selectNearestSign(
   return selected;
 }
 
-interface SignColors { face: string; text: string; accent: string }
-
-/** Pochodne palety kraju, bez kopiowania urzedowych znakow. */
-export function signColors(kind: FunnyPlaceKind, country: CountryCode): SignColors {
-  if (kind === 'exit') {
-    return { face: country === 'UK' ? '#24649b' : '#2b659b', text: '#fff8e8', accent: '#acd0df' };
-  }
-  if (kind === 'town') {
-    const yellow = country === 'DE' || country === 'NL' || country === 'SE' || country === 'PL';
-    return { face: yellow ? '#f5d67b' : '#fff0d1', text: NAVY, accent: yellow ? '#eaa64d' : '#f9c881' };
-  }
-  const green = country === 'NL' || country === 'UK' || country === 'NO' || country === 'DK' || country === 'PL';
-  return { face: green ? '#367856' : '#87613f', text: '#fff6e5', accent: green ? '#9ac69b' : '#dbb287' };
+export interface SignColors {
+  /** Tło znaku. */
+  face: string;
+  /** Napis. */
+  text: string;
+  /** Wewnętrzna ramka (jak na prawdziwych tablicach). */
+  accent: string;
+  /** Kształt: tablica prostokątna albo strzałka zjazdu. */
+  shape: 'rect' | 'arrow';
 }
 
-/** Wlasny rounded rect: zachowuje kompatybilnosc z WebView i mockami Canvas. */
+const WHITE = '#ffffff';
+const BLACK = '#141414';
+const RED = '#d22630';
+/** Tablice miejscowości wzorowane na prawdziwych znakach danego kraju (kolory i ramka). */
+const TOWN_SIGNS: Readonly<Record<CountryCode, Omit<SignColors, 'shape'>>> = {
+  PL: { face: '#00923f', text: WHITE, accent: WHITE }, // E-17a: zielona, biała ramka
+  DE: { face: '#f7d117', text: BLACK, accent: BLACK }, // Ortstafel: żółta, czarna ramka
+  NL: { face: '#1f5ea8', text: WHITE, accent: WHITE }, // plaatsnaambord: niebieska
+  BE: { face: WHITE, text: BLACK, accent: BLACK },     // biała, czarna ramka
+  LU: { face: WHITE, text: BLACK, accent: BLACK },
+  FR: { face: WHITE, text: BLACK, accent: RED },       // EB10: biała, czerwona ramka
+  CH: { face: '#1f5ea8', text: WHITE, accent: WHITE }, // Ortstafel: niebieska
+  AT: { face: WHITE, text: BLACK, accent: BLACK },
+  IT: { face: WHITE, text: BLACK, accent: BLACK },
+  ES: { face: WHITE, text: BLACK, accent: BLACK },
+  UK: { face: WHITE, text: BLACK, accent: BLACK },
+  IE: { face: WHITE, text: BLACK, accent: BLACK },
+  SE: { face: '#1f5ea8', text: WHITE, accent: WHITE },
+  NO: { face: '#1f5ea8', text: WHITE, accent: WHITE },
+  FI: { face: '#1f5ea8', text: WHITE, accent: WHITE },
+  DK: { face: WHITE, text: BLACK, accent: BLACK },
+  CZ: { face: WHITE, text: BLACK, accent: BLACK },
+  EE: { face: WHITE, text: BLACK, accent: BLACK },
+  LV: { face: WHITE, text: BLACK, accent: BLACK },
+  LT: { face: WHITE, text: BLACK, accent: BLACK },
+};
+
+export function signColors(kind: FunnyPlaceKind, country: CountryCode): SignColors {
+  if (kind === 'exit') {
+    // Zjazd z autostrady: niebieska strzałka (w CH i IT autostrady mają zielone znaki).
+    const green = country === 'CH' || country === 'IT';
+    return { face: green ? '#00804a' : '#0a6fc2', text: WHITE, accent: WHITE, shape: 'arrow' };
+  }
+  return { ...(TOWN_SIGNS[country] ?? TOWN_SIGNS.BE), shape: 'rect' };
+}
+
+/** Własny rounded rect: zachowuje kompatybilność z WebView i mockami Canvas. */
 function roundedRect(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, r: number): void {
   ctx.beginPath();
   ctx.moveTo(x + r, y);
   ctx.arcTo(x + w, y, x + w, y + h, r);
   ctx.arcTo(x + w, y + h, x, y + h, r);
   ctx.arcTo(x, y + h, x, y, r);
+  ctx.arcTo(x, y, x + w, y, r);
   ctx.closePath();
 }
 
-/** Rysuje jeden znak z grubym konturem i prostym cieniem z lewej-gory. */
+/** Strzałka w prawo (znak zjazdu): prostokąt z ostrym szpicem. */
+function arrowPath(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, r: number): void {
+  const tip = Math.min(ARROW_TIP, w / 4);
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.lineTo(x + w - tip, y);
+  ctx.lineTo(x + w, y + h / 2);
+  ctx.lineTo(x + w - tip, y + h);
+  ctx.arcTo(x, y + h, x, y, r);
+  ctx.arcTo(x, y, x + w, y, r);
+  ctx.closePath();
+}
+
+/** Rysuje jeden znak: kształt i barwy jak prawdziwa tablica, kontur A+ dookoła. */
 export function drawRoadSign(ctx: CanvasRenderingContext2D, sign: RoadSign, x: number): void {
   const width = signPanelWidth(sign.name);
   const left = -width / 2;
   const colors = signColors(sign.kind, sign.country);
+  const path = colors.shape === 'arrow' ? arrowPath : roundedRect;
   ctx.save();
   ctx.translate(x, 0);
 
-  // Dwa slupki dla szerokich znakow, jeden dla malych dzielnic.
+  // Dwa słupki dla szerokich znaków, jeden dla małych dzielnic.
   const posts = width > 125 ? [-width * 0.27, width * 0.27] : [0];
   for (const px of posts) {
     ctx.fillStyle = '#667d84';
@@ -159,35 +250,32 @@ export function drawRoadSign(ctx: CanvasRenderingContext2D, sign: RoadSign, x: n
     ctx.strokeRect(px - 4, SIGN_TOP_Y + 36, 8, WORLD.groundY - SIGN_TOP_Y - 36);
   }
 
-  // Rzucany cien w prawo i w dol; jasny kant sugeruje slonce z lewej gory.
+  // Rzucany cień w prawo i w dół.
   ctx.fillStyle = '#16323d55';
-  roundedRect(ctx, left + 4, SIGN_TOP_Y + 5, width, SIGN_HEIGHT, 9);
+  path(ctx, left + 4, SIGN_TOP_Y + 5, width, SIGN_HEIGHT, 5);
   ctx.fill();
-  ctx.fillStyle = colors.face;
+  // Tablica: biały brzeg, kontur A+, potem pole w kolorze kraju i wewnętrzna ramka.
+  ctx.fillStyle = WHITE;
   ctx.strokeStyle = NAVY;
-  ctx.lineWidth = 3.5;
-  roundedRect(ctx, left, SIGN_TOP_Y, width, SIGN_HEIGHT, 9);
+  ctx.lineWidth = 3;
+  path(ctx, left, SIGN_TOP_Y, width, SIGN_HEIGHT, 5);
   ctx.fill();
   ctx.stroke();
+  ctx.fillStyle = colors.face;
+  path(ctx, left + 2.5, SIGN_TOP_Y + 2.5, width - 5, SIGN_HEIGHT - 5, 4);
+  ctx.fill();
   ctx.strokeStyle = colors.accent;
-  ctx.lineWidth = 2.2;
-  ctx.beginPath();
-  ctx.moveTo(left + 10, SIGN_TOP_Y + 6);
-  ctx.lineTo(left + width - 10, SIGN_TOP_Y + 6);
+  ctx.lineWidth = 2;
+  path(ctx, left + 5.5, SIGN_TOP_Y + 5.5, width - 11, SIGN_HEIGHT - 11, 3);
   ctx.stroke();
 
-  // Maly, asymetryczny detal ilustracyjny zamiast autentycznego piktogramu.
-  ctx.fillStyle = BORDER;
-  ctx.beginPath();
-  ctx.arc(left + 10, SIGN_TOP_Y + SIGN_HEIGHT - 10, 2.2, 0, Math.PI * 2);
-  ctx.arc(left + width - 10, SIGN_TOP_Y + SIGN_HEIGHT - 10, 2.2, 0, Math.PI * 2);
-  ctx.fill();
-
-  const availableWidth = width - 26;
-  const font = 'system-ui, -apple-system, "Segoe UI", sans-serif';
-  let fontSize = 18;
+  const arrowRoom = colors.shape === 'arrow' ? ARROW_TIP : 0;
+  const availableWidth = width - 26 - arrowRoom;
+  // Krój zbliżony do tablicowego (DIN / Transport): wąski, pogrubiony bezszeryfowy.
+  const font = '"DIN Alternate", "Bahnschrift", "Roboto Condensed", "Arial Narrow", system-ui, sans-serif';
+  let fontSize = 21;
   do {
-    ctx.font = `900 ${fontSize}px ${font}`;
+    ctx.font = `700 ${fontSize}px ${font}`;
     if (ctx.measureText(sign.name).width <= availableWidth || fontSize <= 13) break;
     fontSize--;
   } while (true);
@@ -198,7 +286,7 @@ export function drawRoadSign(ctx: CanvasRenderingContext2D, sign: RoadSign, x: n
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
   ctx.fillStyle = colors.text;
-  ctx.fillText(label, 0, SIGN_TOP_Y + 25);
+  ctx.fillText(label, arrowRoom ? -arrowRoom / 2 : 0, SIGN_TOP_Y + 23);
   ctx.restore();
 }
 
@@ -236,7 +324,7 @@ export class SignsRenderer {
     if (sign) drawRoadSign(ctx, sign, signScreenX(sign.km, state.progressKm));
     if (sign && this.previousKm !== null && this.previousKm < sign.km && state.progressKm >= sign.km) {
       // Polski żart słowny nie przekłada się na inne języki — tam krótki, ciepły dymek ze słownika.
-      this.jokeText = localized('FUNNY_PLACES')?.[sign.id] ?? sign.joke;
+      this.jokeText = localized('FUNNY_PLACES')?.[sign.jokeKey ?? sign.id] ?? sign.joke;
       this.jokeUntil = state.timeSec + SIGN_JOKE_SECONDS;
     }
     this.previousKm = state.progressKm;

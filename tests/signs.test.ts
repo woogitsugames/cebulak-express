@@ -4,7 +4,7 @@ import type { Waypoint } from '../src/content/waypoints';
 import type { FunnyPlace } from '../src/content/funny-places';
 import { PARALLAX, waypointScreenX } from '../src/render/background';
 import {
-  SIGN_HEIGHT, SIGN_JOKE_SECONDS, SIGN_TOP_Y, SignsRenderer, drawRoadSign,
+  SIGN_HEIGHT, SIGN_JOKE_SECONDS, ausfahrtSigns, SIGN_TOP_Y, SignsRenderer, drawRoadSign,
   overlapsWaypointPanorama, selectNearestSign, signColors, signPanelWidth,
   signScreenX, signsForWaypoints,
 } from '../src/render/signs';
@@ -89,12 +89,33 @@ describe('tablice: brak kolizji z panoramami', () => {
 
 });
 
+describe('tablice: Ausfahrt w Niemczech', () => {
+  const de = (id: string, km: number, kind: Waypoint['kind'] = 'city'): Waypoint =>
+    ({ id, name: id, country: 'DE', km, kind, motifs: [], text: '' });
+
+  it('stawia co jakiś czas niebieską strzałkę Ausfahrt z tłumaczonym żartem', () => {
+    const wps = [de('a', 0), de('b', 100), de('c', 200), de('d', 300), de('e', 400)];
+    const signs = ausfahrtSigns(wps);
+    expect(signs.map((s) => s.km)).toEqual([35, 235]);
+    expect(signs[0]).toMatchObject({ name: 'Ausfahrt', kind: 'exit', country: 'DE', jokeKey: 'de-ausfahrt-0' });
+    expect(signs[1].jokeKey).toBe('de-ausfahrt-1');
+  });
+
+  it('nie wchodzi na inne tablice ani poza Niemcy', () => {
+    const wps = [de('a', 0), { ...de('pl', 40), country: 'PL' as const }];
+    expect(ausfahrtSigns(wps)).toEqual([]);
+    const busy = [de('a', 0), de('b', 100)];
+    expect(ausfahrtSigns(busy, [{ id: 'x', name: 'X', country: 'DE', kind: 'town', km: 30, joke: 'x' }])).toEqual([]);
+  });
+});
+
 describe('tablice: wyglad i czas dymka', () => {
-  it('kolory rozrozniaja typy i kraje bez oficjalnych logotypow', () => {
-    expect(signColors('exit', 'UK').face).toMatch(/^#2/);
-    expect(signColors('exit', 'FR').text).toBe('#fff8e8');
+  it('kolory jak prawdziwe tablice danego kraju, zjazd jako strzałka', () => {
+    expect(signColors('exit', 'DE')).toMatchObject({ face: '#0a6fc2', shape: 'arrow' });
+    expect(signColors('town', 'PL').face).toBe('#00923f');
+    expect(signColors('town', 'FR').accent).toBe('#d22630');
     expect(signColors('town', 'DE').face).not.toBe(signColors('town', 'FR').face);
-    expect(signColors('district', 'UK').face).not.toBe(signColors('district', 'BE').face);
+    expect(signColors('district', 'NL').face).not.toBe(signColors('district', 'BE').face);
   });
 
   it('rysuje slupki, obrys, dopasowany tekst i nie wychodzi ponizej drogi', () => {
@@ -104,7 +125,7 @@ describe('tablice: wyglad i czas dymka', () => {
     expect(ctx.translate).toHaveBeenCalledWith(180, 0);
     expect(ctx.stroke).toHaveBeenCalled();
     expect(ctx.measureText).toHaveBeenCalled();
-    expect(ctx.fillText).toHaveBeenCalledWith('Deurne', 0, SIGN_TOP_Y + 25);
+    expect(ctx.fillText).toHaveBeenCalledWith('Deurne', 0, SIGN_TOP_Y + 23);
     expect(SIGN_TOP_Y + SIGN_HEIGHT).toBeLessThan(WORLD.groundY);
     expect(ctx.fillRect.mock.calls.some(([x, y, w, h]) => x === -4 && y === SIGN_TOP_Y + 36 && w === 8 && y + h === WORLD.groundY)).toBe(true);
   });

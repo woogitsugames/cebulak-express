@@ -204,6 +204,9 @@ export default {
     'erfurt-3': 'Erfurt. Les valises réclament une déviation plus courte.',
   },
   FUNNY_PLACES: {
+    'de-ausfahrt-0': 'Ausfahrt : la plus grande ville d’Allemagne. Il y a une sortie vers elle tous les trois kilomètres !',
+    'de-ausfahrt-1': 'Encore Ausfahrt ? Cette ville a sûrement plus de sorties que d’habitants.',
+    'de-ausfahrt-2': 'Ausfahrt : la seule ville accessible depuis toutes les autoroutes.',
     'be-deurne': 'Deurne ! Un petit salut sur la route de la maison.',
     'be-hoboken': 'Hoboken ! Le port salue, les bocaux répondent.',
     'be-wilrijk': 'Wilrijk ! Le repas de maman n’est qu’à quelques frontières.',

@@ -204,6 +204,9 @@ export default {
     'erfurt-3': 'Erfurt. Die Koffer bitten um eine kürzere Umleitung.',
   },
   FUNNY_PLACES: {
+    'de-ausfahrt-0': 'Ausfahrt – die größte Stadt Deutschlands. Abfahrten dorthin gibt es überall!',
+    'de-ausfahrt-1': 'Schon wieder Ausfahrt? Die Stadt hat wohl mehr Abfahrten als Einwohner.',
+    'de-ausfahrt-2': 'Ausfahrt: die einzige Stadt, die man von jeder Autobahn erreicht.',
     'be-deurne': 'Deurne! Ein freundlicher Gruß vom Heimweg.',
     'be-hoboken': 'Hoboken! Der Hafen winkt, die Gläser winken zurück.',
     'be-wilrijk': 'Wilrijk! Mamas Essen ist nur ein paar Grenzen entfernt.',

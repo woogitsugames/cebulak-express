@@ -204,6 +204,9 @@ export default {
     'erfurt-3': 'Erfurt. De koffers vragen om een kortere omweg.',
   },
   FUNNY_PLACES: {
+    'de-ausfahrt-0': 'Ausfahrt — de grootste stad van Duitsland. Overal afritten ernaartoe!',
+    'de-ausfahrt-1': 'Alweer Ausfahrt? Die stad heeft vast meer afritten dan inwoners.',
+    'de-ausfahrt-2': 'Ausfahrt: de enige stad die je vanaf elke snelweg bereikt.',
     'be-deurne': 'Deurne! Een vriendelijke groet van de weg naar huis.',
     'be-hoboken': 'Hoboken! De haven zwaait, de potten zwaaien terug.',
     'be-wilrijk': 'Wilrijk! Mama’s eten is maar een paar grenzen verder.',

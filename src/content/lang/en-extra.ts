@@ -204,6 +204,9 @@ export default {
     'erfurt-3': 'Erfurt. The suitcases ask for a shorter detour.',
   },
   FUNNY_PLACES: {
+    'de-ausfahrt-0': "Ausfahrt — Germany's biggest city. There's an exit to it every few kilometres!",
+    'de-ausfahrt-1': 'Ausfahrt again? That city must have more exits than people.',
+    'de-ausfahrt-2': 'Ausfahrt: the only city you can reach from every motorway.',
     'be-deurne': 'Deurne! A friendly wave from the road home.',
     'be-hoboken': 'Hoboken! The port waves, the jars wave back.',
     'be-wilrijk': "Wilrijk! Mum's dinner is only a few borders away.",
