@@ -1,6 +1,12 @@
 # HANDOVER — Cebulak Express (koordynacja Claude)
 
-> Ostatnia aktualizacja: **2026-10-31 14:05 UTC** (koniec sesji `claude/wizardly-curie-prxr7z`, limit 5 h). **Przekazanie projektu:** poprzedniej sesji Claude kończył się limit tygodniowy, więc pracę przejmuje nowa sesja (inne konto). Przeczytaj ten plik w całości, zanim zaczniesz. Prompt startowy dla nowej sesji jest w `docs/PROMPT-NOWA-SESJA.md`.
+> Ostatnia aktualizacja: **2026-10-31 14:25 UTC** (sesja `claude/laughing-goodall-amslh7`, start 14:00 UTC; gałąź zrobiona od `claude/wizardly-curie-prxr7z`, zastąpi PR #110).
+>
+> **Sesja 31.10 po południu (`claude/laughing-goodall-amslh7`):**
+> - Wgrane zlecenie 104 (Czeski Cieszyn A+) — runda 7 zamknięta.
+> - Dołączona łatka płynności (`wip-plynnosc-interpolacja.patch`, konflikt w `step()` rozwiązany: ślady `breadcrumb` zostają wokół `renderer.draw(…, alpha)`).
+> - Nowe (prośba właściciela): tablice miejscowości w barwach prawdziwych znaków kraju (`TOWN_SIGNS` w `src/render/signs.ts`) i niebieska strzałka „Ausfahrt — największe miasto w Niemczech” za co drugim miastem DE (`ausfahrtSigns`, żarty `de-ausfahrt-0..2` w słownikach).
+> - Pixel 7 na Chrome 141 (build 1194) lokalnie: 47/47, potem 188/188 przy `--repeat-each=4 --workers=2` — **zawieszenie się NIE odtwarza lokalnie**. Następny krok: przebieg jak w CI (wszystkie projekty, 1 worker) i analiza artefaktu `playwright-e2e` z CI. **Przekazanie projektu:** poprzedniej sesji Claude kończył się limit tygodniowy, więc pracę przejmuje nowa sesja (inne konto). Przeczytaj ten plik w całości, zanim zaczniesz. Prompt startowy dla nowej sesji jest w `docs/PROMPT-NOWA-SESJA.md`.
 
 ## 1. Kim jest właściciel i jak pracujemy
 - **Właściciel:** Mateusz (portale PoPolsku / TuWiesz / Aktualności). Komunikacja **po polsku**. Decyzje dawaj **klikalnie** (AskUserQuestion, 2–4 opcje, rekomendowana pierwsza).
