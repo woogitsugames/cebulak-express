@@ -1038,7 +1038,7 @@ Zalecany wspólny prefiks dla **każdego** promptu:
 
 <!-- Zlecenie 89 (runda 7) z ZIP-a GPT; PNG skwantyzowane do 256 kolorów przez koordynatora. -->
 
-> **Koordynator:** odrzucono nykoping (styl niezgodny z A+); zostaje poprzednia wersja, do ponowienia.
+> **Koordynator:** odrzucono nykoping (prawa część to doklejony płaski blok wody i mostu bez konturu); zostaje poprzednia wersja, ponowione w zleceniu 104.
 
 # ASSETS-89 — Panoramy A+ (Szwecja)
 
@@ -1519,7 +1519,7 @@ Zastąpić odpowiadające pliki w `public/assets/landmarks/` bez zmiany nazw. Ka
 
 <!-- Zlecenie 98 (runda 7) z ZIP-a GPT; PNG skwantyzowane do 256 kolorów przez koordynatora. -->
 
-> **Koordynator:** odrzucono cesky-tesin (styl niezgodny z A+); zostaje poprzednia wersja, do ponowienia.
+> **Koordynator:** odrzucono cesky-tesin (prawa część to doklejony płaski blok wody i mostu bez konturu); zostaje poprzednia wersja, ponowione w zleceniu 104.
 
 # Zlecenie 98 — panoramy miast A+
 
@@ -1735,3 +1735,79 @@ Użyto odbicia poziomego wyizolowanej sylwetki Oslo w celu poprawnej kolejności
 1. Cel identyfikowalności zabytków powoduje konflikt z warunkiem jednego autentycznego punktu widzenia dla Krakowa i Katowic. W tej wersji świadomie pierwszeństwo mają rozpoznawalne sylwetki i proporcje w grze; **to decyzja do akceptacji**.
 2. Stylizowany dworzec w Mariampolu oraz przeszklone bryły Muzeum Śląskiego nie są dokumentalnie dokładnymi rekonstrukcjami. Zalecane sprawdzenie przez osobę znającą miasta.
 3. Przed publikacją gry zalecana jest kontrola zakresu swobody panoramy dla każdego obiektu chronionej współczesnej architektury w danej jurysdykcji. Norwegia dopuszcza obrazowanie budynków, a w Polsce art. 33 pkt 1 przewiduje odrębny wyjątek. Nie używano cudzych fotografii w produktowych PNG.
+
+
+<!-- Zlecenie 103 (runda 7) z ZIP-a GPT; PNG skwantyzowane do 256 kolorów przez koordynatora. -->
+
+> **Koordynator:** odrzucono cesky-tesin (prawa część to doklejony płaski blok wody i mostu bez konturu); zostaje poprzednia wersja, ponowione w zleceniu 104.
+
+# ASSETS-103 — panoramy A+ (runda 7, poprawka)
+
+Data: **2026-10-31**. Gra: **Cebulak Express — Kierunek Polska**. Grafiki mają rozdzielczość **1620×900**, kanał **RGBA** i przezroczyste tło; brak tekstów, logo, flag, herbów i postaci.
+
+| ID / plik | Miasto | Elementy sceny i punkt widzenia | Narzędzie / poprawki | Licencja / autorstwo |
+|---|---|---|---|---|
+| `nykoping` / `nykoping.png` | Nyköping, Szwecja | Autorska, lekko skompresowana perspektywa **z przeciwnego brzegu Nyköpingsån** ku **Nyköpingshus**: biała wieża królewska z ciemnym dachem, ceglane skrzydła, kamienne mury obronne, niski stary Nyköping, nabrzeżna zieleń i stylizowany most. Most jest elementem krajobrazowym; nie jest dokładnym odwzorowaniem jednego istniejącego przęsła w tym kadrze. | **GPT Image w ChatGPT**, dopasowanie w Pillow do 1620×900, bez wykorzystania fragmentów zdjęć. | **Oryginalna grafika wygenerowana** na potrzeby projektu; prawo do korzystania z wyniku zgodnie z warunkami OpenAI przysługuje właścicielowi projektu. |
+| `cesky-tesin` / `cesky-tesin.png` | Český Těšín (Czeski Cieszyn), Czechy | Uproszczone spojrzenie **z polskiego brzegu Olzy na czeskie nabrzeże**: niski, betonowy **Most Přátelství / Most Przyjaźni**, charakterystyczny **ochrowy ratusz** (1928–1929) ze schodkowo-łukowym szczytem i zegarem, **kościół Najświętszego Serca Jezusowego** (1894) ze smukłą wieżą, kamienice i drzewa. Budowle oddane jako panorama kompozycyjna — **ratusz jest w rzeczywistości przy náměstí ČSA, a nie bezpośrednio nad rzeką**. | **GPT Image w ChatGPT** — autorska baza ilustracyjna; **ręczne poprawki w Pillow + wektorowe w CairoSVG**: usunięcie błędnej, łukowej konstrukcji mostu i fantazyjnej wieży ratusza, narysowanie mostu belkowego oraz ratusza ze szczytem. | **Oryginalna grafika wygenerowana i ręcznie poprawiona** na potrzeby projektu; prawo do korzystania z wyniku zgodnie z warunkami OpenAI przysługuje właścicielowi projektu. |
+
+## Prompty / opis instrukcji generacji
+
+**Nyköping.** „Panorama A+, rysunkowa płaska ilustracja wektorowa, zamek Nyköpingshus nad Nyköpingsån: masywna biała wieża z ciemnym czterospadowym dachem, ceglane skrzydła i ruiny murów, zabudowa starego Nyköping, zieleń, woda i kamienny most; 2–4 duże dominanty, ciepłe barwy, światło z lewej góry, grube kontury granatowe #1d2f3b, bez nieba, pełna przezroczystość, bez napisów i symboli.”
+
+**Český Těšín.** „Jedna panoramiczna ilustracja A+ czeskiego brzegu Olzy: betonowy Most Przyjaźni, ratusz Český Těšín ze schodkowo-łukowym szczytem i zegarem, neogotycki kościół Serca Jezusowego z wysoką iglicą, nabrzeże z kamienicami i zielenią; ciepłe płaskie plamy kolorów i gruby granatowy kontur, bez chmur, nieba, znaków i flag, przezroczyste tło.” Wewnętrzny prompt systemu generacji obrazu nie jest udostępniany; powyżej zapisano **brief opisowy użyty przy tworzeniu**.
+
+## Źródła do identyfikacji obiektów (wyłącznie referencje faktograficzne, nie kopiowano zdjęć)
+
+- Nyköpingsguiden, opis Nyköpingshus nad rzeką, wieży Kungstornet i pozostałości murów: https://www.nykopingsguiden.se/se-och-gora/nykopingshus/
+- Nyköpings kommun, przestrzeń nad Nyköpingsån i położenie zamku na zachodnim brzegu: https://www.nykoping.se/contentassets/01d21b5ca23340dbaede14bd21f395cc/kulturhistoriska-omradesbeskrivningar-nykopings-tatort.-kmv-forum.-2019..pdf
+- Archiwum regionalne, ratusz w Českém Těšíně z 1928/29 i charakterystyczny noworenesansowy szczyt: https://www.archives.cz/web/soka/karvina/projekt/resources/karvina/Mestska_radnice_v_Ceskem_Tesine.pdf
+- Atlas architektury, kościół Božského Srdce Páně z 1894: https://www.archmap.cz/cs/objekt/28659
+- Moravskoslezský kraj, historia cieszyńskich mostów: https://moravskoslezsky.kraj.cz/encyklopedie/objekty1.phtml?id=112054
+- Szlak czesko-polski Olza: lokalizacja Mostu Přátelství i relacja do nabrzeża Českého Těšína: https://olza.pl/cz/turystyka/produkty-i-atrakcje/inne
+
+## QA i ograniczenia
+
+- Format: PNG, **1620×900, RGBA**; tło przezroczyste; spójna ciepła paleta, kontury ciemnogranatowe.
+- Podgląd na błękitnym tle: `docs/art/podglady/panoramy-103.png`.
+- Nie wykorzystano zdjęć ani map jako podkładu do odrysowania.
+- Uwaga: panorama to **rysunkowa synteza** najważniejszych obiektów, a nie fotografia z pojedynczego miejsca z dokładnymi odległościami między nimi. Zwłaszcza ratusz Českého Těšína znajduje się przy rynku, dalej od Olzy; należy ocenić rozpoznawalność w kadrze gry.
+- Do wykonania po integracji: przegląd @1/5 rozmiaru w rendererze gry. Testów `npm ci`, `typecheck`, `test`, `build` nie uruchomiono, ponieważ nie udało się pobrać pełnego repozytorium do lokalnego środowiska (brak dostępu sieciowego).
+
+
+---
+
+# ASSETS-104 — panorama A+ Czeskiego Cieszyna
+
+**Projekt:** Cebulak Express — Kierunek Polska  
+**Data opracowania:** 31 października 2026 r.  
+**Narzędzie:** wbudowany generator obrazów ChatGPT (GPT Image), następnie przygotowanie eksportu za pomocą Pillow.  
+**Zakres:** jedna autorska ilustracja wygenerowana przez AI, PNG RGBA 1620 × 900 px, profil sRGB.
+
+| Id / plik | Miasto | Budowle i otoczenie | Punkt widzenia | Źródło / licencja |
+|---|---|---|---|---|
+| `cesky-tesin` / `cesky-tesin.png` | Czeski Cieszyn, Czechy | Po lewej neogotycki kościół Najświętszego Serca Jezusowego z wysoką wieżą; pośrodku ochrowy ratusz na náměstí ČSA z zegarem w ozdobnym szczycie; po prawej Most Przyjaźni (Most Družby), z widocznymi filarami i balustradą; poniżej Olza, drzewa i ciągłe nabrzeże | Stylizowany widok z polskiego brzegu Olzy w stronę Czeskiego Cieszyna, z elementami rozpoznawczymi zestawionymi w czytelną kompozycję | Wygenerowane w ChatGPT (GPT Image), bez kopiowania fotografii. Zasób przygotowany dla właściciela projektu do użytku komercyjnego zgodnie z warunkami narzędzia i prawem właściwym. |
+
+## Prompt / brief zastosowany do generacji
+
+> Płaska, ciepła, spójna panorama rysunkowa w stylu A+ miasta Český Těšín, szeroki poziomy kadr 1,8:1. Widok zza rzeki Olzy. Lewą stronę zajmuje duży neogotycki kościół z wysoką strzelistą wieżą, środek duży ratusz o ochrowej elewacji i dekoracyjnym szczycie z zegarem, a po prawej Most Przyjaźni / Most Družby ze wspornikami, filarami i balustradą, narysowany identycznym stylem jak budynki; most nie zasłania ratusza. Rzeka i nabrzeże przebiegają jednym ciągłym pasem, bez doklejanych bloków i widocznych łączeń. Duże sylwetki, mało detali, niższe kamienice z tyłu, zielone drzewa. Płaskie ciepłe barwy, mocny kontur w ciemnym granacie zbliżonym do `#1d2f3b`, światło od lewej góry, miękkie cienie w płaskich plamach. Bez gradientów, tekstur fotograficznych, nieba, chmur, napisów, szyldów, reklam, logo, flag, herbów i ludzi na pierwszym planie. Tło przezroczyste, rzeka dochodzi do dolnej krawędzi.
+
+*Powyższy opis to brief redakcyjny wykorzystany w zleceniu, nie dosłowny zapis wewnętrznego promptu generatora.*
+
+## Postprodukcja i kontrola
+
+- Rozdzielczość wyjściowa generatora: **1683 × 935 px**; przeskalowano proporcjonalnie do **1620 × 900 px**, bez przycinania.
+- Zachowano przezroczystość alfa; wzmocniono pełną nieprzezroczystość w obszarach, które powinny być w pełni kryjące, pozostawiając antyaliasing na krawędziach.
+- Wyeksportowano PNG z dołączonym profilem **sRGB**.
+- Sprawdzono wymiary, format **RGBA**, przezroczystość tła i obecność rzeki przy dolnej krawędzi.
+- Arkusz kontrolny na jasnoniebieskim tle: `docs/art/podglady/panoramy-104.png`. Zawiera także podgląd panoramy w skali 1:5.
+- Kompozycja jest **ilustracyjną syntezą**, a nie dosłowną panoramą fotograficzną. Zegar i najbardziej charakterystyczne sylwetki celowo powiększono dla czytelności w grze. Drobne relacje przestrzenne budowli wymagają oceny koordynatora.
+
+## Źródła do sprawdzenia wyglądu obiektów (niekopiowane)
+
+1. Ratusz na náměstí ČSA: https://www.turistika.cz/mista/cesky-tesin-radnice-na-namesti-csa/detail
+2. Kościół Najświętszego Serca Jezusowego: https://slovo.proglas.cz/nase-porady/pred-kostelem/jubilejni-kostel-nejsvetejsiho-srdce-jezisova-v-ceskem-tesine/
+3. Most Przyjaźni: https://www.slaskcieszynski.travel/culturalheritage/1019465/most-przyjani
+
+**Prawa:** Samodzielnie wygenerowany zasób, bez użycia cudzych plików graficznych jako elementów montażu. Właściciel projektu jest uprawniony do wykorzystywania wygenerowanego wyniku zgodnie z warunkami dostawcy narzędzia; nie deklaruje się wyłącznego prawa autorskiego do samych budynków ani gwarantowanej ochrony autorskiej obrazu AI w każdym kraju.
+
+> **Koordynator (31.10):** przyjęto — styl A+ z grubym konturem; PNG skwantyzowany do 256 kolorów.

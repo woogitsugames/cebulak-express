@@ -1,9 +1,10 @@
-import { OBSTACLE, PICKUPS, PLAYER, TICK, WORLD } from '../core/config';
+import { KM_PER_PX, OBSTACLE, PICKUPS, PLAYER, TICK, WORLD } from '../core/config';
 import type { Game } from '../core/game';
 import { effectiveGapH, isPowerupKind, type BottomKind, type Obstacle, type Pickup, type TopKind } from '../core/obstacles';
 import { POWERUP_NAME } from '../content/i18n';
 import { BackgroundRenderer, type BackgroundState } from './background';
 import { createSnow } from './snow';
+import { PoseHistory, type RenderPose } from './interpolation';
 import type { SignsRenderer } from './signs';
 import { PALETTES } from './palette';
 import { drawBottomSprite, drawGateSprite, drawHeroSprite, drawPowerupAura, drawPowerupSprite, drawTopSprite } from './sprites';
@@ -24,6 +25,10 @@ export class Renderer {
   winter = false;
   private readonly snow = createSnow(2026);
   private lastSnowT = 0;
+  /** Premia km pokazywana w tle: dochodzi do prawdziwej płynnie, zamiast skakać panoramą. */
+  private shownBonusKm = 0;
+  private lastBonusT = 0;
+  private lastGame: Game | null = null;
   /** Tablice z zabawnymi nazwami (zlecenia 70–71) i żart do dymka w HUD. */
   private signs: SignsRenderer | null = null;
   signJoke: string | null = null;
@@ -31,7 +36,12 @@ export class Renderer {
    * Duch znajomego (zlecenie 59): półprzezroczyste kombi rysowane pod bohaterem.
    * Ustawiany przez main.ts na czas przejazdu wyzwania; błąd rysowania wyłącza ducha.
    */
-  ghost: { draw(ctx: CanvasRenderingContext2D, timeSec: number): void } | null = null;
+  ghost: { draw(ctx: CanvasRenderingContext2D, timeSec: number, alpha?: number): void } | null = null;
+  /** Stan gracza sprzed ostatniego ticku — render rysuje pozycję pośrednią (płynność 90/120/144 Hz). */
+  private readonly history = new PoseHistory<Game>();
+  private lastPose: RenderPose | null = null;
+  /** Rozmiar kanwy z ostatniego resize: ten sam rozmiar nie czyści i nie przelicza kanwy. */
+  private sizeKey = '';
 
   constructor(private canvas: HTMLCanvasElement) {
     const ctx = canvas.getContext('2d');
@@ -44,6 +54,11 @@ export class Renderer {
   /** Dopasowanie do kontenera z zachowaniem proporcji 9:16 i ostrości na ekranach HiDPI. */
   resize(cssWidth: number, cssHeight: number): void {
     const dpr = Math.min(window.devicePixelRatio || 1, 3);
+    // Android WebView potrafi zgłaszać resize bez zmiany rozmiaru (pasek systemowy, klawiatura):
+    // przypisanie canvas.width czyści kanwę i resetuje kontekst — to błysk/szarpnięcie w trakcie gry.
+    const key = `${cssWidth}x${cssHeight}@${dpr}`;
+    if (key === this.sizeKey) return;
+    this.sizeKey = key;
     this.canvas.width = Math.round(cssWidth * dpr);
     this.canvas.height = Math.round(cssHeight * dpr);
     this.canvas.style.width = `${cssWidth}px`;
@@ -53,8 +68,41 @@ export class Renderer {
     this.offsetY = (this.canvas.height - WORLD.height * this.scale) / 2;
   }
 
-  draw(game: Game, timeSec: number): void {
+  /**
+   * Pozycja tła w km bez zaokrąglenia: game.km to Math.floor (wynik gracza), a 1 km to 20 px świata,
+   * więc panoramy i tablice skakałyby o 5–20 px. Premia za znajdźkę dochodzi płynnie w ok. 0,5 s.
+   */
+  private smoothProgressKm(game: Game, timeSec: number, distancePx: number): number {
+    const dt = Math.min(0.1, Math.max(0, timeSec - this.lastBonusT));
+    this.lastBonusT = timeSec;
+    if (game !== this.lastGame || game.bonusKm < this.shownBonusKm) {
+      this.lastGame = game;
+      this.shownBonusKm = game.bonusKm;
+    } else {
+      this.shownBonusKm += (game.bonusKm - this.shownBonusKm) * Math.min(1, dt * 6);
+      if (game.bonusKm - this.shownBonusKm < 0.01) this.shownBonusKm = game.bonusKm;
+    }
+    return Math.min(game.route.totalKm, distancePx * KM_PER_PX + this.shownBonusKm);
+  }
+
+  /** main.ts woła tuż przed każdym game.tick(): zapamiętuje stan do interpolacji renderu. */
+  beforeTick(game: Game): void {
+    this.history.beforeTick(game);
+  }
+
+  /** Pozycja narysowana w ostatniej klatce (hak ?test=1 do pomiaru płynności). */
+  get renderedPose(): Readonly<RenderPose> | null {
+    return this.lastPose;
+  }
+
+  /**
+   * alpha: ułamek ticku, który upłynął od ostatniego pełnego ticku (acc / TICK).
+   * Świat, tło i auto rysujemy w pozycji pośredniej; logika gry tego nie widzi.
+   */
+  draw(game: Game, timeSec: number, alpha = 1): void {
     const { ctx } = this;
+    const pose = this.history.pose(game, alpha);
+    this.lastPose = pose;
     // Pasy poza światem 9:16 (wysokie telefony, desktop) wypełniamy niebem i asfaltem.
     const pal = PALETTES[game.country];
     const groundScreenY = this.offsetY + WORLD.groundY * this.scale;
@@ -72,16 +120,17 @@ export class Renderer {
     // Wysokie ekrany: próbkuj brzeg oryginalnego PNG sky/road zamiast
     // rysować odcinające się pasy jednolitym kolorem palety.
     this.background.drawOutsideWorld(
-      ctx, game.country, game.distancePx, timeSec,
+      ctx, game.country, pose.distancePx, timeSec,
       -this.offsetY / this.scale,
       (this.canvas.height - this.offsetY) / this.scale,
     );
 
-    const worldX = game.distancePx;
+    const worldX = pose.distancePx;
+    const progressKm = this.smoothProgressKm(game, timeSec, worldX);
     const bg: BackgroundState = {
       country: game.country,
       distancePx: worldX,
-      progressKm: game.km,
+      progressKm,
       waypoints: game.route.waypoints,
       timeSec,
       includeRoad: false,
@@ -90,7 +139,7 @@ export class Renderer {
     // Tło i droga idą na całą szerokość ekranu (rozłożony składak, tablet, poziom),
     // ale przeszkody i bonusy tylko w kolumnie 360 — szerszy ekran nie daje przewagi w rankingu.
     this.background.drawBackground(this.ctx, bg);
-    this.signJoke = this.signs?.draw(ctx, { progressKm: game.km, timeSec, waypoints: game.route.waypoints }).joke ?? null;
+    this.signJoke = this.signs?.draw(ctx, { progressKm, timeSec, waypoints: game.route.waypoints }).joke ?? null;
     ctx.save();
     ctx.beginPath();
     ctx.rect(0, viewTop, WORLD.width, viewHeight);
@@ -103,19 +152,19 @@ export class Renderer {
     if (this.ghost) {
       ctx.save();
       try {
-        this.ghost.draw(ctx, timeSec);
+        this.ghost.draw(ctx, timeSec, alpha);
       } catch {
         this.ghost = null;
       }
       ctx.restore();
     }
-    if (!drawHeroSprite(this.ctx, game, timeSec)) this.drawPlayer(game, timeSec);
+    if (!drawHeroSprite(this.ctx, game, timeSec, pose)) this.drawPlayer(game, timeSec, pose);
     if (this.winter) {
       this.snow.update(Math.min(0.1, Math.max(0, timeSec - this.lastSnowT)));
       this.lastSnowT = timeSec;
       this.snow.draw(ctx);
     }
-    drawPowerupAura(this.ctx, game, timeSec);
+    drawPowerupAura(this.ctx, game, timeSec, pose);
     this.drawPowerupHud(game);
   }
 
@@ -215,14 +264,14 @@ export class Renderer {
     ctx.restore();
   }
 
-  private drawPlayer(game: Game, t: number): void {
+  private drawPlayer(game: Game, t: number, pose: RenderPose): void {
     const { ctx } = this;
     const blink = game.invulnerableTicks > 0 && Math.floor(t * 12) % 2 === 0;
     if (blink) return;
-    const tilt = Math.max(-0.35, Math.min(0.5, game.vy / 900));
+    const tilt = Math.max(-0.35, Math.min(0.5, pose.vy / 900));
     const luggage = Math.min(4, 1 + Math.floor(game.weight * 4));
     ctx.save();
-    ctx.translate(PLAYER.x, game.y);
+    ctx.translate(PLAYER.x, pose.y);
     ctx.rotate(tilt);
 
     // Bagaże na dachu — im cięższy, tym wyższy stos

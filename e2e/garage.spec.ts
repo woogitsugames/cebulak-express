@@ -26,7 +26,8 @@ test('garaż na telefonie: skórki, nicki i zrzut ekranu', async ({ page }, test
   if (!script) throw new Error('Nie udało się zbudować samodzielnego ekranu garażu');
 
   // Nawigacja do pliku statycznego ustawia origin serwera, bez uruchamiania main.ts.
-  await page.goto('/assets/hero/hero.json');
+  // hero.json nie trafia do dist (manifest generatora); skin.json czyta gra, więc zostaje.
+  await page.goto('/assets/skins/pan-cebulek/skin.json');
   await page.setContent(
     '<!doctype html><html lang="pl"><head><meta charset="utf-8" />' +
     '<base href="/"/><meta name="viewport" content="width=device-width,initial-scale=1" />' +

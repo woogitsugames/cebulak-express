@@ -17,12 +17,12 @@ W katalogu głównym repo:
 
 ```bash
 npm ci
-npm install --prefix firebase --package-lock=false --no-audit --no-fund
+npm install --prefix functions --package-lock=false --no-audit --no-fund
 cp .firebaserc.example .firebaserc
 # Edytuj .firebaserc i zastąp YOUR_FIREBASE_PROJECT_ID prawdziwym ID.
-npx --prefix firebase firebase login
-npm --prefix firebase run build
-npm --prefix firebase run test:unit
+npx --prefix functions firebase login
+npm --prefix functions run build
+npm --prefix functions run test:unit
 npm run test:firebase
 ```
 
@@ -71,8 +71,8 @@ npm ci
 npm run typecheck
 npm test
 npm run build
-npm --prefix firebase run build
-npm --prefix firebase run test:unit
+npm --prefix functions run build
+npm --prefix functions run test:unit
 npm run test:firebase
 ```
 

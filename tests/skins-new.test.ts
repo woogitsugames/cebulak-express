@@ -42,7 +42,9 @@ function assertPng(id: string, name: string, width: number, height: number): voi
   expect(bytes.readUInt32BE(16), `${id}/${name}: szerokość`).toBe(width);
   expect(bytes.readUInt32BE(20), `${id}/${name}: wysokość`).toBe(height);
   expect(bytes[24], `${id}/${name}: głębia 8-bit`).toBe(8);
-  expect(bytes[25], `${id}/${name}: PNG RGBA z alfa`).toBe(6);
+  // RGBA albo paleta 256 kolorów z kanałem alfa w tRNS (kwantyzacja dla mniejszego APK).
+  const alpha = bytes[25] === 6 || (bytes[25] === 3 && bytes.includes(Buffer.from('tRNS', 'ascii')));
+  expect(alpha, `${id}/${name}: PNG z alfa (RGBA albo paleta + tRNS)`).toBe(true);
   expect(bytes.length, `${id}/${name}: niepusty plik`).toBeGreaterThan(150);
 }
 

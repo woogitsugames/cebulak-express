@@ -114,6 +114,10 @@ ui.btnChallenge.textContent = GHOST_TEXTS.challengeButton;
 const dailyTitleText = (key: string): string => dailyTitle(key, localized('DAILY_TITLES'));
 
 const params = new URLSearchParams(location.search);
+/** Ślady dla e2e (?test=1): komunikat konsoli dociera do Playwrighta, nawet gdy wątek potem stanie. */
+const breadcrumb = params.get('test') === '1'
+  ? (label: string): void => console.debug('[ce]', Math.round(performance.now()), label)
+  : (): void => {};
 /**
  * Gracz, który już kiedyś grał, nie dostaje ekranu pierwszego uruchomienia. Samo ce.settings tego nie
  * dowodzi: zapisujemy je przy pierwszym starcie (nick), zanim gracz cokolwiek wybierze.
@@ -145,6 +149,8 @@ let game: Game | null = null;
 let daily: string | null = null;
 let runId: string | null = null;
 let overAt = 0;
+/** Tylko ?test=1: tyle klatek po ekranie końca zostawia ślady w konsoli. */
+let postOverFrames = 0;
 let toastTimer = 0;
 let lastMilestone = 0;
 let cardImage: Promise<Blob> | null = null;
@@ -655,7 +661,10 @@ function toast(text: string): void {
 function handleEvents(g: Game): void {
   for (const e of g.drainEvents()) {
     // drainEvents oddaje zdarzenie raz: wyjątek w dźwięku/wibracji/muzyce nie może zjeść końca przejazdu.
+    const important = e.type === 'hit' || e.type === 'over' || e.type === 'arrived';
+    if (important) breadcrumb('event:' + e.type);
     try { feedback(e); } catch (error) { console.error('[feedback]', e.type, error); }
+    if (important) breadcrumb('feedback-done:' + e.type);
     if (e.type === 'pickup') {
       toast(fill(pick(PICKUP_TEXTS[e.kind]), { km: e.bonusKm }));
       track('pickup', { kind: e.kind, mode: g.mode });
@@ -709,6 +718,8 @@ function cardData(g: Game, joke: string): CardData {
 let lastCard: CardData | null = null;
 
 function showOver(g: Game): void {
+  breadcrumb('showOver:start');
+  if (params.get('test') === '1') postOverFrames = 5;
   overAt = performance.now();
   const bestKey = 'ce.best.' + g.mode;
   const prevBest = load<{ km: number }>(bestKey, { km: 0 }).km;
@@ -756,6 +767,7 @@ function showOver(g: Game): void {
   }
   ui.hud.hidden = true;
   ui.over.hidden = false;
+  breadcrumb('showOver:visible');
   // Lot powrotny: po dojechaniu do Polski (nie po samym powrocie) można od razu ruszyć z powrotem.
   offeredReturn = returnFlightRoute(g, daily);
   ui.btnReturnFlight.hidden = !offeredReturn;
@@ -765,6 +777,7 @@ function showOver(g: Game): void {
   // Toasty tylko na tym ekranie końca: po „Zagraj ponownie” lub powrocie do menu przepadają.
   const serial = overSerial;
   void Promise.all([progressModule(), progressReady]).then(([{ applyRun, saveProgress, summarizeRun }]) => {
+    breadcrumb('progress:start');
     if (!progress) return;
     const kmBefore = progress.stats.totalKm;
     // Powrót za granicę to nie „dojazd do domu” — summarizeRun rozpoznaje go po baseWeight.
@@ -773,7 +786,9 @@ function showOver(g: Game): void {
     void saveProgress(progress);
     const kmAfter = progress.stats.totalKm;
     // Teksty toastów z leniwych chunków: bez sieci przepadają, ale postęp jest już policzony.
+    breadcrumb('progress:applied');
     return Promise.all([import('./meta/unlocks'), import('./ui/collection')]).then(([unlocks, { medalToast, postcardToast }]) => {
+      breadcrumb('progress:toasts');
       const cars = unlocks.applyRunKm({ totalKm: kmBefore }, kmAfter - kmBefore).newlyUnlocked;
       // Jedna kolejka: nowe auto najpierw, medal nie może go przykryć po 300 ms.
       const news = [...cars.map(unlocks.unlockAnnouncement), ...change.newMedals.map(medalToast), ...change.newPostcards.map(postcardToast)];
@@ -791,7 +806,8 @@ function showOver(g: Game): void {
   ui.overLeagueList.replaceChildren();
   // Bez skonfigurowanego Firebase ranking to atrapa z przykładowymi liczbami — nie pokazujemy jej graczom.
   void net.then(({ api, isMock }) => (!isMock || params.get('test') === '1')
-    ? import('./ui/mini-league').then(({ miniLeagueRows }) => miniLeagueRows(api, g.route.home)) : []).then((rows) => {
+    ? import('./ui/mini-league').then(({ miniLeagueRows }) => { breadcrumb('league:start'); return miniLeagueRows(api, g.route.home); }) : []).then((rows) => {
+    breadcrumb('league:done');
     if (leagueRequest !== overLeagueRequest || ui.over.hidden || !rows.length) return;
     ui.overLeagueList.replaceChildren(...rows);
     ui.overMiniLeague.hidden = false;
@@ -800,18 +816,32 @@ function showOver(g: Game): void {
   // Kartę renderujemy od razu, żeby kliknięcie „Udostępnij” zachowało gest użytkownika.
   lastCard = cardData(g, joke);
   const card = lastCard;
-  cardImage = import('./share/card').then(({ renderCard }) => renderCard(card, 'story')).catch(() => null as unknown as Blob);
+  cardImage = import('./share/card').then(({ renderCard }) => { breadcrumb('card:start'); return renderCard(card, 'story'); })
+    .then((blob) => { breadcrumb('card:done'); return blob; })
+    .catch(() => null as unknown as Blob);
   void import('./share/share').catch(quiet);
   prepareChallenge(g, card);
+  breadcrumb('showOver:end');
+  if (params.get('test') === '1') {
+    // Bicie serca: ostatni ślad przed ciszą wskazuje moment zawieszenia wątku.
+    let beats = 0;
+    const heartbeat = window.setInterval(() => {
+      breadcrumb('hb');
+      if (++beats >= 40) window.clearInterval(heartbeat);
+    }, 250);
+  }
 
+  breadcrumb('track:start');
   track('run_end', {
     km: g.km, seconds, cause: arrived ? 'arrived' : g.cause ?? 'ground', mode: g.mode, home: g.route.home as AnalyticsHome,
   });
+  breadcrumb('track:done');
   // Nick ładuje się leniwie: wynik zgłaszamy po jego sprawdzeniu, zamiast pomijać, gdy jeszcze go nie ma.
   if (runId) {
     const run = { runId, flapTicks: [...g.flapTicks], ticks: g.ticks, km: g.km, rulesVersion: RULES_VERSION };
     void Promise.all([net, ensureNick()])
-      .then(([{ api, queue, submitOrQueue }, nickId]) => submitOrQueue(api, queue, { ...run, nickId }))
+      .then(([{ api, queue, submitOrQueue }, nickId]) => { breadcrumb('submit:start'); return submitOrQueue(api, queue, { ...run, nickId }); })
+      .then(() => breadcrumb('submit:done'))
       .catch(quiet);
     runId = null;
   }
@@ -850,7 +880,9 @@ function prepareChallenge(g: Game, card: CardData): void {
   ui.btnChallenge.hidden = true;
   if (g.baseWeight !== 0) return;
   const request = Promise.all([import('./share/share'), ghostModule()]).then(([shareMod, gm]) => {
+    breadcrumb('challenge:start');
     const url = gm.buildChallengeLink(shareMod.shareUrl(card), g, settings.nickId);
+    breadcrumb('challenge:done');
     return url ? { url, text: gm.challengeShareText(g) } : null;
   }).catch(() => null);
   challengeLink = request;
@@ -902,22 +934,33 @@ function step(now: number): void {
     acc += dt;
     let steps = 0;
     while (acc >= TICK && steps < 24) {
+      // Stan sprzed ticku: render rysuje pozycję pośrednią (równy ruch przy 90/120/144 Hz).
+      renderer.beforeTick(game);
       game.tick();
       // Duch musi dostać każdy tick gracza; rozjechanie się wyłącza go po cichu.
       if (ghostRunner && ghostMod) ghostRunner = ghostMod.syncGhost(ghostRunner, game);
       acc -= TICK;
       steps++;
     }
-    if (steps === 24) acc = 0;
+    if (steps === 24) {
+      acc = 0;
+      renderer.beforeTick(game);
+    }
     handleEvents(game);
+    const traceFrame = postOverFrames > 0;
+    if (traceFrame) { postOverFrames--; breadcrumb('frame:events-done'); }
     if (game.phase === 'playing') updateHud();
     const drawGhost = !ghostDrawFailed && ghostRunner && ghostMod?.isGhostVisible(ghostRunner, game) ? ghostRunner : null;
     renderer.ghost = drawGhost;
-    renderer.draw(game, now / 1000);
+    if (traceFrame) breadcrumb('frame:draw-start');
+    // Ułamek ticku, który już upłynął — bez zaokrąglania pozycji do pełnych ticków.
+    renderer.draw(game, now / 1000, Math.min(1, Math.max(0, acc / TICK)));
+    if (traceFrame) breadcrumb('frame:draw-done');
     // Renderer zeruje ducha po błędzie rysowania — wtedy nie próbujemy ponownie w tym przejeździe.
     if (drawGhost && !renderer.ghost) ghostDrawFailed = true;
     // Żart z tablicy nie nachodzi na komunikat o mieście lub granicy.
     signJoke?.show(game.phase === 'playing' && ui.toast.hidden ? renderer.signJoke : null);
+    if (traceFrame) breadcrumb('frame:end');
   } else {
     renderer.draw(previewGame, now / 1000);
   }
@@ -926,7 +969,7 @@ function step(now: number): void {
 let signJoke: SignJokeBubble | null = null;
 void import('./render/signs').then(({ mountSignJoke }) => { signJoke = mountSignJoke(ui.hud); });
 // Haki tylko dla ?test=1 (zrzuty do sklepu, e2e) — w zwykłej sesji nic nie robią.
-void net.then(({ api }) => installStoreShotHooks(() => game, api));
+void net.then(({ api }) => installStoreShotHooks(() => game, api, () => renderer.renderedPose));
 
 /** Gra w tle menu (stoi w miejscu). */
 const previewGame = new Game({ seed: 1, mode: 'ranked', route });

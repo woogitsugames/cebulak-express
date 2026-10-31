@@ -10,6 +10,7 @@ import { PL_MENU, type ForeignLocale } from '../src/content/lang/schema';
 import { waypointText } from '../src/content/waypoint-text';
 import * as ALL_WAYPOINTS from '../src/content/waypoints';
 import { FUNNY_PLACES } from '../src/content/funny-places';
+import { AUSFAHRT_JOKES } from '../src/render/signs';
 import { DAILY_TITLE_TEXTS, dailyTitle } from '../src/core/daily';
 import { PL_CITIES, START_CITIES, makeRoute } from '../src/core/route';
 import { MEDAL_IDS, POSTCARDS } from '../src/meta/progress';
@@ -169,7 +170,9 @@ describe('Teksty spoza dawnych słowników — kompletne w każdym języku', () 
         expect(text, key).not.toBe(waypoints.get(key));
         expect(Array.from(text).length, text).toBeLessThanOrEqual(64);
       }
-      expect(Object.keys(dict.FUNNY_PLACES).sort()).toEqual(FUNNY_PLACES.map((place) => place.id).sort());
+      expect(Object.keys(dict.FUNNY_PLACES).sort()).toEqual([
+        ...FUNNY_PLACES.map((place) => place.id), ...AUSFAHRT_JOKES.map((_, i) => 'de-ausfahrt-' + i),
+      ].sort());
       for (const place of FUNNY_PLACES) {
         const joke = dict.FUNNY_PLACES[place.id];
         // Prawdziwa nazwa z tablicy zostaje; zmienia się tylko dymek.

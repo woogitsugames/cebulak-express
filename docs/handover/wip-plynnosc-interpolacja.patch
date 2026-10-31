@@ -1,0 +1,737 @@
+From fd1129d7463a8567f3c5a22091aa72f18c37a866 Mon Sep 17 00:00:00 2001
+From: Claude <noreply@anthropic.com>
+Date: Sat, 31 Oct 2026 13:53:41 +0000
+Subject: [PATCH] =?UTF-8?q?P=C5=82ynny=20render=20mi=C4=99dzy=20tickami:?=
+ =?UTF-8?q?=20interpolacja=20pozycji,=20pasy=20wygaszenia=20z=20panoram?=
+ =?UTF-8?q?=C4=85?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+- Render rysuje stan pośredni prev + (cur - prev) * (acc / TICK) zamiast stanu po
+  pełnych tickach: przy 90/144 Hz liczba ticków na klatkę skakała (1-1-2, 1-1-1-1-0),
+  a przy 60 Hz zdarzały się klatki 1/3 ticku. Dotyczy tła, przeszkód, gracza i ducha.
+  Rdzeń gry bez zmian (tylko odczyt stanu przed tickiem w warstwie renderu).
+- Pasy wygaszenia warstwy far przy panoramie jadą razem z panoramą (siatka stała
+  względem ekranu dawała „pełzające” prążki, zwłaszcza 24 px w trybie oszczędnym).
+- AdaptiveQuality: po drugim spadku FPS zostaje w trybie oszczędnym (bez cyklu
+  mrugania chmur/zimowych teł co ~13 s).
+- resize bez zmiany rozmiaru nie czyści kanwy (Android WebView).
+- Hak ?test=1 renderPose() i e2e smooth-motion (wirtualny vsync 60/90/144 Hz),
+  vitest dla interpolacji.
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01GfKv6HpRFHiwHaFvzS3hrY
+---
+ e2e/smooth-motion.spec.ts      | 75 ++++++++++++++++++++++++++++++++++
+ src/main.ts                    | 12 ++++--
+ src/render/background.ts       |  6 ++-
+ src/render/ghost.ts            | 13 ++++--
+ src/render/interpolation.ts    | 64 +++++++++++++++++++++++++++++
+ src/render/performance.ts      | 17 +++++++-
+ src/render/renderer.ts         | 53 ++++++++++++++++++------
+ src/render/sprites.ts          | 14 ++++---
+ src/test-hooks.ts              | 17 +++++++-
+ tests/background.test.ts       | 19 +++++++++
+ tests/interpolation.test.ts    | 75 ++++++++++++++++++++++++++++++++++
+ tests/performance-mode.test.ts | 16 ++++++++
+ 12 files changed, 350 insertions(+), 31 deletions(-)
+ create mode 100644 e2e/smooth-motion.spec.ts
+ create mode 100644 src/render/interpolation.ts
+ create mode 100644 tests/interpolation.test.ts
+
+diff --git a/e2e/smooth-motion.spec.ts b/e2e/smooth-motion.spec.ts
+new file mode 100644
+index 0000000..4af8c48
+--- /dev/null
++++ b/e2e/smooth-motion.spec.ts
+@@ -0,0 +1,75 @@
++import type { Page } from '@playwright/test';
++import { test, expect, openMenu, startRun } from './support';
++
++/**
++ * Płynność przesuwu tła na ekranach 60/90/144 Hz (zgłoszenie „tło klatkuje, bolą oczy”).
++ * Headless Chromium nie ma wyświetlacza 90/144 Hz i nie nadąża z rysowaniem w czasie
++ * rzeczywistym, więc strona dostaje wirtualny zegar: requestAnimationFrame i performance.now
++ * idą równymi krokami 1/hz s, jak vsync telefonu. Mierzymy pozycję świata faktycznie
++ * narysowaną w każdej klatce (hak ?test=1) i porównujemy przyrosty między klatkami.
++ */
++interface MotionStats { frames: number; meanDx: number; cv: number; jerk: number }
++
++interface MotionProbe { samples: number[]; on: boolean }
++
++async function measure(page: Page, hz: number): Promise<MotionStats> {
++  await page.addInitScript((rate: number) => {
++    const period = 1000 / rate;
++    const queue: FrameRequestCallback[] = [];
++    const probe: MotionProbe = { samples: [], on: false };
++    (window as unknown as { __ceMotion: MotionProbe }).__ceMotion = probe;
++    const realNow = performance.now.bind(performance);
++    let virtual = realNow();
++    performance.now = () => virtual;
++    window.requestAnimationFrame = (cb) => { queue.push(cb); return queue.length; };
++    window.cancelAnimationFrame = () => undefined;
++    const press = (): boolean => window.dispatchEvent(new KeyboardEvent('keydown', { code: 'Space', bubbles: true }));
++    const pump = (): void => {
++      virtual += period;
++      for (const cb of queue.splice(0)) cb(virtual);
++      const t = window.__ceTest;
++      const s = probe.on ? t?.snapshot() : null;
++      if (s?.phase === 'playing') {
++        probe.samples.push(t?.renderPose?.()?.distancePx ?? s.distancePx);
++        // Autopilot w wirtualnym czasie: tapnięcie, gdy auto opada poniżej środka (bez losowości).
++        if (s.y > 320 && s.vy > 0) press();
++      }
++      setTimeout(pump, 4);
++    };
++    setTimeout(pump, 4);
++  }, hz);
++  await openMenu(page);
++  await page.locator('[data-mode="cozy"]').click();
++  await startRun(page);
++  await page.keyboard.press('Space');
++  await page.waitForFunction(() => window.__ceTest?.snapshot()?.phase === 'playing', undefined, { polling: 50 });
++  await page.evaluate(() => { (window as unknown as { __ceMotion: MotionProbe }).__ceMotion.on = true; });
++  await page.waitForFunction(() => {
++    const { samples } = (window as unknown as { __ceMotion: MotionProbe }).__ceMotion;
++    return samples.length >= 200 || (samples.length > 0 && window.__ceTest?.snapshot()?.phase !== 'playing');
++  }, undefined, { timeout: 30_000, polling: 50 });
++  const xs = await page.evaluate(() => (window as unknown as { __ceMotion: MotionProbe }).__ceMotion.samples.slice(0, 200));
++  return motionStats(xs);
++}
++
++/** Przyrosty pozycji między klatkami: odchylenie (cv) i największy skok sąsiednich przyrostów (jerk). */
++function motionStats(xs: number[]): MotionStats {
++  const dx = xs.slice(1).map((x, i) => x - xs[i]).filter((d) => d >= 0); // 0 = klatka bez ruchu (też szarpnięcie)
++  const mean = dx.reduce((a, b) => a + b, 0) / dx.length;
++  const std = Math.sqrt(dx.reduce((a, b) => a + (b - mean) ** 2, 0) / dx.length);
++  const jerk = Math.max(...dx.slice(1).map((d, i) => Math.abs(d - dx[i])));
++  return { frames: dx.length, meanDx: +mean.toFixed(4), cv: +(std / mean).toFixed(4), jerk: +(jerk / mean).toFixed(4) };
++}
++
++for (const hz of [60, 90, 144]) {
++  test(`tło przesuwa się równomiernie przy ${hz} Hz`, async ({ page }, testInfo) => {
++    test.skip(testInfo.project.name.includes('WebKit'), 'Wirtualny zegar klatek sprawdzamy w Chromium.');
++    const stats = await measure(page, hz);
++    console.log(`[płynność ${hz} Hz] ${testInfo.project.name}: ${JSON.stringify(stats)}`);
++    await testInfo.attach(`plynnosc-${hz}hz`, { body: JSON.stringify(stats), contentType: 'application/json' });
++    expect(stats.frames).toBeGreaterThan(40);
++    // Przyrost na klatkę stały co do 3% (zostaje tylko powolne przyspieszanie trasy, bonusy, kolizje).
++    expect(stats.cv).toBeLessThan(0.03);
++    expect(stats.jerk).toBeLessThan(0.15);
++  });
++}
+diff --git a/src/main.ts b/src/main.ts
+index 0ccfbd8..d57d97f 100644
+--- a/src/main.ts
++++ b/src/main.ts
+@@ -912,18 +912,24 @@ function step(now: number): void {
+     acc += dt;
+     let steps = 0;
+     while (acc >= TICK && steps < 24) {
++      // Stan sprzed ticku: render rysuje pozycję pośrednią (równy ruch przy 90/120/144 Hz).
++      renderer.beforeTick(game);
+       game.tick();
+       // Duch musi dostać każdy tick gracza; rozjechanie się wyłącza go po cichu.
+       if (ghostRunner && ghostMod) ghostRunner = ghostMod.syncGhost(ghostRunner, game);
+       acc -= TICK;
+       steps++;
+     }
+-    if (steps === 24) acc = 0;
++    if (steps === 24) {
++      acc = 0;
++      renderer.beforeTick(game);
++    }
+     handleEvents(game);
+     if (game.phase === 'playing') updateHud();
+     const drawGhost = !ghostDrawFailed && ghostRunner && ghostMod?.isGhostVisible(ghostRunner, game) ? ghostRunner : null;
+     renderer.ghost = drawGhost;
+-    renderer.draw(game, now / 1000);
++    // Ułamek ticku, który już upłynął — bez zaokrąglania pozycji do pełnych ticków.
++    renderer.draw(game, now / 1000, Math.min(1, Math.max(0, acc / TICK)));
+     // Renderer zeruje ducha po błędzie rysowania — wtedy nie próbujemy ponownie w tym przejeździe.
+     if (drawGhost && !renderer.ghost) ghostDrawFailed = true;
+     // Żart z tablicy nie nachodzi na komunikat o mieście lub granicy.
+@@ -936,7 +942,7 @@ function step(now: number): void {
+ let signJoke: SignJokeBubble | null = null;
+ void import('./render/signs').then(({ mountSignJoke }) => { signJoke = mountSignJoke(ui.hud); });
+ // Haki tylko dla ?test=1 (zrzuty do sklepu, e2e) — w zwykłej sesji nic nie robią.
+-void net.then(({ api }) => installStoreShotHooks(() => game, api));
++void net.then(({ api }) => installStoreShotHooks(() => game, api, () => renderer.renderedPose));
+ 
+ /** Gra w tle menu (stoi w miejscu). */
+ const previewGame = new Game({ seed: 1, mode: 'ranked', route });
+diff --git a/src/render/background.ts b/src/render/background.ts
+index 96b7ffd..5fc8618 100644
+--- a/src/render/background.ts
++++ b/src/render/background.ts
+@@ -363,7 +363,11 @@ export class BackgroundRenderer {
+     this.fadeActiveX = activeStrength > 0 ? waypointScreenX(this.activeWaypoint!.km, state.progressKm) : 0;
+     this.fadeOutgoingX = outgoingStrength > 0 ? waypointScreenX(this.outgoingWaypoint!.km, state.progressKm) : 0;
+     const step = this.quality.reduced ? FAR_FADE_STEP_REDUCED : FAR_FADE_STEP;
+-    let runStart = this.viewLeft;
++    // Siatka pasów jedzie razem z panoramą: krycie każdego pasa stoi w miejscu, gdy panorama
++    // się przesuwa. Siatka stała względem ekranu przeskakiwała co klatkę o poziom alfy
++    // (w trybie oszczędnym pasy 24 px) — widoczne „pełzające” prążki za sylwetką miasta.
++    const anchor = activeStrength > 0 ? this.fadeActiveX : this.fadeOutgoingX;
++    let runStart = anchor - Math.ceil((anchor - this.viewLeft) / step) * step;
+     let runAlpha = this.farAlphaAt(runStart + step / 2);
+     for (let x = runStart + step; ; x += step) {
+       const end = x >= this.viewRight;
+diff --git a/src/render/ghost.ts b/src/render/ghost.ts
+index a3d05bf..0e5c3ff 100644
+--- a/src/render/ghost.ts
++++ b/src/render/ghost.ts
+@@ -4,6 +4,7 @@ import { renderNick } from '../content/nicks';
+ import { GHOST_TEXTS, fill } from '../content/i18n';
+ import type { GhostChallenge } from '../share/ghost';
+ import { drawHeroSprite } from './sprites';
++import { PoseHistory, type RenderPose } from './interpolation';
+ 
+ export interface GhostOutcome {
+   readonly playerKm: number;
+@@ -22,6 +23,8 @@ export class GhostRunner {
+   private nextFlap = 0;
+   private lastPlayerTick = -1;
+   private playerKmAtLimit: number | null = null;
++  /** Stan ducha sprzed ostatniego ticku — rysowany płynnie, tak jak gracz. */
++  private readonly history = new PoseHistory<Game>();
+ 
+   constructor(challenge: GhostChallenge) {
+     this.challenge = challenge;
+@@ -48,6 +51,7 @@ export class GhostRunner {
+         this.game.flap();
+         this.nextFlap++;
+       }
++      this.history.beforeTick(this.game);
+       this.game.tick();
+     }
+     // Odbiorca przejeżdża tyle samo sekund co nadawca (w uciętym linku),
+@@ -73,18 +77,19 @@ export class GhostRunner {
+   }
+ 
+   /** Canvas musi być już w logicznym układzie 360×640 (przed bohaterem gracza). */
+-  draw(ctx: CanvasRenderingContext2D, timeSec: number): void {
++  draw(ctx: CanvasRenderingContext2D, timeSec: number, alpha = 1): void {
++    const pose = this.history.pose(this.game, alpha);
+     // Duch pozostaje widoczny po zakończeniu zapisu, ale nie zyskuje dodatkowych km.
+     ctx.save();
+     ctx.translate(25, 0);
+     ctx.globalAlpha *= 0.45;
+-    if (!drawHeroSprite(ctx, this.game, timeSec)) drawGhostFallback(ctx, this.game);
++    if (!drawHeroSprite(ctx, this.game, timeSec, pose)) drawGhostFallback(ctx, pose);
+     ctx.restore();
+ 
+     const measure = Math.min(314, measureLabel(ctx, this.label));
+     const labelWidth = Math.max(85, measure + 16);
+     const left = Math.max(5, Math.min(WORLD.width - 5 - labelWidth, PLAYER.x + 25 - labelWidth / 2));
+-    const top = Math.max(8, this.game.y - 59);
++    const top = Math.max(8, pose.y - 59);
+     ctx.save();
+     ctx.fillStyle = 'rgba(19, 58, 60, 0.79)';
+     ctx.beginPath();
+@@ -107,7 +112,7 @@ function measureLabel(ctx: CanvasRenderingContext2D, label: string): number {
+ }
+ 
+ /** Awaryjne kombi wektorowe, gdy sprite nie został jeszcze wczytany. */
+-function drawGhostFallback(ctx: CanvasRenderingContext2D, game: Game): void {
++function drawGhostFallback(ctx: CanvasRenderingContext2D, game: RenderPose): void {
+   ctx.save();
+   ctx.translate(PLAYER.x, game.y);
+   ctx.rotate(Math.max(-0.35, Math.min(0.5, game.vy / 900)));
+diff --git a/src/render/interpolation.ts b/src/render/interpolation.ts
+new file mode 100644
+index 0000000..d28f10f
+--- /dev/null
++++ b/src/render/interpolation.ts
+@@ -0,0 +1,64 @@
++/**
++ * Interpolacja renderu między dwoma stanami symulacji (stały krok TICK).
++ *
++ * Symulacja liczy pełne ticki 1/120 s, a ekran odświeża się 60/90/120/144 razy na sekundę.
++ * Bez interpolacji liczba ticków na klatkę skacze (90 Hz: 1-1-2, 144 Hz: 1-1-1-1-0…),
++ * więc tło i auto przesuwają się nierówno — oko widzi to jako „klatkowanie”.
++ * Render rysuje więc stan pośredni: prev + (cur − prev) · alpha, gdzie alpha = acc / TICK
++ * (ułamek ticku, który już upłynął). Kosztem jest opóźnienie obrazu o ≤ 1 tick (8 ms).
++ * Moduł tylko czyta stan gry — rdzeń (współdzielony z weryfikacją rankingu) się nie zmienia.
++ */
++
++/** Część stanu gry, którą rysujemy w pozycji pośredniej. Game spełnia ten interfejs. */
++export interface RenderPose {
++  distancePx: number;
++  y: number;
++  vy: number;
++}
++
++/** Ułamek ticku do interpolacji: 0 = poprzedni stan, 1 = bieżący. Odporny na NaN i ujemne acc. */
++export function renderAlpha(acc: number, tick: number): number {
++  if (!(tick > 0) || !(acc > 0)) return 0;
++  return Math.min(1, acc / tick);
++}
++
++/**
++ * Pozycja do narysowania. Bez poprzedniego stanu (nowy przejazd, pierwsza klatka)
++ * zwraca bieżący. `out` pozwala nie alokować obiektu w każdej klatce.
++ */
++export function interpolatePose(
++  prev: RenderPose | null, cur: RenderPose, alpha: number,
++  out: RenderPose = { distancePx: 0, y: 0, vy: 0 },
++): RenderPose {
++  const a = Number.isFinite(alpha) ? Math.min(1, Math.max(0, alpha)) : 1;
++  if (!prev || a >= 1) {
++    out.distancePx = cur.distancePx;
++    out.y = cur.y;
++    out.vy = cur.vy;
++    return out;
++  }
++  out.distancePx = prev.distancePx + (cur.distancePx - prev.distancePx) * a;
++  out.y = prev.y + (cur.y - prev.y) * a;
++  out.vy = prev.vy + (cur.vy - prev.vy) * a;
++  return out;
++}
++
++/** Zapamiętuje stan sprzed ostatniego ticku jednej instancji gry (bez alokacji w pętli). */
++export class PoseHistory<T extends RenderPose = RenderPose> {
++  private owner: T | null = null;
++  private readonly prev: RenderPose = { distancePx: 0, y: 0, vy: 0 };
++  private readonly out: RenderPose = { distancePx: 0, y: 0, vy: 0 };
++
++  /** Wywołuj tuż przed każdym tick() — zapisuje stan, z którego tick wystartuje. */
++  beforeTick(game: T): void {
++    this.owner = game;
++    this.prev.distancePx = game.distancePx;
++    this.prev.y = game.y;
++    this.prev.vy = game.vy;
++  }
++
++  /** Pozycja do narysowania; dla innej instancji gry (nowy przejazd) — stan bieżący. */
++  pose(game: T, alpha: number): RenderPose {
++    return interpolatePose(this.owner === game ? this.prev : null, game, alpha, this.out);
++  }
++}
+diff --git a/src/render/performance.ts b/src/render/performance.ts
+index ab69642..18cc2bf 100644
+--- a/src/render/performance.ts
++++ b/src/render/performance.ts
+@@ -63,11 +63,16 @@ export function savePerformanceMode(mode: PerformanceMode): void {
+ /**
+  * Stan oszczędny po trzech kolejnych sekundach FPS < 45.
+  * Powrót po dziesięciu sekundach FPS >= 55 zapobiega migotaniu jakości.
++ * Gdy po powrocie urządzenie znów zwalnia (pełna jakość jest dla niego za ciężka),
++ * zostaje w trybie oszczędnym do końca sesji — inaczej co ~13 s chmury i zimowe tła
++ * znikałyby i wracały (cykliczne „mruganie” obrazu).
+  * Stałe liczniki, bez tablic i alokacji w pętli animacji.
+  */
+ export class AdaptiveQuality {
+   private mode: PerformanceMode;
+   private autoReduced = false;
++  private recovered = false;
++  private latched = false;
+   private windowStart: number | null = null;
+   private lastFrame: number | null = null;
+   private frames = 0;
+@@ -88,6 +93,8 @@ export class AdaptiveQuality {
+   setMode(mode: PerformanceMode): void {
+     this.mode = mode;
+     this.autoReduced = false;
++    this.recovered = false;
++    this.latched = false;
+     this.resetSamples();
+   }
+ 
+@@ -112,11 +119,17 @@ export class AdaptiveQuality {
+     if (this.fpsValue < 45) {
+       this.slowMs += elapsed;
+       this.fastMs = 0;
+-      if (this.slowMs >= 3_000) this.autoReduced = true;
++      if (this.slowMs >= 3_000 && !this.autoReduced) {
++        this.autoReduced = true;
++        if (this.recovered) this.latched = true;
++      }
+     } else if (this.fpsValue >= 55) {
+       this.fastMs += elapsed;
+       this.slowMs = 0;
+-      if (this.fastMs >= 10_000) this.autoReduced = false;
++      if (this.fastMs >= 10_000 && this.autoReduced && !this.latched) {
++        this.autoReduced = false;
++        this.recovered = true;
++      }
+     } else {
+       this.slowMs = 0;
+       this.fastMs = 0;
+diff --git a/src/render/renderer.ts b/src/render/renderer.ts
+index 681b8e4..746bb95 100644
+--- a/src/render/renderer.ts
++++ b/src/render/renderer.ts
+@@ -4,6 +4,7 @@ import { effectiveGapH, isPowerupKind, type BottomKind, type Obstacle, type Pick
+ import { POWERUP_NAME } from '../content/i18n';
+ import { BackgroundRenderer, type BackgroundState } from './background';
+ import { createSnow } from './snow';
++import { PoseHistory, type RenderPose } from './interpolation';
+ import type { SignsRenderer } from './signs';
+ import { PALETTES } from './palette';
+ import { drawBottomSprite, drawGateSprite, drawHeroSprite, drawPowerupAura, drawPowerupSprite, drawTopSprite } from './sprites';
+@@ -35,7 +36,12 @@ export class Renderer {
+    * Duch znajomego (zlecenie 59): półprzezroczyste kombi rysowane pod bohaterem.
+    * Ustawiany przez main.ts na czas przejazdu wyzwania; błąd rysowania wyłącza ducha.
+    */
+-  ghost: { draw(ctx: CanvasRenderingContext2D, timeSec: number): void } | null = null;
++  ghost: { draw(ctx: CanvasRenderingContext2D, timeSec: number, alpha?: number): void } | null = null;
++  /** Stan gracza sprzed ostatniego ticku — render rysuje pozycję pośrednią (płynność 90/120/144 Hz). */
++  private readonly history = new PoseHistory<Game>();
++  private lastPose: RenderPose | null = null;
++  /** Rozmiar kanwy z ostatniego resize: ten sam rozmiar nie czyści i nie przelicza kanwy. */
++  private sizeKey = '';
+ 
+   constructor(private canvas: HTMLCanvasElement) {
+     const ctx = canvas.getContext('2d');
+@@ -48,6 +54,11 @@ export class Renderer {
+   /** Dopasowanie do kontenera z zachowaniem proporcji 9:16 i ostrości na ekranach HiDPI. */
+   resize(cssWidth: number, cssHeight: number): void {
+     const dpr = Math.min(window.devicePixelRatio || 1, 3);
++    // Android WebView potrafi zgłaszać resize bez zmiany rozmiaru (pasek systemowy, klawiatura):
++    // przypisanie canvas.width czyści kanwę i resetuje kontekst — to błysk/szarpnięcie w trakcie gry.
++    const key = `${cssWidth}x${cssHeight}@${dpr}`;
++    if (key === this.sizeKey) return;
++    this.sizeKey = key;
+     this.canvas.width = Math.round(cssWidth * dpr);
+     this.canvas.height = Math.round(cssHeight * dpr);
+     this.canvas.style.width = `${cssWidth}px`;
+@@ -61,7 +72,7 @@ export class Renderer {
+    * Pozycja tła w km bez zaokrąglenia: game.km to Math.floor (wynik gracza), a 1 km to 20 px świata,
+    * więc panoramy i tablice skakałyby o 5–20 px. Premia za znajdźkę dochodzi płynnie w ok. 0,5 s.
+    */
+-  private smoothProgressKm(game: Game, timeSec: number): number {
++  private smoothProgressKm(game: Game, timeSec: number, distancePx: number): number {
+     const dt = Math.min(0.1, Math.max(0, timeSec - this.lastBonusT));
+     this.lastBonusT = timeSec;
+     if (game !== this.lastGame || game.bonusKm < this.shownBonusKm) {
+@@ -71,11 +82,27 @@ export class Renderer {
+       this.shownBonusKm += (game.bonusKm - this.shownBonusKm) * Math.min(1, dt * 6);
+       if (game.bonusKm - this.shownBonusKm < 0.01) this.shownBonusKm = game.bonusKm;
+     }
+-    return Math.min(game.route.totalKm, game.distancePx * KM_PER_PX + this.shownBonusKm);
++    return Math.min(game.route.totalKm, distancePx * KM_PER_PX + this.shownBonusKm);
+   }
+ 
+-  draw(game: Game, timeSec: number): void {
++  /** main.ts woła tuż przed każdym game.tick(): zapamiętuje stan do interpolacji renderu. */
++  beforeTick(game: Game): void {
++    this.history.beforeTick(game);
++  }
++
++  /** Pozycja narysowana w ostatniej klatce (hak ?test=1 do pomiaru płynności). */
++  get renderedPose(): Readonly<RenderPose> | null {
++    return this.lastPose;
++  }
++
++  /**
++   * alpha: ułamek ticku, który upłynął od ostatniego pełnego ticku (acc / TICK).
++   * Świat, tło i auto rysujemy w pozycji pośredniej; logika gry tego nie widzi.
++   */
++  draw(game: Game, timeSec: number, alpha = 1): void {
+     const { ctx } = this;
++    const pose = this.history.pose(game, alpha);
++    this.lastPose = pose;
+     // Pasy poza światem 9:16 (wysokie telefony, desktop) wypełniamy niebem i asfaltem.
+     const pal = PALETTES[game.country];
+     const groundScreenY = this.offsetY + WORLD.groundY * this.scale;
+@@ -93,13 +120,13 @@ export class Renderer {
+     // Wysokie ekrany: próbkuj brzeg oryginalnego PNG sky/road zamiast
+     // rysować odcinające się pasy jednolitym kolorem palety.
+     this.background.drawOutsideWorld(
+-      ctx, game.country, game.distancePx, timeSec,
++      ctx, game.country, pose.distancePx, timeSec,
+       -this.offsetY / this.scale,
+       (this.canvas.height - this.offsetY) / this.scale,
+     );
+ 
+-    const worldX = game.distancePx;
+-    const progressKm = this.smoothProgressKm(game, timeSec);
++    const worldX = pose.distancePx;
++    const progressKm = this.smoothProgressKm(game, timeSec, worldX);
+     const bg: BackgroundState = {
+       country: game.country,
+       distancePx: worldX,
+@@ -125,19 +152,19 @@ export class Renderer {
+     if (this.ghost) {
+       ctx.save();
+       try {
+-        this.ghost.draw(ctx, timeSec);
++        this.ghost.draw(ctx, timeSec, alpha);
+       } catch {
+         this.ghost = null;
+       }
+       ctx.restore();
+     }
+-    if (!drawHeroSprite(this.ctx, game, timeSec)) this.drawPlayer(game, timeSec);
++    if (!drawHeroSprite(this.ctx, game, timeSec, pose)) this.drawPlayer(game, timeSec, pose);
+     if (this.winter) {
+       this.snow.update(Math.min(0.1, Math.max(0, timeSec - this.lastSnowT)));
+       this.lastSnowT = timeSec;
+       this.snow.draw(ctx);
+     }
+-    drawPowerupAura(this.ctx, game, timeSec);
++    drawPowerupAura(this.ctx, game, timeSec, pose);
+     this.drawPowerupHud(game);
+   }
+ 
+@@ -237,14 +264,14 @@ export class Renderer {
+     ctx.restore();
+   }
+ 
+-  private drawPlayer(game: Game, t: number): void {
++  private drawPlayer(game: Game, t: number, pose: RenderPose): void {
+     const { ctx } = this;
+     const blink = game.invulnerableTicks > 0 && Math.floor(t * 12) % 2 === 0;
+     if (blink) return;
+-    const tilt = Math.max(-0.35, Math.min(0.5, game.vy / 900));
++    const tilt = Math.max(-0.35, Math.min(0.5, pose.vy / 900));
+     const luggage = Math.min(4, 1 + Math.floor(game.weight * 4));
+     ctx.save();
+-    ctx.translate(PLAYER.x, game.y);
++    ctx.translate(PLAYER.x, pose.y);
+     ctx.rotate(tilt);
+ 
+     // Bagaże na dachu — im cięższy, tym wyższy stos
+diff --git a/src/render/sprites.ts b/src/render/sprites.ts
+index 14097cf..3947ab5 100644
+--- a/src/render/sprites.ts
++++ b/src/render/sprites.ts
+@@ -2,6 +2,7 @@ import { PLAYER, WORLD } from '../core/config';
+ import type { Game } from '../core/game';
+ import type { BottomKind, PowerupKind, TopKind } from '../core/obstacles';
+ import { unlockedSkins } from '../meta/unlocks';
++import type { RenderPose } from './interpolation';
+ 
+ /** Identyfikatory zapisywane w settings.skin; po publikacji pozostają stałe. */
+ export const HERO_SKINS = [
+@@ -163,15 +164,16 @@ function layerDraw(ctx: CanvasRenderingContext2D, asset: { img: HTMLImageElement
+   const { img, anchor: at } = asset;
+   ctx.drawImage(img, -at.x / SCALE, -at.y / SCALE, img.naturalWidth / SCALE, img.naturalHeight / SCALE);
+ }
+-export function drawHeroSprite(ctx: CanvasRenderingContext2D, game: Game, t: number): boolean {
++/** pose: pozycja do narysowania (interpolowana między tickami); domyślnie stan gry. */
++export function drawHeroSprite(ctx: CanvasRenderingContext2D, game: Game, t: number, pose: RenderPose = game): boolean {
+   const layout = activeLayout();
+   const crashed = game.phase === 'over';
+   const body = sprite(layout, crashed ? 'crash' : 'body');
+   const wheel = crashed ? null : sprite(layout, 'wheel');
+   if (!body || (!crashed && !wheel)) return false;
+-  const tilt = Math.max(-0.35, Math.min(0.5, game.vy / 900));
++  const tilt = Math.max(-0.35, Math.min(0.5, pose.vy / 900));
+   ctx.save();
+-  ctx.translate(PLAYER.x, game.y);
++  ctx.translate(PLAYER.x, pose.y);
+   ctx.rotate(tilt);
+   if (!crashed && game.vy < -150) {
+     const flame = sprite(layout, Math.floor(t * 14) % 2 ? 'flame-2' : 'flame-1');
+@@ -179,7 +181,7 @@ export function drawHeroSprite(ctx: CanvasRenderingContext2D, game: Game, t: num
+   }
+   const drawWheels = (): void => {
+     if (!wheel) return;
+-    const spin = (game.distancePx / 6) % (Math.PI * 2);
++    const spin = (pose.distancePx / 6) % (Math.PI * 2);
+     for (const pos of layout.wheels) {
+       ctx.save();
+       ctx.translate((pos.x - layout.anchor.x) / SCALE, (pos.y - layout.anchor.y) / SCALE);
+@@ -267,7 +269,7 @@ export function drawPowerupSprite(ctx: CanvasRenderingContext2D, kind: PowerupKi
+ }
+ 
+ /** Poświata podkreśla aktywny bonus, bez migania grafiki samochodu. */
+-export function drawPowerupAura(ctx: CanvasRenderingContext2D, game: Game, timeSec: number): void {
++export function drawPowerupAura(ctx: CanvasRenderingContext2D, game: Game, timeSec: number, pose: RenderPose = game): void {
+   if (!game.activePowerup) return;
+   const pulse = 0.5 + 0.5 * Math.sin(timeSec * 12);
+   const colors: Record<PowerupKind, string> = {
+@@ -276,7 +278,7 @@ export function drawPowerupAura(ctx: CanvasRenderingContext2D, game: Game, timeS
+     mamcall: '#e9b6f6',
+   };
+   ctx.save();
+-  ctx.translate(PLAYER.x, game.y);
++  ctx.translate(PLAYER.x, pose.y);
+   ctx.strokeStyle = colors[game.activePowerup];
+   ctx.globalAlpha = 0.68 + 0.24 * pulse;
+   ctx.lineWidth = 3 + pulse * 2;
+diff --git a/src/test-hooks.ts b/src/test-hooks.ts
+index d2eb04f..77cdb40 100644
+--- a/src/test-hooks.ts
++++ b/src/test-hooks.ts
+@@ -18,7 +18,12 @@ export interface StoreShotSnapshot {
+ 
+ declare global {
+   interface Window {
+-    __ceTest?: { snapshot(): StoreShotSnapshot | null; rankingMode(): RankingApi['kind'] };
++    __ceTest?: {
++      snapshot(): StoreShotSnapshot | null;
++      rankingMode(): RankingApi['kind'];
++      /** Pozycja narysowana w ostatniej klatce (interpolowana między tickami) — pomiar płynności. */
++      renderPose?(): { distancePx: number; y: number } | null;
++    };
+   }
+ }
+ 
+@@ -27,7 +32,11 @@ declare global {
+  * nicków ani tokenów; nie zmienia pozycji, wyniku ani reguł gry.
+  * Koordynator integruje moduł w src/main.ts po utworzeniu game i api.
+  */
+-export function installStoreShotHooks(getGame: () => Game | null, api: RankingApi): void {
++export function installStoreShotHooks(
++  getGame: () => Game | null,
++  api: RankingApi,
++  getRenderPose: () => { readonly distancePx: number; readonly y: number } | null = () => null,
++): void {
+   if (new URLSearchParams(location.search).get('test') !== '1') return;
+   window.__ceTest = {
+     snapshot: () => {
+@@ -42,5 +51,9 @@ export function installStoreShotHooks(getGame: () => Game | null, api: RankingAp
+       };
+     },
+     rankingMode: () => api.kind,
++    renderPose: () => {
++      const pose = getRenderPose();
++      return pose ? { distancePx: pose.distancePx, y: pose.y } : null;
++    },
+   };
+ }
+diff --git a/tests/background.test.ts b/tests/background.test.ts
+index 497fcb8..29d460b 100644
+--- a/tests/background.test.ts
++++ b/tests/background.test.ts
+@@ -261,6 +261,25 @@ describe('panorama miasta (D14): rozmiar i wygaszanie warstwy far', () => {
+     expect(Math.max(...rects.map(([left, , width]) => left + width))).toBe(WORLD.width);
+   });
+ 
++  it('pasy wygaszenia jadą razem z panoramą: krycie pasa nie skacze przy płynnym przesuwie', () => {
++    const strips = (progressKm: number, mode: 'off' | 'always') => {
++      const { loader } = mockAssets();
++      const c = fakeCanvas();
++      const seen: [number, number][] = [];
++      c.rect.mockImplementation((left: number) => { seen.push([left, c.globalAlpha]); });
++      const renderer = new BackgroundRenderer(loader);
++      renderer.setPerformanceMode(mode);
++      renderer.drawBackground(c as unknown as CanvasRenderingContext2D, cityState(progressKm));
++      const x = 180 - (progressKm - 105) / KM_PER_PX * PARALLAX.far;
++      // Pozycje pasów względem środka panoramy (pomijamy pierwszy, przycięty krawędzią ekranu).
++      return seen.slice(1).map(([left, alpha]) => [+(left - x).toFixed(6), +alpha.toFixed(6)]);
++    };
++    for (const mode of ['off', 'always'] as const) {
++      // 0,013 km ≈ 0,065 px świata przesuwu panoramy — mniej niż jedna klatka jazdy.
++      expect(strips(135.013, mode)).toEqual(strips(135, mode));
++    }
++  });
++
+   it('bez wczytanego PNG panoramy far rysujemy normalnie (zastępcza sylwetka jest mała)', () => {
+     const { layers, loader, landmarks } = mockAssets();
+     landmarks.delete('frankfurt');
+diff --git a/tests/interpolation.test.ts b/tests/interpolation.test.ts
+new file mode 100644
+index 0000000..b2ff9a9
+--- /dev/null
++++ b/tests/interpolation.test.ts
+@@ -0,0 +1,75 @@
++import { describe, expect, it } from 'vitest';
++import { TICK } from '../src/core/config';
++import type { Game } from '../src/core/game';
++import { PoseHistory, interpolatePose, renderAlpha } from '../src/render/interpolation';
++import { botStep, newGame } from './helpers';
++
++/** Pętla jak w main.ts (stały krok + akumulator) przy idealnym vsync o częstotliwości hz. */
++function simulate(hz: number, frames: number, interpolate: boolean): { xs: number[]; game: Game } {
++  const game = newGame(7, 'cozy');
++  const history = new PoseHistory<Game>();
++  game.flap();
++  let acc = 0;
++  const xs: number[] = [];
++  for (let f = 0; f < frames; f++) {
++    acc += 1 / hz;
++    let steps = 0;
++    while (acc >= TICK && steps < 24) {
++      history.beforeTick(game);
++      botStep(game);
++      game.tick();
++      acc -= TICK;
++      steps++;
++    }
++    xs.push(interpolate ? history.pose(game, renderAlpha(acc, TICK)).distancePx : game.distancePx);
++  }
++  return { xs, game };
++}
++
++/** Odchylenie przyrostów na klatkę względem średniej; pomija ruszanie z miejsca w pierwszych klatkach. */
++function unevenness(all: number[]): number {
++  const xs = all.slice(3);
++  const dx = xs.slice(1).map((x, i) => x - xs[i]);
++  const mean = dx.reduce((a, b) => a + b, 0) / dx.length;
++  const std = Math.sqrt(dx.reduce((a, b) => a + (b - mean) ** 2, 0) / dx.length);
++  return std / mean;
++}
++
++describe('interpolacja renderu', () => {
++  it('liczy pozycję pośrednią i obcina alfę do 0..1', () => {
++    const prev = { distancePx: 100, y: 200, vy: -50 };
++    const cur = { distancePx: 102, y: 196, vy: -40 };
++    expect(interpolatePose(prev, cur, 0.25)).toEqual({ distancePx: 100.5, y: 199, vy: -47.5 });
++    expect(interpolatePose(prev, cur, -1)).toEqual(prev);
++    expect(interpolatePose(prev, cur, 7)).toEqual(cur);
++    expect(interpolatePose(prev, cur, Number.NaN)).toEqual(cur);
++    expect(interpolatePose(null, cur, 0.5)).toEqual(cur);
++    expect(renderAlpha(TICK / 2, TICK)).toBeCloseTo(0.5);
++    expect(renderAlpha(-1e-12, TICK)).toBe(0);
++    expect(renderAlpha(TICK * 3, TICK)).toBe(1);
++  });
++
++  it('nowa instancja gry nie dziedziczy pozycji poprzedniego przejazdu', () => {
++    const history = new PoseHistory<Game>();
++    const a = newGame(1);
++    a.flap();
++    for (let i = 0; i < 50; i++) { history.beforeTick(a); a.tick(); }
++    const b = newGame(1);
++    expect(history.pose(b, 0)).toMatchObject({ distancePx: 0, y: b.y });
++  });
++
++  for (const hz of [60, 90, 120, 144]) {
++    it(`${hz} Hz: przesuw tła na klatkę jest równy, a rozgrywka bez zmian`, () => {
++      const frames = Math.round(hz * 1.5);
++      const plain = simulate(hz, frames, false);
++      const smooth = simulate(hz, frames, true);
++      // Logika gry identyczna: ta sama pozycja, tick i wynik po tej samej liczbie klatek.
++      expect(smooth.game.ticks).toBe(plain.game.ticks);
++      expect(smooth.game.distancePx).toBe(plain.game.distancePx);
++      expect(smooth.game.y).toBe(plain.game.y);
++      // Bez interpolacji 90/144 Hz daje kroki 1-1-2 / 1-1-0… ticku (odchylenie ≥ 30%).
++      if (hz === 90 || hz === 144) expect(unevenness(plain.xs)).toBeGreaterThan(0.3);
++      expect(unevenness(smooth.xs)).toBeLessThan(0.01);
++    });
++  }
++});
+diff --git a/tests/performance-mode.test.ts b/tests/performance-mode.test.ts
+index 4272635..7e72968 100644
+--- a/tests/performance-mode.test.ts
++++ b/tests/performance-mode.test.ts
+@@ -105,6 +105,22 @@ describe('adaptacja FPS', () => {
+     expect(quality.reduced).toBe(false);
+   });
+ 
++  it('po drugim spadku FPS zostaje w trybie oszczędnym (bez cyklicznego mrugania jakości)', () => {
++    const quality = new AdaptiveQuality();
++    let ms = 0;
++    const run = (until: number, step: number): void => { for (; ms <= until; ms += step) quality.sample(ms); };
++    run(3_000, 50);
++    expect(quality.reduced).toBe(true);
++    run(14_000, 16);
++    expect(quality.reduced).toBe(false);
++    run(18_500, 50);
++    expect(quality.reduced).toBe(true);
++    run(40_000, 16);
++    expect(quality.reduced).toBe(true);
++    quality.setMode('auto');
++    expect(quality.reduced).toBe(false);
++  });
++
+   it('ignoruje pauzę i nie uruchamia oszczędzania po powrocie z tła', () => {
+     const quality = new AdaptiveQuality();
+     quality.sample(0);
+-- 
+2.43.0
+

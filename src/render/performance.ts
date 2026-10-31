@@ -63,11 +63,16 @@ export function savePerformanceMode(mode: PerformanceMode): void {
 /**
  * Stan oszczędny po trzech kolejnych sekundach FPS < 45.
  * Powrót po dziesięciu sekundach FPS >= 55 zapobiega migotaniu jakości.
+ * Gdy po powrocie urządzenie znów zwalnia (pełna jakość jest dla niego za ciężka),
+ * zostaje w trybie oszczędnym do końca sesji — inaczej co ~13 s chmury i zimowe tła
+ * znikałyby i wracały (cykliczne „mruganie” obrazu).
  * Stałe liczniki, bez tablic i alokacji w pętli animacji.
  */
 export class AdaptiveQuality {
   private mode: PerformanceMode;
   private autoReduced = false;
+  private recovered = false;
+  private latched = false;
   private windowStart: number | null = null;
   private lastFrame: number | null = null;
   private frames = 0;
@@ -88,6 +93,8 @@ export class AdaptiveQuality {
   setMode(mode: PerformanceMode): void {
     this.mode = mode;
     this.autoReduced = false;
+    this.recovered = false;
+    this.latched = false;
     this.resetSamples();
   }
 
@@ -112,11 +119,17 @@ export class AdaptiveQuality {
     if (this.fpsValue < 45) {
       this.slowMs += elapsed;
       this.fastMs = 0;
-      if (this.slowMs >= 3_000) this.autoReduced = true;
+      if (this.slowMs >= 3_000 && !this.autoReduced) {
+        this.autoReduced = true;
+        if (this.recovered) this.latched = true;
+      }
     } else if (this.fpsValue >= 55) {
       this.fastMs += elapsed;
       this.slowMs = 0;
-      if (this.fastMs >= 10_000) this.autoReduced = false;
+      if (this.fastMs >= 10_000 && this.autoReduced && !this.latched) {
+        this.autoReduced = false;
+        this.recovered = true;
+      }
     } else {
       this.slowMs = 0;
       this.fastMs = 0;

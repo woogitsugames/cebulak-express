@@ -1,0 +1,152 @@
+name: Firebase - wdrożenie (ręczne)
+
+# Uruchamiane wyłącznie ręcznie: Actions → „Firebase - wdrożenie (ręczne)” → Run workflow.
+# Bez sekretów FIREBASE_SERVICE_ACCOUNT i FIREBASE_PROJECT_ID kończy się sukcesem
+# z komunikatem „pomijam: brak sekretów”. Instrukcja: docs/START-WDROZENIA.md.
+on:
+  workflow_dispatch:
+    inputs:
+      hosting:
+        description: 'Wdróż też stronę gry (Firebase Hosting) — tylko po zatwierdzeniu polityki prywatności'
+        type: boolean
+        default: false
+      require_app_check:
+        description: 'Wymagaj App Check w funkcjach (włączać dopiero po teście na telefonach)'
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-firebase
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Functions, reguły Firestore (i opcjonalnie Hosting)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - name: Czy są sekrety wdrożenia?
+        id: secrets
+        env:
+          HAS_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT != '' }}
+          HAS_PROJECT: ${{ secrets.FIREBASE_PROJECT_ID != '' }}
+        shell: bash
+        run: |
+          if [[ "$HAS_ACCOUNT" == "true" && "$HAS_PROJECT" == "true" ]]; then
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::pomijam: brak sekretów (FIREBASE_SERVICE_ACCOUNT i FIREBASE_PROJECT_ID). Zobacz docs/START-WDROZENIA.md."
+            echo "### Firebase: pomijam: brak sekretów" >> "$GITHUB_STEP_SUMMARY"
+            echo "Ustaw FIREBASE_SERVICE_ACCOUNT i FIREBASE_PROJECT_ID (docs/START-WDROZENIA.md, krok 4)." >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - uses: actions/checkout@v4
+        if: steps.secrets.outputs.ready == 'true'
+
+      - uses: actions/setup-node@v4
+        if: steps.secrets.outputs.ready == 'true'
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Zależności gry i backendu
+        if: steps.secrets.outputs.ready == 'true'
+        run: |
+          npm ci
+          npm install --prefix functions --package-lock=false --no-audit --no-fund
+
+      - name: Build i testy jednostkowe Functions
+        if: steps.secrets.outputs.ready == 'true'
+        run: |
+          npm --prefix functions run build
+          npm --prefix functions run test:unit
+
+      - name: Ustawienia funkcji (functions/.env tylko na czas wdrożenia)
+        if: steps.secrets.outputs.ready == 'true'
+        env:
+          ORIGINS: ${{ secrets.ANALYTICS_ALLOWED_ORIGINS }}
+          APP_CHECK: ${{ inputs.require_app_check && 'true' || 'false' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ -z "$ORIGINS" ]]; then
+            echo "::warning::Brak sekretu ANALYTICS_ALLOWED_ORIGINS: analityka przyjmie żądania z każdej domeny."
+          fi
+          {
+            echo "REQUIRE_APP_CHECK=$APP_CHECK"
+            echo "ANALYTICS_ALLOWED_ORIGINS=$ORIGINS"
+          } > functions/.env
+          echo "REQUIRE_APP_CHECK=$APP_CHECK" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Konto serwisowe tylko w pliku tymczasowym
+        if: steps.secrets.outputs.ready == 'true'
+        env:
+          ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          keyfile="$RUNNER_TEMP/firebase-deploy.json"
+          printf '%s' "$ACCOUNT_JSON" > "$keyfile"
+          chmod 600 "$keyfile"
+          python3 -m json.tool "$keyfile" > /dev/null || {
+            echo "::error::FIREBASE_SERVICE_ACCOUNT nie jest poprawnym JSON (wklej całą zawartość pobranego pliku)."
+            exit 1
+          }
+          echo "GOOGLE_APPLICATION_CREDENTIALS=$keyfile" >> "$GITHUB_ENV"
+
+      - name: Wdrożenie Functions i reguł Firestore
+        if: steps.secrets.outputs.ready == 'true'
+        env:
+          PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID }}
+        run: |
+          ./functions/node_modules/.bin/firebase deploy \
+            --config firebase.json \
+            --only functions,firestore:rules,firestore:indexes \
+            --project "$PROJECT_ID" --non-interactive --force
+          echo "Functions i reguły Firestore wdrożone." >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Build strony gry z konfiguracją Firebase
+        if: steps.secrets.outputs.ready == 'true' && inputs.hosting
+        env:
+          VITE_FIREBASE_API_KEY: ${{ secrets.VITE_FIREBASE_API_KEY }}
+          VITE_FIREBASE_AUTH_DOMAIN: ${{ secrets.VITE_FIREBASE_AUTH_DOMAIN }}
+          VITE_FIREBASE_PROJECT_ID: ${{ secrets.VITE_FIREBASE_PROJECT_ID }}
+          VITE_FIREBASE_APP_ID: ${{ secrets.VITE_FIREBASE_APP_ID }}
+          VITE_FIREBASE_MESSAGING_SENDER_ID: ${{ secrets.VITE_FIREBASE_MESSAGING_SENDER_ID }}
+          VITE_FIREBASE_STORAGE_BUCKET: ${{ secrets.VITE_FIREBASE_STORAGE_BUCKET }}
+          VITE_RECAPTCHA_SITE_KEY: ${{ secrets.VITE_RECAPTCHA_SITE_KEY }}
+          VITE_ANALYTICS_ENDPOINT: ${{ secrets.VITE_ANALYTICS_ENDPOINT }}
+          SITE_ORIGIN: ${{ vars.SITE_ORIGIN }}
+          SITE_BASE_PATH: ${{ vars.SITE_BASE_PATH || '/' }}
+          SITE_CONTACT_EMAIL: ${{ vars.SITE_CONTACT_EMAIL }}
+        run: |
+          npm run check:launch
+          npm run build:site
+
+      - name: Kontrola prawna strony przed publikacją
+        if: steps.secrets.outputs.ready == 'true' && inputs.hosting
+        env:
+          SITE_ORIGIN: ${{ vars.SITE_ORIGIN }}
+          SITE_BASE_PATH: ${{ vars.SITE_BASE_PATH || '/' }}
+          SITE_CONTACT_EMAIL: ${{ vars.SITE_CONTACT_EMAIL }}
+          SITE_LEGAL_APPROVED: YES
+        run: node scripts/site-check.mjs --release
+
+      - name: Wdrożenie Hosting
+        if: steps.secrets.outputs.ready == 'true' && inputs.hosting
+        env:
+          PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID }}
+        run: |
+          ./functions/node_modules/.bin/firebase deploy \
+            --config firebase.json --only hosting \
+            --project "$PROJECT_ID" --non-interactive
+          echo "Hosting wdrożony." >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Usuwanie plików tymczasowych
+        if: always()
+        shell: bash
+        run: rm -f "$RUNNER_TEMP/firebase-deploy.json" functions/.env

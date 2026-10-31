@@ -261,6 +261,25 @@ describe('panorama miasta (D14): rozmiar i wygaszanie warstwy far', () => {
     expect(Math.max(...rects.map(([left, , width]) => left + width))).toBe(WORLD.width);
   });
 
+  it('pasy wygaszenia jadą razem z panoramą: krycie pasa nie skacze przy płynnym przesuwie', () => {
+    const strips = (progressKm: number, mode: 'off' | 'always') => {
+      const { loader } = mockAssets();
+      const c = fakeCanvas();
+      const seen: [number, number][] = [];
+      c.rect.mockImplementation((left: number) => { seen.push([left, c.globalAlpha]); });
+      const renderer = new BackgroundRenderer(loader);
+      renderer.setPerformanceMode(mode);
+      renderer.drawBackground(c as unknown as CanvasRenderingContext2D, cityState(progressKm));
+      const x = 180 - (progressKm - 105) / KM_PER_PX * PARALLAX.far;
+      // Pozycje pasów względem środka panoramy (pomijamy pierwszy, przycięty krawędzią ekranu).
+      return seen.slice(1).map(([left, alpha]) => [+(left - x).toFixed(6), +alpha.toFixed(6)]);
+    };
+    for (const mode of ['off', 'always'] as const) {
+      // 0,013 km ≈ 0,065 px świata przesuwu panoramy — mniej niż jedna klatka jazdy.
+      expect(strips(135.013, mode)).toEqual(strips(135, mode));
+    }
+  });
+
   it('bez wczytanego PNG panoramy far rysujemy normalnie (zastępcza sylwetka jest mała)', () => {
     const { layers, loader, landmarks } = mockAssets();
     landmarks.delete('frankfurt');

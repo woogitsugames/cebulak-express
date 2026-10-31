@@ -24,23 +24,24 @@
     "test:league-report": "node --test tools/league-report/report.test.mjs",
     "build:site": "npm run build && node scripts/build-site.mjs && node scripts/site-check.mjs",
     "test:site": "node scripts/site-check.mjs",
-    "art:postcards": "python3 tools/art/postcards_from_panoramas.py"
+    "art:postcards": "python3 tools/art/postcards_from_panoramas.py",
+    "check:launch": "node scripts/check-launch.mjs"
   },
   "devDependencies": {
     "@capacitor/cli": "^8.5.3",
+    "@playwright/test": "1.63.0",
     "typescript": "5.9",
     "vite": "^7.3.7",
-    "vitest": "^3.2.7",
-    "@playwright/test": "1.56.1"
+    "vitest": "^3.2.7"
   },
   "dependencies": {
     "@capacitor-firebase/app-check": "8.5.2",
     "@capacitor/android": "^8.5.3",
     "@capacitor/app": "8.0.0",
     "@capacitor/core": "^8.5.3",
-    "@capacitor/ios": "8.5.3",
     "@capacitor/filesystem": "8.0.0",
     "@capacitor/haptics": "8.0.0",
+    "@capacitor/ios": "8.5.3",
     "@capacitor/preferences": "8.0.1",
     "@capacitor/share": "8.0.0",
     "@capacitor/splash-screen": "8.0.0",

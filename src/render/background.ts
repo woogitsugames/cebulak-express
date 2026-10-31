@@ -363,7 +363,11 @@ export class BackgroundRenderer {
     this.fadeActiveX = activeStrength > 0 ? waypointScreenX(this.activeWaypoint!.km, state.progressKm) : 0;
     this.fadeOutgoingX = outgoingStrength > 0 ? waypointScreenX(this.outgoingWaypoint!.km, state.progressKm) : 0;
     const step = this.quality.reduced ? FAR_FADE_STEP_REDUCED : FAR_FADE_STEP;
-    let runStart = this.viewLeft;
+    // Siatka pasów jedzie razem z panoramą: krycie każdego pasa stoi w miejscu, gdy panorama
+    // się przesuwa. Siatka stała względem ekranu przeskakiwała co klatkę o poziom alfy
+    // (w trybie oszczędnym pasy 24 px) — widoczne „pełzające” prążki za sylwetką miasta.
+    const anchor = activeStrength > 0 ? this.fadeActiveX : this.fadeOutgoingX;
+    let runStart = anchor - Math.ceil((anchor - this.viewLeft) / step) * step;
     let runAlpha = this.farAlphaAt(runStart + step / 2);
     for (let x = runStart + step; ; x += step) {
       const end = x >= this.viewRight;

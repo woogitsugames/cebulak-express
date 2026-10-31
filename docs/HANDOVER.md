@@ -1,6 +1,14 @@
 # HANDOVER — Cebulak Express (koordynacja Claude)
 
-> Ostatnia aktualizacja: **2026-10-31 09:00 UTC**. **Przekazanie projektu:** poprzedniej sesji Claude kończył się limit tygodniowy, więc pracę przejmuje nowa sesja (inne konto). Przeczytaj ten plik w całości, zanim zaczniesz. Prompt startowy dla nowej sesji jest w `docs/PROMPT-NOWA-SESJA.md`.
+> Ostatnia aktualizacja: **2026-10-31 16:40 UTC** (sesja `claude/laughing-goodall-amslh7`, start 14:00 UTC; gałąź zrobiona od `claude/wizardly-curie-prxr7z`, zastąpi PR #110).
+>
+> **Sesja 31.10 po południu (`claude/laughing-goodall-amslh7`):**
+> - Wgrane zlecenie 104 (Czeski Cieszyn A+) — runda 7 zamknięta.
+> - Dołączona łatka płynności (`wip-plynnosc-interpolacja.patch`, konflikt w `step()` rozwiązany: ślady `breadcrumb` zostają wokół `renderer.draw(…, alpha)`).
+> - Nowe (prośba właściciela): tablice miejscowości w barwach prawdziwych znaków kraju (`TOWN_SIGNS` w `src/render/signs.ts`) i niebieska strzałka „Ausfahrt — największe miasto w Niemczech” za co drugim miastem DE (`ausfahrtSigns`, żarty `de-ausfahrt-0..2` w słownikach).
+> - **Zawieszenie Pixel 7 ROZWIĄZANE:** to błąd Chromium 141 (Linux): główny wątek renderera czeka bez końca w `FontServiceThread::FontRenderStyleForStrike` (stos z gdb). Odtwarzane testem `qa.spec.ts -g "wstrzyma requestAnimationFrame" --repeat-each=30 --workers=3` (3–9/30 na 1194). Poprawka: `@playwright/test` 1.63.0 (Chromium 153, build 1243 — już jest w `/opt/pw-browsers`, nie trzeba nic pobierać). Ślady `breadcrumb` w `src/main.ts` są tylko dla `?test=1`, można je kiedyś usunąć.
+> - **Mniejsze APK** (agent): `dist` 49,6 → 36,4 MB; `tools/art/quantize-assets.py` (libimagequant + dithering, oxipng; wymaga `pip install imagequant pyoxipng`), `pruneNonRuntimeAssets` w `scripts/pwa-plugin.ts` (OG i tło karty zostają w dist).
+> - Wszystko w PR #112 (zastępuje #110). #78 i #109 zamknięte. **Przekazanie projektu:** poprzedniej sesji Claude kończył się limit tygodniowy, więc pracę przejmuje nowa sesja (inne konto). Przeczytaj ten plik w całości, zanim zaczniesz. Prompt startowy dla nowej sesji jest w `docs/PROMPT-NOWA-SESJA.md`.
 
 ## 1. Kim jest właściciel i jak pracujemy
 - **Właściciel:** Mateusz (portale PoPolsku / TuWiesz / Aktualności). Komunikacja **po polsku**. Decyzje dawaj **klikalnie** (AskUserQuestion, 2–4 opcje, rekomendowana pierwsza).
@@ -17,9 +25,9 @@
 - Budynki chronione prawem autorskim pomijamy (Atomium, piramida Luwru, Grande Arche).
 - Decyzje właściciela D1–D15: `docs/GDD.md` (sekcja „Decyzje właściciela”).
 
-## 3. Stan na `main` (33d6934)
+## 3. Stan na `main` (44a3b1c, po scaleniu #108)
 Gra: TypeScript + Canvas 2D, Vite, PWA, Capacitor Android/iOS, Firebase (functions/). Na main jest m.in.:
-- 15 krajów zamieszkania + tranzyt (CZ, EE, LV, LT), trasy z km, tła krajów (lato/zima), **45 panoram miast w stylu A+** (rozpoznawalne); runda 7 (kolejne 86 + poprawki Oslo/Kraków/Katowice) i tła EE/LV/LT są w PR po #108 (patrz sekcja 6).
+- 15 krajów zamieszkania + tranzyt (CZ, EE, LV, LT), trasy z km, tła krajów (lato/zima), **45 panoram miast w stylu A+** (rozpoznawalne); runda 7 scalona w #108: łącznie ~133 panoramy A+ (stare zostały tylko Nyköping i Czeski Cieszyn, poprawka w zleceniu 103) oraz tła EE/LV/LT.
 - Garaż: 11 skórek/aut, 7 aut odblokowywanych za km łącznie (licznik z albumu).
 - Album z medalami i pocztówkami (pocztówki generowane z panoram: `npm run art:postcards`).
 - Lot powrotny, bonusy i bramka bagażowa, duch znajomego (`?g=`), tablice z zabawnymi nazwami miejscowości (78), muzyka krajów, sezon zimowy (1–26.12 lub `?sezon=zima`), samouczek, ekran ustawień (zębatka), 5 języków (PL domyślnie zawsze; EN/NL/DE/FR leniwie).
@@ -51,17 +59,49 @@ for i in 1 2 3; do npx playwright test --project="Slow 4G + CPU 4x (Chromium)"; 
 - Nie przebudowuj `dist` w trakcie testów Playwright (daje fałszywe błędy konsoli). Nie zostawiaj `vite preview` na porcie 4173 (Playwright użyje starego builda przez `reuseExistingServer`).
 - `public/licencje.html` regeneruje `prebuild` — commituj świadomie.
 
-## 6. Otwarte PR-y / obserwacje
-- **PR #108** (`claude/wizardly-curie-prxr7z`): zawartość #89 plus naprawy CI. Naprawione: leniwy import nagrywania offline, `registration.update()` na WebKit, gdy `register()` zwraca undefined, oraz dwa testy WebKit. Po zielonym CI: ready i scalenie (merge commit), potem zamknąć #89 jako zastąpiony.
-- **Panoramy rundy 7** są w tym samym PR #108 (wypchnięte, żeby nie zginęły z kontenerem).
-- Szkice PR GPT #78–#85, #90, #91 zawierają tylko pliki ASSETS bez PNG. Po scaleniu panoram zamknąć je jako zastąpione.
-- Garaż na Foldzie: poprawka na main, **czeka na potwierdzenie właściciela na telefonie**.
-- Lokalne Playwright: projekt wymaga przeglądarki z buildu 1194. W kontenerze jest 1243, więc podlinkuj `chromium_headless_shell-1243/chrome-headless-shell-linux64/chrome-headless-shell` jako `/opt/pw-browsers/chromium_headless_shell-1194/chrome-linux/headless_shell`.
+## 6. Otwarte PR-y / obserwacje (stan na koniec sesji 31.10, 14:05 UTC)
+- **PR #110** (`claude/wizardly-curie-prxr7z`, szkic, NIE scalony). Zawartość:
+  - płynny ruch panoram i tablic (tło liczone z `distancePx` zamiast zaokrąglonego `game.km`; właściciel zgłosił „klatkuje”),
+  - Nyköping A+ ze zlecenia 103,
+  - gotowość wdrożenia od agenta: `docs/START-WDROZENIA.md`, `deploy-firebase.yml`, `npm run check:launch`, poprawiona polityka prywatności, sekrety `VITE_FIREBASE_*` w `release-android.yml` i `pages.yml`,
+  - ślady diagnostyczne e2e.
+  - CI czerwony tylko przez zawieszenie Pixel 7 (niżej). Wszystko inne jest zielone.
+- **#109** (GPT, 103) zamknij: Nyköping jest w #110, Cieszyn idzie w zleceniu 104. **#78** (auta, zlecenie 83): sprawdź, czy grafiki są na main, i zamknij albo wgraj.
+- **Zlecenie 104** (Czeski Cieszyn, druga poprawka) jest u GPT. Gdy wróci ZIP, wgraj go wg sekcji 4 pkt 4.
+
+### Zawieszenie Pixel 7 w CI (najważniejszy otwarty problem)
+- **Objaw:** po rozbiciu auta (zwykle ziarno 20261030, 7 km, tablica Deurne) strona przestaje odpowiadać. Nawet `page.evaluate` nie odpowiada przez 10 s. Losowo 1–2 testy na przebieg, tylko projekt „Pixel 7 (Chromium)”.
+- **Ustalone śladami `[ce]`** (`?test=1`, `console.debug`; e2e przy porażce wypisuje ostatnie 40 komunikatów konsoli pod `[diagnostyka]`): JS kończy klatkę (`showOver:end` → `track:done` → `frame:draw-done` → `frame:end`), a dopiero potem wątek staje. Ani timer, ani rAF już nie ruszają. **To praca przeglądarki po klatce (styl, układ, malowanie) albo coś natywnego w Chrome 141, nie nasz JS.**
+- **Wykluczone:**
+  - pętla tłumaczenia trasy (MutationObserver jest idempotentny),
+  - feedback, dźwięk i wibracja,
+  - analityka, kolejka wyników, karta wyniku (jest asynchroniczna, ok. 1,2 s),
+  - link wyzwania,
+  - widoczność strony,
+  - pętle rysowania.
+- **Odtworzenie lokalne:** CI używa Chromium 141 (build 1194), a kontener ma 1243 i na nim błąd się nie pojawia. Pobierz build 1194 do `/opt`:
+  ```
+  curl -L -o hs.zip https://cdn.playwright.dev/dbazure/download/playwright/builds/chromium/1194/chromium-headless-shell-linux.zip
+  unzip hs.zip && mkdir -p /opt/pw-browsers/chromium_headless_shell-1194 && cp -r chrome-linux /opt/pw-browsers/chromium_headless_shell-1194/
+  ```
+  Na nim testy są wyraźnie wolniejsze. Pierwsza próba pełnego zestawu Pixel 7 dała porażki, ale nie zostały przeanalizowane: sesja skończyła się w trakcie, a część porażek mogła wynikać z ubitego serwera preview.
+- **Kolejne kroki:**
+  1. Na Chrome 141 uruchom `npx playwright test --project="Pixel 7 (Chromium)" --workers=1` i potwierdź zawieszenie.
+  2. Bisekcja CSS i DOM ekranu końca: ukrywaj kolejne elementy `#over` (mini-liga, ikona przyczyny, wstążka z `border-image`), wyłącz animację `panel-arrive`, wyłącz `.ce-record-control`, który przy rozbiciu nie zmienia widoczności (`syncRecordVisibility` jest wołane tylko przy montażu).
+  3. Gdy przyczyna się znajdzie, usuń ślady `breadcrumb`/`postOverFrames` z `src/main.ts` (diagnostykę w `e2e/support.ts` można zostawić).
+- W kodzie są już zabezpieczenia (zostają): strażnik pętli przy wstrzymanym rAF, try/catch dla `feedback` i `showOver`, rAF planowany przed krokiem.
+
+### Niedokończona praca agentów (zapisana jako łatki, NIEPRZETESTOWANA przez koordynatora)
+- `docs/handover/wip-plynnosc-interpolacja.patch`: płynność między tickami. Obejmuje interpolację renderu (`acc/TICK`) dla tła, przeszkód, gracza i ducha, pasy wygaszenia jadące z panoramą, AdaptiveQuality bez cyklicznego mrugania, resize bez czyszczenia kanwy, hak `renderPose()` oraz test e2e `smooth-motion` (vsync 60/90/144). Agent zrobił commit na bazie #110. Zastosuj `git am`, przejrzyj, przetestuj i dołącz.
+- `docs/handover/wip-mniejsze-apk-bez-png.patch`: mniejsze APK, tylko część tekstowa. Zawiera narzędzie `tools/art/quantize-assets.py` i zmiany w buildzie/teście. Agent przerwał przed raportem. Kwantyzacja PNG (265 plików) nie jest w łatce: odtwórz ją narzędziem z łatki i sprawdź banding nieba.
+- Lokalne APK: Maven Central odpowiada 429 (limit). Gotowe APK jest w artefakcie CI `cebulak-express-debug-apk` (workflow CI na PR/main). Artefakty i trace pobierzesz przez `curl -L https://api.github.com/repos/woogitsugames/cebulak-express/actions/artifacts/<id>/zip`.
+- WebKit (iPhone) w CI: losowe „Target crashed” także na main.
+- Garaż na Foldzie: **czeka na potwierdzenie właściciela**.
 
 ## 7. Kontynuacja projektu — plan na najbliższe dni
-1. Scal PR #89 i wyślij właścicielowi APK (`npm run android:apk`).
-2. Odbieraj ZIP-y rundy 7 i wgrywaj je (sekcja 4, pkt 4). Jedna paczka = jeden commit. Kilka paczek może iść w jednym PR.
-3. **Mniejsze APK** (sekcja 4, pkt 2). Uwaga: każda nowa panorama zwiększa APK, więc kwantyzacja jest obowiązkowa.
-4. **Gotowość wdrożenia** (sekcja 4, pkt 3). Potem decyzje właściciela: projekt Firebase, Play Console, domena.
+1. **Zawieszenie Pixel 7** (sekcja 6): odtwórz na Chrome 141, znajdź przyczynę, popraw, a potem scal #110 i wyślij właścicielowi APK (artefakt CI).
+2. Dołącz łatkę płynności (`docs/handover/wip-plynnosc-interpolacja.patch`). Właściciel zgłosił, że tło „klatkuje i bolą oczy”, więc to priorytet. Po scaleniu wyślij APK do sprawdzenia na telefonie.
+3. **Mniejsze APK**: dokończ z łatki `wip-mniejsze-apk-bez-png.patch` i narzędzia `tools/art/quantize-assets.py`.
+4. ZIP zlecenia 104 (Czeski Cieszyn) od GPT: wgraj, gdy wróci.
 5. Start gry planowany na ok. 10–15.12.2026, razem z sezonem zimowym (1–26.12).
-6. Pracuj oszczędnie: maksymalnie 1 agent naraz. Właściciel pilnuje limitów (5-godzinnego i tygodniowego).
+6. Pracuj oszczędnie: maksymalnie 1 agent naraz (31.10 właściciel jednorazowo pozwolił na 10, użyto 3). Właściciel pilnuje limitów (5-godzinnego i tygodniowego).

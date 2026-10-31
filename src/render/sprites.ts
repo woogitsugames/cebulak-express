@@ -2,6 +2,7 @@ import { PLAYER, WORLD } from '../core/config';
 import type { Game } from '../core/game';
 import type { BottomKind, PowerupKind, TopKind } from '../core/obstacles';
 import { unlockedSkins } from '../meta/unlocks';
+import type { RenderPose } from './interpolation';
 
 /** Identyfikatory zapisywane w settings.skin; po publikacji pozostają stałe. */
 export const HERO_SKINS = [
@@ -163,15 +164,16 @@ function layerDraw(ctx: CanvasRenderingContext2D, asset: { img: HTMLImageElement
   const { img, anchor: at } = asset;
   ctx.drawImage(img, -at.x / SCALE, -at.y / SCALE, img.naturalWidth / SCALE, img.naturalHeight / SCALE);
 }
-export function drawHeroSprite(ctx: CanvasRenderingContext2D, game: Game, t: number): boolean {
+/** pose: pozycja do narysowania (interpolowana między tickami); domyślnie stan gry. */
+export function drawHeroSprite(ctx: CanvasRenderingContext2D, game: Game, t: number, pose: RenderPose = game): boolean {
   const layout = activeLayout();
   const crashed = game.phase === 'over';
   const body = sprite(layout, crashed ? 'crash' : 'body');
   const wheel = crashed ? null : sprite(layout, 'wheel');
   if (!body || (!crashed && !wheel)) return false;
-  const tilt = Math.max(-0.35, Math.min(0.5, game.vy / 900));
+  const tilt = Math.max(-0.35, Math.min(0.5, pose.vy / 900));
   ctx.save();
-  ctx.translate(PLAYER.x, game.y);
+  ctx.translate(PLAYER.x, pose.y);
   ctx.rotate(tilt);
   if (!crashed && game.vy < -150) {
     const flame = sprite(layout, Math.floor(t * 14) % 2 ? 'flame-2' : 'flame-1');
@@ -179,7 +181,7 @@ export function drawHeroSprite(ctx: CanvasRenderingContext2D, game: Game, t: num
   }
   const drawWheels = (): void => {
     if (!wheel) return;
-    const spin = (game.distancePx / 6) % (Math.PI * 2);
+    const spin = (pose.distancePx / 6) % (Math.PI * 2);
     for (const pos of layout.wheels) {
       ctx.save();
       ctx.translate((pos.x - layout.anchor.x) / SCALE, (pos.y - layout.anchor.y) / SCALE);
@@ -267,7 +269,7 @@ export function drawPowerupSprite(ctx: CanvasRenderingContext2D, kind: PowerupKi
 }
 
 /** Poświata podkreśla aktywny bonus, bez migania grafiki samochodu. */
-export function drawPowerupAura(ctx: CanvasRenderingContext2D, game: Game, timeSec: number): void {
+export function drawPowerupAura(ctx: CanvasRenderingContext2D, game: Game, timeSec: number, pose: RenderPose = game): void {
   if (!game.activePowerup) return;
   const pulse = 0.5 + 0.5 * Math.sin(timeSec * 12);
   const colors: Record<PowerupKind, string> = {
@@ -276,7 +278,7 @@ export function drawPowerupAura(ctx: CanvasRenderingContext2D, game: Game, timeS
     mamcall: '#e9b6f6',
   };
   ctx.save();
-  ctx.translate(PLAYER.x, game.y);
+  ctx.translate(PLAYER.x, pose.y);
   ctx.strokeStyle = colors[game.activePowerup];
   ctx.globalAlpha = 0.68 + 0.24 * pulse;
   ctx.lineWidth = 3 + pulse * 2;
