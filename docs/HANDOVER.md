@@ -1,6 +1,6 @@
 # HANDOVER — Cebulak Express (koordynacja Claude)
 
-> Ostatnia aktualizacja: **2026-10-31 07:20 UTC**. Aktualizowane co godzinę. Dla nowej sesji Claude (inne konto) — przeczytaj w całości przed pracą.
+> Ostatnia aktualizacja: **2026-10-31 08:05 UTC**. **Przekazanie projektu:** poprzedniej sesji Claude kończył się limit tygodniowy, więc pracę przejmuje nowa sesja (inne konto). Przeczytaj ten plik w całości, zanim zaczniesz. Prompt startowy dla nowej sesji jest w `docs/PROMPT-NOWA-SESJA.md`.
 
 ## 1. Kim jest właściciel i jak pracujemy
 - **Właściciel:** Mateusz (portale PoPolsku / TuWiesz / Aktualności). Komunikacja **po polsku**. Decyzje dawaj **klikalnie** (AskUserQuestion, 2–4 opcje, rekomendowana pierwsza).
@@ -28,10 +28,21 @@ Gra: TypeScript + Canvas 2D, Vite, PWA, Capacitor Android/iOS, Firebase (functio
 - Budżet pierwszej klatki (e2e Slow 4G + CPU 4x < 2 s): główny plik ~59 kB gzip, wynik ~1,87–1,93 s. **Uwaga:** każdy nowy import w `src/main.ts` może przekroczyć budżet — ładuj nowe moduły dynamicznie.
 
 ## 4. W toku / do zrobienia (kolejka)
-1. ~~Polowanie na błędy~~ — zrobione 31.10 rano (10 błędów naprawionych, e2e/qa.spec.ts), PR po scaleniu.
+1. ~~Polowanie na błędy~~: zrobione 31.10 rano. Naprawiono 10 błędów, dodano `e2e/qa.spec.ts`. Zmiany są w PR #89 (patrz sekcja 6).
 2. **Mniejsze APK** (debug ~34 MB): kwantyzacja PNG, usunięcie grafik sklepowych z aplikacji, sprawdzenie precache PWA.
 3. **Gotowość wdrożenia:** `docs/START-WDROZENIA.md` krok po kroku dla właściciela (Firebase, Play Console, sekrety GitHub), workflow `deploy-firebase.yml` (workflow_dispatch, pomija bez sekretów), `scripts/check-launch.mjs`, aktualizacja polityki prywatności.
-4. **Runda 7 dla GPT** (gotowa, wysłana właścicielowi w ZIP, `docs/zlecenia/runda7/`): 18 paczek panoram A+ (pozostałe 86 miast + poprawki Oslo/Kraków/Katowice) + tła EE/LV/LT. Gdy wrócą ZIP-y: wgrać do `public/assets/landmarks/` (kwantyzacja), dopisać ASSETS, `npm run art:postcards`, testy, PR.
+4. **Runda 7 dla GPT. GPT już nad nią pracuje.** Do 31.10 08:00 nie wróciła żadna paczka. Właściciel 31.10 rano przekazał wszystkie 19 zleceń (84–102) nowym sesjom ChatGPT, ZIP `runda7-ponowienie.zip`. Postęp: tabela w `docs/zlecenia/runda7/README.md`.
+   - **Zawartość rundy:** 18 paczek panoram A+ (pozostałe 86 miast oraz poprawki Oslo, Krakowa i Katowic) i paczka 102 z tłami Estonii, Łotwy i Litwy (folderów `public/assets/countries/ee|lv|lt` jeszcze nie ma).
+   - **Gdy właściciel wrzuci ZIP:**
+     1. Rozpakuj do osobnego katalogu tymczasowego.
+     2. Sprawdź PNG: 1620×900, przezroczyste tło, gruby kontur, brak napisów, logo i flag.
+     3. Skwantyzuj do 256 kolorów (Pillow `quantize(256, method=Image.Quantize.FASTOCTREE)` na RGBA).
+     4. Skopiuj do `public/assets/landmarks/<id>.png`.
+     5. Dopisz licencje/opis do `assets/ASSETS.md`. Jeśli ZIP ma własny plik ASSETS, dołącz jego treść.
+     6. Uruchom `npm run art:postcards` (pocztówki z panoram, przyrostowo).
+     7. Odpal testy, otwórz PR, scal po zielonym CI.
+     8. Odhacz zlecenie w tabeli w README rundy 7.
+   - **Tła 102:** kraje EE/LV/LT trzeba dopiąć w kodzie tam, gdzie ładowane są tła krajów (szukaj `countries/` w `src/`).
 5. Do decyzji właściciela później: wdrożenie Firebase (projekt, klucze), domena gry, klucze Play, start ~10–15.12.2026.
 
 ## 5. Jak sprawdzać (przed każdym PR)
@@ -45,4 +56,14 @@ for i in 1 2 3; do npx playwright test --project="Slow 4G + CPU 4x (Chromium)"; 
 - `public/licencje.html` regeneruje `prebuild` — commituj świadomie.
 
 ## 6. Otwarte PR-y / obserwacje
-- Brak otwartych PR-ów koordynatora po scaleniu #87 (stan na 07:20 UTC).
+- **PR #89** (`claude/awesome-sagan-cx6z7w`): polowanie na błędy, ten handover i prompt startowy. Stan o 08:05 UTC: CI w toku, „Testy i build web” zielone. **Jeśli jest otwarty i CI zielone:** oznacz jako gotowy (`draft=false`) i scal. Jeśli CI czerwone, napraw przyczynę; nie wyłączaj testów.
+- Garaż na Foldzie: poprawka na main, **czeka na potwierdzenie właściciela na telefonie**. Właściciel zgłosił też ogólnie „coś się buguje”, bez szczegółów; dopytaj.
+- Cykliczne zadanie „handover co godzinę” było w poprzedniej sesji (konto, którego limit się kończy). W nowej sesji ustaw własne, jeśli właściciel nadal chce aktualizacji co godzinę.
+
+## 7. Kontynuacja projektu — plan na najbliższe dni
+1. Scal PR #89 i wyślij właścicielowi APK (`npm run android:apk`).
+2. Odbieraj ZIP-y rundy 7 i wgrywaj je (sekcja 4, pkt 4). Jedna paczka = jeden commit. Kilka paczek może iść w jednym PR.
+3. **Mniejsze APK** (sekcja 4, pkt 2). Uwaga: każda nowa panorama zwiększa APK, więc kwantyzacja jest obowiązkowa.
+4. **Gotowość wdrożenia** (sekcja 4, pkt 3). Potem decyzje właściciela: projekt Firebase, Play Console, domena.
+5. Start gry planowany na ok. 10–15.12.2026, razem z sezonem zimowym (1–26.12).
+6. Pracuj oszczędnie: maksymalnie 1 agent naraz. Właściciel pilnuje limitów (5-godzinnego i tygodniowego).

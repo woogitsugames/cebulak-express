@@ -21,3 +21,28 @@ Panoramy A+ dla pozostałych miast (86) + poprawki Oslo, Krakowa i Katowic + tł
 - `100-panoramy-parnu-ryga.md` — Panoramy A+: Pärnu, Ryga, Bauska, Poniewież, Kowno
 - `101-panoramy-mariampol-oslo.md` — Panoramy A+: Mariampol, Oslo, Kraków, Katowice
 - `102-tla-baltyk.md` — Tła krajów tranzytowych: Estonia, Łotwa, Litwa
+
+## Stan (31.10.2026, 08:00 UTC)
+Do tej pory **nie wróciła żadna paczka** z rundy 7. Wszystkie 19 zleceń (84–102) wysłano ponownie do nowych sesji GPT. Nowy ZIP: `runda7-ponowienie.zip`, ta sama treść. Gdy wróci ZIP, odhacz tu numer:
+
+| Zlecenie | Wróciło? | Wgrane w PR |
+|---|---|---|
+| 84 | nie | — |
+| 85 | nie | — |
+| 86 | nie | — |
+| 87 | nie | — |
+| 88 | nie | — |
+| 89 | nie | — |
+| 90 | nie | — |
+| 91 | nie | — |
+| 92 | nie | — |
+| 93 | nie | — |
+| 94 | nie | — |
+| 95 | nie | — |
+| 96 | nie | — |
+| 97 | nie | — |
+| 98 | nie | — |
+| 99 | nie | — |
+| 100 | nie | — |
+| 101 | nie | — |
+| 102 | nie | — |
