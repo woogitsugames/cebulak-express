@@ -409,7 +409,7 @@ export default {
     "settingsMotionSystem": "Use device settings",
     "settingsLinks": "Legal information",
     "settingsPrivacy": "Privacy policy",
-    "settingsLicenses": "Graphics licences",
+    "settingsLicenses": "Licences",
     "settingsPerformance": "Battery saver graphics",
     "settingsPerformanceAuto": "Auto",
     "settingsPerformanceAlways": "Always",

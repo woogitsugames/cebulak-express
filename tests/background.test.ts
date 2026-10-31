@@ -4,7 +4,7 @@ import type { Waypoint } from '../src/content/waypoints';
 import { ASSET_SIZES, type AssetLoader, type BackgroundLayer } from '../src/render/assets';
 import {
   BackgroundRenderer, PARALLAX, LAYER_Y, COUNTRY_FADE_SECONDS, WAYPOINT_FADE_SECONDS,
-  borderNearOpacity, crossedWaypoints, fadeProgress, layerOffset,
+  crossedWaypoints, nearLandmarkBaseY, fadeProgress, layerOffset,
   farLayerAlphaAt, FAR_FADE_INSET, FAR_FADE_RAMP, LANDMARK_FAR_HEIGHT, LANDMARK_FAR_WIDTH,
   selectNearestWaypoint, tilePositions, visibleWaypoints, waypointScreenX,
 } from '../src/render/background';
@@ -47,7 +47,6 @@ function mockAssets() {
     prime: vi.fn(),
     getCountryLayer: vi.fn((_country: string, layer: BackgroundLayer) => layers[layer]),
     getLandmark: vi.fn((point: Waypoint) => landmarks.get(point.id)),
-    getBorderNear: vi.fn(() => undefined),
     getHomeCity: vi.fn((point: Waypoint) => homeCities.get(point.id)),
   };
   return { layers, assets, loader: assets as unknown as AssetLoader, landmarks, homeCities };
@@ -114,14 +113,30 @@ describe('tło: matematyka i polityka panoram', () => {
     expect(fadeProgress(2, 2, 0)).toBe(1);
   });
 
-  it('near granicy włącza się płynnie na odcinku border -> rest', () => {
-    expect(borderNearOpacity(95, 115, 123)).toBe(0);
-    expect(borderNearOpacity(97, 115, 123)).toBe(0);
-    expect(borderNearOpacity(100, 115, 123)).toBeCloseTo(0.5);
-    expect(borderNearOpacity(105, 115, 123)).toBe(1);
-    expect(borderNearOpacity(130, 115, 123)).toBe(1);
-    expect(borderNearOpacity(141, 115, 123)).toBe(0);
-    expect(borderNearOpacity(110, Number.NaN, Number.NaN)).toBe(0);
+  it('grafika przy drodze stoi na krawędzi kryjącej części warstwy road kraju', () => {
+    // PL/DE: bariera od samej góry road (y=530) — grafika nie może schodzić pod asfalt.
+    expect(nearLandmarkBaseY('PL')).toBe(LAYER_Y.road + 4);
+    expect(nearLandmarkBaseY('DE')).toBe(LAYER_Y.road + 4);
+    // CZ/AT/IT/ES: 46 px przezroczystego pobocza; nie niżej niż linia asfaltu.
+    expect(nearLandmarkBaseY('CZ')).toBe(WORLD.groundY);
+    expect(nearLandmarkBaseY('EE')).toBe(LAYER_Y.road + 40);
+    for (const country of ['PL', 'BE', 'FR', 'CZ', 'LV'] as const) {
+      expect(nearLandmarkBaseY(country)).toBeLessThanOrEqual(WORLD.groundY);
+    }
+  });
+
+  it('latem w PL stacja za granicą ma własną grafikę (bez wspólnego pasa granicy)', () => {
+    const { loader, landmarks, layers } = mockAssets();
+    const c = fakeCanvas();
+    const renderer = new BackgroundRenderer(loader);
+    renderer.drawBackground(c as unknown as CanvasRenderingContext2D, {
+      country: 'PL', distancePx: 0, progressKm: 123, waypoints: nearby, timeSec: 5, includeRoad: false,
+    });
+    const station = c.drawImage.mock.calls.filter((args) => args[0] === landmarks.get('stacja-swiecko'));
+    expect(station).toHaveLength(1);
+    expect((station[0][2] as number) + (station[0][4] as number)).toBe(nearLandmarkBaseY('PL'));
+    // Bliski plan to zwykły kafelek near kraju.
+    expect(c.drawImage.mock.calls.some((args) => args[0] === layers.near)).toBe(true);
   });
 });
 
@@ -175,7 +190,6 @@ describe('renderer warstw: docelowe współrzędne i pasy', () => {
     renderer.drawBackground(c as unknown as CanvasRenderingContext2D, state);
     expect(c.drawImage.mock.calls.filter((args) => args[0] === landmarks.get('granica-swiecko'))).toHaveLength(1);
     expect(c.drawImage.mock.calls.filter((args) => args[0] === landmarks.get('stacja-swiecko'))).toHaveLength(0);
-    expect(assets.getBorderNear).not.toHaveBeenCalled(); // brak zimowego wariantu tej panoramy
 
     // Zmiana punktu rozpoczyna fade z alfą nowego punktu równą 0.
     renderer.drawBackground(c as unknown as CanvasRenderingContext2D, { ...state, progressKm: 120, timeSec: 5.2 });
@@ -186,7 +200,7 @@ describe('renderer warstw: docelowe współrzędne i pasy', () => {
     expect(borders).toHaveLength(1);
     expect(rests).toHaveLength(1);
     expect(borders[0][3]).toBe(180); // near, nie panorama far 330
-    expect(rests[0][2]).toBe(WORLD.groundY - 100);
+    expect(rests[0][2]).toBe(nearLandmarkBaseY('PL') - 100);
     expect(assets.prime).toHaveBeenCalledTimes(1);
   });
 });
@@ -329,7 +343,7 @@ describe('meta: panorama miasta docelowego', () => {
     expect(cityCalls.at(-1)?.[3]).toBe(LANDMARK_FAR_WIDTH);
     expect(houseCalls.length).toBeGreaterThan(0);
     expect(houseCalls.at(-1)?.[3]).toBeLessThan(LANDMARK_FAR_WIDTH);
-    expect((houseCalls.at(-1)?.[2] as number) + (houseCalls.at(-1)?.[4] as number)).toBe(WORLD.groundY);
+    expect((houseCalls.at(-1)?.[2] as number) + (houseCalls.at(-1)?.[4] as number)).toBe(nearLandmarkBaseY('PL'));
   });
 
   it('bez panoramy miasta: sam domek na dalekim planie, jak dawniej', () => {

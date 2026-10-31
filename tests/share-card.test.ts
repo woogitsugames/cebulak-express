@@ -1,9 +1,10 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { makeRoute } from '../src/core/route';
 import {
-  CARD_DIMENSIONS, cardShareText, formatKilometres, renderCard, roundedKilometres,
-  type CardData,
+  CARD_DIMENSIONS, cardBackgroundPaths, cardShareText, firstImage, formatKilometres, renderCard,
+  roundedKilometres, type CardData,
 } from '../src/share/card';
+import { seasonAt } from '../src/core/season';
 
 const route = makeRoute('BE', 'antwerpia', 'rzeszow');
 const result: CardData = {
@@ -82,5 +83,47 @@ describe('eksport PNG', () => {
     expect(blob).toBeInstanceOf(Blob);
     expect(blob.type).toBe('image/png');
     expect(made).toEqual([CARD_DIMENSIONS[format]]);
+  });
+});
+
+describe('tło karty zależne od sezonu', () => {
+  it('latem używa tylko letniego tła', () => {
+    expect(cardBackgroundPaths(1920, 'regular')).toEqual(['/assets/brand/card-bg-1080x1920.png']);
+    expect(cardBackgroundPaths(1080, 'regular')).toEqual(['/assets/brand/card-bg-1080x1080.png']);
+  });
+
+  it('zimą najpierw próbuje tła zimowego, potem letniego', () => {
+    expect(cardBackgroundPaths(1920, 'winter')).toEqual([
+      '/assets/brand/card-bg-zima-1080x1920.png',
+      '/assets/brand/card-bg-1080x1920.png',
+    ]);
+    expect(cardBackgroundPaths(1080, 'winter')[0]).toBe('/assets/brand/card-bg-zima-1080x1080.png');
+  });
+
+  it('gdy zimowe tło się nie wczyta, bierze letnie; gdy żadne — null', async () => {
+    const summer = { naturalWidth: 1080 } as HTMLImageElement;
+    const tried: string[] = [];
+    const load = async (path: string) => {
+      tried.push(path);
+      return path.includes('-zima-') ? null : summer;
+    };
+    await expect(firstImage(cardBackgroundPaths(1920, 'winter'), load)).resolves.toBe(summer);
+    expect(tried).toEqual(['/assets/brand/card-bg-zima-1080x1920.png', '/assets/brand/card-bg-1080x1920.png']);
+    await expect(firstImage(cardBackgroundPaths(1920, 'winter'), async () => null)).resolves.toBeNull();
+  });
+
+  it('zimowe tło wczytane od razu — letniego nie pobiera', async () => {
+    const winter = { naturalWidth: 1080 } as HTMLImageElement;
+    const load = vi.fn(async () => winter);
+    await expect(firstImage(cardBackgroundPaths(1080, 'winter'), load)).resolves.toBe(winter);
+    expect(load).toHaveBeenCalledTimes(1);
+  });
+
+  it('sezon karty liczy się jak tło gry (seasonAt, z ?sezon=)', () => {
+    expect(cardBackgroundPaths(1920, seasonAt(new Date('2026-12-10T12:00:00Z')))[0]).toContain('-zima-');
+    expect(cardBackgroundPaths(1920, seasonAt(new Date('2026-12-27T12:00:00Z')))).toHaveLength(1);
+    expect(cardBackgroundPaths(1920, seasonAt(new Date('2026-07-01T12:00:00Z'), '?sezon=zima'))[0])
+      .toContain('-zima-');
+    expect(cardBackgroundPaths(1920, seasonAt(new Date('2026-12-10T12:00:00Z'), '?sezon=lato'))).toHaveLength(1);
   });
 });

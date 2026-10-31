@@ -1,6 +1,7 @@
 import { COUNTRY_NAME, UI, fill, localized } from '../content/i18n';
 import { cityNameForShare, localizedCityName } from '../content/lang/cities';
 import type { City, HomeCountry } from '../core/route';
+import { seasonAt, type Season } from '../core/season';
 
 /** Polskie napisy karty; EN/NL/DE/FR w słownikach (CARD). */
 export const CARD_TEXT = {
@@ -330,8 +331,43 @@ async function pngBlob(canvas: OffscreenCanvas | HTMLCanvasElement): Promise<Blo
   });
 }
 
+/**
+ * Kolejność prób tła karty: zimą (1–26 grudnia lub ?sezon=zima, jak tło gry)
+ * najpierw zimowe tło z kremowym panelem w tych samych współrzędnych, potem letnie.
+ */
+export function cardBackgroundPaths(height: number, season: Season): string[] {
+  const summer = '/assets/brand/card-bg-1080x' + height + '.png';
+  return season === 'winter'
+    ? ['/assets/brand/card-bg-zima-1080x' + height + '.png', summer]
+    : [summer];
+}
+
+/** Sezon jak w main.ts: kalendarz warszawski, z wymuszeniem przez ?sezon=zima / ?sezon=lato. */
+function currentSeason(): Season {
+  const search = typeof location !== 'undefined' ? location.search : '';
+  try {
+    return seasonAt(new Date(), search);
+  } catch {
+    return 'regular';
+  }
+}
+
+/** Pierwszy obraz z listy, który się wczytał; brak — null (wtedy grafika zastępcza). */
+export async function firstImage(
+  paths: readonly string[],
+  load: (path: string) => Promise<HTMLImageElement | null> = optionalImage,
+): Promise<HTMLImageElement | null> {
+  for (const path of paths) {
+    const image = await load(path);
+    if (image) return image;
+  }
+  return null;
+}
+
 /** Generuje pełnowymiarowy PNG na niewidocznej kanwie; działa także bez zasobów T10. */
-export async function renderCard(data: CardData, format: CardFormat): Promise<Blob> {
+export async function renderCard(
+  data: CardData, format: CardFormat, season: Season = currentSeason(),
+): Promise<Blob> {
   const { width, height } = CARD_DIMENSIONS[format];
   if (!width || !height) throw new Error('Nieznany format karty wyniku');
   if (typeof document !== 'undefined' && document.fonts) {
@@ -352,7 +388,7 @@ export async function renderCard(data: CardData, format: CardFormat): Promise<Bl
   }
   if (!ctx) throw new Error('Brak kontekstu Canvas 2D');
   const [background, logo] = await Promise.all([
-    optionalImage('/assets/brand/card-bg-1080x' + height + '.png'),
+    firstImage(cardBackgroundPaths(height, season)),
     optionalImage('/assets/brand/logo-small.png'),
   ]);
   if (background) ctx.drawImage(background, 0, 0, width, height);

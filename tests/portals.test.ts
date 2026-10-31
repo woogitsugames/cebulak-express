@@ -13,13 +13,14 @@ describe('linki do portali', () => {
     }
   });
 
-  it('sprawdzone portale ES, IT i SE są dostępne, niezweryfikowane NIE tworzą linków', () => {
+  it('sprawdzone portale ES, IT, SE, AT, FI i LU są dostępne, niezweryfikowane (IE) NIE tworzą linków', () => {
     expect(new URL(portalLink('ES', 'menu')!).hostname).toBe('popolsku.es');
     expect(new URL(portalLink('IT', 'menu')!).hostname).toBe('popolsku.it');
     expect(new URL(portalLink('SE', 'menu')!).hostname).toBe('popolsku.se');
-    for (const home of ['IE', 'AT', 'FI', 'LU'] as const) {
-      expect(portalLink(home, 'result')).toBeUndefined();
-    }
+    expect(new URL(portalLink('AT', 'result')!).hostname).toBe('popolsku.at');
+    expect(new URL(portalLink('FI', 'result')!).hostname).toBe('popolsku.fi');
+    expect(new URL(portalLink('LU', 'result')!).hostname).toBe('popolsku.lu');
+    expect(portalLink('IE', 'result')).toBeUndefined();
   });
 
     it('news ma pierwszeństwo przed poradnikami', () => {
@@ -33,7 +34,11 @@ describe('linki do portali', () => {
 
   it('kraje bez portalu news kieruje do poradników', () => {
     expect(new URL(portalLink('CH', 'finish')!).host).toBe('popolsku.ch');
-    expect(new URL(portalLink('NO', 'finish')!).host).toBe('popolsku.no');
+  });
+
+  it('Norwegia: „Co słychać u Polonii” prowadzi do aktualnosci.no, poradniki do popolsku.no', () => {
+    expect(new URL(portalLink('NO', 'result')!).host).toBe('aktualnosci.no');
+    expect(new URL(portalLink('NO', 'menu', 'guides')!).host).toBe('popolsku.no');
   });
 
   it('pozwala świadomie wybrać poradniki', () => {

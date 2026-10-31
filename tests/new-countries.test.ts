@@ -118,7 +118,6 @@ describe('zlecenie 55 — kraje, trasy, km i fallback', () => {
       prime: vi.fn(),
       getCountryLayer: vi.fn(() => undefined),
       getLandmark: vi.fn(() => undefined),
-      getBorderNear: vi.fn(() => undefined),
     } as unknown as AssetLoader;
     const gradient = { addColorStop: vi.fn() };
     const ctx = {

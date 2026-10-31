@@ -64,25 +64,26 @@ Sprawdzone 31.10: `public/assets/brand/` ma letnie wersje: play-feature, ikony, 
 3. Skwantyzuj PNG z `landmarks` (`tools/art/quantize-assets.py`, 256 kolorów) i dopisz `ASSETS-NN.md` na koniec `public/assets/landmarks/ASSETS.md`.
 4. Panoramy miast docelowych zadziałają w grze dopiero po propozycji A (wyżej). `npm run art:postcards`, testy, PR.
 
-## Stan (31.10.2026)
-Paczki przygotowane, jeszcze niewysłane do GPT.
+## Stan (31.10.2026, wieczór)
+**Runda 8 zamknięta:** wszystkie 17 ZIP-ów wróciło i jest wgranych. Panoramy i punkty skwantyzowano (Pillow FASTOCTREE + oxipng, 62 → 8,8 MB). Propozycja A (meta z panoramą miasta) jest w kodzie od #113.
+Przy okazji naprawione: grafiki przejść/stacji były do połowy zasłonięte drogą w krajach z barierą w warstwie road (`nearLandmarkBaseY`); latem w PL zamiast wspólnego pasa `pl-border-near` widać własne stacje A+ (decyzja właściciela 31.10).
 
-| Zlecenie | Wysłane? | Wróciło? | Wgrane w PR |
+| Zlecenie | Wysłane? | Wróciło? | Wgrane |
 |---|---|---|---|
-| 105 | nie | — | — |
-| 106 | nie | — | — |
-| 107 | nie | — | — |
-| 108 | nie | — | — |
-| 109 | nie | — | — |
-| 110 | nie | — | — |
-| 111 | nie | — | — |
-| 112 | nie | — | — |
-| 113 | nie | — | — |
-| 114 | nie | — | — |
-| 115 | nie | — | — |
-| 116 | nie | — | — |
-| 117 | nie | — | — |
-| 118 | nie | — | — |
-| 119 | nie | — | — |
-| 120 | nie | — | — |
-| 121 | nie | — | — |
+| 105 | tak | tak (31.10) | tak — PR z gałęzi `claude/compassionate-mayer-uzqz9l` |
+| 106 | tak | tak (31.10) | tak — PR z gałęzi `claude/compassionate-mayer-uzqz9l` |
+| 107 | tak | tak (31.10) | tak — PR z gałęzi `claude/compassionate-mayer-uzqz9l` |
+| 108 | tak | tak (31.10) | tak — PR z gałęzi `claude/compassionate-mayer-uzqz9l` |
+| 109 | tak | tak (31.10) | tak — PR z gałęzi `claude/compassionate-mayer-uzqz9l` |
+| 110 | tak | tak (31.10) | tak — PR z gałęzi `claude/compassionate-mayer-uzqz9l` |
+| 111 | tak | tak (31.10) | tak — PR z gałęzi `claude/compassionate-mayer-uzqz9l` |
+| 112 | tak | tak (31.10) | tak — PR z gałęzi `claude/compassionate-mayer-uzqz9l` |
+| 113 | tak | tak (31.10) | tak — PR z gałęzi `claude/compassionate-mayer-uzqz9l` |
+| 114 | tak | tak (31.10) | tak — PR z gałęzi `claude/compassionate-mayer-uzqz9l` (do poprawki: tablica LV–LT ucięta prawą krawędzią) |
+| 115 | tak | tak (31.10) | tak — PR z gałęzi `claude/compassionate-mayer-uzqz9l` |
+| 116 | tak | tak (31.10) | tak — PR z gałęzi `claude/compassionate-mayer-uzqz9l` |
+| 117 | tak | tak (31.10) | tak — PR z gałęzi `claude/compassionate-mayer-uzqz9l` |
+| 118 | tak | tak (31.10) | tak — PR z gałęzi `claude/compassionate-mayer-uzqz9l` |
+| 119 | tak | tak (31.10) | tak — PR z gałęzi `claude/compassionate-mayer-uzqz9l` |
+| 120 | tak | tak (31.10) | tak — PR z gałęzi `claude/compassionate-mayer-uzqz9l` |
+| 121 | tak | tak (31.10) | tak — PR z gałęzi `claude/compassionate-mayer-uzqz9l` |

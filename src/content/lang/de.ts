@@ -409,7 +409,7 @@ export default {
     "settingsMotionSystem": "Geräteeinstellung verwenden",
     "settingsLinks": "Rechtliche Hinweise",
     "settingsPrivacy": "Datenschutzerklärung",
-    "settingsLicenses": "Grafiklizenzen",
+    "settingsLicenses": "Lizenzen",
     "settingsPerformance": "Sparmodus für Grafik",
     "settingsPerformanceAuto": "Auto",
     "settingsPerformanceAlways": "Immer",

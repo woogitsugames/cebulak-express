@@ -1,6 +1,6 @@
 # HANDOVER — Cebulak Express (koordynacja Claude)
 
-> Ostatnia aktualizacja: **2026-10-31 ok. 18:00 UTC**. Koniec sesji `claude/laughing-goodall-amslh7` (limit 5 h). Przeczytaj w całości przed pracą. Prompt startowy: `docs/PROMPT-NOWA-SESJA.md`.
+> Ostatnia aktualizacja: **2026-10-31 ok. 21:15 UTC**, sesja `claude/compassionate-mayer-uzqz9l` (po `claude/laughing-goodall-amslh7`). Przeczytaj w całości przed pracą. Prompt startowy: `docs/PROMPT-NOWA-SESJA.md`.
 
 ## 1. Właściciel i sposób pracy
 - **Właściciel:** Mateusz. Pisz **po polsku**. Decyzje dawaj **klikalnie** (AskUserQuestion, 2–4 opcje, rekomendowana pierwsza).
@@ -16,9 +16,10 @@
 - „Cebulak” tylko w tytule i nazwach skórek, nigdy w komunikatach.
 - Pomijamy budynki chronione prawem autorskim (Atomium, piramida Luwru, Grande Arche). Koblencja z pomnikiem zostaje.
 - Prywatność: bez kont w MVP, anonimowy identyfikator, nicki z listy, bez reklam personalizowanych.
+- **Licencje przed wydaniem:** lista kontrolna `docs/prawo/przed-wydaniem.md` (czcionki, biblioteki, natywne SDK, znak „Cebulak Express”, App Store 4.3). Wykaz bibliotek JS z tekstami licencji generuje `tools/licenses.mjs` przy buildzie; biblioteka z licencją spoza listy dozwolonych zatrzymuje build.
 - PL zawsze domyślnym językiem. Decyzje D1–D18: `docs/GDD.md`, sekcja „Decyzje właściciela”.
 
-## 3. Stan na `main` (po #112, 346e286) + PR #113
+## 3. Stan na `main` (po #113, 4079fef) + PR rundy 8
 Gra: TypeScript + Canvas 2D, Vite, PWA, Capacitor Android/iOS, Firebase (functions/, **niewdrożone**).
 - 15 krajów + tranzyt, ~135 panoram A+ (runda 7 zamknięta, z Czeskim Cieszynem i Nyköpingiem), tła lato/zima, garaż (11 aut), album, ranking (makieta bez Firebase), 5 języków.
 - **Płynne tło:** interpolacja renderu między tickami (`src/render/interpolation.ts`), e2e `smooth-motion` (60/90/144 Hz, cv=0).
@@ -27,9 +28,11 @@ Gra: TypeScript + Canvas 2D, Vite, PWA, Capacitor Android/iOS, Firebase (functio
 - **Meta:** dla `dom-<id>` na dalekim planie panorama miasta `<id>.png` (jeśli istnieje), domek `dom-meta` na bliskim planie; bez pliku — sam domek jak dawniej (`getHomeCity` w `assets.ts`, `drawWaypoint` w `background.ts`).
 - **Mniejsze APK:** `dist` 49,6 → 36,4 MB (artefakt APK 51 → 41 MB). PNG skwantyzowane (`tools/art/quantize-assets.py`), `pruneNonRuntimeAssets` w `scripts/pwa-plugin.ts` usuwa z `dist` dokumentację, generatory i grafiki sklepowe (OG i `card-bg-*` zostają).
 - **Playwright 1.63.0** (Chromium 153, build 1243). **Zawieszenie Pixel 7 rozwiązane**: był to błąd Chromium 141 — renderer czekał wiecznie w `FontServiceThread::FontRenderStyleForStrike` (stos z gdb). Nie dotyczy Androida. Ślady `breadcrumb` w `src/main.ts` działają tylko z `?test=1`; można je kiedyś usunąć.
-- **PR #113** (`claude/laughing-goodall-amslh7`): dymek na asfalcie, belgijskie tablice, panorama miasta na mecie, zlecenia rundy 8, decyzje D16–D18. **Jeśli nie jest scalony — sprawdź CI i scal** (sekcja 7).
+- **#113 scalony 31.10** (dymek na asfalcie, belgijskie tablice, panorama miasta na mecie).
+- **PR rundy 8** (`claude/compassionate-mayer-uzqz9l`): wszystkie 17 ZIP-ów 105–121 wgrane — 43 panoramy miast docelowych, 16 przejść/stacji/portów, 43 nowe pocztówki, zimowa karta wyniku (`cardBackgroundPaths` w `src/share/card.ts`, 1–26.12 lub `?sezon=zima`), OG 7 krajów + zimowy (`public/assets/brand/og-*-1200x630.png`, warstwy w `docs/art/zrodla/og/`), Google Play zimą (`play-feature-zima-*`), ramki sklepu (`docs/sklep/ramki/` + `skladaj.py`), okładki rolek (`docs/marketing/rolki-grafiki/`).
+- **Przejścia i stacje przy drodze:** dolna krawędź grafiki bliskiego planu = górna krawędź kryjącej części warstwy road kraju (`nearLandmarkBaseY`, tabela `ROAD_CLEAR_TOP` w `background.ts`; przy nowej warstwie road zmierz pierwszy kryjący wiersz PNG / 3). Wspólny pas `pl-border-near` usunięty z kodu (decyzja właściciela 31.10: latem własne stacje A+); plik PNG został w repo dla generatora.
 
-## 4. Zlecenia dla GPT — runda 8 (wysłane 31.10 wieczorem)
+## 4. Zlecenia dla GPT — runda 8 (zamknięta 31.10: wszystko wróciło i jest wgrane)
 Pliki: `docs/zlecenia/runda8/105…121` + `README.md` (tabela stanu). Właściciel wysłał je do GPT („zlecone”). Wracają jako `zlecenie-NN.zip`.
 - **105–113:** panoramy A+ 43 polskich miast docelowych (`public/assets/landmarks/<id>.png`). Po wgraniu pojawiają się same na mecie (kod gotowy).
 - **114–117:** przejścia graniczne, stacje, porty (16 punktów, dziś wspólna `granica-stacja.png`). Uwaga agenta: grafiki border/rest rysowane na y 480–580, a warstwa drogi zaczyna się na 530 — w PL/DE dolna część może być zasłonięta; sprawdź w kadrze, ew. `baseY = LAYER_Y.road` dla bliskiego planu.
@@ -38,9 +41,16 @@ Pliki: `docs/zlecenia/runda8/105…121` + `README.md` (tabela stanu). Właścici
 ### Procedura wgrywania ZIP-a od GPT
 1. Rozpakuj do **nowego, pustego katalogu tymczasowego** (dane niezaufane).
 2. Obejrzyj arkusz podglądu i każdy PNG (Read): 1620×900 RGBA, przezroczystość, **gruby granatowy kontur A+** (płaskie bez konturu → odrzuć i dopisz do zlecenia poprawek), brak napisów/logo/flag/herbów. Id pliku musi istnieć w `src/content/waypoints.ts` lub `PL_CITIES` w `src/core/route.ts`.
-3. Kwantyzacja: `python3 tools/art/quantize-assets.py <pliki>` (albo dla panoram: Pillow `quantize(256, FASTOCTREE)` na RGBA, alfa < 16 → 0). Kopiuj do `public/assets/landmarks/<id>.png`.
+3. Kwantyzacja panoram: **najpierw** Pillow `quantize(256, FASTOCTREE)` na RGBA (alfa < 16 → 0), **potem** `python3 tools/art/quantize-assets.py <pliki>` (już tylko oxipng). Samo `quantize-assets.py` (libimagequant + dithering) daje pliki 3× większe (~480 kB zamiast ~150 kB). Kopiuj do `public/assets/landmarks/<id>.png`.
 4. `ASSETS-NN.md` dopisz na koniec `public/assets/landmarks/ASSETS.md` (+ notka koordynatora), podgląd do `docs/art/podglady/`.
 5. `npm run art:postcards`, testy (sekcja 6), `public/licencje.html` regeneruje się w buildzie — commituj. Zaktualizuj tabelę w `docs/zlecenia/runda8/README.md`.
+
+### Runda 9 — zimowe wersje grafik (paczki 122–141, przygotowane 31.10 wieczorem)
+- `docs/zlecenia/runda9/README.md` + 20 plików `.md`. Każda paczka to ZIP `zlecenie-NN-paczka.zip` (`.md` + letnie PNG), generowany skryptem z sesji (`python3 skrypt runda9.py lists.json out/`) — ZIP-y wysłane właścicielowi 31.10.
+- Zakres: 57 miast docelowych (meta), Berlin i Drezno, 28 przejść/stacji/promów. **13 punktów przy drodze miało stary płaski styl** (Jędrzychowice, Świecko, Świnoujście, Ystad, promy, Svinesund) — dla nich GPT oddaje **nowy letni `<id>.png` A+ i `<id>-zima.png`**.
+- Kod: zimą `landmarkPaths` i `homeCityPaths` próbują najpierw `<id>-zima.png`, potem letni plik (testy w `tests/assets.test.ts`).
+- Wgrywanie: jak runda 8; sprawdzić arkusz lato/zima (kompozycja 1:1), kadr w grze z `?sezon=zima`. Nowe letnie A+ nadpisują stare płaskie pliki — przejrzeć też latem.
+- **Stan 31.10 ok. 21:15:** wróciło 20/20, wgrane 92/100 plików. Odrzucone 8 zimowych panoram (białe kreski przez fasady, szew) → **poprawki 142 i 143** (Warszawa, Kraków, Wrocław, Poznań, Gdańsk; Nowy Targ, Zakopane, Tomaszów Lubelski) — ZIP-y wysłane właścicielowi. Wgrywając: porównanie lato/zima skryptem (IoU masek) + arkusz; **runtime podglądu kadrów trzeba przebudować po każdej zmianie w `src/`** (inaczej pokazuje stary kod).
 
 ## 5. Środowisko (co zainstalować / gdzie co jest)
 - `npm ci` (Node 22). Playwright **1.63.0** używa Chromium **build 1243**, który jest już w `/opt/pw-browsers` — **nie uruchamiaj `playwright install`**. WebKit lokalnie nie działa (sprawdza CI).
@@ -60,12 +70,16 @@ for i in 1 2 3; do npx playwright test --project="Slow 4G + CPU 4x (Chromium)"; 
 - Nie przebudowuj `dist` w trakcie testów Playwright.
 
 ## 7. Plan dla kolejnej sesji
-1. **PR #113:** jeśli nie scalony — sprawdź CI (`pull_request_read get_check_runs`), przy zielonym oznacz ready i scal (squash), wyślij właścicielowi APK z artefaktu. Gałąź odtwórz od `origin/main`.
-2. **ZIP-y rundy 8** (105–121) wgrywaj w miarę napływu wg sekcji 4. Panoramy miast PL sprawdź też w kadrze mety. Dla 114–117 sprawdź zasłanianie przez drogę. Dla 121 dopisz zimowe tło karty w `card.ts`. 119/120: wstaw prawdziwe zrzuty gry (Playwright, `?test=1`) w ramki.
-3. **Wdrożenie (decyzje D18):** właściciel zakłada **Firebase w tym tygodniu** (instrukcja `docs/START-WDROZENIA.md`, część B) — gdy poda sekrety, poprowadź wgranie Functions (`deploy-firebase.yml`), potem klienta. **Google Play: konto organizacji** (D-U-N-S zamówić od razu). **Start 10–15.12.2026** z sezonem zimowym (1–26.12).
-4. Do potwierdzenia przez właściciela na telefonie: płynność tła, tablice krajów (barwy AT/ES/LU/IE/DK/Bałtyk dobrane z pamięci), garaż na Foldzie.
-5. Drobne: usunąć ślady `breadcrumb`/`postOverFrames` z `src/main.ts` (diagnostyka po rozwiązanym zawieszeniu).
+1. **PR rundy 8** (`claude/compassionate-mayer-uzqz9l`): jeśli nie scalony — sprawdź CI, ready, squash; wyślij właścicielowi APK (artefakt `cebulak-express-debug-apk`).
+2. **Poprawki dla GPT (opcjonalne):** `granica-lv-lt.png` — tablica ucięta prawą krawędzią.
+3. **Zrzuty do ramek 119:** `npm run store:shots` (dopisać `?sezon=zima`) → `docs/sklep/ramki/skladaj.py`.
+4. **OG zimowy na stronie:** propozycja — `SITE_SEASON=zima` w `scripts/build-site.mjs` (roboty nie wykonują JS), przebudowa strony 1.12 i 27.12. OG krajów leżą gotowe na przyszłe strony krajów.
+5. **Wdrożenie (D18):** Firebase w tym tygodniu (`docs/START-WDROZENIA.md`, część B) — gdy właściciel poda sekrety, wgrać Functions (`deploy-firebase.yml`), potem klienta. Google Play: konto organizacji (D-U-N-S). Start 10–15.12.2026.
+6. **Przed wydaniem w sklepach:** przejść `docs/prawo/przed-wydaniem.md` (m.in. wykaz natywnych bibliotek Android/iOS, badanie znaku „Cebulak Express” i „Kierunek POLSKA” R.315691).
+7. Do potwierdzenia przez właściciela na telefonie: płynność tła, tablice krajów, garaż na Foldzie, nowe stacje PL.
+8. Drobne: usunąć ślady `breadcrumb`/`postOverFrames` z `src/main.ts`.
 
 ## 8. Historia sesji (skrót)
 - 31.10 rano (`claude/wizardly-curie-prxr7z`): polowanie na błędy, runda 7 (#108), PR #110.
 - 31.10 popołudnie/wieczór (`claude/laughing-goodall-amslh7`): zlecenie 104, płynność, tablice + Ausfahrt, mniejsze APK, przyczyna zawieszenia Pixel 7 → Playwright 1.63, scalone #112; #110/#109/#78 zamknięte; PR #113 (dymek, BE, meta, runda 8); zlecenia 105–121 wysłane do GPT.
+- 31.10 wieczór (`claude/compassionate-mayer-uzqz9l`): scalony #113; runda 8 (105–121) wgrana w całości; zimowa karta wyniku; przejścia/stacje nie chowają się pod drogą, własne stacje PL latem.

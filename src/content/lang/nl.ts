@@ -409,7 +409,7 @@ export default {
     "settingsMotionSystem": "Apparaatinstellingen gebruiken",
     "settingsLinks": "Juridische informatie",
     "settingsPrivacy": "Privacybeleid",
-    "settingsLicenses": "Licenties van afbeeldingen",
+    "settingsLicenses": "Licenties",
     "settingsPerformance": "Zuinige graphics",
     "settingsPerformanceAuto": "Auto",
     "settingsPerformanceAlways": "Altijd",

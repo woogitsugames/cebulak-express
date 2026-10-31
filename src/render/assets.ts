@@ -48,7 +48,6 @@ export interface AssetLoaderOptions {
 
 const countryPathCache = new Map<string, string>();
 const landmarkPathCache = new Map<string, readonly string[]>();
-const BORDER_NEAR_PATH = 'assets/countries/pl/pl-border-near.png';
 const DEFAULT_HERO_PATHS: readonly string[] = ['assets/hero/kombi-body.png'];
 
 /** Zimowe niebo i plany mają wszystkie kraje z tłami; brak pliku = fallback do lata. */
@@ -69,7 +68,7 @@ export function countryLayerPath(country: CountryCode, layer: BackgroundLayer, s
   return path;
 }
 
-/** Kolejność prób: wariant sezonowy, zwykły, ew. wspólna stacja. */
+/** Kolejność prób: wariant sezonowy (`<id>-zima.png`, runda 9), zwykły, ew. wspólna stacja. */
 export function landmarkPaths(point: Pick<Waypoint, 'id' | 'kind'>, season: Season = 'summer'): readonly string[] {
   const key = point.id + ':' + point.kind + ':' + season;
   let paths = landmarkPathCache.get(key);
@@ -80,13 +79,20 @@ export function landmarkPaths(point: Pick<Waypoint, 'id' | 'kind'>, season: Seas
         : ['assets/landmarks/dom-meta.png'];
     } else {
       const primary = 'assets/landmarks/' + point.id + '.png';
+      const seasonal = season === 'winter' ? ['assets/landmarks/' + point.id + '-zima.png', primary] : [primary];
       paths = point.kind === 'border' || point.kind === 'rest'
-        ? [primary, 'assets/landmarks/granica-stacja.png']
-        : [primary];
+        ? [...seasonal, 'assets/landmarks/granica-stacja.png']
+        : seasonal;
     }
     landmarkPathCache.set(key, paths);
   }
   return paths;
+}
+
+/** Panorama miasta docelowego na mecie: zimą najpierw `<id>-zima.png`, potem letnia. */
+export function homeCityPaths(cityId: string, season: Season = 'summer'): readonly string[] {
+  const summer = 'assets/landmarks/' + cityId + '.png';
+  return season === 'winter' ? ['assets/landmarks/' + cityId + '-zima.png', summer] : [summer];
 }
 
 /**
@@ -201,11 +207,6 @@ export class AssetLoader {
     return undefined;
   }
 
-  /** Wariant near dla odcinka polskiej granicy, zastępujący zwykły kafelek. */
-  getBorderNear(): DrawableAsset | undefined {
-    return this.request(BORDER_NEAR_PATH, 1).image;
-  }
-
   getLandmark(point: Pick<Waypoint, 'id' | 'kind'>, season: Season = 'summer'): DrawableAsset | undefined {
     for (const path of landmarkPaths(point, season)) {
       const record = this.request(path, 1);
@@ -220,9 +221,15 @@ export class AssetLoader {
    * Panorama miasta docelowego dla mety `dom-<id>` (te same pliki co miasta na trasie).
    * Brak pliku = undefined; meta rysuje wtedy sam domek `dom-meta` jak dawniej.
    */
-  getHomeCity(point: Pick<Waypoint, 'id'>): DrawableAsset | undefined {
+  getHomeCity(point: Pick<Waypoint, 'id'>, season: Season = 'summer'): DrawableAsset | undefined {
     if (!point.id.startsWith('dom-')) return undefined;
-    return this.request('assets/landmarks/' + point.id.slice(4) + '.png', 1).image;
+    const city = point.id.slice(4);
+    for (const path of homeCityPaths(city, season)) {
+      const record = this.request(path, 1);
+      if (record.status === 'ready') return record.image;
+      if (record.status !== 'missing') return undefined;
+    }
+    return undefined;
   }
 
   /** Bohater ma osobny renderer; tu zwracamy również oryginalną bitmapę bez downscale. */

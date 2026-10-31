@@ -1,5 +1,7 @@
 # Wejście do Google Play i App Store — wymagania prawne, treści i konta
 
+> Lista kontrolna licencji przed każdym wydaniem: `docs/prawo/przed-wydaniem.md`.
+
 **Stan informacji: 30.10.2026.** Dotyczy „Cebulak Express — Kierunek Polska” (Capacitor 8, Android targetSdk 36, następnie iOS; gra bez reklam, bez kont imiennych, z pseudonimowym rankingiem Firebase). Stan zasad sklepów może się zmienić przed publikacją — sprawdzić bezpośrednio w panelach w dniu zgłoszenia.
 
 ## 1. Google Play — typ konta i testy
