@@ -1,6 +1,6 @@
 # HANDOVER — Cebulak Express (koordynacja Claude)
 
-> Ostatnia aktualizacja: **2026-10-31 09:00 UTC**. **Przekazanie projektu:** poprzedniej sesji Claude kończył się limit tygodniowy, więc pracę przejmuje nowa sesja (inne konto). Przeczytaj ten plik w całości, zanim zaczniesz. Prompt startowy dla nowej sesji jest w `docs/PROMPT-NOWA-SESJA.md`.
+> Ostatnia aktualizacja: **2026-10-31 11:20 UTC**. **Przekazanie projektu:** poprzedniej sesji Claude kończył się limit tygodniowy, więc pracę przejmuje nowa sesja (inne konto). Przeczytaj ten plik w całości, zanim zaczniesz. Prompt startowy dla nowej sesji jest w `docs/PROMPT-NOWA-SESJA.md`.
 
 ## 1. Kim jest właściciel i jak pracujemy
 - **Właściciel:** Mateusz (portale PoPolsku / TuWiesz / Aktualności). Komunikacja **po polsku**. Decyzje dawaj **klikalnie** (AskUserQuestion, 2–4 opcje, rekomendowana pierwsza).
@@ -17,9 +17,9 @@
 - Budynki chronione prawem autorskim pomijamy (Atomium, piramida Luwru, Grande Arche).
 - Decyzje właściciela D1–D15: `docs/GDD.md` (sekcja „Decyzje właściciela”).
 
-## 3. Stan na `main` (33d6934)
+## 3. Stan na `main` (44a3b1c, po scaleniu #108)
 Gra: TypeScript + Canvas 2D, Vite, PWA, Capacitor Android/iOS, Firebase (functions/). Na main jest m.in.:
-- 15 krajów zamieszkania + tranzyt (CZ, EE, LV, LT), trasy z km, tła krajów (lato/zima), **45 panoram miast w stylu A+** (rozpoznawalne); runda 7 (kolejne 86 + poprawki Oslo/Kraków/Katowice) i tła EE/LV/LT są w PR po #108 (patrz sekcja 6).
+- 15 krajów zamieszkania + tranzyt (CZ, EE, LV, LT), trasy z km, tła krajów (lato/zima), **45 panoram miast w stylu A+** (rozpoznawalne); runda 7 scalona w #108: łącznie ~133 panoramy A+ (stare zostały tylko Nyköping i Czeski Cieszyn, poprawka w zleceniu 103) oraz tła EE/LV/LT.
 - Garaż: 11 skórek/aut, 7 aut odblokowywanych za km łącznie (licznik z albumu).
 - Album z medalami i pocztówkami (pocztówki generowane z panoram: `npm run art:postcards`).
 - Lot powrotny, bonusy i bramka bagażowa, duch znajomego (`?g=`), tablice z zabawnymi nazwami miejscowości (78), muzyka krajów, sezon zimowy (1–26.12 lub `?sezon=zima`), samouczek, ekran ustawień (zębatka), 5 języków (PL domyślnie zawsze; EN/NL/DE/FR leniwie).
@@ -52,14 +52,18 @@ for i in 1 2 3; do npx playwright test --project="Slow 4G + CPU 4x (Chromium)"; 
 - `public/licencje.html` regeneruje `prebuild` — commituj świadomie.
 
 ## 6. Otwarte PR-y / obserwacje
-- **PR #108** (`claude/wizardly-curie-prxr7z`): zawartość #89 plus naprawy CI. Naprawione: leniwy import nagrywania offline, `registration.update()` na WebKit, gdy `register()` zwraca undefined, oraz dwa testy WebKit. Po zielonym CI: ready i scalenie (merge commit), potem zamknąć #89 jako zastąpiony.
-- **Panoramy rundy 7** są w tym samym PR #108 (wypchnięte, żeby nie zginęły z kontenerem).
-- Szkice PR GPT #78–#85, #90, #91 zawierają tylko pliki ASSETS bez PNG. Po scaleniu panoram zamknąć je jako zastąpione.
+- **#108 scalony 31.10 ok. 11:15 UTC** (zastąpił #89). Właściciel zgodził się scalić mimo czerwonego WebKit w CI (patrz niżej). APK z CI wysłane właścicielowi.
+- **Otwarte:** #109 (GPT, zlecenie 103: same ASSETS, czekamy na ZIP od właściciela) i #78 (zlecenie 83, auta; nie sprawdzono, czy grafiki są już na main). Szkice rund 6 i 7 (#79–#85, #90–#107) zamknięte jako zastąpione.
+- **Niestabilne e2e w CI (do zbadania osobno):**
+  - WebKit (iPhone 14): proces przeglądarki się wywraca („Target crashed” / „browser has been closed”) w losowych testach. Zdarza się też na kodzie z main (PR GPT z samą dokumentacją).
+  - Pixel 7: rzadkie zawieszenie po rozbiciu przy ziarnie 20261030 (7 km, Deurne). Główny wątek jest zapchany, klatek brak. Lokalnie nie odtworzone. W kodzie są już zabezpieczenia: strażnik pętli, try/catch dla feedback i showOver. `e2e/support.ts` przy porażce wypisuje w logu `[diagnostyka]` (visibility, longTasks, faza gry). Następne zawieszenie da dane.
+- Lokalne APK: Maven Central odpowiada 429 (limit). Gotowe APK jest w artefakcie CI `cebulak-express-debug-apk` (workflow CI na PR/main).
 - Garaż na Foldzie: poprawka na main, **czeka na potwierdzenie właściciela na telefonie**.
 - Lokalne Playwright: projekt wymaga przeglądarki z buildu 1194. W kontenerze jest 1243, więc podlinkuj `chromium_headless_shell-1243/chrome-headless-shell-linux64/chrome-headless-shell` jako `/opt/pw-browsers/chromium_headless_shell-1194/chrome-linux/headless_shell`.
+- Artefakty i trace z CI: `curl -L https://api.github.com/repos/woogitsugames/cebulak-express/actions/artifacts/<id>/zip` działa przez proxy sesji.
 
 ## 7. Kontynuacja projektu — plan na najbliższe dni
-1. Scal PR #89 i wyślij właścicielowi APK (`npm run android:apk`).
+1. ~~Scal PR #89/#108 i wyślij APK~~ (zrobione 31.10). Następnie wgraj ZIP zlecenia 103, gdy wróci.
 2. Odbieraj ZIP-y rundy 7 i wgrywaj je (sekcja 4, pkt 4). Jedna paczka = jeden commit. Kilka paczek może iść w jednym PR.
 3. **Mniejsze APK** (sekcja 4, pkt 2). Uwaga: każda nowa panorama zwiększa APK, więc kwantyzacja jest obowiązkowa.
 4. **Gotowość wdrożenia** (sekcja 4, pkt 3). Potem decyzje właściciela: projekt Firebase, Play Console, domena.
