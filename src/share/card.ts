@@ -1,5 +1,28 @@
-import { COUNTRY_NAME } from '../content/pl';
+import { COUNTRY_NAME, UI, fill, localized } from '../content/i18n';
+import { cityNameForShare, localizedCityName } from '../content/lang/cities';
 import type { City, HomeCountry } from '../core/route';
+
+/** Polskie napisy karty; EN/NL/DE/FR w słownikach (CARD). */
+export const CARD_TEXT = {
+  headlineArrived: 'DOLECIAŁEM DO DOMU!',
+  headlineOver: 'KONIEC TRASY!',
+  kilometres: 'KILOMETRÓW',
+  route: 'Z {from} do {to}',
+  arrivedTitle: 'CEL OSIĄGNIĘTY!',
+  overTitle: 'CO MNIE ZATRZYMAŁO?',
+  arrivedDetail: 'Mama już nakrywa do stołu.',
+  fallbackCause: 'Kombi chciało lecieć, ale droga miała inne plany.',
+  league: 'LIGA POLONII · {country}',
+  place: '{place}. miejsce',
+  placeSoon: 'Pozycja wkrótce',
+  daily: 'WYZWANIE DNIA · {title}',
+  footerArrived: 'W {sec} s! · Spróbuj mnie pobić',
+  footerOver: 'Jeszcze raz? · Spróbuj mnie pobić',
+} as const;
+
+function texts(): Record<keyof typeof CARD_TEXT, string> {
+  return localized('CARD') ?? CARD_TEXT;
+}
 
 /** Dane wyłącznie z ukończonego przejazdu i jego trasy. */
 export interface CardData {
@@ -34,13 +57,13 @@ export function formatKilometres(value: number): string {
   return String(roundedKilometres(value)).replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
 }
 
-/** Tekst komunikatu do udostępnienia; odmiana pochodzi z route.ts. */
+/** Tekst komunikatu do udostępnienia; polska odmiana pochodzi z route.ts, inne języki — mianownik. */
 export function cardShareText(data: CardData): string {
+  const from = cityNameForShare(data.from, 'from');
+  const to = cityNameForShare(data.to, 'to');
   const text = data.arrived
-    ? 'Doleciałem z ' + data.from.fromName + ' do ' + data.to.toName +
-      ' w ' + roundedKilometres(data.seconds) + ' s! A Ty?'
-    : 'Przeleciałem ' + formatKilometres(data.km) + ' km z ' + data.from.fromName +
-      ' w stronę ' + data.to.toName + '! Dasz radę dalej?';
+    ? fill(UI.shareArrivedText, { from, to, sec: roundedKilometres(data.seconds) })
+    : fill(UI.shareText, { km: formatKilometres(data.km), from, to });
   return data.daily?.trim() ? text + ' ' + data.daily.trim() : text;
 }
 
@@ -191,9 +214,9 @@ function drawProgress(ctx: CardContext, data: CardData, story: boolean): void {
   const h = story ? 192 : 124;
   panel(ctx, 72, y, 936, h);
   const nameY = y + (story ? 55 : 40);
-  fittedText(ctx, data.from.name, 130, nameY, 350, story ? 38 : 31,
+  fittedText(ctx, localizedCityName(data.from), 130, nameY, 350, story ? 38 : 31,
     { align: 'left', weight: 750, minSize: 23 });
-  fittedText(ctx, data.to.name, 947, nameY, 350, story ? 38 : 31,
+  fittedText(ctx, localizedCityName(data.to), 947, nameY, 350, story ? 38 : 31,
     { align: 'right', weight: 750, minSize: 23 });
   const total = roundedKilometres(data.totalKm);
   const ratio = total > 0 ? Math.min(1, roundedKilometres(data.km) / total) : 0;
@@ -215,12 +238,13 @@ function drawCause(ctx: CardContext, data: CardData, story: boolean): void {
   const y = story ? 1262 : 786;
   const h = story ? 226 : 114;
   panel(ctx, 72, y, 936, h, 'rgba(255,249,225,0.96)');
-  const title = data.arrived ? 'CEL OSIĄGNIĘTY!' : 'CO MNIE ZATRZYMAŁO?';
+  const T = texts();
+  const title = data.arrived ? T.arrivedTitle : T.overTitle;
   fittedText(ctx, title, 540, y + (story ? 65 : 40), 820, story ? 45 : 31,
     { color: '#145a48', weight: 900 });
   const detail = data.arrived
-    ? 'Mama już nakrywa do stołu.'
-    : data.causeText.trim() || 'Kombi chciało lecieć, ale droga miała inne plany.';
+    ? T.arrivedDetail
+    : data.causeText.trim() || T.fallbackCause;
   fittedText(ctx, detail, 540, y + (story ? 144 : 84), 840, story ? 42 : 30,
     { color: '#354849', minSize: 23, weight: 650 });
 }
@@ -229,42 +253,44 @@ function drawLeague(ctx: CardContext, data: CardData, story: boolean): void {
   const y = story ? 1538 : 915;
   const h = story ? 135 : 72;
   panel(ctx, 72, y, 936, h, 'rgba(14,87,72,0.94)');
-  const league = 'LIGA POLONII · ' + COUNTRY_NAME[data.home];
+  const T = texts();
+  const league = fill(T.league, { country: COUNTRY_NAME[data.home] });
   const position = data.leaguePosition;
   const validPosition = position !== undefined && Number.isFinite(position) && position > 0;
   if (story) {
     fittedText(ctx, league, 540, y + 50, 850, 37, { color: '#ffdf71', minSize: 27 });
-    fittedText(ctx, validPosition ? Math.floor(position) + '. miejsce' : 'Pozycja wkrótce',
+    fittedText(ctx, validPosition ? fill(T.place, { place: Math.floor(position) }) : T.placeSoon,
       540, y + 107, 850, 58, { minSize: 34, weight: 900 });
   } else {
-    fittedText(ctx, validPosition ? league + ' · ' + Math.floor(position) + '. miejsce' : league,
+    fittedText(ctx, validPosition ? league + ' · ' + fill(T.place, { place: Math.floor(position) }) : league,
       540, y + 50, 855, 35, { minSize: 26, weight: 850 });
   }
 }
 
 function drawCardContent(ctx: CardContext, data: CardData, story: boolean, logo: HTMLImageElement | null): void {
+  const T = texts();
   drawLogo(ctx, logo, story);
   const daily = data.daily?.trim();
   if (daily) {
     const y = story ? 308 : 211;
     panel(ctx, 160, y, 760, story ? 73 : 45, 'rgba(255,223,104,0.96)');
-    fittedText(ctx, 'WYZWANIE DNIA · ' + daily, 540, y + (story ? 51 : 33),
+    fittedText(ctx, fill(T.daily, { title: daily }), 540, y + (story ? 51 : 33),
       710, story ? 34 : 24, { color: '#214c45', minSize: 20 });
   }
-  fittedText(ctx, data.arrived ? 'DOLECIAŁEM DO DOMU!' : 'KONIEC TRASY!',
+  fittedText(ctx, data.arrived ? T.headlineArrived : T.headlineOver,
     540, story ? 470 : 297, 920, story ? 65 : 54, { color: '#145240', minSize: 39, weight: 900 });
   fittedText(ctx, formatKilometres(data.km), 540, story ? 778 : 480,
     950, story ? 255 : 195, { color: '#fffdf2', minSize: 100, weight: 900, outline: true });
-  fittedText(ctx, 'KILOMETRÓW', 540, story ? 857 : 536, 850,
+  fittedText(ctx, T.kilometres, 540, story ? 857 : 536, 850,
     story ? 64 : 48, { color: '#144c3f', minSize: 34, weight: 900 });
-  fittedText(ctx, 'Z ' + data.from.fromName + ' do ' + data.to.toName, 540,
+  fittedText(ctx, fill(T.route, { from: cityNameForShare(data.from, 'from'), to: cityNameForShare(data.to, 'to') }), 540,
     story ? 947 : 602, 930, story ? 62 : 46, { color: '#12483c', minSize: 29, weight: 850 });
   drawProgress(ctx, data, story);
   drawCause(ctx, data, story);
   drawLeague(ctx, data, story);
   const footer = data.arrived
-    ? 'W ' + roundedKilometres(data.seconds) + ' s! · Spróbuj mnie pobić'
-    : 'Jeszcze raz? · Spróbuj mnie pobić';
+    ? fill(T.footerArrived, { sec: roundedKilometres(data.seconds) })
+    : T.footerOver;
   fittedText(ctx, footer, 540, story ? 1804 : 1040, 925, story ? 47 : 32,
     { color: '#ffffff', minSize: 27, weight: 900 });
 }

@@ -18,6 +18,8 @@ test.beforeAll(async () => {
         formats: ['es'],
         fileName: 'recorder-smoke',
       },
+      // Teksty nagrywania idą przez i18n (leniwe słowniki języków) — jeden plik bez dociąganych chunków.
+      rollupOptions: { output: { inlineDynamicImports: true } },
     },
   });
   const builds = Array.isArray(output) ? output : [output];

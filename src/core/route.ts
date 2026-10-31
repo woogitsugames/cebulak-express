@@ -195,7 +195,7 @@ function abroadWaypoints(home: HomeCountry, from: City): Waypoint[] {
     return list.slice(fromIndex).map((w) => ({ ...w, km: Math.round(startKm + w.km - base) }));
   };
   const startPoint = (): Waypoint => ({
-    id: from.id, name: from.name, country: home, km: 0, kind: 'city', motifs: [], text: `${from.name}. Ruszamy do domu!`,
+    id: from.id, name: from.name, country: home, km: 0, kind: 'city', motifs: [], text: `${from.name}. Ruszamy do domu!`, textKey: 'start',
   });
 
   if (from.via) {
@@ -412,6 +412,7 @@ export function makeRoute(home: HomeCountry, fromId: string, toId: string): Rout
     country: 'PL',
     km: totalKm,
     text: `${to.name}. Jesteś w domu!`,
+    textKey: 'home',
     lat: to.lat,
     lon: to.lon,
   };

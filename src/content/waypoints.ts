@@ -19,6 +19,11 @@ export interface Waypoint {
   kind: WaypointKind;
   motifs: string[];
   text: string;
+  /**
+   * Klucz tłumaczenia `text` (WAYPOINTS w słownikach EN/NL/DE/FR), gdy ten sam `id`
+   * ma na różnych trasach inny tekst; domyślnie klucz = `id`. 'start'/'home' — szablony z UI.
+   */
+  textKey?: string;
   lat?: number;
   lon?: number;
 }
@@ -240,10 +245,10 @@ export const ROUTE_WAYPOINTS: Record<HomeCountry, Waypoint[]> = {
     { id: 'goteborg', name: 'Göteborg', country: 'SE', km: 290, kind: 'city', motifs: ['dźwigi portowe', 'tramwaje', 'kanały'], text: 'Göteborg. Port, tramwaje i dalej na południe.' },
     { id: 'helsingborg', name: 'Helsingborg', country: 'SE', km: 510, kind: 'city', motifs: ['ceglana wieża twierdzy', 'prom w cieśninie'], text: 'Helsingborg. Za cieśniną już Dania.' },
     { id: 'malmo', name: 'Malmö', country: 'SE', km: 570, kind: 'city', motifs: ['most nad cieśniną na horyzoncie', 'ceglany zamek'], text: 'Malmö. Most na horyzoncie, prom przed nami.' },
-    { id: 'ystad', name: 'Ystad', country: 'SE', km: 615, kind: 'crossing', motifs: ['port z promem', 'domy z muru pruskiego'], text: 'Ystad. Wjeżdżamy na prom. Trzymaj się!' },
-    { id: 'prom-baltyk', name: 'Prom przez Bałtyk', country: 'SE', km: 700, kind: 'crossing', motifs: ['prom na Bałtyku', 'mewy', 'latarnia morska'], text: 'Na promie: kawa, mewy i cisza. Rzadkość!' },
-    { id: 'swinoujscie', name: 'Świnoujście', country: 'PL', km: 780, kind: 'border', motifs: ['latarnia morska', 'wiatrak-stawa w porcie', ...BORDER_MOTIFS], text: 'Świnoujście. Polska wita po rejsie!', lat: 53.91, lon: 14.25 },
-    { id: 'stacja-swinoujscie', name: 'Stacja przy S3', country: 'PL', km: 790, kind: 'rest', motifs: STATION_MOTIFS, text: 'Hot dog po rejsie smakuje podwójnie.', lat: 53.85, lon: 14.3 },
+    { id: 'ystad', name: 'Ystad', country: 'SE', km: 615, kind: 'crossing', motifs: ['port z promem', 'domy z muru pruskiego'], text: 'Ystad. Wjeżdżamy na prom. Trzymaj się!', textKey: 'ystad-2' },
+    { id: 'prom-baltyk', name: 'Prom przez Bałtyk', country: 'SE', km: 700, kind: 'crossing', motifs: ['prom na Bałtyku', 'mewy', 'latarnia morska'], text: 'Na promie: kawa, mewy i cisza. Rzadkość!', textKey: 'prom-baltyk-2' },
+    { id: 'swinoujscie', name: 'Świnoujście', country: 'PL', km: 780, kind: 'border', motifs: ['latarnia morska', 'wiatrak-stawa w porcie', ...BORDER_MOTIFS], text: 'Świnoujście. Polska wita po rejsie!', textKey: 'swinoujscie-2', lat: 53.91, lon: 14.25 },
+    { id: 'stacja-swinoujscie', name: 'Stacja przy S3', country: 'PL', km: 790, kind: 'rest', motifs: STATION_MOTIFS, text: 'Hot dog po rejsie smakuje podwójnie.', textKey: 'stacja-swinoujscie-2', lat: 53.85, lon: 14.3 },
   ],
   DK: [
     { id: 'kopenhaga', name: 'Kopenhaga', country: 'DK', km: 0, kind: 'city', motifs: ['kolorowe domki nad kanałem', 'rowery', 'wieża z iglicą'], text: 'Kopenhaga. Rowery mkną, kombi się turla.' },
@@ -262,12 +267,12 @@ export const ROUTE_WAYPOINTS: Record<HomeCountry, Waypoint[]> = {
     { id: 'cherbourg', name: 'Cherbourg', country: 'FR', km: 755, kind: 'city', motifs: ['baseny portowe', 'latarnie morskie'], text: 'Cherbourg. Ląd pod kołami, mapa znów pracuje.' },
     { id: 'caen', name: 'Caen', country: 'FR', km: 875, kind: 'city', motifs: ['wieże opactwa', 'kamienny most'], text: 'Caen. Pierwszy odcinek po rejsie zaliczony.' },
     { id: 'rouen', name: 'Rouen', country: 'FR', km: 995, kind: 'city', motifs: ['gotycka wieża', 'nabrzeże Sekwany'], text: 'Rouen. Katedra wysoka, dach jeszcze wyższy.' },
-    { id: 'reims', name: 'Reims', country: 'FR', km: 1195, kind: 'city', motifs: ['wieże katedry', 'łagodne wzgórza'], text: 'Reims. Kawa się skończyła, kilometry nie.' },
-    { id: 'metz', name: 'Metz', country: 'FR', km: 1360, kind: 'city', motifs: ['mosty nad Mozelą', 'kamienna katedra'], text: 'Metz. W bagażniku wszystko, oprócz wolnego miejsca.' },
-    { id: 'saarbrucken', name: 'Saarbrücken', country: 'DE', km: 1430, kind: 'city', motifs: ['most nad Saarą', 'zielone wzgórza'], text: 'Saarbrücken. Nowy kraj, ten sam pełny dach.' },
-    { id: 'mannheim', name: 'Mannheim', country: 'DE', km: 1560, kind: 'city', motifs: ['wieża ciśnień', 'rzeka z barkami'], text: 'Mannheim. Termos dostał kolejne zadanie.' },
-    { id: 'frankfurt-main', name: 'Frankfurt nad Menem', country: 'DE', km: 1610, kind: 'city', motifs: ['wieżowce nad rzeką', 'mosty'], text: 'Frankfurt. Piętra rosną, kilometrów ubywa.' },
-    { id: 'erfurt', name: 'Erfurt', country: 'DE', km: 1870, kind: 'city', motifs: ['kamienice na moście', 'wieże starego miasta'], text: 'Erfurt. Jeszcze trochę i pora na obiad.' },
+    { id: 'reims', name: 'Reims', country: 'FR', km: 1195, kind: 'city', motifs: ['wieże katedry', 'łagodne wzgórza'], text: 'Reims. Kawa się skończyła, kilometry nie.', textKey: 'reims-2' },
+    { id: 'metz', name: 'Metz', country: 'FR', km: 1360, kind: 'city', motifs: ['mosty nad Mozelą', 'kamienna katedra'], text: 'Metz. W bagażniku wszystko, oprócz wolnego miejsca.', textKey: 'metz-2' },
+    { id: 'saarbrucken', name: 'Saarbrücken', country: 'DE', km: 1430, kind: 'city', motifs: ['most nad Saarą', 'zielone wzgórza'], text: 'Saarbrücken. Nowy kraj, ten sam pełny dach.', textKey: 'saarbrucken-2' },
+    { id: 'mannheim', name: 'Mannheim', country: 'DE', km: 1560, kind: 'city', motifs: ['wieża ciśnień', 'rzeka z barkami'], text: 'Mannheim. Termos dostał kolejne zadanie.', textKey: 'mannheim-2' },
+    { id: 'frankfurt-main', name: 'Frankfurt nad Menem', country: 'DE', km: 1610, kind: 'city', motifs: ['wieżowce nad rzeką', 'mosty'], text: 'Frankfurt. Piętra rosną, kilometrów ubywa.', textKey: 'frankfurt-main-2' },
+    { id: 'erfurt', name: 'Erfurt', country: 'DE', km: 1870, kind: 'city', motifs: ['kamienice na moście', 'wieże starego miasta'], text: 'Erfurt. Jeszcze trochę i pora na obiad.', textKey: 'erfurt-2' },
     ...dresdenToJedrzychowice(2085),
   ],
   ES: [
@@ -282,8 +287,8 @@ export const ROUTE_WAYPOINTS: Record<HomeCountry, Waypoint[]> = {
     { id: 'mulhouse', name: 'Mulhouse', country: 'FR', km: 965, kind: 'city', motifs: ['stary ratusz', 'kominy fabryczne'], text: 'Mulhouse. Termos wie, że droga jeszcze długa.' },
     { id: 'freiburg', name: 'Fryburg Bryzgowijski', country: 'DE', km: 1045, kind: 'city', motifs: ['strzelista wieża katedry', 'lasy na horyzoncie'], text: 'Fryburg. Znów nowy kraj i nowa kawa.' },
     { id: 'karlsruhe', name: 'Karlsruhe', country: 'DE', km: 1175, kind: 'city', motifs: ['pałac i park', 'aleje drzew'], text: 'Karlsruhe. Torby siedzą, licznik biegnie.' },
-    { id: 'norymberga', name: 'Norymberga', country: 'DE', km: 1445, kind: 'city', motifs: ['zamek na wzgórzu', 'dachy kamienic'], text: 'Norymberga. Dom coraz bliżej.' },
-    { id: 'jena', name: 'Jena', country: 'DE', km: 1580, kind: 'city', motifs: ['smukła wieża', 'zielone wzgórza'], text: 'Jena. Zapas kawy już policzony.' },
+    { id: 'norymberga', name: 'Norymberga', country: 'DE', km: 1445, kind: 'city', motifs: ['zamek na wzgórzu', 'dachy kamienic'], text: 'Norymberga. Dom coraz bliżej.', textKey: 'norymberga-2' },
+    { id: 'jena', name: 'Jena', country: 'DE', km: 1580, kind: 'city', motifs: ['smukła wieża', 'zielone wzgórza'], text: 'Jena. Zapas kawy już policzony.', textKey: 'jena-2' },
     ...dresdenToJedrzychowice(1700),
   ],
   IT: [
@@ -300,8 +305,8 @@ export const ROUTE_WAYPOINTS: Record<HomeCountry, Waypoint[]> = {
     ...czechToCieszyn(1015),
   ],
   AT: [
-    { id: 'wieden', name: 'Wiedeń', country: 'AT', km: 0, kind: 'city', motifs: ['kopuła zabytkowego gmachu', 'tramwaj'], text: 'Wiedeń. Pakujemy wspomnienia i ruszamy.' },
-    { id: 'mikulov', name: 'Mikulov', country: 'CZ', km: 75, kind: 'border', motifs: ['zamek na wzgórzu', 'łagodne pagórki'], text: 'Mikulov. Przez Czechy coraz bliżej domu.' },
+    { id: 'wieden', name: 'Wiedeń', country: 'AT', km: 0, kind: 'city', motifs: ['kopuła zabytkowego gmachu', 'tramwaj'], text: 'Wiedeń. Pakujemy wspomnienia i ruszamy.', textKey: 'wieden-2' },
+    { id: 'mikulov', name: 'Mikulov', country: 'CZ', km: 75, kind: 'border', motifs: ['zamek na wzgórzu', 'łagodne pagórki'], text: 'Mikulov. Przez Czechy coraz bliżej domu.', textKey: 'mikulov-2' },
     ...czechToCieszyn(135),
   ],
   SE: [
@@ -309,8 +314,8 @@ export const ROUTE_WAYPOINTS: Record<HomeCountry, Waypoint[]> = {
     { id: 'nykoping', name: 'Nyköping', country: 'SE', km: 100, kind: 'city', motifs: ['zamek nad rzeką', 'zielone wzgórza'], text: 'Nyköping. Pierwsza kawa zaliczona.' },
     { id: 'norrkoping', name: 'Norrköping', country: 'SE', km: 160, kind: 'city', motifs: ['czerwone budynki nad wodą', 'most'], text: 'Norrköping. Walizki się nie nudzą.' },
     { id: 'jonkoping', name: 'Jönköping', country: 'SE', km: 320, kind: 'city', motifs: ['jezioro z łodziami', 'drewniane domki'], text: 'Jönköping. Jezioro mija, kombi jedzie dalej.' },
-    { id: 'helsingborg', name: 'Helsingborg', country: 'SE', km: 510, kind: 'city', motifs: ['ceglana wieża', 'prom w cieśninie'], text: 'Helsingborg. Mewy znają już nasz bagażnik.' },
-    { id: 'malmo', name: 'Malmö', country: 'SE', km: 570, kind: 'city', motifs: ['most nad cieśniną', 'ceglany zamek'], text: 'Malmö. Port coraz bliżej.' },
+    { id: 'helsingborg', name: 'Helsingborg', country: 'SE', km: 510, kind: 'city', motifs: ['ceglana wieża', 'prom w cieśninie'], text: 'Helsingborg. Mewy znają już nasz bagażnik.', textKey: 'helsingborg-2' },
+    { id: 'malmo', name: 'Malmö', country: 'SE', km: 570, kind: 'city', motifs: ['most nad cieśniną', 'ceglany zamek'], text: 'Malmö. Port coraz bliżej.', textKey: 'malmo-2' },
     ...ystadToSwinoujscie(620),
   ],
   FI: [
@@ -333,8 +338,8 @@ export const ROUTE_WAYPOINTS: Record<HomeCountry, Waypoint[]> = {
     { id: 'luksemburg', name: 'Luksemburg', country: 'LU', km: 0, kind: 'city', motifs: ['most nad doliną', 'kamienne fortyfikacje'], text: 'Luksemburg. Torby na dach i ruszamy.' },
     { id: 'trier', name: 'Trewir', country: 'DE', km: 60, kind: 'city', motifs: ['starożytna brama miejska', 'kamienny most'], text: 'Trewir. Granica minęła, trasa trwa.' },
     { id: 'koblenz', name: 'Koblencja', country: 'DE', km: 190, kind: 'city', motifs: ['dwie rzeki u zbiegu', 'zamek na wzgórzu'], text: 'Koblencja. Dwie rzeki, jeden cel.' },
-    { id: 'frankfurt-main', name: 'Frankfurt nad Menem', country: 'DE', km: 315, kind: 'city', motifs: ['wieżowce nad Menem', 'mosty'], text: 'Frankfurt. Kombi nie liczy pięter.' },
-    { id: 'erfurt', name: 'Erfurt', country: 'DE', km: 570, kind: 'city', motifs: ['kamienice na moście', 'gotyckie wieże'], text: 'Erfurt. Walizki proszą o krótszy objazd.' },
+    { id: 'frankfurt-main', name: 'Frankfurt nad Menem', country: 'DE', km: 315, kind: 'city', motifs: ['wieżowce nad Menem', 'mosty'], text: 'Frankfurt. Kombi nie liczy pięter.', textKey: 'frankfurt-main-3' },
+    { id: 'erfurt', name: 'Erfurt', country: 'DE', km: 570, kind: 'city', motifs: ['kamienice na moście', 'gotyckie wieże'], text: 'Erfurt. Walizki proszą o krótszy objazd.', textKey: 'erfurt-3' },
     ...dresdenToJedrzychowice(780),
   ],
 

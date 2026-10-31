@@ -1,7 +1,7 @@
 import { OBSTACLE, PICKUPS, PLAYER, TICK, WORLD } from '../core/config';
 import type { Game } from '../core/game';
 import { effectiveGapH, isPowerupKind, type BottomKind, type Obstacle, type Pickup, type TopKind } from '../core/obstacles';
-import { POWERUP_NAME } from '../content/pl';
+import { POWERUP_NAME } from '../content/i18n';
 import { BackgroundRenderer, type BackgroundState } from './background';
 import { createSnow } from './snow';
 import type { SignsRenderer } from './signs';

@@ -1,4 +1,5 @@
-import { COUNTRY_NAME } from '../content/pl';
+import { COUNTRY_NAME, localized } from '../content/i18n';
+import { localizedCityName } from '../content/lang/cities';
 import { HOME_COUNTRIES, PL_CITIES, START_CITIES, type City, type HomeCountry } from '../core/route';
 import { platform } from '../platform';
 import './onboarding.css';
@@ -55,7 +56,8 @@ export function searchOnboardingCities(query: string, cities: readonly City[] = 
     .toLocaleLowerCase('pl').replace(/ł/g, 'l').normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '').trim();
   const needle = normalized(query);
-  return sortedOnboardingCities(cities).filter((city) => normalized(city.name).includes(needle));
+  return sortedOnboardingCities(cities).filter((city) =>
+    normalized(city.name).includes(needle) || normalized(localizedCityName(city)).includes(needle));
 }
 
 function element<K extends keyof HTMLElementTagNameMap>(
@@ -80,6 +82,7 @@ function image(path: string, cls: string): HTMLImageElement {
 /** Dwa ekrany DOM, bez ingerencji w silnik. Zwraca idempotentny disposer. */
 export function mountOnboarding(container: HTMLElement, opts: OnboardingOptions): () => void {
   let disposed = false;
+  const T = localized('ONBOARDING') ?? ONBOARDING_TEXT;
   let step: 'country' | 'city' = 'country';
   let selectedHome: HomeCountry = HOME_COUNTRIES[0];
   let selectedFrom = START_CITIES[selectedHome][0].id;
@@ -88,7 +91,7 @@ export function mountOnboarding(container: HTMLElement, opts: OnboardingOptions)
   const root = element('section', 'ce-onboarding');
   root.setAttribute('role', 'dialog');
   root.setAttribute('aria-modal', 'true');
-  root.setAttribute('aria-label', ONBOARDING_TEXT.dialog);
+  root.setAttribute('aria-label', T.dialog);
   root.addEventListener('pointerdown', (event) => event.stopPropagation());
   // Aktywne menu w tle nie może przejąć klawiszy podczas wyboru.
   root.addEventListener('keydown', (event) => {
@@ -132,18 +135,18 @@ export function mountOnboarding(container: HTMLElement, opts: OnboardingOptions)
     if (disposed) return;
     step = 'country';
     card.classList.add('ce-onboarding__card--country');
-    const header = heading(ONBOARDING_TEXT.countryTitle, ONBOARDING_TEXT.countryHint, ONBOARDING_TEXT.stepCountry);
+    const header = heading(T.countryTitle, T.countryHint, T.stepCountry);
     const hero = element('div', 'ce-onboarding__hero');
     hero.append(image('hero/kombi-body.png', 'ce-onboarding__car'));
     hero.setAttribute('aria-hidden', 'true');
     const grid = element('div', 'ce-onboarding__flags');
     grid.setAttribute('role', 'group');
-    grid.setAttribute('aria-label', ONBOARDING_TEXT.countryChoose);
+    grid.setAttribute('aria-label', T.countryChoose);
     const buttons = HOME_COUNTRIES.map((home) => {
       const button = element('button', 'ce-onboarding__flag');
       button.type = 'button';
       button.dataset.home = home;
-      button.setAttribute('aria-label', `${ONBOARDING_TEXT.countryChoose}: ${COUNTRY_NAME[home]}`);
+      button.setAttribute('aria-label', `${T.countryChoose}: ${COUNTRY_NAME[home]}`);
       button.append(image(`ui/flag-${home.toLowerCase()}.png`, 'ce-onboarding__flag-image'),
         element('span', 'ce-onboarding__flag-name', COUNTRY_NAME[home]));
       button.addEventListener('click', () => {
@@ -154,7 +157,7 @@ export function mountOnboarding(container: HTMLElement, opts: OnboardingOptions)
       return button;
     });
     grid.append(...buttons);
-    const footer = element('div', 'ce-onboarding__footer', ONBOARDING_TEXT.direction);
+    const footer = element('div', 'ce-onboarding__footer', T.direction);
     footer.prepend(image('ui/flag-pl.png', 'ce-onboarding__footer-flag'));
     card.replaceChildren(header, hero, grid, footer);
     root.scrollTop = 0;
@@ -167,38 +170,38 @@ export function mountOnboarding(container: HTMLElement, opts: OnboardingOptions)
     card.classList.remove('ce-onboarding__card--country');
     const back = element('button', 'ce-onboarding__back', '‹');
     back.type = 'button';
-    back.setAttribute('aria-label', ONBOARDING_TEXT.back);
+    back.setAttribute('aria-label', T.back);
     back.addEventListener('click', renderCountry);
     const country = element('div', 'ce-onboarding__selected-country');
     country.append(image(`ui/flag-${selectedHome.toLowerCase()}.png`, ''),
       element('span', '', COUNTRY_NAME[selectedHome]));
     const nav = element('div', 'ce-onboarding__nav');
     nav.append(back, country);
-    const header = heading(ONBOARDING_TEXT.cityTitle, ONBOARDING_TEXT.cityHint, ONBOARDING_TEXT.stepCity);
+    const header = heading(T.cityTitle, T.cityHint, T.stepCity);
 
-    const originLabel = element('label', 'ce-onboarding__field-label', ONBOARDING_TEXT.origin);
+    const originLabel = element('label', 'ce-onboarding__field-label', T.origin);
     const origin = element('select', 'ce-onboarding__origin');
     for (const city of START_CITIES[selectedHome]) {
       const option = document.createElement('option');
       option.value = city.id;
-      option.textContent = city.name;
+      option.textContent = localizedCityName(city);
       origin.append(option);
     }
     origin.value = selectedFrom;
     originLabel.append(origin);
     origin.addEventListener('change', () => { selectedFrom = origin.value; });
 
-    const searchLabel = element('label', 'ce-onboarding__field-label', ONBOARDING_TEXT.search);
+    const searchLabel = element('label', 'ce-onboarding__field-label', T.search);
     const input = element('input', 'ce-onboarding__search');
     input.type = 'search';
     input.autocomplete = 'off';
-    input.placeholder = ONBOARDING_TEXT.searchPlaceholder;
-    input.setAttribute('aria-label', ONBOARDING_TEXT.search);
+    input.placeholder = T.searchPlaceholder;
+    input.setAttribute('aria-label', T.search);
     searchLabel.append(input);
 
     const cities = element('div', 'ce-onboarding__cities');
     cities.setAttribute('role', 'group');
-    cities.setAttribute('aria-label', ONBOARDING_TEXT.cityTitle);
+    cities.setAttribute('aria-label', T.cityTitle);
     const scroller = element('div', 'ce-onboarding__scroll');
     scroller.append(cities);
 
@@ -214,7 +217,7 @@ export function mountOnboarding(container: HTMLElement, opts: OnboardingOptions)
       const matches = searchOnboardingCities(input.value);
       const buttons: HTMLElement[] = [];
       if (!matches.length) {
-        cities.replaceChildren(element('p', 'ce-onboarding__empty', ONBOARDING_TEXT.noResults));
+        cities.replaceChildren(element('p', 'ce-onboarding__empty', T.noResults));
         return;
       }
       function addGroup(title: string, items: City[]): void {
@@ -222,7 +225,7 @@ export function mountOnboarding(container: HTMLElement, opts: OnboardingOptions)
         const titleNode = element('p', 'ce-onboarding__group-title', title);
         buttons.push(titleNode);
         for (const city of items) {
-          const button = element('button', 'ce-onboarding__city', city.name);
+          const button = element('button', 'ce-onboarding__city', localizedCityName(city));
           button.type = 'button';
           button.dataset.cityId = city.id;
           button.addEventListener('click', () => finish(city.id));
@@ -230,10 +233,10 @@ export function mountOnboarding(container: HTMLElement, opts: OnboardingOptions)
         }
       }
       if (input.value.trim()) {
-        addGroup(ONBOARDING_TEXT.results, matches);
+        addGroup(T.results, matches);
       } else {
-        addGroup(ONBOARDING_TEXT.popular, matches.filter((city) => popularOrder.has(city.id)));
-        addGroup(ONBOARDING_TEXT.other, matches.filter((city) => !popularOrder.has(city.id)));
+        addGroup(T.popular, matches.filter((city) => popularOrder.has(city.id)));
+        addGroup(T.other, matches.filter((city) => !popularOrder.has(city.id)));
       }
       cities.replaceChildren(...buttons);
     }

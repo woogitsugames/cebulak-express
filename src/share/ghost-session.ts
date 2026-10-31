@@ -4,7 +4,8 @@
  * dekodowanie linku odtwarza cały przejazd (do 72 000 ticków).
  * Każda funkcja jest „bezpieczna”: błąd oznacza brak ducha, nigdy wyjątek w pętli gry.
  */
-import { GHOST_TEXTS, fill } from '../content/lang/pl';
+import { GHOST_TEXTS, fill } from '../content/i18n';
+import { localizedCityName } from '../content/lang/cities';
 import { isValidNickId, renderNick } from '../content/nicks';
 import { TICK } from '../core/config';
 import type { Game, GameOptions } from '../core/game';
@@ -70,7 +71,7 @@ export function ghostOutcomeText(runner: GhostRunner, player: Game): string | nu
 
 /** Opis wyzwania w menu; nick tylko z zamkniętej listy. */
 export function ghostMenuInfo(challenge: GhostChallenge): string {
-  const vars = { from: challenge.route.from.name, to: challenge.route.to.name, km: challenge.km };
+  const vars = { from: localizedCityName(challenge.route.from), to: localizedCityName(challenge.route.to), km: challenge.km };
   if (challenge.nickId && isValidNickId(challenge.nickId)) {
     try {
       return fill(GHOST_TEXTS.menuInfoNick, { ...vars, nick: renderNick(challenge.nickId) });
@@ -95,5 +96,5 @@ export function buildChallengeLink(baseUrl: string, game: Game, nickId?: string)
 }
 
 export function challengeShareText(game: Game): string {
-  return fill(GHOST_TEXTS.shareText, { km: game.km, from: game.route.from.name, to: game.route.to.name });
+  return fill(GHOST_TEXTS.shareText, { km: game.km, from: localizedCityName(game.route.from), to: localizedCityName(game.route.to) });
 }

@@ -1,7 +1,7 @@
 import { isValidNickId, randomNickChoices, renderNick, type NickGender, type NickRng } from '../content/nicks';
 import { UI } from '../content/i18n';
 import type { HomeCountry } from '../core/route';
-import { UNLOCKABLE_CARS, unlockedSkins, unlockHint } from '../meta/unlocks';
+import { UNLOCKABLE_CARS, carName, unlockedSkins, unlockHint } from '../meta/unlocks';
 import { HERO_SKINS, normalizeHeroSkin, type HeroSkinId } from '../render/sprites';
 import './garage.css';
 
@@ -17,13 +17,16 @@ export interface GarageOptions extends Partial<GarageSelection> {
   onClose?: () => void;
   rng?: NickRng;
 }
-const SKIN_NAMES: Record<HeroSkinId, string> = {
-  default: UI.garageDefaultSkin,
-  'pan-cebulek': UI.garagePanCebulek,
-  'pani-cebulka': UI.garagePaniCebulka,
-  'bus-kurierski': UI.garageBusKurierski,
-  ...Object.fromEntries(UNLOCKABLE_CARS.map(({ id, name }) => [id, name])),
-} as Record<HeroSkinId, string>;
+/** Liczone przy każdym otwarciu garażu — nazwy w bieżącym języku. */
+function skinNames(): Record<HeroSkinId, string> {
+  return {
+    default: UI.garageDefaultSkin,
+    'pan-cebulek': UI.garagePanCebulek,
+    'pani-cebulka': UI.garagePaniCebulka,
+    'bus-kurierski': UI.garageBusKurierski,
+    ...Object.fromEntries(UNLOCKABLE_CARS.map(({ id }) => [id, carName(id)])),
+  } as Record<HeroSkinId, string>;
+}
 function element<K extends keyof HTMLElementTagNameMap>(tag: K, className: string, value?: string): HTMLElementTagNameMap[K] {
   const node = document.createElement(tag);
   node.className = className;
@@ -70,6 +73,7 @@ export function mountGarage(container: HTMLElement, opts: GarageOptions): () => 
   let nickIds = garageNickChoices(rng, opts.home, gender, [], persistedNick);
   let nickId = persistedNick ?? nickIds[0];
 
+  const names = skinNames();
   const root = element('section', 'ce-garage');
   root.setAttribute('aria-label', UI.garage);
   const head = element('header', 'ce-garage__header');
@@ -136,14 +140,14 @@ export function mountGarage(container: HTMLElement, opts: GarageOptions): () => 
   picks.setAttribute('aria-label', UI.garageSkin);
   const pickButtons = HERO_SKINS.map((id) => {
     const isUnlocked = available.has(id);
-    const pick = button('ce-garage__pick', isUnlocked ? SKIN_NAMES[id] : '🔒 ' + SKIN_NAMES[id]);
+    const pick = button('ce-garage__pick', isUnlocked ? names[id] : '🔒 ' + names[id]);
     pick.disabled = !isUnlocked;
     if (!isUnlocked) {
       const car = UNLOCKABLE_CARS.find((item) => item.id === id);
       if (car) {
         const hint = unlockHint(car.id, totalKm);
         pick.title = hint;
-        pick.setAttribute('aria-label', SKIN_NAMES[id] + '. ' + hint);
+        pick.setAttribute('aria-label', names[id] + '. ' + hint);
       }
     }
     pick.addEventListener('click', () => changeSkin(id));
@@ -175,7 +179,7 @@ export function mountGarage(container: HTMLElement, opts: GarageOptions): () => 
   function refreshSkin(): void {
     const locked = !available.has(viewedSkin);
     const car = UNLOCKABLE_CARS.find((item) => item.id === viewedSkin);
-    skinName.textContent = SKIN_NAMES[viewedSkin];
+    skinName.textContent = names[viewedSkin];
     preview.classList.toggle('ce-garage__portrait--locked', locked);
     lockIcon.hidden = !locked;
     lockHintNode.hidden = !locked || !car;

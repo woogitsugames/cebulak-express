@@ -1,6 +1,6 @@
 import { platform } from '../platform';
 import * as pl from './lang/pl';
-import { PL_MENU, type GameLocale } from './lang/schema';
+import { PL_MENU, type CoreLocale, type ForeignLocale, type GameLocale, type LazyLocale } from './lang/schema';
 import type { CountryCode } from '../core/route';
 import type { ObstacleKind } from '../core/obstacles';
 
@@ -15,17 +15,18 @@ export const LANGUAGE_STORAGE_KEY = 'ce.language';
 const PL_LOCALE = {
     COUNTRY_NAME: pl.COUNTRY_NAME, COUNTRY_LOCATIVE: pl.COUNTRY_LOCATIVE,
     OBSTACLE_NAME: pl.OBSTACLE_NAME, FAIL_JOKES: pl.FAIL_JOKES,
-    PICKUP_TOAST: pl.PICKUP_TOAST, BORDER_TEXTS: pl.BORDER_TEXTS,
-    ARRIVAL_TEXTS: pl.ARRIVAL_TEXTS, NEAR_MISS_TEXTS: pl.NEAR_MISS_TEXTS,
+    PICKUP_TOAST: pl.PICKUP_TOAST, POWERUP_NAME: pl.POWERUP_NAME, BORDER_TEXTS: pl.BORDER_TEXTS,
+    ARRIVAL_TEXTS: pl.ARRIVAL_TEXTS, RETURN_DEPARTURE_TEXTS: pl.RETURN_DEPARTURE_TEXTS,
+    RETURN_ARRIVAL_TEXTS: pl.RETURN_ARRIVAL_TEXTS, NEAR_MISS_TEXTS: pl.NEAR_MISS_TEXTS,
     PICKUP_TEXTS: pl.PICKUP_TEXTS, MILESTONE_TEXTS: pl.MILESTONE_TEXTS,
-    WIGILIA_TEXTS: pl.WIGILIA_TEXTS, UI: pl.UI, MENU: PL_MENU,
+    WIGILIA_TEXTS: pl.WIGILIA_TEXTS, GHOST_TEXTS: pl.GHOST_TEXTS, UI: pl.UI, MENU: PL_MENU,
 } satisfies GameLocale;
 
 /**
  * Obce języki ładujemy dopiero po wybraniu (osobne pliki JS) — polski start
  * na słabym internecie nie płaci za cztery słowniki, których prawie nikt nie użyje.
  */
-const LOADERS: Record<Exclude<Language, 'pl'>, () => Promise<{ default: GameLocale }>> = {
+const LOADERS: Record<Exclude<Language, 'pl'>, () => Promise<{ default: ForeignLocale }>> = {
   en: () => import('./lang/en'),
   nl: () => import('./lang/nl'),
   de: () => import('./lang/de'),
@@ -144,6 +145,19 @@ export function getTexts(): GameLocale {
   return dictionaries[current] ?? PL_LOCALE;
 }
 
+/** Słownik konkretnego języka, jeśli już wczytany (polski jest zawsze). */
+export function getTextsFor(language: Language): GameLocale | undefined {
+  return dictionaries[language];
+}
+
+/**
+ * Sekcja trzymana tylko w obcych słownikach (leniwe pliki języków). Dla polskiego
+ * i przed dociągnięciem słownika zwraca undefined — wtedy moduł używa polskiego oryginału.
+ */
+export function localized<K extends keyof LazyLocale>(key: K): LazyLocale[K] | undefined {
+  return (getTexts() as Partial<LazyLocale>)[key];
+}
+
 export function t(key: TranslationKey, vars?: Record<string, string | number>): string {
   const dict = getTexts();
   let template: string;
@@ -156,7 +170,7 @@ export function t(key: TranslationKey, vars?: Record<string, string | number>): 
 }
 
 /** Istniejąca logika korzysta z obiektów/typów tablic: Proxy odczytuje bieżący słownik. */
-function liveSection<K extends keyof GameLocale>(key: K, original: GameLocale[K]): GameLocale[K] {
+function liveSection<K extends keyof CoreLocale>(key: K, original: CoreLocale[K]): CoreLocale[K] {
   return new Proxy(original, {
     get(_target, property) { return Reflect.get(getTexts()[key], property); },
   });
@@ -167,12 +181,16 @@ export const COUNTRY_LOCATIVE = liveSection('COUNTRY_LOCATIVE', pl.COUNTRY_LOCAT
 export const OBSTACLE_NAME = liveSection('OBSTACLE_NAME', pl.OBSTACLE_NAME);
 export const FAIL_JOKES = liveSection('FAIL_JOKES', pl.FAIL_JOKES);
 export const PICKUP_TOAST = liveSection('PICKUP_TOAST', pl.PICKUP_TOAST);
+export const POWERUP_NAME = liveSection('POWERUP_NAME', pl.POWERUP_NAME);
 export const BORDER_TEXTS = liveSection('BORDER_TEXTS', pl.BORDER_TEXTS);
 export const ARRIVAL_TEXTS = liveSection('ARRIVAL_TEXTS', pl.ARRIVAL_TEXTS);
+export const RETURN_DEPARTURE_TEXTS = liveSection('RETURN_DEPARTURE_TEXTS', pl.RETURN_DEPARTURE_TEXTS);
+export const RETURN_ARRIVAL_TEXTS = liveSection('RETURN_ARRIVAL_TEXTS', pl.RETURN_ARRIVAL_TEXTS);
 export const NEAR_MISS_TEXTS = liveSection('NEAR_MISS_TEXTS', pl.NEAR_MISS_TEXTS);
 export const PICKUP_TEXTS = liveSection('PICKUP_TEXTS', pl.PICKUP_TEXTS);
 export const MILESTONE_TEXTS = liveSection('MILESTONE_TEXTS', pl.MILESTONE_TEXTS);
 export const WIGILIA_TEXTS = liveSection('WIGILIA_TEXTS', pl.WIGILIA_TEXTS);
+export const GHOST_TEXTS = liveSection('GHOST_TEXTS', pl.GHOST_TEXTS);
 export const UI = liveSection('UI', pl.UI);
 export const MENU = liveSection('MENU', PL_MENU);
 export { fill } from './lang/pl';
