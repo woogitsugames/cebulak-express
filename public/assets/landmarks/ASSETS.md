@@ -1515,3 +1515,56 @@ Przedstawiono sylwetki widoczne na stałe z ogólnodostępnych przestrzeni miejs
 Zastąpić odpowiadające pliki w `public/assets/landmarks/` bez zmiany nazw. Każdy PNG ma kanał alfa. W silniku nakładać ilustrację na warstwy nieba gry, zachowując proporcje; zarys dolnej krawędzi powinien trafiać do linii gruntu. Dla podglądu użyć arkusza `panoramy-97.png` — jego jasnoniebieskie tło nie występuje w osobnych PNG.
 
 **Ograniczenie:** grafiki wygenerowane przez AI mogą wymagać końcowej korekty architektonicznej przez grafika przed produkcyjną publikacją; zwłaszcza porównania z rzeczywistą perspektywą i redukcji małych detali na docelowej rozdzielczości w grze. Nie weryfikowano uruchomienia gry w tym środowisku.
+
+
+<!-- Zlecenie 98 (runda 7) z ZIP-a GPT; PNG skwantyzowane do 256 kolorów przez koordynatora. -->
+
+> **Koordynator:** odrzucono cesky-tesin (styl niezgodny z A+); zostaje poprzednia wersja, do ponowienia.
+
+# Zlecenie 98 — panoramy miast A+
+
+Data wykonania: **31.10.2026**. Projekt: **Cebulak Express — Kierunek Polska**.
+
+## Prawa i technika
+
+Wszystkie pliki PNG są oryginalnymi opracowaniami powstałymi w ChatGPT. Wygenerowano własne koncepcje za pomocą wbudowanego **GPT Image**, a następnie wykonano korekty kadru, skali, alfa i detalu narzędziami **Pillow**; Czeski Cieszyn został dodatkowo narysowany od nowa jako grafika wektorowa z użyciem **SVG/CairoSVG** na podstawie wygenerowanej koncepcji i zweryfikowanych motywów miejskich. W źródłowych plikach nie użyto ani nie kopiowano cudzych zdjęć, logotypów, napisów czy herbów.
+
+**Przeznaczenie / uprawnienia:** grafiki powstały na zlecenie właściciela projektu i mogą być przez niego wykorzystywane w grze i materiałach promocyjnych zgodnie z warunkami usług OpenAI oraz obowiązującym prawem. Samo wygenerowanie treści AI nie daje gwarancji wyłącznej ochrony prawnoautorskiej wszystkich elementów. Przed komercyjną premierą koordynator powinien przeprowadzić końcową kontrolę prawną i wizualną.
+
+**Parametry wspólne:** każdy PNG ma **1620 × 900 px**, kanał **RGBA**, przezroczyste niebo, obrys ciemnogranatowy zbliżony do `#1d2f3b`, nabrzeże/trawę/wodę u dołu; brak wtopionego tekstu, nazw, logo, flag i postaci na pierwszym planie. Główne sylwetki zajmują ok. 70–80% wysokości. Arkusz podpisów jest osobnym plikiem `docs/art/podglady/panoramy-98.png` — podpisy nie znajdują się na sprite'ach.
+
+## Lista plików i referencje
+
+| Plik / id | Miasto | Rozpoznawalne obiekty i motywy | Punkt widzenia / uwagi | Narzędzie | Licencja / prawa do użycia |
+|---|---|---|---|---|---|
+| `ostrawa.png` / `ostrawa` | Ostrawa, Czechy | Zabytkowe wielkie piece huty Dolní Vítkovice, wieża szybowa, historyczny gazometr Gong i kominy; łączniki technologiczne | Widok na zespół poprzemysłowy od strony placów i ciągów technologicznych. Bez nowoczesnej nadbudowy Bolt Tower. | ChatGPT GPT Image; Pillow, korekta skali i alfa | Wygenerowane dla właściciela projektu; warunki OpenAI |
+| `cesky-tesin.png` / `cesky-tesin` | Czeski Cieszyn, Czechy | Most Przyjaźni nad Olzą, ratusz na náměstí ČSA z charakterystycznym falistym szczytem i zegarem, neogotycki kościół Najświętszego Serca Jezusowego, zieleń Masarykovych sadów | Stylizowana kompozycja z polskiego brzegu w stronę czeskiego miasta. Relacje odległości ratusza i kościoła są umowne — **nie jest to fotograficznie wierny obraz z jednej stacji obserwacyjnej**. | ChatGPT GPT Image (koncepcja); ręczny projekt SVG/CairoSVG, Pillow | Wygenerowane i wektorowo opracowane dla właściciela projektu; warunki OpenAI |
+| `roskilde.png` / `roskilde` | Roskilde, Dania | Dwie ceglane wieże katedry w Roskilde, stylizowane rekonstrukcje łodzi wikińskich, port i przystań fiordu | Od strony portu w stronę wyniesionej nad miastem katedry; bez współczesnej bryły muzeum z 1969 r. | ChatGPT GPT Image; kadrowanie, powiększanie, Pillow | Wygenerowane dla właściciela projektu; warunki OpenAI |
+| `slupsk.png` / `slupsk` | Słupsk, Polska | Stylizowane średniowieczne mury i baszty, motywy Baszty Czarownic i Bramy Młyńskiej, ceglana bryła kościoła, pas zieleni nad Słupią | Uproszczony widok na historyczne centrum z rejonu nadrzecznych skwerów; nie stanowi dokumentacyjnego rzutu zamku. | ChatGPT GPT Image; kadrowanie, powiększanie, Pillow | Wygenerowane dla właściciela projektu; warunki OpenAI |
+| `bydgoszcz.png` / `bydgoszcz` | Bydgoszcz, Polska | Trzy szachulcowe spichrze nad Brdą, barki, rzeka, most i zabudowa staromiejska ze świątynią w głębi | Perspektywa zza rzeki na nabrzeże przy ul. Grodzkiej; most i część dalszej zabudowy są uproszczonymi motywami panoramy, a nie odwzorowaniem precyzyjnego kadru. | ChatGPT GPT Image; kadrowanie, powiększanie, usunięcie artefaktów napisów, Pillow | Wygenerowane dla właściciela projektu; warunki OpenAI |
+
+## Prompty koncepcyjne / opis użyty przy opracowaniu
+
+Wygenerowane obrazy pochodziły z kontekstu zlecenia w ChatGPT, nie z osobno zapisanych tekstowych promptów. Poniższe teksty rekonstruują jego wymagania jako **prompty produkcyjne**, a nie dokumentują dosłowną treść niedostępnego zapisu generatora.
+
+**Wspólny prompt stylu:** `Original flat vector game city-panorama asset, horizontal 16:9, transparent background without sky or clouds, warm saturated colors, soft flat shadows lit from upper left, bold dark navy #1d2f3b outlines approximately 9-10px at 1620px width, 2-4 large recognizable landmark silhouettes taking 70-80 percent image height, simple windows, minimum ornament, continuous bottom riverbank or ground line, no words, labels, national flags, coats of arms, logos, brands, people or photographic textures. Keep geographically sensible landmark arrangements. PNG with alpha channel.`
+
+- **Ostrawa:** `Industrial heritage of Dolní Vítkovice in Ostrava, monumental historic blast-furnace steel framework, shaft headframe of Hlubina, brick chimney and preserved circular Gong gasometer shell, large linked architectural masses and steel conveyor walkways, from the industrial precinct; avoid modern architect-designed extensions.`
+- **Czeski Cieszyn:** `Český Těšín seen from the Cieszyn side of the Olza: historical town hall of 1928 with a broad cream facade, stepped scalloped gable and central clock, the asymmetrical pointed Gothic Revival church tower of the Sacred Heart, straight concrete Friendship Bridge, low historic townhouses and green Masaryk Gardens; correct bridge and church silhouettes.`
+- **Roskilde:** `Roskilde harbour and fjord with a cluster of traditional Viking longship replicas at the wooden pier, unmistakable twin Gothic brick spires of Roskilde Cathedral behind the low harbour houses and trees; water foreground, no modern museum architecture.`
+- **Słupsk:** `Historic Słupsk by the Słupia, massive red-brick medieval city-wall towers and mill gate, Gothic church spire, traditional low townhouses and leafy riverside squares, historically inspired silhouettes with warm terracotta colors.`
+- **Bydgoszcz:** `Bydgoszcz old city seen across the Brda, three large distinctive half-timbered granaries on Grodzka Street, quays, moored historic river barges, a bridge, low old town facades and distant Gothic church silhouette, recognizable river panorama.`
+
+## Źródła weryfikacji miejsc (wyłącznie referencje faktograficzne, nie materiały wykorzystane w PNG)
+
+- Ostrawa — VisitCzechia: https://www.visitczechia.com/en-us/things-to-do/places/landmarks/urban-architecture/c-ostrava-vitkovice ; VisitOstrava: https://www.visitostrava.eu/en/discover-ostrava/top-attractions/476-dolni-vitkovice-area.html
+- Czeski Cieszyn — VisitCieszyn: https://visitcieszyn.com/index.php/cs/pro-to-stoj-za-to ; państwowy rejestr kościoła: https://pamatkovykatalog.cz/kostel-bozskeho-srdce-pane-12778011 ; budynek ratusza: https://www.turistika.cz/mista/cesky-tesin-radnice-na-namesti-csa/detail
+- Roskilde — Muzeum Łodzi Wikingów: https://www.vikingeskibsmuseet.dk/en/visit-the-museum/exhibitions/the-five-reconstructions ; widok na katedrę z portu: https://commons.wikimedia.org/wiki/File:Roskilde_Cathedral_from_harbour.JPG
+- Słupsk — strona miasta: https://www.slupsk.pl/turysta/trasy-turystyczne/spacer-po-slupsku ; trasa Gryfitów: https://www.slupsk.pl/turysta/trasy-turystyczne/spacer-po-slupsku-sladami-gryfitow
+- Bydgoszcz — oficjalny portal turystyczny: https://www.visitbydgoszcz.pl/odkryj/trasy-zwiedzania/a/poznajemy-stare-miasto ; architektura spichrzy: https://www.turystyka.bydgoszcz.pl/art/24/spichrze.html
+
+## Kontrola i ograniczenia
+
+1. Kontrola techniczna PNG: 5 × 1620 × 900, RGBA z przezroczystym obszarem nad panoramą; arkusz podglądu osobno. Podczas transformacji usunięto napisowe artefakty generacji połączonej.
+2. Jako grafiki A+ są to stylizowane panoramy, nie modele geodezyjne. Najsilniejsze przybliżenie relacji budynków dotyczy Czeskiego Cieszyna i Bydgoszczy; potrzebne zatwierdzenie koordynatora pod kątem rozpoznawalności przez mieszkańców.
+3. Nie weryfikowano lokalnie integracji w Canvas i w aplikacji ani zestawu `npm ci && npm run typecheck && npm test && npm run build`, ponieważ pełne repozytorium nie dało się sklonować w środowisku plikowym. Obrazy są gotowe do umieszczenia w repozytorium w ścieżkach wymienionych wyżej.
