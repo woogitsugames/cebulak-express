@@ -1473,3 +1473,45 @@ Przedstawiono sylwetki widoczne na stałe z ogólnodostępnych przestrzeni miejs
 - Kontury wzmocnione przez segmentację ciemnogranatowych linii; pliki nie są źródłowym SVG, lecz rastrowymi ilustracjami PNG.
 - Obrazy są swobodnie stylizowanymi widokami, nie geometrycznie precyzyjną rekonstrukcją. Układ budynków i proporcje poszczególnych brył mogą odbiegać od autentycznej fotografii. Wymagana jest końcowa ocena czytelności przez właściciela w kadrze gry przy skali ok. 1:5.
 - Sprawdzenie w runtime gry i weryfikacja kodu projektu (`npm ci`, `typecheck`, `test`, `build`) nie zostały przeprowadzone, ponieważ w środowisku wykonawczym `git clone/pull` nie mógł rozwiązać hosta GitHub.
+
+
+<!-- Zlecenie 97 (runda 7) z ZIP-a GPT; PNG skwantyzowane do 256 kolorów przez koordynatora. -->
+
+# Zlecenie 97 — panoramy A+ (Karlsruhe, Trewir, Koblencja, Brno, Ołomuniec)
+
+- **Data:** 2026-10-31.
+- **Narzędzie:** natywny generator obrazów ChatGPT (GPT Image), następnie ręczne kadrowanie, powiększenie i wyrównanie przezroczystości skryptem Pillow.
+- **Format wynikowy:** PNG RGBA, 1620 × 900 px, tło przezroczyste; światło z lewej góry; ciemnogranatowy kontur zbliżony do `#1d2f3b`; bez napisów, flag, logotypów i ludzi na pierwszym planie.
+- **Prawa i licencja:** oryginalne obrazy syntetyczne, wygenerowane na potrzeby i do wykorzystania komercyjnego przez właściciela projektu „Cebulak Express”. Nie włączono cudzych zdjęć ani zewnętrznych obrazów stockowych do finalnych assetów. Samo użycie AI nie stanowi gwarancji wyłącznych praw autorskich, które zależą od prawa właściwego.
+- **Plik podglądu:** `docs/art/podglady/panoramy-97.png`.
+
+## Wykaz
+
+| Plik (id) | Miasto | Budowle i rzeczywisty punkt widzenia | Narzędzie i poprawki | Data | Syntetyczny opis promptu | Uprawnienia |
+|---|---|---|---|---|---|---|
+| `karlsruhe.png` (`karlsruhe`) | Karlsruhe, Niemcy | Barokowy **Schloss Karlsruhe** (centralna wieża, oba skrzydła pałacu), regularne aleje oraz drzewa **Schlossplatz**; frontalny widok ze środka placu pałacowego od południa | GPT Image; kadrowanie, skala, zewnętrzny kontur i przezroczystość | 2026-10-31 | „Płaska, ciepła ilustracja wektorowa Karlsruhe: żółty pałac barokowy z centralną wieżą i skrzydłami, regularne aleje parkowe, mocny kontur #1d2f3b, bez nieba, tekstu i osób, panoramiczne RGBA”. | Syntetyczne, na potrzeby właściciela gry |
+| `trier.png` (`trier`) | Trewir, Niemcy | **Porta Nigra**, skrzydło **Simeonstift**, sąsiadujące historyczne domy; widok od południa z rejonu Porta-Nigra-Platz / północnego końca Simeonstraße | GPT Image; kadrowanie, skala, zewnętrzny kontur i przezroczystość | 2026-10-31 | „Monumentalna ciemna brama rzymska Porta Nigra pośrodku, muzeum Simeonstift i kamienice w tle; uproszczone piaskowcowe łuki, płaskie plamy cienia, bardzo mocny kontur, bez nieba, napisów i ludzi”. | Syntetyczne, na potrzeby właściciela gry |
+| `koblenz.png` (`koblenz`) | Koblencja, Niemcy | **Deutsches Eck** (pomnik konny), **Bazylika św. Kastora** (wieże po lewej), **twierdza Ehrenbreitstein** na wschodnim brzegu; szeroki widok z południowego odcinka nadreńskiej promenady ku północy i północnemu wschodowi | GPT Image; kadrowanie, lekka korekta proporcji wysokości, kontur i przezroczystość | 2026-10-31 | „Dwie strony Renu w Koblencji, pomnik konny i historyczna bazylika po lewej, forteczny masyw Ehrenbreitstein na zielonym wzgórzu po prawej, wąska woda przy dole, gruby ciemnogranatowy obrys, brak nieba, tekstu, ludzi”. | Syntetyczne, na potrzeby właściciela gry |
+| `brno.png` (`brno`) | Brno, Czechy | **Katedra św. Piotra i Pawła na Petrovíe**, zabudowa na stoku i u podnóża Petrova, czerwono-biały generyczny tramwaj; wyobrażony punkt widzenia z południowego podejścia do centrum; zarys gmachu na dalszym planie **nie jest zweryfikowany jako Špilberk**, dlatego nie przypisujemy go jednoznacznie | GPT Image — wyodrębnienie przezroczystej panoramy Brna z natywnie wygenerowanego arkusza, odcięcie etykiety, przeskalowanie, kontur | 2026-10-31 | „Rozpoznawalne gotyckie bliźniacze wieże katedry Petrov nad wzgórzem i zabudową Brna, niski rząd kamienic, typowy tramwaj, grube kontury i ciepła paleta, wycinanka RGBA bez napisów”. | Syntetyczne, na potrzeby właściciela gry |
+| `olomouc.png` (`olomouc`) | Ołomuniec, Czechy | **Ratusz z wieżą**, **Kolumna Trójcy Świętej** i kamienice **Horní náměstí**; widok z przeciwległej części placu na dwie dominanty | GPT Image — wyodrębnienie przezroczystej panoramy Ołomuńca z natywnie wygenerowanego arkusza, odcięcie etykiety, przeskalowanie, kontur | 2026-10-31 | „Plac Górny w Ołomuńcu: ratusz z zegarową wieżą, barokowa kolumna UNESCO i rząd kolorowych kamienic, płaskie ciepłe plamy, ciemnogranatowe kontury, panorama przezroczysta bez tekstu”. | Syntetyczne, na potrzeby właściciela gry |
+
+## Uzasadnienie wyboru i weryfikacja motywów
+
+- Karlsruhe: pałac i zespół osiowy, bez piramidy Marktplatz, ponieważ piramidy nie można wiarygodnie umieścić obok fasady z tego samego bliskiego punktu.
+- Trewir: monumentalna Porta Nigra i jej bezpośrednie sąsiedztwo, **bez Römerbrücke**, gdyż most leży daleko od placu Porta Nigra i nie może tworzyć wiarygodnego zbliżenia w tym samym kadrze.
+- Koblencja: ujęcie jest interpretacją szerokiego widoku (Deutsches Eck + przeciwległe wzgórze). Nie jest pomiarową rekonstrukcją panoramy fotograficznej.
+- Brno: priorytet to rzeczywista sylwetka katedry Petrov. Tramwaj jest generyczny, bez oznaczeń przewoźnika.
+- Ołomuniec: oba główne zabytki leżą przy Horní náměstí; uproszczono zdobienia kolumny i zegara, tak aby były czytelne w małej skali gry.
+
+**Źródła referencyjne (wyłącznie identyfikacja obiektów, nie kopiowane fotografie):**
+- Karlsruhe: https://guide.karlsruhe.de/db/guide-en/marktplatz1 oraz https://www.karlsruhe-erleben.de/
+- Trewir: https://www.trier-info.de/en/places-of-interest/porta-nigra/ i https://www.trier-info.de/fuehrungen/stadtfuehrung-trier
+- Koblencja: https://www.germany.travel/en/cities-culture/koblenz.html i https://www.visitmosel.de/en/cities-and-towns/koblenz
+- Brno: https://upmb.brno.cz/wp-content/uploads/2022/06/03_Mesto.pdf i https://kultura.brno.cz/w/spilberk
+- Ołomuniec: https://whc.unesco.org/en/list/859/ i https://www.visitczechia.com/en-us/things-to-do/places/landmarks/urban-architecture/c-olomouc-city-hall
+
+## Integracja i QA
+
+Zastąpić odpowiadające pliki w `public/assets/landmarks/` bez zmiany nazw. Każdy PNG ma kanał alfa. W silniku nakładać ilustrację na warstwy nieba gry, zachowując proporcje; zarys dolnej krawędzi powinien trafiać do linii gruntu. Dla podglądu użyć arkusza `panoramy-97.png` — jego jasnoniebieskie tło nie występuje w osobnych PNG.
+
+**Ograniczenie:** grafiki wygenerowane przez AI mogą wymagać końcowej korekty architektonicznej przez grafika przed produkcyjną publikacją; zwłaszcza porównania z rzeczywistą perspektywą i redukcji małych detali na docelowej rozdzielczości w grze. Nie weryfikowano uruchomienia gry w tym środowisku.
