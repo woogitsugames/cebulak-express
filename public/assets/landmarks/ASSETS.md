@@ -1355,3 +1355,46 @@ Generator obrazu zastosował kontekst rozmowy i zlecenia (techniczne pole `promp
 4. Ilustracja wygenerowana przez AI jest materiałem do wykorzystania zgodnie z warunkami dostawcy; nie ma gwarancji prawnoautorskiej wyłączności ani identycznej grafiki dla innych użytkowników. Fotografie referencyjne nie zostały skopiowane 1:1.
 
 **Integracja:** nadpisać odpowiednie pięć plików w `public/assets/landmarks/`, niczego nie zmieniać w `src/core/` ani rendererze. Koordynator powinien ocenić sylwetki w rzeczywistym kadrze gry oraz ewentualnie zamówić precyzyjną korektę architektoniczną przed akceptacją.
+
+
+<!-- Zlecenie 95 (runda 7) z ZIP-a GPT; PNG skwantyzowane do 256 kolorów przez koordynatora. -->
+
+# ASSETS-95 — Panoramy A+ miast niemieckich
+
+- **Zlecenie:** 95, runda 7, *Cebulak Express — Kierunek Polska*.
+- **Data przygotowania:** 31.10.2026.
+- **Format:** osobne ilustracje PNG, RGBA, 1620 × 900 px, profil sRGB, przezroczyste niebo; kontur zasadniczy `#1d2f3b`.
+- **Źródło/narzędzie:** oryginalne ilustracje wygenerowane wbudowanym generatorem obrazów ChatGPT (GPT Image) na potrzeby zlecenia; izolacja paneli, kadrowanie, skalowanie, miejscowa korekta linii oraz dodanie sylwetki Stadtkirche wykonane programowo (Pillow, CairoSVG). Nie wykorzystano zdjęć zewnętrznych jako tekstur ani jako elementów rastrowych.
+- **Prawa do użytkowania:** grafiki generowane na zamówienie właściciela projektu, przeznaczone do komercyjnego wykorzystania w grze na zasadach warunków OpenAI. Żadnych obcych logotypów, znaków towarowych ani rozpoznawalnych osób. Nie deklaruje się wyłącznych praw autorskich do samych elementów wytworzonych automatycznie.
+
+## Wykaz
+
+| Plik / ID | Miasto | Zidentyfikowane motywy / budynki | Kierunek widoku i uwagi |
+|---|---|---|---|
+| `norymberga.png` / `norymberga` | Norymberga | Kaiserburg i Sinwellturm, podwójne wieże St. Sebald, czerwone dachy Altstadt | Uproszczony widok z południa ku północy, przez dachy Starego Miasta na zamek na wzgórzu. |
+| `bayreuth.png` / `bayreuth` | Bayreuth | Stadtkirche (dwie wieże z cebulastymi hełmami), barokowa fasada nawiązująca do Markgräfliches Opernhaus, wieża z miedzianą kopułą nawiązująca do Schlosskirche | Umowny widok starego centrum z południowego zachodu. Dwie wieże Stadtkirche zostały wyraźnie dorysowane; fasady środkowa i prawa są **inspirowane**, nie są dokładną rekonstrukcją geometryczną zabytków. |
+| `chemnitz.png` / `chemnitz` | Chemnitz | Wieża kościelna St. Jakobi, czerwony gmach i wieża Neues Rathaus, sąsiednia zabudowa Altes Rathaus, kamienice rynku | Stylizowany widok od Marktplatz. Rozmieszczenie jest przybliżone, a nie geodezyjnie dokładne. |
+| `saarbrucken.png` / `saarbrucken` | Saarbrücken | Łukowa Alte Brücke, Saara, schodząca do rzeki zabudowa, bryła Saarbrücker Schloss oraz sylwetka Schlosskirche | Umowny widok z okolic St. Johann w stronę starego Saarbrücken przez rzekę. Kontur wzgórza i zabudowy jest artystycznym skrótem. |
+| `mannheim.png` / `mannheim` | Mannheim | Charakterystyczna wieża Wasserturm, fontanny Friedrichsplatz, historyczne gmachy, barka na rzece | **Uwaga:** motyw barki na Renie i wieża Wasserturm nie są widoczne z jednego rzeczywistego punktu; to zestawienie dwóch miejskich symboli wymaganych w briefie. Przed ostateczną akceptacją należy zdecydować, czy ważniejszy jest motyw barki, czy rygor jednej perspektywy. |
+
+## Odtwarzalne opisy / prompty dla wariantów miast
+
+**Zasady wspólne:** „Wide 16:9 side-scrolling game skyline, isolated on transparent background (no sky, no clouds), flat warm vector illustration, bold 9–10 px deep-navy `#1d2f3b` outlines, 2–4 large recognisable historic landmarks, low band of old town buildings, simple rectangular windows, soft flat shadows illuminated from upper left, no text, flags, logos, people or photographic textures; ground line touching lower 0–40 px; final sprite 1620×900 RGBA.” Generator pierwotnie oddał też arkusze zbiorcze; z nich wyizolowano pojedyncze miasta.
+
+1. **Norymberga:** „Kaiserburg Nürnberg and characteristic Sinwell Tower on the hill behind dense red-roofed Altstadt, twin pointed towers of St. Sebald in the foreground, viewed from the south; warm sandstone, simple half-timbered gables.”
+2. **Bayreuth:** „Historic central Bayreuth: Stadtkirche with two square sandstone towers and dark slate onion domes, historic baroque opera-house facades and Schlosskirche cupola, low roofs, warm cream stone and green trees.” Dwie wieże Stadtkirche dorysowano lokalnie, żeby zachować rozpoznawalny kształt.
+3. **Chemnitz:** „Central Chemnitz market skyline: St. Jakobi church tower, red sandstone Neues Rathaus with its main clock tower, adjacent Altes Rathaus and reduced old-market facades, green Saxon hills far behind.”
+4. **Saarbrücken:** „From near St. Johann across the Saar: historic multi-arched Alte Brücke in front, old Saarbrücken buildings, Schloss on the west bank and historic church tower above trees, low green hills.”
+5. **Mannheim:** „Iconic Wasserturm of Mannheim and Friedrichsplatz fountains amid trees, historic city buildings; Rhine cargo-barge motif in foreground, compressed illustrative perspective rather than literal geography.”
+
+## Weryfikacja obiektów (źródła referencyjne, bez kopiowania zdjęć)
+
+- Norymberga: [Nürnberg Tourismus — historyczne centrum](https://tourismus.nuernberg.de/en/guidedtours/tour-on-your-own-walk-through-the-old-town/).
+- Bayreuth: [Miasto Bayreuth — zabytki margrabiów](https://www.bayreuth.de/markgraefliche-sehenswuerdigkeiten/), [Bayreuth Tourismus — panorama](https://www.bayreuth-tourismus.de/news/das-panorama-bayreuths/), [historyczna Altstadt](https://www.filmlocations-bayern.de/Motivsuche/Historische-Altstadt-Bayreuth/).
+- Chemnitz: [Chemnitz Travel — highlights w centrum](https://www.chemnitz.travel/en/must-c/sehenswuerdigkeiten/highlights-in-city-centre).
+- Saarbrücken: [Tourismus Saarbrücken — Top sights](https://tourismus.saarbruecken.de/en/discovering/top_sights).
+- Mannheim: [Visit Mannheim — Wasserturm i trasa zabytków](https://www.visit-mannheim.de/erleben-entdecken/radtouren-mannheim/sightseeing-tour).
+
+## Kontrola i integracja
+
+Wszystkie pięć plików zostało sprawdzonych lokalnie pod kątem wymiarów, trybu RGBA, przezroczystości górnej części i obecności ilustracji przy dolnej krawędzi. Arkusz oglądowy jest zapisany jako `docs/art/podglady/panoramy-95.png` na błękitnym tle; etykiety znajdują się tylko w arkuszu, nie w samych sprite'ach. Wymagany pozostaje wizualny odbiór w rzeczywistym kadrze gry, szczególnie Bayreuth i Mannheim. Nie wykonano testów npm/CI, ponieważ środowisko nie miało sieciowego dostępu do repozytorium przez Git.
