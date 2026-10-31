@@ -885,6 +885,17 @@
       },
       "output": "18091855f1b3449e4a3acf2a74f42113c6f9398fcfca0d5f48a660746ba68c0e"
     },
+    "nykoping": {
+      "country": "SE",
+      "style": 8,
+      "sources": {
+        "panorama": "0459d5cdf7d83ed16d7e5bebe4c01570c437d9eba06e26d879244c200abf66c1",
+        "sky": "82cd252325698e859ea7cc75acbc85a8f7b7a840e6316f8c7f90158c76aa9575",
+        "far": "94679f0df9362814d777ebe36e3ddaebcf8ef3276e6c0f081d539e5a682d400d",
+        "stamp": "da13ffc1a7d6f3695b1648ba27754cfc0ac2f8ab49965f918906acd12d3e434d"
+      },
+      "output": "fa3e5cc9efdfbb0832add9306ad19b873b19a0e853b27bcd56f1d3a37856502f"
+    },
     "odense": {
       "country": "DK",
       "style": 8,

@@ -21,7 +21,8 @@ Panoramy A+ dla pozostałych miast (86) + poprawki Oslo, Krakowa i Katowic + tł
 - `100-panoramy-parnu-ryga.md` — Panoramy A+: Pärnu, Ryga, Bauska, Poniewież, Kowno
 - `101-panoramy-mariampol-oslo.md` — Panoramy A+: Mariampol, Oslo, Kraków, Katowice
 - `102-tla-baltyk.md` — Tła krajów tranzytowych: Estonia, Łotwa, Litwa
-- `103-panoramy-poprawki.md` — Poprawka: Nyköping, Czeski Cieszyn (dodane 31.10 po przeglądzie)
+- `103-panoramy-poprawki.md` — Poprawka: Nyköping, Czeski Cieszyn (dodane 31.10 po przeglądzie; wgrany Nyköping)
+- `104-panorama-cieszyn.md` — Druga poprawka: Czeski Cieszyn
 
 ## Stan (31.10.2026, 09:00 UTC)
 Wszystkie 19 paczek wróciło i zostało wgranych (PNG skwantyzowane do 256 kolorów, ASSETS dopisane, pocztówki odświeżone).
