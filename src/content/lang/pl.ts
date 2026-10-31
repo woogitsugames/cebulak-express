@@ -504,7 +504,7 @@ export const UI = {
   settingsMotionSystem: 'Użyj ustawień urządzenia',
   settingsLinks: 'Informacje prawne',
   settingsPrivacy: 'Polityka prywatności',
-  settingsLicenses: 'Licencje grafik',
+  settingsLicenses: 'Licencje',
   settingsPerformance: 'Tryb oszczędny grafiki',
   settingsPerformanceAuto: 'Auto',
   settingsPerformanceAlways: 'Zawsze',

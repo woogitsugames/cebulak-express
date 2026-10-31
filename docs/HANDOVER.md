@@ -16,6 +16,7 @@
 - „Cebulak” tylko w tytule i nazwach skórek, nigdy w komunikatach.
 - Pomijamy budynki chronione prawem autorskim (Atomium, piramida Luwru, Grande Arche). Koblencja z pomnikiem zostaje.
 - Prywatność: bez kont w MVP, anonimowy identyfikator, nicki z listy, bez reklam personalizowanych.
+- **Licencje przed wydaniem:** lista kontrolna `docs/prawo/przed-wydaniem.md` (czcionki, biblioteki, natywne SDK, znak „Cebulak Express”, App Store 4.3). Wykaz bibliotek JS z tekstami licencji generuje `tools/licenses.mjs` przy buildzie; biblioteka z licencją spoza listy dozwolonych zatrzymuje build.
 - PL zawsze domyślnym językiem. Decyzje D1–D18: `docs/GDD.md`, sekcja „Decyzje właściciela”.
 
 ## 3. Stan na `main` (po #113, 4079fef) + PR rundy 8
@@ -67,8 +68,9 @@ for i in 1 2 3; do npx playwright test --project="Slow 4G + CPU 4x (Chromium)"; 
 3. **Zrzuty do ramek 119:** `npm run store:shots` (dopisać `?sezon=zima`) → `docs/sklep/ramki/skladaj.py`.
 4. **OG zimowy na stronie:** propozycja — `SITE_SEASON=zima` w `scripts/build-site.mjs` (roboty nie wykonują JS), przebudowa strony 1.12 i 27.12. OG krajów leżą gotowe na przyszłe strony krajów.
 5. **Wdrożenie (D18):** Firebase w tym tygodniu (`docs/START-WDROZENIA.md`, część B) — gdy właściciel poda sekrety, wgrać Functions (`deploy-firebase.yml`), potem klienta. Google Play: konto organizacji (D-U-N-S). Start 10–15.12.2026.
-6. Do potwierdzenia przez właściciela na telefonie: płynność tła, tablice krajów, garaż na Foldzie, nowe stacje PL.
-7. Drobne: usunąć ślady `breadcrumb`/`postOverFrames` z `src/main.ts`.
+6. **Przed wydaniem w sklepach:** przejść `docs/prawo/przed-wydaniem.md` (m.in. wykaz natywnych bibliotek Android/iOS, badanie znaku „Cebulak Express” i „Kierunek POLSKA” R.315691).
+7. Do potwierdzenia przez właściciela na telefonie: płynność tła, tablice krajów, garaż na Foldzie, nowe stacje PL.
+8. Drobne: usunąć ślady `breadcrumb`/`postOverFrames` z `src/main.ts`.
 
 ## 8. Historia sesji (skrót)
 - 31.10 rano (`claude/wizardly-curie-prxr7z`): polowanie na błędy, runda 7 (#108), PR #110.
