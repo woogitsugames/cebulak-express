@@ -114,6 +114,10 @@ ui.btnChallenge.textContent = GHOST_TEXTS.challengeButton;
 const dailyTitleText = (key: string): string => dailyTitle(key, localized('DAILY_TITLES'));
 
 const params = new URLSearchParams(location.search);
+/** Ślady dla e2e (?test=1): komunikat konsoli dociera do Playwrighta, nawet gdy wątek potem stanie. */
+const breadcrumb = params.get('test') === '1'
+  ? (label: string): void => console.debug('[ce]', Math.round(performance.now()), label)
+  : (): void => {};
 /**
  * Gracz, który już kiedyś grał, nie dostaje ekranu pierwszego uruchomienia. Samo ce.settings tego nie
  * dowodzi: zapisujemy je przy pierwszym starcie (nick), zanim gracz cokolwiek wybierze.
@@ -655,7 +659,10 @@ function toast(text: string): void {
 function handleEvents(g: Game): void {
   for (const e of g.drainEvents()) {
     // drainEvents oddaje zdarzenie raz: wyjątek w dźwięku/wibracji/muzyce nie może zjeść końca przejazdu.
+    const important = e.type === 'hit' || e.type === 'over' || e.type === 'arrived';
+    if (important) breadcrumb('event:' + e.type);
     try { feedback(e); } catch (error) { console.error('[feedback]', e.type, error); }
+    if (important) breadcrumb('feedback-done:' + e.type);
     if (e.type === 'pickup') {
       toast(fill(pick(PICKUP_TEXTS[e.kind]), { km: e.bonusKm }));
       track('pickup', { kind: e.kind, mode: g.mode });
@@ -709,6 +716,7 @@ function cardData(g: Game, joke: string): CardData {
 let lastCard: CardData | null = null;
 
 function showOver(g: Game): void {
+  breadcrumb('showOver:start');
   overAt = performance.now();
   const bestKey = 'ce.best.' + g.mode;
   const prevBest = load<{ km: number }>(bestKey, { km: 0 }).km;
@@ -756,6 +764,7 @@ function showOver(g: Game): void {
   }
   ui.hud.hidden = true;
   ui.over.hidden = false;
+  breadcrumb('showOver:visible');
   // Lot powrotny: po dojechaniu do Polski (nie po samym powrocie) można od razu ruszyć z powrotem.
   offeredReturn = returnFlightRoute(g, daily);
   ui.btnReturnFlight.hidden = !offeredReturn;
@@ -803,6 +812,7 @@ function showOver(g: Game): void {
   cardImage = import('./share/card').then(({ renderCard }) => renderCard(card, 'story')).catch(() => null as unknown as Blob);
   void import('./share/share').catch(quiet);
   prepareChallenge(g, card);
+  breadcrumb('showOver:end');
 
   track('run_end', {
     km: g.km, seconds, cause: arrived ? 'arrived' : g.cause ?? 'ground', mode: g.mode, home: g.route.home as AnalyticsHome,

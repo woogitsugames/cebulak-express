@@ -5,7 +5,10 @@ import type {} from '../src/test-hooks';
 export const test = base.extend<{ runtimeErrors: string[] }>({
   runtimeErrors: [async ({ page }, use, testInfo) => {
     const errors: string[] = [];
+    const recent: string[] = [];
     page.on('console', (message) => {
+      recent.push(`${message.type()}: ${message.text()}`);
+      if (recent.length > 40) recent.shift();
       if (message.type() === 'error') errors.push(`console: ${message.text()}`);
     });
     page.on('pageerror', (error) => errors.push(`pageerror: ${error.message}`));
@@ -35,7 +38,7 @@ export const test = base.extend<{ runtimeErrors: string[] }>({
         new Promise<string>((resolve) => setTimeout(() => resolve('evaluate: brak odpowiedzi strony w 10 s'), 10_000)),
       ]);
       await testInfo.attach('diagnostyka-strony', { body: Buffer.from(String(state), 'utf8'), contentType: 'application/json' });
-      console.log(`[diagnostyka] ${testInfo.title}: ${state}`);
+      console.log(`[diagnostyka] ${testInfo.title}: ${state}\n[diagnostyka] ostatnie komunikaty konsoli:\n${recent.join('\n')}`);
     }
     if (errors.length > 0) {
       await testInfo.attach('bledy-konsoli', {
