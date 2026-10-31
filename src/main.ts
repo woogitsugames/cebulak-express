@@ -149,6 +149,8 @@ let game: Game | null = null;
 let daily: string | null = null;
 let runId: string | null = null;
 let overAt = 0;
+/** Tylko ?test=1: tyle klatek po ekranie końca zostawia ślady w konsoli. */
+let postOverFrames = 0;
 let toastTimer = 0;
 let lastMilestone = 0;
 let cardImage: Promise<Blob> | null = null;
@@ -717,6 +719,7 @@ let lastCard: CardData | null = null;
 
 function showOver(g: Game): void {
   breadcrumb('showOver:start');
+  if (params.get('test') === '1') postOverFrames = 5;
   overAt = performance.now();
   const bestKey = 'ce.best.' + g.mode;
   const prevBest = load<{ km: number }>(bestKey, { km: 0 }).km;
@@ -828,9 +831,11 @@ function showOver(g: Game): void {
     }, 250);
   }
 
+  breadcrumb('track:start');
   track('run_end', {
     km: g.km, seconds, cause: arrived ? 'arrived' : g.cause ?? 'ground', mode: g.mode, home: g.route.home as AnalyticsHome,
   });
+  breadcrumb('track:done');
   // Nick ładuje się leniwie: wynik zgłaszamy po jego sprawdzeniu, zamiast pomijać, gdy jeszcze go nie ma.
   if (runId) {
     const run = { runId, flapTicks: [...g.flapTicks], ticks: g.ticks, km: g.km, rulesVersion: RULES_VERSION };
@@ -937,14 +942,19 @@ function step(now: number): void {
     }
     if (steps === 24) acc = 0;
     handleEvents(game);
+    const traceFrame = postOverFrames > 0;
+    if (traceFrame) { postOverFrames--; breadcrumb('frame:events-done'); }
     if (game.phase === 'playing') updateHud();
     const drawGhost = !ghostDrawFailed && ghostRunner && ghostMod?.isGhostVisible(ghostRunner, game) ? ghostRunner : null;
     renderer.ghost = drawGhost;
+    if (traceFrame) breadcrumb('frame:draw-start');
     renderer.draw(game, now / 1000);
+    if (traceFrame) breadcrumb('frame:draw-done');
     // Renderer zeruje ducha po błędzie rysowania — wtedy nie próbujemy ponownie w tym przejeździe.
     if (drawGhost && !renderer.ghost) ghostDrawFailed = true;
     // Żart z tablicy nie nachodzi na komunikat o mieście lub granicy.
     signJoke?.show(game.phase === 'playing' && ui.toast.hidden ? renderer.signJoke : null);
+    if (traceFrame) breadcrumb('frame:end');
   } else {
     renderer.draw(previewGame, now / 1000);
   }
