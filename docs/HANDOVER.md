@@ -45,6 +45,12 @@ Pliki: `docs/zlecenia/runda8/105…121` + `README.md` (tabela stanu). Właścici
 4. `ASSETS-NN.md` dopisz na koniec `public/assets/landmarks/ASSETS.md` (+ notka koordynatora), podgląd do `docs/art/podglady/`.
 5. `npm run art:postcards`, testy (sekcja 6), `public/licencje.html` regeneruje się w buildzie — commituj. Zaktualizuj tabelę w `docs/zlecenia/runda8/README.md`.
 
+### Runda 9 — zimowe wersje grafik (paczki 122–141, przygotowane 31.10 wieczorem)
+- `docs/zlecenia/runda9/README.md` + 20 plików `.md`. Każda paczka to ZIP `zlecenie-NN-paczka.zip` (`.md` + letnie PNG), generowany skryptem z sesji (`python3 skrypt runda9.py lists.json out/`) — ZIP-y wysłane właścicielowi 31.10.
+- Zakres: 57 miast docelowych (meta), Berlin i Drezno, 28 przejść/stacji/promów. **13 punktów przy drodze miało stary płaski styl** (Jędrzychowice, Świecko, Świnoujście, Ystad, promy, Svinesund) — dla nich GPT oddaje **nowy letni `<id>.png` A+ i `<id>-zima.png`**.
+- Kod: zimą `landmarkPaths` i `homeCityPaths` próbują najpierw `<id>-zima.png`, potem letni plik (testy w `tests/assets.test.ts`).
+- Wgrywanie: jak runda 8; sprawdzić arkusz lato/zima (kompozycja 1:1), kadr w grze z `?sezon=zima`. Nowe letnie A+ nadpisują stare płaskie pliki — przejrzeć też latem.
+
 ## 5. Środowisko (co zainstalować / gdzie co jest)
 - `npm ci` (Node 22). Playwright **1.63.0** używa Chromium **build 1243**, który jest już w `/opt/pw-browsers` — **nie uruchamiaj `playwright install`**. WebKit lokalnie nie działa (sprawdza CI).
 - Narzędzie kwantyzacji: `pip install imagequant pyoxipng` (Pillow jest).

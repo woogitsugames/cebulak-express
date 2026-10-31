@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { AssetLoader, BACKGROUND_LAYERS, ASSET_SIZES, countryLayerPath, landmarkPaths, drawableWidth, drawableHeight } from '../src/render/assets';
+import { AssetLoader, BACKGROUND_LAYERS, ASSET_SIZES, countryLayerPath, homeCityPaths, landmarkPaths, drawableWidth, drawableHeight } from '../src/render/assets';
 import type { Waypoint } from '../src/content/waypoints';
 
 class FakeImage {
@@ -42,6 +42,13 @@ describe('assets: HiDPI, preload i warianty', () => {
     expect(landmarkPaths({ id: 'stacja-swiecko', kind: 'rest' })).toEqual([
       'assets/landmarks/stacja-swiecko.png', 'assets/landmarks/granica-stacja.png',
     ]);
+    // Runda 9: zimą najpierw <id>-zima.png, potem letni plik (i wspólna stacja przy drodze).
+    expect(landmarkPaths(city, 'winter')).toEqual(['assets/landmarks/leuven-zima.png', 'assets/landmarks/leuven.png']);
+    expect(landmarkPaths({ id: 'stacja-swiecko', kind: 'rest' }, 'winter')).toEqual([
+      'assets/landmarks/stacja-swiecko-zima.png', 'assets/landmarks/stacja-swiecko.png', 'assets/landmarks/granica-stacja.png',
+    ]);
+    expect(homeCityPaths('lublin')).toEqual(['assets/landmarks/lublin.png']);
+    expect(homeCityPaths('lublin', 'winter')).toEqual(['assets/landmarks/lublin-zima.png', 'assets/landmarks/lublin.png']);
   });
 
   it('prime pobiera wyłącznie kraje z trasy, nie wszystkie kraje', () => {
@@ -102,6 +109,26 @@ describe('assets: HiDPI, preload i warianty', () => {
     const home = { id: 'dom-warszawa', kind: 'city' as const };
     expect(assets.getLandmark(home, 'winter')).toBeUndefined();
     expect(FakeImage.requested[2].src).toContain('dom-meta-zima.png');
+  });
+
+  it('zimą panorama miasta i stacja: najpierw -zima.png, po 404 letni plik', () => {
+    vi.stubGlobal('Image', FakeImage);
+    const assets = new AssetLoader({ baseUrl: '/', maxConcurrent: 1 });
+    const home = { id: 'dom-lublin' };
+    expect(assets.getHomeCity(home, 'winter')).toBeUndefined();
+    expect(FakeImage.requested[0].src).toBe('/assets/landmarks/lublin-zima.png');
+    FakeImage.requested[0].fail();
+    expect(assets.getHomeCity(home, 'winter')).toBeUndefined();
+    expect(FakeImage.requested[1].src).toBe('/assets/landmarks/lublin.png');
+    FakeImage.requested[1].succeed();
+    expect(assets.getHomeCity(home, 'winter')).toBe(FakeImage.requested[1]);
+    expect(assets.getHomeCity(home)).toBe(FakeImage.requested[1]); // latem bez dodatkowego żądania
+
+    const rest = { id: 'stacja-swiecko', kind: 'rest' as const };
+    expect(assets.getLandmark(rest, 'winter')).toBeUndefined();
+    expect(FakeImage.requested[2].src).toBe('/assets/landmarks/stacja-swiecko-zima.png');
+    FakeImage.requested[2].succeed();
+    expect(assets.getLandmark(rest, 'winter')).toBe(FakeImage.requested[2]);
   });
 
   it('cache LRU usuwa dawno nieużyte bitmapy, nie usuwa świeżo wczytanej', () => {

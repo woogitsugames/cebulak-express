@@ -498,7 +498,7 @@ export class BackgroundRenderer {
     // Meta: panorama miasta docelowego na dalekim planie, a domek z mamą w oknie
     // przy drodze (bliski plan). Bez panoramy miasta — sam domek na dalekim planie, jak dawniej.
     if (point.id.startsWith('dom-')) {
-      const city = this.assets.getHomeCity(point);
+      const city = this.assets.getHomeCity(point, state.season ?? 'summer');
       if (city) {
         if (layer === 'far') this.drawImageAt(ctx, state, city, point, alpha, false);
         else {
