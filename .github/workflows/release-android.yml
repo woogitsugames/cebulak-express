@@ -65,7 +65,33 @@ jobs:
           npm test
           node --test scripts/android-version.test.mjs scripts/prepare-play-metadata.test.mjs
 
+      # Konfiguracja Firebase klienta (publiczna, ale trzymana w sekretach, żeby była w jednym miejscu).
+      # Bez sekretów gra buduje się w trybie demo (ranking lokalny) — patrz docs/START-WDROZENIA.md.
+      - name: Plik google-services.json (App Check na Androidzie, opcjonalnie)
+        env:
+          GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ -z "$GOOGLE_SERVICES_JSON" ]]; then
+            echo "::notice::Brak sekretu GOOGLE_SERVICES_JSON — APK bez natywnego Firebase (App Check Play Integrity)."
+            exit 0
+          fi
+          printf '%s' "$GOOGLE_SERVICES_JSON" > android/app/google-services.json
+          python3 -m json.tool android/app/google-services.json > /dev/null || {
+            echo "::error::GOOGLE_SERVICES_JSON nie jest poprawnym JSON."
+            exit 1
+          }
+
       - name: Build web i synchronizacja Android
+        env:
+          VITE_FIREBASE_API_KEY: ${{ secrets.VITE_FIREBASE_API_KEY }}
+          VITE_FIREBASE_AUTH_DOMAIN: ${{ secrets.VITE_FIREBASE_AUTH_DOMAIN }}
+          VITE_FIREBASE_PROJECT_ID: ${{ secrets.VITE_FIREBASE_PROJECT_ID }}
+          VITE_FIREBASE_APP_ID: ${{ secrets.VITE_FIREBASE_APP_ID }}
+          VITE_FIREBASE_MESSAGING_SENDER_ID: ${{ secrets.VITE_FIREBASE_MESSAGING_SENDER_ID }}
+          VITE_FIREBASE_STORAGE_BUCKET: ${{ secrets.VITE_FIREBASE_STORAGE_BUCKET }}
+          VITE_ANALYTICS_ENDPOINT: ${{ secrets.VITE_ANALYTICS_ENDPOINT }}
         run: |
           npm run build
           npx cap sync android
@@ -224,4 +250,5 @@ jobs:
         run: |
           rm -f "$RUNNER_TEMP/cebulak-ci-test.jks" \
             "$RUNNER_TEMP/cebulak-upload.jks" \
-            "$RUNNER_TEMP/cebulak-play-service-account.json"
+            "$RUNNER_TEMP/cebulak-play-service-account.json" \
+            android/app/google-services.json
