@@ -1133,3 +1133,55 @@ Prompty tematyczne (opisy kierujące kompozycją):
 - Brak chronionych napisów i znanych logotypów. Nie wykorzystano rysunku pięciu murali Differdange autorstwa Alaina Weltera.
 
 **Integracja:** podmienić pliki w `public/assets/landmarks/` na zasoby z ZIP, bez zmian w rendererze. Podgląd w `docs/art/podglady/` nie jest używany przez grę.
+
+
+<!-- Zlecenie 91 (runda 7) z ZIP-a GPT; PNG skwantyzowane do 256 kolorów przez koordynatora. -->
+
+# Zlecenie 91 — panoramy A+: Brugia, Venlo, Utrecht, Arnhem, Calais
+
+**Data:** 2026-10-31  
+**Narzędzie:** natywny generator obrazów ChatGPT (GPT Image), następnie Python/Pillow oraz OpenCV (skalowanie do 1620 × 900, wzmocnienie ciemnogranatowych konturów, arkusz podglądu).  
+**Przeznaczenie:** `Cebulak Express — Kierunek Polska`; każda grafika: 1620 × 900 px, PNG RGBA, sRGB, przezroczyste niebo; bez napisów, logotypów, osób i flag.  
+**Prawa użycia:** materiały wygenerowane na zamówienie właściciela projektu; właściciel może używać, modyfikować i publikować wyniki w ramach warunków OpenAI. Nie jest to gwarancja wyłącznych praw autorskich do treści AI. Zdjęcia źródłowe wykorzystano **wyłącznie do sprawdzenia form architektonicznych** — nie kopiowano pikseli ani cudzych fotografii.
+
+## Rejestr
+
+| Plik (w `public/assets/landmarks/`) | ID, miasto | Obiekty i umowny punkt widzenia | Generator, data, identyfikator |
+|---|---|---|---|
+| `brugia.png` | `brugia`, Brugia (BE) | Widok **z Rozenhoedkaai wzdłuż kanału Dijver**: Belfort na tle kamienic o schodkowych szczytach, przykanalikowe zabudowania, most i łabędzie; kierunek ku historycznemu centrum. | GPT Image, 2026-10-31, `3831a0c9-6f04-4d2e-ae51-db747acae00c` |
+| `venlo.png` | `venlo`, Venlo (NL) | **Narożnik Markt w stronę Stadhuis**: ratusz renesansowy z dwiema wieżyczkami i pierzeja historycznych domów targowych (jedna fasada inspirowana Handelshuis het Korenvat). Szklarnie celowo pominięto — nie należą do rzeczywistej pierzei rynku. | GPT Image, 2026-10-31, `de524cc2-1a94-489c-92a0-38c7fe8e60b6` |
+| `utrecht.png` | `utrecht`, Utrecht (NL) | Widok **znad Oudegracht w kierunku Domtoren**: wysoka gotycka wieża w głębi, kamienice, piętrowe nabrzeża z piwnicami i schodami oraz łukowy most; na prawo za wieżą bryła gotyckiego kościoła w skrócie perspektywicznym. | GPT Image, 2026-10-31, `1f07cf59-2cba-4394-9129-6b03f52d1716` |
+| `arnhem.png` | `arnhem`, Arnhem (NL) | Widok **z południowego brzegu Nederrijn na centrum Arnhem**: stalowy łuk John Frostbrug po lewej, wieża Eusebiuskerk na prawym planie, historyczne dachy oraz zieleń nad rzeką. | GPT Image, 2026-10-31, `96f1403b-61ed-403b-b5c8-d16aa68dd9cb` |
+| `calais.png` | `calais`, Calais (FR) | **Stylizowany widok na Calais-Nord od strony nabrzeża**: średniowieczna Tour du Guet (bryła przybliżona), Notre-Dame de Calais oraz XIX-wieczny Phare de Calais. Celowo **bez Hôtel de Ville i beffroi ratusza** (uwaga prawna poniżej). | GPT Image, 2026-10-31, `06b32b02-95c4-48d3-9a87-a775f922f7de` |
+
+## Prompty zadaniowe (opis redakcyjny)
+
+Wspólne dla pięciu miast: „**szeroka wycięta panorama 16:9, wektorowa ilustracja do gry, 2–4 dominujące zabytki, proste duże bryły, ciepłe barwy, płaskie cienie, światło z lewej góry, mocny ciemnogranatowy kontur `#1d2f3b`, przezroczyste tło bez nieba, linia gruntu u dołu; bez ludzi, napisów, znaków, reklam, logo, flag i gradientów**”.
+
+- **Brugia:** „Rozenhoedkaai i kanał, szczytowe średniowieczne kamienice, wysoki Belfort w głębi, niewielki łukowy most, łabędzie, cegła i woda; rozpoznawalna architektura Brugii”.
+- **Venlo:** „Widok z narożnika Markt, wielki renesansowy Stadhuis Venlo z dwiema charakterystycznymi cebulastymi wieżyczkami, obok niskie kamienice rynku, Handelshuis Korenvat jako inspiracja; bez szklarni z innej części miasta”.
+- **Utrecht:** „Oudegracht z dwupoziomowymi nabrzeżami, ciemnymi łukami piwnic, schodami do wody, historyczne kamienice, dominująca ażurowa gotycka Domtoren; widok kanałem w stronę Domplein”.
+- **Arnhem:** „Nederrijn, charakterystyczny biały stalowy pojedynczy łuk mostu Johna Frosta, wieża Eusebiuskerk i dachy historycznego centrum na drugim brzegu, zalesione wzgórza w tle”.
+- **Calais:** „Widok miejskiego nabrzeża i Calais-Nord, masywna średniowieczna wieża obserwacyjna Tour du Guet, wysoki kościół Notre-Dame z ostrołukowymi oknami, wysoka biała latarnia Phare de Calais z czarną latarnią na szczycie; bez ratusza, bez plaży w pobliżu ratusza”.
+
+Techniczny, wewnętrzny prompt generatora **nie był udostępniony**; powyższe są opisami zleconych motywów i stylistyki, a identyfikatory `gen_id` pozwalają przypisać generacje.
+
+## Korekty i sprawdzenie
+
+- Z bazowych plików PNG RGBA utworzono docelowe 1620 × 900; skorygowano marginesy górne i ułożenie podstawy.
+- Kontur wzmocniono kolorystycznie do `#1d2f3b`, dodano około 2 px obrysu zewnętrznego i 1 px rozszerzenia ciemnych linii wewnętrznych w OpenCV; nie można zagwarantować jednakowej grubości co do piksela na każdym fragmencie.
+- Zweryfikowano rozmiar, kanał alfa, przezroczyste narożniki i złożono **`docs/art/podglady/panoramy-91.png`** na jasnoniebieskim tle z podpisami. Sprawdzono też czytelność miniatur 324 × 180.
+- **Ograniczenie:** perspektywy są artystycznymi przybliżeniami kierunków widoku, nie rekonstrukcjami fotogrametrycznymi ani weryfikacją geodezyjną. Dotyczy zwłaszcza zestawienia trzech symboli Calais i uproszczonej bryły Tour du Guet. W grze wymagana jest wizualna akceptacja mieszkańca miasta.
+- Nie uruchomiono `npm ci`, `npm run typecheck`, `npm test` ani `npm run build`, ponieważ pełnego checkoutu repo nie dało się pobrać w środowisku generowania grafik (brak dostępu Git HTTPS z kontenera). Zmieniono wyłącznie zasoby graficzne i ten dokument, bez kodu TypeScript.
+
+## Uwaga prawna — Calais
+
+Hôtel de Ville de Calais (1911–1925) został zaprojektowany przez **Louisa Debrouwera, zmarłego 18 czerwca 1967 r.** Standardowy termin ochrony we Francji to 70 lat po śmierci twórcy; dla komercyjnych przedstawień chronionego dzieła architektury nie należy zakładać swobody panoramy. **W finalnym `calais.png` nie przedstawiono ratusza**. Zamiast niego wybrano XIX-wieczny Phare de Calais, średniowieczną Tour du Guet i historyczną Notre-Dame; nie ma również współczesnych nadmorskich instalacji artystycznych. Jeśli koordynator uzyska odpowiednią licencję, może zlecić oddzielny wariant z ratuszem.
+
+## Źródła referencyjne (do rozpoznania zabytków; bez kopiowania fotografii)
+
+- Brugia — [Visit Bruges: Belfort](https://www.visitbruges.be/en/things-to-do/culture-and-heritage/belfort-belfry), [Rozenhoedkaai](https://www.visitbruges.be/en/things-to-do/culture-and-heritage/rozenhoedkaai-rosary-quay).
+- Venlo — [In Venlo: historyczne centrum i zabytki Markt](https://www.invenlo.com/en/visiting/visit-our-historic-city-center/venlo-from-a-to-z/).
+- Utrecht — [Discover Utrecht: Dom Tower i Oudegracht](https://www.discover-utrecht.com/news/top-10-sights-in-utrecht/).
+- Arnhem — [Rijksdienst voor het Cultureel Erfgoed: John Frostbrug](https://monumentenregister.cultureelerfgoed.nl/monumenten/529907).
+- Calais — [Calais XXL: Notre-Dame, Tour du Guet, latarnia](https://www.calaisxxl.com/wp-content/uploads/2025/02/Guide_VAH_Calais_Focus_Hotel-de-Ville_EN.pdf), [Archives du Pas-de-Calais: Notre-Dame](https://www.archivespasdecalais.fr/patrimoines/Decouvrir/Patrimoine-architectural/L-eglise-Notre-Dame-de-Calais), [INHA: Louis Debrouwer, 1879–1967](https://agorha.inha.fr/ark%3A/54721/01c0aeff-d1b1-432c-96b7-ddf3f07fdc07), [Université Lyon 3: droit à l'image des bâtiments](https://www.univ-lyon3.fr/le-droit-a-limage-des-personnes-et-des-biens).
