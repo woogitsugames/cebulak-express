@@ -774,6 +774,7 @@ function showOver(g: Game): void {
   // Toasty tylko na tym ekranie końca: po „Zagraj ponownie” lub powrocie do menu przepadają.
   const serial = overSerial;
   void Promise.all([progressModule(), progressReady]).then(([{ applyRun, saveProgress, summarizeRun }]) => {
+    breadcrumb('progress:start');
     if (!progress) return;
     const kmBefore = progress.stats.totalKm;
     // Powrót za granicę to nie „dojazd do domu” — summarizeRun rozpoznaje go po baseWeight.
@@ -782,7 +783,9 @@ function showOver(g: Game): void {
     void saveProgress(progress);
     const kmAfter = progress.stats.totalKm;
     // Teksty toastów z leniwych chunków: bez sieci przepadają, ale postęp jest już policzony.
+    breadcrumb('progress:applied');
     return Promise.all([import('./meta/unlocks'), import('./ui/collection')]).then(([unlocks, { medalToast, postcardToast }]) => {
+      breadcrumb('progress:toasts');
       const cars = unlocks.applyRunKm({ totalKm: kmBefore }, kmAfter - kmBefore).newlyUnlocked;
       // Jedna kolejka: nowe auto najpierw, medal nie może go przykryć po 300 ms.
       const news = [...cars.map(unlocks.unlockAnnouncement), ...change.newMedals.map(medalToast), ...change.newPostcards.map(postcardToast)];
@@ -800,7 +803,8 @@ function showOver(g: Game): void {
   ui.overLeagueList.replaceChildren();
   // Bez skonfigurowanego Firebase ranking to atrapa z przykładowymi liczbami — nie pokazujemy jej graczom.
   void net.then(({ api, isMock }) => (!isMock || params.get('test') === '1')
-    ? import('./ui/mini-league').then(({ miniLeagueRows }) => miniLeagueRows(api, g.route.home)) : []).then((rows) => {
+    ? import('./ui/mini-league').then(({ miniLeagueRows }) => { breadcrumb('league:start'); return miniLeagueRows(api, g.route.home); }) : []).then((rows) => {
+    breadcrumb('league:done');
     if (leagueRequest !== overLeagueRequest || ui.over.hidden || !rows.length) return;
     ui.overLeagueList.replaceChildren(...rows);
     ui.overMiniLeague.hidden = false;
@@ -809,10 +813,20 @@ function showOver(g: Game): void {
   // Kartę renderujemy od razu, żeby kliknięcie „Udostępnij” zachowało gest użytkownika.
   lastCard = cardData(g, joke);
   const card = lastCard;
-  cardImage = import('./share/card').then(({ renderCard }) => renderCard(card, 'story')).catch(() => null as unknown as Blob);
+  cardImage = import('./share/card').then(({ renderCard }) => { breadcrumb('card:start'); return renderCard(card, 'story'); })
+    .then((blob) => { breadcrumb('card:done'); return blob; })
+    .catch(() => null as unknown as Blob);
   void import('./share/share').catch(quiet);
   prepareChallenge(g, card);
   breadcrumb('showOver:end');
+  if (params.get('test') === '1') {
+    // Bicie serca: ostatni ślad przed ciszą wskazuje moment zawieszenia wątku.
+    let beats = 0;
+    const heartbeat = window.setInterval(() => {
+      breadcrumb('hb');
+      if (++beats >= 40) window.clearInterval(heartbeat);
+    }, 250);
+  }
 
   track('run_end', {
     km: g.km, seconds, cause: arrived ? 'arrived' : g.cause ?? 'ground', mode: g.mode, home: g.route.home as AnalyticsHome,
@@ -821,7 +835,8 @@ function showOver(g: Game): void {
   if (runId) {
     const run = { runId, flapTicks: [...g.flapTicks], ticks: g.ticks, km: g.km, rulesVersion: RULES_VERSION };
     void Promise.all([net, ensureNick()])
-      .then(([{ api, queue, submitOrQueue }, nickId]) => submitOrQueue(api, queue, { ...run, nickId }))
+      .then(([{ api, queue, submitOrQueue }, nickId]) => { breadcrumb('submit:start'); return submitOrQueue(api, queue, { ...run, nickId }); })
+      .then(() => breadcrumb('submit:done'))
       .catch(quiet);
     runId = null;
   }
@@ -860,7 +875,9 @@ function prepareChallenge(g: Game, card: CardData): void {
   ui.btnChallenge.hidden = true;
   if (g.baseWeight !== 0) return;
   const request = Promise.all([import('./share/share'), ghostModule()]).then(([shareMod, gm]) => {
+    breadcrumb('challenge:start');
     const url = gm.buildChallengeLink(shareMod.shareUrl(card), g, settings.nickId);
+    breadcrumb('challenge:done');
     return url ? { url, text: gm.challengeShareText(g) } : null;
   }).catch(() => null);
   challengeLink = request;
