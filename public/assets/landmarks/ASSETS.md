@@ -1615,3 +1615,59 @@ Zewnętrzne zdjęcia i opracowania służyły wyłącznie do sprawdzenia charakt
 **Źródło:** grafika wygenerowana w ChatGPT (GPT Image), następnie technicznie przetworzona na potrzeby projektu. **Dysponent plików:** właściciel projektu. Przeznaczone do komercyjnego wykorzystania w grze zgodnie z obowiązującymi warunkami używania treści wygenerowanych przez OpenAI. Nie wykorzystano zewnętrznych fotografii jako elementów bitmapowych, marek ani logotypów.
 
 **Ważna uwaga akceptacyjna:** wymóg „prawdziwe proporcje i kolejność z jednego rzeczywistego punktu widzenia” nie został w pełni spełniony, zwłaszcza dla Olsztyna (zamek + jezioro). To propozycje koncepcyjne A+ do kontroli redakcyjno-geograficznej przez koordynatora, a nie wierne odwzorowania topograficzne. Nie akceptować bez sprawdzenia w kadrze gry i zatwierdzenia tej interpretacji.
+
+
+<!-- Zlecenie 100 (runda 7) z ZIP-a GPT; PNG skwantyzowane do 256 kolorów przez koordynatora. -->
+
+# Zlecenie 100 — panoramy A+: Pärnu, Ryga, Bauska, Poniewież, Kowno
+
+**Data:** 2026-10-31. **Projekt:** Cebulak Express — Kierunek Polska.
+
+**Narzędzie źródłowe:** natywny generator obrazów ChatGPT (GPT Image). **Obróbka techniczna:** Pillow (wycięcie odpowiedniej części wygenerowanej ilustracji, usunięcie pozostałości napisów z marginesu, skalowanie Lanczos, ustawienie przezroczystości, profil sRGB i przygotowanie arkusza podglądu). Nie użyto cudzych zdjęć ani stockowych ilustracji w plikach wynikowych. Obrazy referencyjne służyły wyłącznie do sprawdzania zabytków.
+
+**Prawa/licencja do użycia:** grafiki wygenerowane w ChatGPT; prawo korzystania z wyniku i komercyjnej eksploatacji przysługuje właścicielowi projektu na warunkach OpenAI. Sam fakt wygenerowania przez AI nie przesądza o ochronie prawem autorskim. W archiwum nie ma żadnych cudzych plików fotograficznych.
+
+## Wykaz
+
+| Plik | Miasto i przedstawione obiekty | Punkt widzenia / uwagi o wierności | Generator / data | Licencja |
+|---|---|---|---|---|
+| `parnu.png` | Pärnu, Estonia — historyczny budynek Pärnu Mud Baths (neoklasycystyczny portyk) oraz Pärnu Rannahoone (modernistyczny budynek plażowy z charakterystycznym balkonem) | Umowny panoramiczny widok z okolic nadmorskiej promenady i wydm, patrząc w stronę zabudowy uzdrowiskowej. Zestawienie dwóch fasad jest kompozycją ilustracyjną, a nie dokładnym rzutem fotograficznym. Bez współczesnego hotelowego aneksu. | ChatGPT GPT Image, 2026-10-31 | Grafika generowana, prawa korzystania właściciela projektu |
+| `ryga.png` | Ryga, Łotwa — Katedra Ryska (Rīgas Doms), historyczne wieże kościelne Starego Miasta (w tym św. Piotra i św. Jakuba), zabudowa nabrzeża Dźwiny | Stylizowany widok z lewego brzegu Dźwiny na Stare Miasto. Nie włączono współczesnego mostu Vanšu: art. 25 łotewskiej ustawy o prawie autorskim nie daje ogólnego wyjątku panoramy dla zastosowań komercyjnych; status ochrony konkretnego projektu mostu nie został sprawdzony. Nie przenoszono też odległych fasad ulicy Alberta do tego ujęcia. | ChatGPT GPT Image, 2026-10-31 | Jak wyżej |
+| `bauska.png` | Bauska, Łotwa — zespół zamkowy Bauskas pils: średniowieczna część zakonu inflanckiego, wieże i renesansowa rezydencja książąt Kurlandii; tereny zielone nad Mūsą | Umowny widok z przeciwległego brzegu Mūsy. Zamek został uproszczony i ma cechy syntetycznej ilustracji; kształty wież **nie są precyzyjną rekonstrukcją**. W wersji końcowej kadrem usunięto zmyślony most pojawiający się w większym szkicu AI. | ChatGPT GPT Image, 2026-10-31 | Jak wyżej |
+| `panevezys.png` | Poniewież (Panevėžys), Litwa — most nad Niewiażą (Nevėžis), niska zabudowa miejska oraz **umowne** obiekty historyczne z wieżami; klimat rzeki i Senvagė | Stylizowany punkt widzenia z przeciwległego brzegu rzeki. **Uwaga jakościowa:** rysunek zawiera niewystarczająco wierne architektonicznie sylwetki; wieży kościelnej i klasycystycznego budynku nie należy przypisywać bez dalszej weryfikacji konkretnym zabytkom. Zalecana redakcyjna korekta/akceptacja lokalna. | ChatGPT GPT Image, 2026-10-31 | Jak wyżej |
+| `kowno.png` | Kowno (Kaunas), Litwa — ceglana wieża Zamku Kowieńskiego, gotycki kościół św. Jerzego i typowa zabudowa historycznego śródmieścia z dalszymi wieżami | Umowny widok znad Wilii (Neris) na zamek i Starówkę. Układ i skala wież w głębi są artystycznie przybliżone; kompozycja ma utrzymać rozpoznawalną sylwetkę ceglanych budowli przy rzece. | ChatGPT GPT Image, 2026-10-31 | Jak wyżej |
+
+## Prompty — dokumentacja pochodzenia
+
+Dla przejrzystości zapisano opis źródłowy generacji (język angielski), z której wycięto odpowiedni fragment. Nie sugeruje to, że każdy wygenerowany plik jest osobnym wynikiem modelu — po jednej samodzielnej ilustracji Pärnu wygenerowano również arkusze pięciu miast, z których przygotowano pozostałe assety. Podpisy arkuszy zostały usunięte z końcowych plików gry.
+
+- **`parnu.png`** — *“Wide, horizontal vector cartoon of a seaside promenade on a transparent checkerboard background, with no sky or people, rendered in crisp, bold dark outlines, flat shading, and a polished sticker-like style. A neoclassical cream building with teal roof, columned pediment, steps, windows, trees, and hedges stands left, while a modern white Art Deco complex with blue glass bands, terraces, a rounded cantilevered observation deck, and mast anchors the right; dunes, grasses, fences, boardwalk elements, benches, and landscaped greenery fill the sandy foreground.”*
+- **`bauska.png`** — *“A crisp, poster-style infographic on a light sky-blue background presents five colorful, outlined vector panoramas in a grid: Pärnu’s beach and pavilion, Riga’s bridge and historic skyline, Bauska’s castle and arched bridge, Panevėžys’s riverside cityscape, and Kaunas’s fortress and church, each with water, greenery, and warm flat shading. Bold dark labels beneath each scene read ‘Pärnu (Estonia),’ ‘Ryga (Łotwa),’ ‘Bauska (Łotwa),’ ‘Poniewież (Litwa),’ and ‘Kowno (Litwa),’ with no people shown.”*
+- **`ryga.png`** — *“A crisp, colorful flat-vector composition presents five detailed, landmark-filled city panoramas with bold outlines and transparent checkerboard backgrounds, plus a light-blue preview strip beneath them. The scenes depict Pärnu, Riga, Bauska, Panevėžys, and Kaunas, while the bottom banner repeats each miniature panorama with centered labels: ‘Pärnu,’ ‘Ryga,’ ‘Bauska,’ ‘Poniewież,’ and ‘Kowno,’ with no people or other text.”*
+- **`panevezys.png`, `kowno.png`** — *“A crisp, colorful vector postcard on a pale blue background presents five labeled city panoramas in a tidy three-over-two grid, using bold dark outlines, flat shading, simplified architecture, greenery, bridges, and water without people or clouds. The scenes feature Pärnu’s seaside resort, Ryga’s riverfront and bridge, Bauska’s red-roofed castle, Poniewież’s churches and modern bridge, and Kowno’s fortress and church complex, with the names ‘Pärnu,’ ‘Ryga,’ ‘Bauska,’ ‘Poniewież,’ and ‘Kowno’ centered beneath each illustration.”*
+
+## Materiały sprawdzające charakterystyczne miejsca (wyłącznie referencje)
+
+- Pärnu Mud Baths: https://visitparnu.com/en/objekt/parnu-mud-baths/
+- Pärnu Beach House: https://visitparnu.com/en/objekt/parnu-beach-house/
+- Klasyczny widok Starej Rygi znad Dźwiny: https://www.celotajs.lv/en/e/vecrigaskati?lang=en
+- Prawo łotewskie, wyjątek panoramy (sekcja 25 — nie obejmuje zastosowań komercyjnych): https://likumi.lv/ta/en/en/id/5138-copyright-law
+- Zamek Bauska, oba historyczne człony: https://www.latvia.travel/en/sight/bauska-castle
+- Poniewież — Senvagė, rzeka, wyspy i mostki: https://pu-pa.eu/eng/projects/panevezio-senvages-parkas/
+- Poniewież — historia i zabudowa: https://www.panevezys.lt/en/history
+- Kowno — zamek przy zbiegu Wilii i Niemna, historyczna zabudowa: https://www.nationalgeographic.com/travel/article/paid-content-kaunas-lithuania-guide
+
+## Kontrola techniczna i ograniczenia
+
+- Wszystkie pięć assetów ma **1620 × 900 px**, PNG **RGBA**, profil **sRGB**, przezroczyste niebo i 8 px odstępu od dolnej krawędzi do najniższej treści graficznej.
+- Pliki są artystycznymi ilustracjami na podstawie modeli AI, nie geometrycznie wiernymi rekonstrukcjami widoków. W szczególności `panevezys.png` wymaga oceny przez osobę znającą miasto, a `bauska.png` — porównania sylwetki zamku z fotografią.
+- Część grafik została powiększona z fragmentów arkusza zbiorczego. **Nie są to natywne osobne renderingi 1620×900**; format końcowy jest prawidłowy, ale może być widoczna interpolacja po zbliżeniu 1:1. Po zmniejszeniu do skali gry efekt powinien być znacznie mniej widoczny — nie potwierdzono tego w rendererze.
+- Styl A+ zrealizowano jakościowo (płaskie plamy kolorów, granatowe kontury, duże sylwetki). Dokładnej grubości **9–10 px dla każdej linii** i proporcji 70–80% wysokości nie potwierdzono automatycznie; w `parnu.png` i `kowno.png` bryły zajmują mniejszy odsetek wysokości.
+- Nie porównano wyników piksel do piksela z plikami `docs/art/probki-panoram/*-A-rysunkowa.png`, ponieważ binarne próbki repo nie były dostępne do odczytu w tym środowisku.
+- **Arkusz podglądu:** `docs/art/podglady/panoramy-100.png` (podpisy występują wyłącznie na arkuszu, nie w plikach gry).
+
+## Pytania do koordynatora
+
+1. Czy po obejrzeniu w rendererze przy rozmiarze ok. 324×180 px interpolacja pozostaje akceptowalna, czy potrzebny jest nowy natywny rendering dla każdego miasta?
+2. Czy w przypadku Poniewieża priorytetem powinna być wierna sylwetka dwuwieżowego kościoła św. Piotra i Pawła wraz z Senvagė (kosztem miejskiego mostu)?
+3. Czy uproszczona rezydencja zamkowa Bauski jest wystarczająco rozpoznawalna dla mieszkańca, czy wymaga pokazania zburzonej części fortecy?
