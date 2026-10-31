@@ -1,6 +1,6 @@
 # HANDOVER — Cebulak Express (koordynacja Claude)
 
-> Ostatnia aktualizacja: **2026-10-31 ok. 19:00 UTC**, sesja `claude/compassionate-mayer-uzqz9l` (po `claude/laughing-goodall-amslh7`). Przeczytaj w całości przed pracą. Prompt startowy: `docs/PROMPT-NOWA-SESJA.md`.
+> Ostatnia aktualizacja: **2026-10-31 ok. 21:15 UTC**, sesja `claude/compassionate-mayer-uzqz9l` (po `claude/laughing-goodall-amslh7`). Przeczytaj w całości przed pracą. Prompt startowy: `docs/PROMPT-NOWA-SESJA.md`.
 
 ## 1. Właściciel i sposób pracy
 - **Właściciel:** Mateusz. Pisz **po polsku**. Decyzje dawaj **klikalnie** (AskUserQuestion, 2–4 opcje, rekomendowana pierwsza).
@@ -50,6 +50,7 @@ Pliki: `docs/zlecenia/runda8/105…121` + `README.md` (tabela stanu). Właścici
 - Zakres: 57 miast docelowych (meta), Berlin i Drezno, 28 przejść/stacji/promów. **13 punktów przy drodze miało stary płaski styl** (Jędrzychowice, Świecko, Świnoujście, Ystad, promy, Svinesund) — dla nich GPT oddaje **nowy letni `<id>.png` A+ i `<id>-zima.png`**.
 - Kod: zimą `landmarkPaths` i `homeCityPaths` próbują najpierw `<id>-zima.png`, potem letni plik (testy w `tests/assets.test.ts`).
 - Wgrywanie: jak runda 8; sprawdzić arkusz lato/zima (kompozycja 1:1), kadr w grze z `?sezon=zima`. Nowe letnie A+ nadpisują stare płaskie pliki — przejrzeć też latem.
+- **Stan 31.10 ok. 21:15:** wróciło 20/20, wgrane 92/100 plików. Odrzucone 8 zimowych panoram (białe kreski przez fasady, szew) → **poprawki 142 i 143** (Warszawa, Kraków, Wrocław, Poznań, Gdańsk; Nowy Targ, Zakopane, Tomaszów Lubelski) — ZIP-y wysłane właścicielowi. Wgrywając: porównanie lato/zima skryptem (IoU masek) + arkusz; **runtime podglądu kadrów trzeba przebudować po każdej zmianie w `src/`** (inaczej pokazuje stary kod).
 
 ## 5. Środowisko (co zainstalować / gdzie co jest)
 - `npm ci` (Node 22). Playwright **1.63.0** używa Chromium **build 1243**, który jest już w `/opt/pw-browsers` — **nie uruchamiaj `playwright install`**. WebKit lokalnie nie działa (sprawdza CI).
