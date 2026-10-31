@@ -48,7 +48,6 @@ export interface AssetLoaderOptions {
 
 const countryPathCache = new Map<string, string>();
 const landmarkPathCache = new Map<string, readonly string[]>();
-const BORDER_NEAR_PATH = 'assets/countries/pl/pl-border-near.png';
 const DEFAULT_HERO_PATHS: readonly string[] = ['assets/hero/kombi-body.png'];
 
 /** Zimowe niebo i plany mają wszystkie kraje z tłami; brak pliku = fallback do lata. */
@@ -199,11 +198,6 @@ export class AssetLoader {
       return this.request(summerPath, 1).image;
     }
     return undefined;
-  }
-
-  /** Wariant near dla odcinka polskiej granicy, zastępujący zwykły kafelek. */
-  getBorderNear(): DrawableAsset | undefined {
-    return this.request(BORDER_NEAR_PATH, 1).image;
   }
 
   getLandmark(point: Pick<Waypoint, 'id' | 'kind'>, season: Season = 'summer'): DrawableAsset | undefined {

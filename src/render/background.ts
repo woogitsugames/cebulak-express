@@ -35,6 +35,20 @@ const LANDMARK_NEAR_HEIGHT = 100;
 const FAR_BASE_Y = LAYER_Y.far + ASSET_SIZES.far.height;
 
 /**
+ * Przezroczysty pas na górze warstwy road kraju (px logiczne od LAYER_Y.road), zmierzony
+ * w PNG 1080×330: pierwszy kryjący wiersz / 3. Kraje spoza listy mają barierę lub pobocze
+ * od samej góry (0). Grafiki przejść i stacji (bliski plan) stawiamy na tej krawędzi, inaczej
+ * w PL, DE, CH, Skandynawii itd. asfalt z barierą zasłaniał dolną połowę obrazka.
+ */
+const ROAD_CLEAR_TOP: Partial<Record<CountryCode, number>> = {
+  AT: 46, CZ: 46, ES: 46, IT: 46, EE: 36, LV: 36, LT: 36, BE: 11, NL: 11, FR: 3, UK: 3,
+};
+/** Dolna krawędź grafiki punktu przy drodze; kilka px zachodzi pod krawędź drogi. */
+export function nearLandmarkBaseY(country: CountryCode): number {
+  return Math.min(WORLD.groundY, LAYER_Y.road + (ROAD_CLEAR_TOP[country] ?? 0) + 4);
+}
+
+/**
  * Wygaszanie ogólnej warstwy far za panoramą: domki i wieże z kafelka far
  * nie mogą wystawać zza sylwetki miasta. Pełne wygaszenie w obrębie panoramy
  * (z marginesem FAR_FADE_INSET od jej krawędzi), miękka rampa FAR_FADE_RAMP
@@ -141,14 +155,6 @@ export function fadeProgress(nowSec: number, startSec: number, durationSec = COU
   return Math.max(0, Math.min(1, (nowSec - startSec) / durationSec));
 }
 
-/** Wymienny near na granicy; po 18 km z obu stron, 6 km miękkiej krawędzi. */
-export function borderNearOpacity(progressKm: number, borderKm: number, restKm: number): number {
-  if (!Number.isFinite(borderKm) || !Number.isFinite(restKm)) return 0;
-  const from = borderKm - 18;
-  const to = Math.max(borderKm, restKm) + 18;
-  return Math.max(0, Math.min(1, (progressKm - from) / 6, (to - progressKm) / 6));
-}
-
 /** Renderer niezależny od Game, z asynchronicznymi PNG i fallbackiem Canvas. */
 export class BackgroundRenderer {
   private fromCountry: CountryCode | null = null;
@@ -163,9 +169,6 @@ export class BackgroundRenderer {
   private previousWaypoints: readonly Waypoint[] | null = null;
   private primedWaypoints: readonly Waypoint[] | null = null;
   private primedSeason: Season = 'summer';
-  private borderKm = Number.NaN;
-  private restKm = Number.NaN;
-  private borderAlpha = 0;
   private fadeActiveX = 0;
   private fadeActiveStrength = 0;
   private fadeOutgoingX = 0;
@@ -210,7 +213,6 @@ export class BackgroundRenderer {
     this.updateCountry(state.country, state.timeSec);
     this.assets.setVisibleCountries?.(state.country,
       this.fromCountry !== this.toCountry ? this.fromCountry : null, season);
-    this.borderAlpha = season === 'winter' ? 0 : borderNearOpacity(state.progressKm, this.borderKm, this.restKm);
     this.drawPair(ctx, 'sky', state.distancePx, season);
     if (!this.quality.reduced) this.drawPair(ctx, 'clouds', state.distancePx, season);
     this.drawFar(ctx, state, season);
@@ -291,18 +293,6 @@ export class BackgroundRenderer {
       this.waypointFade = 1;
       this.fromCountry = null;
       this.toCountry = null;
-      this.borderKm = Number.NaN;
-      this.restKm = Number.NaN;
-      let foundBorder = false;
-      for (const point of state.waypoints) {
-        if (!foundBorder && point.kind === 'border' && point.country === 'PL') {
-          this.borderKm = point.km;
-          foundBorder = true;
-        } else if (foundBorder && point.kind === 'rest' && point.country === 'PL') {
-          this.restKm = point.km;
-          break;
-        }
-      }
     } else if (state.onWaypoint && state.progressKm > this.previousKm) {
       for (const point of state.waypoints) {
         if (point.km > this.previousKm && point.km <= state.progressKm) {
@@ -427,20 +417,6 @@ export class BackgroundRenderer {
     distancePx: number, season: Season,
   ): void {
     const image = this.assets.getCountryLayer(country, layer, season);
-    if (layer === 'near' && country === 'PL' && season !== 'winter' && this.borderAlpha > 0) {
-      const special = this.assets.getBorderNear();
-      if (special) {
-        ctx.save();
-        ctx.globalAlpha *= 1 - this.borderAlpha;
-        this.drawImageOrFallback(ctx, image, country, layer, distancePx);
-        ctx.restore();
-        ctx.save();
-        ctx.globalAlpha *= this.borderAlpha;
-        this.drawAssetLayer(ctx, special, layer, distancePx);
-        ctx.restore();
-        return;
-      }
-    }
     this.drawImageOrFallback(ctx, image, country, layer, distancePx);
   }
 
@@ -539,15 +515,11 @@ export class BackgroundRenderer {
     const x = waypointScreenX(point.km, state.progressKm, onNear ? PARALLAX.near : PARALLAX.far);
     if (x < this.viewLeft - width / 2 || x > this.viewRight + width / 2) return;
 
-    // Stacja jest już w near granicy; unikamy podwójnej stacji w tym samym kadrze.
-    if (onNear && point.kind === 'rest' && state.season !== 'winter' &&
-      this.borderAlpha >= 0.75 && this.assets.getBorderNear()) return;
-
     ctx.save();
     ctx.globalAlpha *= alpha;
     const image = this.assets.getLandmark(point, state.season ?? 'summer');
     if (image) {
-      const baseY = onNear ? WORLD.groundY : FAR_BASE_Y;
+      const baseY = onNear ? nearLandmarkBaseY(state.country) : FAR_BASE_Y;
       ctx.drawImage(image, x - width / 2, baseY - height, width, height);
     } else if (point.kind === 'rest') drawFallbackStation(ctx, x);
     else if (point.kind === 'border') drawFallbackBorder(ctx, x);
@@ -567,7 +539,7 @@ export class BackgroundRenderer {
     if (x < this.viewLeft - width / 2 || x > this.viewRight + width / 2) return;
     ctx.save();
     ctx.globalAlpha *= alpha;
-    ctx.drawImage(image, x - width / 2, (onNear ? WORLD.groundY : FAR_BASE_Y) - height, width, height);
+    ctx.drawImage(image, x - width / 2, (onNear ? nearLandmarkBaseY(state.country) : FAR_BASE_Y) - height, width, height);
     ctx.restore();
   }
 }
