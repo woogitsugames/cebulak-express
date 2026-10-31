@@ -1398,3 +1398,78 @@ Generator obrazu zastosował kontekst rozmowy i zlecenia (techniczne pole `promp
 ## Kontrola i integracja
 
 Wszystkie pięć plików zostało sprawdzonych lokalnie pod kątem wymiarów, trybu RGBA, przezroczystości górnej części i obecności ilustracji przy dolnej krawędzi. Arkusz oglądowy jest zapisany jako `docs/art/podglady/panoramy-95.png` na błękitnym tle; etykiety znajdują się tylko w arkuszu, nie w samych sprite'ach. Wymagany pozostaje wizualny odbiór w rzeczywistym kadrze gry, szczególnie Bayreuth i Mannheim. Nie wykonano testów npm/CI, ponieważ środowisko nie miało sieciowego dostępu do repozytorium przez Git.
+
+
+<!-- Zlecenie 96 (runda 7) z ZIP-a GPT; PNG skwantyzowane do 256 kolorów przez koordynatora. -->
+
+# ASSETS-96 — Panoramy A+: Erfurt, Stuttgart, Jena, Lubeka, Fryburg Bryzgowijski
+
+- **Zlecenie:** 96, runda 7, Cebulak Express — Kierunek Polska.
+- **Data wykonania:** 2026-10-31.
+- **Autor i narzędzie:** ChatGPT, natywny generator obrazów GPT Image; ręczne opracowanie, kadrowanie i normalizacja PNG z użyciem Pillow/OpenCV.
+- **Format gotowy:** 1620 × 900 px, PNG RGBA, przezroczyste tło (brak nieba i chmur), linia gruntu przy dolnej krawędzi.
+- **Styl:** płaska, ciepła ilustracja 2D; pogrubiony kontur granatowy `#1d2f3b`, uproszczone budynki; brak ludzi, szyldów i logotypów.
+- **Licencja i przeznaczenie:** oryginalne materiały generowane w ChatGPT na zlecenie właściciela projektu, przeznaczone do komercyjnego wykorzystania w grze na zasadach korzystania z obrazów generowanych przez OpenAI; brak zapożyczonych fotografii, znaków firmowych i chronionych elementów innych gier.
+
+| Plik | Miasto | Dominujące motywy | Źródło/narzędzie | Uwagi/obróbka |
+|---|---|---|---|---|
+| `erfurt.png` | Erfurt | Krämerbrücke, wieża Ägidienkirche, kamienice szachulcowe | GPT Image + Pillow | Samodzielna generacja; zmniejszenie, przezroczystość, kontury, grunt |
+| `stuttgart.png` | Stuttgart | Stiftskirche, Fernsehturm, zabudowa kotliny i zielone wzgórza | GPT Image + Pillow | Samodzielna generacja; zmniejszenie, przezroczystość, kontury, grunt |
+| `jena.png` | Jena | JenTower, Stadtkirche St. Michael, Soława, zielone wzgórza | GPT Image + Pillow/OpenCV | Wydzielone z wygenerowanej kompozycji wielomiejskiej; ręczne usunięcie nachodzącego elementu i wzmocnienie konturów |
+| `lubeka.png` | Lubeka | Holstentor, wieże kościołów, hanzeatycka zabudowa ceglana | GPT Image + Pillow | Wydzielone z wygenerowanej kompozycji wielomiejskiej; kadrowanie, kontury |
+| `freiburg.png` | Fryburg Bryzgowijski | Freiburger Münster, historyczne kamienice, lasy na zboczach | GPT Image + Pillow | Wydzielone z wygenerowanej kompozycji wielomiejskiej; wycięcie pozostałości innych obrazów, kontury |
+
+## Budowle, punkt widzenia, prompt tematyczny
+
+> **Uwaga o promptach:** interfejs natywnego generatora nie udostępnił pełnej treści promptu w metadanych (`prompt: ""`). Poniżej podano odtwarzalne opisy tematyczne i wspólną instrukcję stylistyczną, a nie rzekomy dosłowny zrzut ukrytego promptu systemowego. Obrazy Jeny, Lubeki i Fryburga zostały wyodrębnione z oryginalnie wygenerowanych panoram zbiorczych.
+
+### `erfurt.png` — Erfurt
+
+- **Budowle:** rząd domów na średniowiecznej Krämerbrücke (most kupiecki); gotycka wieża Ägidienkirche na wschodnim przyczółku; historyczne domy nad rzeką.
+- **Punkt widzenia:** stylizowane ujęcie znad Gery w kierunku zabudowanego mostu; perspektywa celowo uproszczona, bez deklaracji fotograficznej zgodności 1:1.
+- **Prompt tematyczny:** `Panoramic vector-style cartoon illustration of Erfurt, a long continuous row of colorful half-timbered medieval houses on the stone-arched Kraemerbruecke over the Gera River; the Gothic Aegidienkirche tower on one side, warm terracotta roofs and simple trees, no text or people, transparent background.`
+- **Źródło weryfikacji budowli:** https://www.erfurt-tourismus.de/sehenswertes/kraemerbruecke/
+
+### `stuttgart.png` — Stuttgart
+
+- **Budowle:** Stiftskirche z dominującą wieżą i zegarem; Fernsehturm Stuttgart (wieża telewizyjna na Hoher Bopser); pas starszych kamienic w dolinie.
+- **Punkt widzenia:** stylizowany widok z centrum, z wieżą Stiftskirche na bliższym planie i Fernsehturm na zalesionym grzbiecie w oddali; układ nawiązuje do autentycznego widoku miasta.
+- **Prompt tematyczny:** `Flat-vector panoramic Stuttgart skyline: the ochre sandstone clock tower of Stiftskirche in the foreground, the narrow 1956 concrete Fernsehturm high above the wooded slopes of Hoher Bopser, colorful historic town roofs and green hills, clean warm cartoon colors, thick navy outlines, transparent sky.`
+- **Źródła weryfikacji:** https://www.stuttgart-tourist.de/a-stiftskirche-stuttgart ; https://www.stuttgart.de/tourismus/sehenswuerdigkeiten/fernsehturm-stuttgart
+
+### `jena.png` — Jena
+
+- **Budowle:** JenTower (rozpoznawalny wysoki budynek o oszklonej elewacji); Stadtkirche St. Michael (historyczna wieża); budynki starego miasta; zalesione wzgórza doliny Soławy.
+- **Punkt widzenia:** schematyczne ujęcie z terenów nadrzecznych w stronę centrum, z JenTower jako dominantą w osi miasta; nie jest to precyzyjna projekcja jednego zdjęcia.
+- **Prompt tematyczny:** `German city skyline of Jena as a bold flat vector game landscape: cylindrical blue glass JenTower with flat top, Gothic Stadtkirche St. Michael with warm stone bell tower, short river bridge across the Saale, rows of simple red-roofed houses and broad green hills, no logos or sky, transparent alpha.`
+- **Źródła weryfikacji:** https://www.uni-jena.de/en/530/jena ; https://www.visit-jena.de/sehen-und-erleben/sehenswuerdigkeiten/stadtkirche-st-michael/
+
+### `lubeka.png` — Lubeka (Lübeck)
+
+- **Budowle:** Holstentor — dwie masywne, okrągłe ceglane baszty i ozdobny szczyt bramny; sylwetki St. Marien i St. Petri; ceglaste szczyty dawnych budynków handlowych.
+- **Punkt widzenia:** od zachodu, z publicznego trawnika na przedpolu Holstentor w stronę historycznego centrum; wieże kościelne na dalszym planie.
+- **Prompt tematyczny:** `Flat colorful illustrated panorama of Luebeck from the lawn west of Holstentor: the distinctive red brick gate with two huge round towers and very steep slate cones, two green Gothic church spires rising behind, stepped Hanseatic brick gables and low foliage, thick dark navy silhouette outlines, alpha-transparent background.`
+- **Źródło weryfikacji punktu widzenia i budowli:** https://www.luebeck-tourismus.de/service/stadtplan
+
+### `freiburg.png` — Fryburg Bryzgowijski (Freiburg im Breisgau)
+
+- **Budowle:** Freiburger Münster z wyjątkowo wysoką gotycką wieżą; starsza zabudowa z dachami ceramicznymi; dodatkowe historyczne wieżyczki w panoramie.
+- **Punkt widzenia:** schematyczny widok z zachodniej części centrum ku katedrze i zielonym wzniesieniom na wschodzie; na dalszym planie wzgórza Schwarzwaldu.
+- **Prompt tematyczny:** `16:9 vector city panorama of Freiburg im Breisgau featuring the instantly recognizable soaring openwork Gothic spire of Freiburg Minster above red tiled roofs, compact historic houses, secondary stone church towers, wooded Black Forest slopes in the rear, warm ochre stone, flat shading, heavy dark blue outlines, transparent background.`
+- **Źródła weryfikacji:** https://visit.freiburg.de/stadterlebnis-freiburg ; https://visit.freiburg.de/historisches-kaufhaus
+
+## Wspólna instrukcja stylistyczna dla reprodukcji
+
+`Produce ONE isolated panorama for a casual 2D mobile game. Hand-drawn yet flat/vector-like cartoon, 2–4 large real landmark silhouettes, visually recognizable from a public viewpoint. Thick #1d2f3b outlines (target ca. 9–10 px at 1620×900), warm saturated solid colors, minimal windows and ornaments, light from upper left, flat shadow shapes. Transparent PNG with alpha; no sky, no clouds, no gradients, no readable text, no labels, no billboards, no people or logos. Keep the architecture at roughly 70–80 percent of the image height and all ground/water at the bottom edge. Final exported PNG 1620×900.`
+
+## Prawa do przedstawianych budowli
+
+Przedstawiono sylwetki widoczne na stałe z ogólnodostępnych przestrzeni miejskich, bez odtwarzania fotografii źródłowych. Niemiecki § 59 UrhG (panoramafreiheit) dopuszcza utrwalanie i rozpowszechnianie zewnętrznych widoków budowli położonych trwale przy publicznych drogach, ulicach i placach, w tym środkami grafiki i malarstwa. Zob. https://www.gesetze-im-internet.de/urhg/__59.html . Nie obejmuje to zastrzeżonej własności do cudzych zdjęć; takich plików nie włączono.
+
+## Przegląd jakości i ograniczenia
+
+- Wszystkie pięć PNG ma rozmiar **1620 × 900** i tryb **RGBA**; górne 100 wierszy są przezroczyste.
+- Arkusz podglądu: `docs/art/podglady/panoramy-96.png` — wszystkie pięć na jasnoniebieskim tle z podpisami.
+- Kontury wzmocnione przez segmentację ciemnogranatowych linii; pliki nie są źródłowym SVG, lecz rastrowymi ilustracjami PNG.
+- Obrazy są swobodnie stylizowanymi widokami, nie geometrycznie precyzyjną rekonstrukcją. Układ budynków i proporcje poszczególnych brył mogą odbiegać od autentycznej fotografii. Wymagana jest końcowa ocena czytelności przez właściciela w kadrze gry przy skali ok. 1:5.
+- Sprawdzenie w runtime gry i weryfikacja kodu projektu (`npm ci`, `typecheck`, `test`, `build`) nie zostały przeprowadzone, ponieważ w środowisku wykonawczym `git clone/pull` nie mógł rozwiązać hosta GitHub.
