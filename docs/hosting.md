@@ -61,7 +61,7 @@ Adresy i e-maile powyżej to **przykłady**, nie dane produkcyjne. Jeśli serwis
 
 ### CSP / iframe
 
-CSP zawiera `frame-ancestors 'self'` plus **dokładne 13 originów** wyliczonych z `src/content/portals.ts`. `scripts/site-check.mjs` porównuje te wartości z aktualną mapą portali i zatrzyma build, gdy dodanie lub usunięcie domeny spowoduje rozjazd konfiguracji. `X-Frame-Options` nie jest ustawiane, ponieważ blokowałoby legalne osadzenia. Partner musi również zezwolić na iframe w polityce swojej witryny.
+CSP zawiera `frame-ancestors 'self'` plus **dokładne originy** wyliczonych z `src/content/portals.ts`. `scripts/site-check.mjs` porównuje te wartości z aktualną mapą portali i zatrzyma build, gdy dodanie lub usunięcie domeny spowoduje rozjazd konfiguracji. `X-Frame-Options` nie jest ustawiane, ponieważ blokowałoby legalne osadzenia. Partner musi również zezwolić na iframe w polityce swojej witryny.
 
 `script-src 'self'` chroni przed obcymi skryptami, `connect-src` dopuszcza usługi Firebase / Google APIs oraz Cloud Functions. **Po wdrożeniu** sprawdzić konsolę przeglądarki: jeśli konfiguracja rankingu lub analityki wskazuje na własny endpoint, dopisać tylko jego origin do `connect-src`. `img-src blob:` jest konieczne dla kart wyników. Cache wynosi 24 h dla zasobów o stałych nazwach; `index.html` i `sw.js` nie są długoterminowo cache'owane. Nie używać `immutable` dla niehaszowanych grafik `public/assets/`.
 
