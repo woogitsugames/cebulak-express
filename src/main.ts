@@ -966,13 +966,6 @@ function step(now: number): void {
   }
 }
 
-// Ikony ekranu końca: lazy tylko na start (budżet pierwszej klatki). Potem ładujemy je od razu,
-// żeby odsłonięcie #over po kolizji nie uruchamiało leniwego ładowania obrazków w tej samej klatce
-// (podejrzenie zawieszenia renderera w CI, Chromium 141).
-window.setTimeout(() => {
-  for (const img of document.querySelectorAll<HTMLImageElement>('#over img[loading="lazy"]')) img.loading = 'eager';
-}, 2500);
-
 let signJoke: SignJokeBubble | null = null;
 void import('./render/signs').then(({ mountSignJoke }) => { signJoke = mountSignJoke(ui.hud); });
 // Haki tylko dla ?test=1 (zrzuty do sklepu, e2e) — w zwykłej sesji nic nie robią.
