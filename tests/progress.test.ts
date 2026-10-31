@@ -1,10 +1,10 @@
 import { describe, expect, it } from 'vitest';
-import { makeRoute } from '../core/route';
+import { makeRoute, reverseRoute } from '../src/core/route';
 import {
   MEDAL_IDS, POSTCARDS, PROGRESS_STORAGE_KEY, applyRun, emptyProgress,
   loadProgress, normalizeProgress, saveProgress, summarizeRun,
   type ProgressStorage, type RunSummary,
-} from './progress';
+} from '../src/meta/progress';
 
 function run(patch: Partial<RunSummary> = {}): RunSummary {
   return {
@@ -48,6 +48,41 @@ describe('album pocztówek', () => {
     expect(summary.arrived).toBe(true);
     const failed = summarizeRun({ ...game, phase: 'over' });
     expect(failed.cityIds).not.toContain('rzeszow');
+  });
+});
+
+describe('lot powrotny w albumie', () => {
+  const outbound = makeRoute('BE', 'antwerpia', 'rzeszow');
+  const back = reverseRoute(outbound);
+
+  it('rozbicie tuż po starcie z Polski nie liczy granicy ani kraju za granicą', () => {
+    const summary = summarizeRun({ route: back, km: 1, jars: 0, parcels: 0, phase: 'over', baseWeight: 0.25 });
+    expect(summary.countrySequence).toEqual(['PL']);
+    const change = applyRun(emptyProgress(), summary);
+    expect(change.progress.stats.borderCrossings).toBe(0);
+    expect(change.progress.countries).toEqual(['PL']);
+    expect(change.newMedals).not.toContain('first-border');
+  });
+
+  it('dojazd za granicę nie jest dojazdem do domu: bez medali za dojazd i bez zimowego asa', () => {
+    const summary = summarizeRun({ route: back, km: back.totalKm, jars: 0, parcels: 0, phase: 'arrived', baseWeight: 0.25 }, true);
+    expect(summary.arrived).toBe(false);
+    const change = applyRun(emptyProgress(), summary);
+    expect(change.progress.stats.arrivals).toBe(0);
+    expect(change.progress.stats.winterArrivals).toBe(0);
+    expect(change.newMedals).not.toContain('first-arrival');
+    expect(change.newMedals).not.toContain('winter-arrival');
+    // Kilometry i granice z prawdziwego lotu powrotnego się liczą.
+    expect(change.progress.stats.totalKm).toBe(back.totalKm);
+    expect(change.progress.stats.borderCrossings).toBeGreaterThan(0);
+  });
+
+  it('zwykły dojazd w zimie daje zimowego asa', () => {
+    const summary = summarizeRun({ route: outbound, km: outbound.totalKm, jars: 0, parcels: 0, phase: 'arrived', baseWeight: 0 }, true);
+    const change = applyRun(emptyProgress(), summary);
+    expect(change.newMedals).toContain('first-arrival');
+    expect(change.newMedals).toContain('winter-arrival');
+    expect(summary.countrySequence[0]).toBe('BE');
   });
 });
 

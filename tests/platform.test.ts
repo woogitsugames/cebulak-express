@@ -39,7 +39,7 @@ vi.mock('@capacitor/app', () => ({
   App: { addListener: mocks.addListener, exitApp: mocks.exitApp },
 }));
 
-import { platform } from './index';
+import { platform } from '../src/platform/index';
 
 beforeEach(() => {
   vi.clearAllMocks();
