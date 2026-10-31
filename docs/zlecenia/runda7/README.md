@@ -49,3 +49,5 @@ Wszystkie 19 paczek wróciło i zostało wgranych (PNG skwantyzowane do 256 kolo
 | 100 | tak | #108 |
 | 101 | tak | #108 |
 | 102 | tak; krawędź asfaltu poprawiona na wiersz 152 | #108 |
+| 103 | tak; Nyköping przyjęty, Czeski Cieszyn odrzucony | #110 |
+| 104 | tak; Czeski Cieszyn A+ przyjęty (31.10) | #110 / następca |

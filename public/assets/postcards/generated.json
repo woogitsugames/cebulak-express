@@ -229,6 +229,16 @@
       },
       "output": "4aa0b20d0aa3eef5027de45ca22983bf617ca63f80a86a017d3fa43c395ed2fa"
     },
+    "cesky-tesin": {
+      "country": "CZ",
+      "style": 8,
+      "sources": {
+        "panorama": "ebb05ffab12d4853747d5e2c64462127b97231ad849c855fbe4e951a0139291e",
+        "sky": "c426330fd512719eca78d23da54b9c11d68e951d271b6497174d9602dc5a7150",
+        "far": "5ce00b7f88a031665e912fbc7441bd93b4899cd15c5696f343795963abab2aec"
+      },
+      "output": "a0e4dc0124ad4335ab631ebd4d17d869254c774b7ab366930c0c7c3b3e2e1b38"
+    },
     "cherbourg": {
       "country": "FR",
       "style": 8,

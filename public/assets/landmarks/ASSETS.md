@@ -1772,3 +1772,42 @@ Data: **2026-10-31**. Gra: **Cebulak Express — Kierunek Polska**. Grafiki maj�
 - Nie wykorzystano zdjęć ani map jako podkładu do odrysowania.
 - Uwaga: panorama to **rysunkowa synteza** najważniejszych obiektów, a nie fotografia z pojedynczego miejsca z dokładnymi odległościami między nimi. Zwłaszcza ratusz Českého Těšína znajduje się przy rynku, dalej od Olzy; należy ocenić rozpoznawalność w kadrze gry.
 - Do wykonania po integracji: przegląd @1/5 rozmiaru w rendererze gry. Testów `npm ci`, `typecheck`, `test`, `build` nie uruchomiono, ponieważ nie udało się pobrać pełnego repozytorium do lokalnego środowiska (brak dostępu sieciowego).
+
+
+---
+
+# ASSETS-104 — panorama A+ Czeskiego Cieszyna
+
+**Projekt:** Cebulak Express — Kierunek Polska  
+**Data opracowania:** 31 października 2026 r.  
+**Narzędzie:** wbudowany generator obrazów ChatGPT (GPT Image), następnie przygotowanie eksportu za pomocą Pillow.  
+**Zakres:** jedna autorska ilustracja wygenerowana przez AI, PNG RGBA 1620 × 900 px, profil sRGB.
+
+| Id / plik | Miasto | Budowle i otoczenie | Punkt widzenia | Źródło / licencja |
+|---|---|---|---|---|
+| `cesky-tesin` / `cesky-tesin.png` | Czeski Cieszyn, Czechy | Po lewej neogotycki kościół Najświętszego Serca Jezusowego z wysoką wieżą; pośrodku ochrowy ratusz na náměstí ČSA z zegarem w ozdobnym szczycie; po prawej Most Przyjaźni (Most Družby), z widocznymi filarami i balustradą; poniżej Olza, drzewa i ciągłe nabrzeże | Stylizowany widok z polskiego brzegu Olzy w stronę Czeskiego Cieszyna, z elementami rozpoznawczymi zestawionymi w czytelną kompozycję | Wygenerowane w ChatGPT (GPT Image), bez kopiowania fotografii. Zasób przygotowany dla właściciela projektu do użytku komercyjnego zgodnie z warunkami narzędzia i prawem właściwym. |
+
+## Prompt / brief zastosowany do generacji
+
+> Płaska, ciepła, spójna panorama rysunkowa w stylu A+ miasta Český Těšín, szeroki poziomy kadr 1,8:1. Widok zza rzeki Olzy. Lewą stronę zajmuje duży neogotycki kościół z wysoką strzelistą wieżą, środek duży ratusz o ochrowej elewacji i dekoracyjnym szczycie z zegarem, a po prawej Most Przyjaźni / Most Družby ze wspornikami, filarami i balustradą, narysowany identycznym stylem jak budynki; most nie zasłania ratusza. Rzeka i nabrzeże przebiegają jednym ciągłym pasem, bez doklejanych bloków i widocznych łączeń. Duże sylwetki, mało detali, niższe kamienice z tyłu, zielone drzewa. Płaskie ciepłe barwy, mocny kontur w ciemnym granacie zbliżonym do `#1d2f3b`, światło od lewej góry, miękkie cienie w płaskich plamach. Bez gradientów, tekstur fotograficznych, nieba, chmur, napisów, szyldów, reklam, logo, flag, herbów i ludzi na pierwszym planie. Tło przezroczyste, rzeka dochodzi do dolnej krawędzi.
+
+*Powyższy opis to brief redakcyjny wykorzystany w zleceniu, nie dosłowny zapis wewnętrznego promptu generatora.*
+
+## Postprodukcja i kontrola
+
+- Rozdzielczość wyjściowa generatora: **1683 × 935 px**; przeskalowano proporcjonalnie do **1620 × 900 px**, bez przycinania.
+- Zachowano przezroczystość alfa; wzmocniono pełną nieprzezroczystość w obszarach, które powinny być w pełni kryjące, pozostawiając antyaliasing na krawędziach.
+- Wyeksportowano PNG z dołączonym profilem **sRGB**.
+- Sprawdzono wymiary, format **RGBA**, przezroczystość tła i obecność rzeki przy dolnej krawędzi.
+- Arkusz kontrolny na jasnoniebieskim tle: `docs/art/podglady/panoramy-104.png`. Zawiera także podgląd panoramy w skali 1:5.
+- Kompozycja jest **ilustracyjną syntezą**, a nie dosłowną panoramą fotograficzną. Zegar i najbardziej charakterystyczne sylwetki celowo powiększono dla czytelności w grze. Drobne relacje przestrzenne budowli wymagają oceny koordynatora.
+
+## Źródła do sprawdzenia wyglądu obiektów (niekopiowane)
+
+1. Ratusz na náměstí ČSA: https://www.turistika.cz/mista/cesky-tesin-radnice-na-namesti-csa/detail
+2. Kościół Najświętszego Serca Jezusowego: https://slovo.proglas.cz/nase-porady/pred-kostelem/jubilejni-kostel-nejsvetejsiho-srdce-jezisova-v-ceskem-tesine/
+3. Most Przyjaźni: https://www.slaskcieszynski.travel/culturalheritage/1019465/most-przyjani
+
+**Prawa:** Samodzielnie wygenerowany zasób, bez użycia cudzych plików graficznych jako elementów montażu. Właściciel projektu jest uprawniony do wykorzystywania wygenerowanego wyniku zgodnie z warunkami dostawcy narzędzia; nie deklaruje się wyłącznego prawa autorskiego do samych budynków ani gwarantowanej ochrony autorskiej obrazu AI w każdym kraju.
+
+> **Koordynator (31.10):** przyjęto — styl A+ z grubym konturem; PNG skwantyzowany do 256 kolorów.
