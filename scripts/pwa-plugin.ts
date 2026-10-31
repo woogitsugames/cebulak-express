@@ -28,11 +28,12 @@ export function isRuntimeAsset(path: string): boolean {
 }
 
 /**
- * Zasoby, które zostają w dist/ (i w APK). Tło karty udostępniania nie jest w precache
+ * Zasoby, które zostają w dist/ (i w APK). Tło karty udostępniania i obrazy OG (podgląd linku
+ * strony web, scripts/build-site.mjs) nie są w precache
  * (pobierane dopiero przy udostępnianiu), ale czyta je src/share/card.ts, więc zostaje.
  */
 export function isShippedAsset(path: string): boolean {
-  return isRuntimeAsset(path) || /^assets\/brand\/card-bg-[^/]+\.png$/.test(path);
+  return isRuntimeAsset(path) || /^assets\/brand\/(?:card-bg-[^/]+|og-[^/]+)\.png$/.test(path);
 }
 
 /**

@@ -126,12 +126,12 @@ describe('PWA: pliki i ikona', () => {
       const keep = [
         'assets/countries/be/be-sky.png', 'assets/skins/pan-cebulek/skin.json',
         'assets/brand/icon-1024.png', 'assets/brand/logo.png', 'assets/brand/logo-small.png',
-        'assets/brand/card-bg-1080x1920.png',
+        'assets/brand/card-bg-1080x1920.png', 'assets/brand/og-1200x630.png',
       ];
       const drop = [
         'assets/countries/be/ASSETS.md', 'assets/countries/be/winter-builder.js',
         'assets/countries/be/generate_be.py', 'assets/store/README.md',
-        'assets/brand/og-1200x630.png', 'assets/brand/play-feature-1024x500.png',
+        'assets/brand/play-feature-1024x500.png',
         'assets/brand/icon-foreground.png', 'assets/postcards/generated.json',
       ];
       for (const path of [...keep, ...drop]) {
