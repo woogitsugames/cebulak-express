@@ -38,6 +38,22 @@
 5. Sprawdzić każdą grafikę: 1080×1920, brak alfa, kolory sRGB, zrozumiały nagłówek, brak realnych znaków, twarzy i godła. Przeprowadzić podgląd w konsoli sklepu.
 6. Jeśli App Store użyje innych proporcji ekranów urządzeń, **wykonać osobne przechwycenia z odpowiedniego symulatora/urządzenia**, nie rozciągać Androidowych obrazów.
 
+## Zimowe ramki (zlecenie 119)
+
+Grudniowy wariant planszy: prawdziwy zrzut w zimowej ramce z [`ramki/`](ramki/ASSETS.md). Ramki zostają w `docs/`.
+
+1. `npm run build && npm run store:shots` — zapisuje autentyczne kadry Google Play 1080×1920 jako
+   `public/assets/store/screenshot-01.png` … `-08.png` (skrypt nie ustawia `?sezon=zima` — zimowe kadry wymagają dopisania tego parametru w `tools/store-shots/shoot.mjs` albo przechwycenia 1–26 grudnia; letnie kadry w zimowej ramce też są dopuszczalne, bo pokazują prawdziwą grę).
+2. Złożyć planszę (Pillow: `python -m pip install Pillow`), np. kadr z wyborem kraju w ramce 02:
+   ```sh
+   mkdir -p /tmp/ramki-zima
+   python docs/sklep/ramki/skladaj.py public/assets/store/screenshot-02.png 2 /tmp/ramki-zima/02.png
+   ```
+   Skrypt skaluje zrzut proporcjonalnie do 840 px szerokości, wyrównuje do góry okna i przycina tylko dół
+   (z 1080×1920 ginie ok. 113 px na dole — sprawdzić, czy nie znika tam istotny element UI).
+3. Numer ramki dobrać do treści zrzutu (podpisy w `ramki/ASSETS.md`); nie publikować podpisu o funkcji, której nie widać na kadrze.
+4. Wyników nie commitować do `public/` (nie są potrzebne w aplikacji); wgrać ręcznie w konsoli Google Play po kontroli w miniaturze 180×320.
+
 ## Uzupełniające assety
 
 Ikona oraz `play-feature-1024x500.png` należą do **zlecenia 10**, nie duplikujemy ich w tym PR. Tutaj przygotowujemy wyłącznie osiem zrzutów po integracji.
