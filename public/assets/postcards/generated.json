@@ -67,6 +67,17 @@
       },
       "output": "4156554044ad9766ef809256720351cddc4a315c43a13ef7e836efe19a3fef8b"
     },
+    "bartoszyce": {
+      "country": "PL",
+      "style": 8,
+      "sources": {
+        "panorama": "2e615a34255692f3638cecb60a9c5e07d8fa57f8024ddf248db4fd4c9d459bff",
+        "sky": "0fc685ec8883c711158cea505f4d1d38c587fcae2077e720fee63cf937bce4da",
+        "far": "0d1f4ba4fe96e1b68aa6d60a2a88357ee2709610f0d902ae96a01c364c8ecda2",
+        "stamp": "560fea2de4494556f67f8f7e21902b67cfcc4ed4e2fa26d9bc7dc290074fa96a"
+      },
+      "output": "056bf1bab24b1eb60d0d1b89f5afea99a33f52eb6bada0140170a2df21474c4d"
+    },
     "bauska": {
       "country": "LV",
       "style": 8,
@@ -121,6 +132,17 @@
       },
       "output": "edfccb21d7a03bd2366a5ebdcc5eb7b542c9e20e3d896e74aaac5f06af1eb539"
     },
+    "biala-podlaska": {
+      "country": "PL",
+      "style": 8,
+      "sources": {
+        "panorama": "bf3b2d3177080ad0dc3df78f1552b1578c89210049dd6c35a6c1c5ea604030af",
+        "sky": "0fc685ec8883c711158cea505f4d1d38c587fcae2077e720fee63cf937bce4da",
+        "far": "0d1f4ba4fe96e1b68aa6d60a2a88357ee2709610f0d902ae96a01c364c8ecda2",
+        "stamp": "560fea2de4494556f67f8f7e21902b67cfcc4ed4e2fa26d9bc7dc290074fa96a"
+      },
+      "output": "7cae0c237de1365705206a30022c63c20f80f750928b01f62770cf714ccc0e69"
+    },
     "bialystok": {
       "country": "PL",
       "style": 8,
@@ -142,6 +164,17 @@
         "stamp": "26ae75e767207d479be4ebe2769f8624966788c72afd148f98b26ade2824edcc"
       },
       "output": "19c17aa2fcc02aee3d5c46b2a15befec388fa1443ab01707b8627b2d7f7b25c6"
+    },
+    "bielsk-podlaski": {
+      "country": "PL",
+      "style": 8,
+      "sources": {
+        "panorama": "560dc0da361248bbc6252d7dc95f0c3d4ec090288b747e9d3ae3e4515ff37ca5",
+        "sky": "0fc685ec8883c711158cea505f4d1d38c587fcae2077e720fee63cf937bce4da",
+        "far": "0d1f4ba4fe96e1b68aa6d60a2a88357ee2709610f0d902ae96a01c364c8ecda2",
+        "stamp": "560fea2de4494556f67f8f7e21902b67cfcc4ed4e2fa26d9bc7dc290074fa96a"
+      },
+      "output": "d8454e9036617d08c381abd165df2ac944bb6aadc7412be70ec9f0db789ae921"
     },
     "birmingham": {
       "country": "UK",
@@ -207,6 +240,17 @@
       },
       "output": "37a8789158944de29cfb89fd7092baa797edac8f1fb6790043ce2c5f244329c6"
     },
+    "bytow": {
+      "country": "PL",
+      "style": 8,
+      "sources": {
+        "panorama": "6f86a665b6326406a0f938b7afba85f8cc7e197ec1b850d2f4b7ffcf683e51e2",
+        "sky": "0fc685ec8883c711158cea505f4d1d38c587fcae2077e720fee63cf937bce4da",
+        "far": "0d1f4ba4fe96e1b68aa6d60a2a88357ee2709610f0d902ae96a01c364c8ecda2",
+        "stamp": "560fea2de4494556f67f8f7e21902b67cfcc4ed4e2fa26d9bc7dc290074fa96a"
+      },
+      "output": "f18dab84257b157777462d053a6500fbd7a58d91a5ef469da8e2fb36782b0a86"
+    },
     "caen": {
       "country": "FR",
       "style": 8,
@@ -249,6 +293,17 @@
         "stamp": "33ed5459979c21f7541fb83bfcf71b6ed437c4e24afb2ae1865506abd0399e41"
       },
       "output": "d5934ae14f809e49de18463d7d85d87dda784e54e28d37bfbe2d5d5cecda1f5b"
+    },
+    "chojnice": {
+      "country": "PL",
+      "style": 8,
+      "sources": {
+        "panorama": "7ed3f6cca6fab461d8c3f149a3015fe1a5e5db646f3e5ecf7901fff9dbf2c497",
+        "sky": "0fc685ec8883c711158cea505f4d1d38c587fcae2077e720fee63cf937bce4da",
+        "far": "0d1f4ba4fe96e1b68aa6d60a2a88357ee2709610f0d902ae96a01c364c8ecda2",
+        "stamp": "560fea2de4494556f67f8f7e21902b67cfcc4ed4e2fa26d9bc7dc290074fa96a"
+      },
+      "output": "68164d31f53f65ad3f699daf81a26604de4688c1df6ffe4dd140d13d8954fb76"
     },
     "cork": {
       "country": "IE",
@@ -345,6 +400,17 @@
         "stamp": "6053b7a2e94690c13186c0551f86cc78c51735c9de0578c765d83ca90c8fa134"
       },
       "output": "8a8e203cf744eb088ec90ae0535b6f6a1df56e1053b59f7f55e175688676519b"
+    },
+    "elk": {
+      "country": "PL",
+      "style": 8,
+      "sources": {
+        "panorama": "086a4d26c08f01e6a61ffaf385dfc1ae798fb85996048e3cd095eb9fee927b2d",
+        "sky": "0fc685ec8883c711158cea505f4d1d38c587fcae2077e720fee63cf937bce4da",
+        "far": "0d1f4ba4fe96e1b68aa6d60a2a88357ee2709610f0d902ae96a01c364c8ecda2",
+        "stamp": "560fea2de4494556f67f8f7e21902b67cfcc4ed4e2fa26d9bc7dc290074fa96a"
+      },
+      "output": "297c60bffe83c118a9835de9bd6180854ac67e5a58499e94a7f7ab98887e9d84"
     },
     "erfurt": {
       "country": "DE",
@@ -443,6 +509,28 @@
       },
       "output": "90830f6a417ac03b437fc661896129444f35a34579de39507591fd58884e500f"
     },
+    "glogowek": {
+      "country": "PL",
+      "style": 8,
+      "sources": {
+        "panorama": "de7fa400a66b752ca4902772bf2f1859e1ab377784c4016c10b77f314e891c79",
+        "sky": "0fc685ec8883c711158cea505f4d1d38c587fcae2077e720fee63cf937bce4da",
+        "far": "0d1f4ba4fe96e1b68aa6d60a2a88357ee2709610f0d902ae96a01c364c8ecda2",
+        "stamp": "560fea2de4494556f67f8f7e21902b67cfcc4ed4e2fa26d9bc7dc290074fa96a"
+      },
+      "output": "2db089aa43750c7b8a0dd3f3421717f7c9b9b1cbbd67559adee7e56a2141d941"
+    },
+    "goldap": {
+      "country": "PL",
+      "style": 8,
+      "sources": {
+        "panorama": "7d6df1aa93524d69342d132aa08a9b584eb348c318aac9515c4adb5eedff378e",
+        "sky": "0fc685ec8883c711158cea505f4d1d38c587fcae2077e720fee63cf937bce4da",
+        "far": "0d1f4ba4fe96e1b68aa6d60a2a88357ee2709610f0d902ae96a01c364c8ecda2",
+        "stamp": "560fea2de4494556f67f8f7e21902b67cfcc4ed4e2fa26d9bc7dc290074fa96a"
+      },
+      "output": "e3ccd0564a77724cd486a30b4a6462bbced6cba00a58f341faa208582bd5e4ff"
+    },
     "goteborg": {
       "country": "SE",
       "style": 8,
@@ -454,6 +542,17 @@
       },
       "output": "e6f1222bdc11b5e08956c84cdec25a525907cae94233565b950a355e3f9338ab"
     },
+    "grajewo": {
+      "country": "PL",
+      "style": 8,
+      "sources": {
+        "panorama": "a240603fee692a9235f3230e854e8ef26e918793027e66d390cf4a7eff9ec115",
+        "sky": "0fc685ec8883c711158cea505f4d1d38c587fcae2077e720fee63cf937bce4da",
+        "far": "0d1f4ba4fe96e1b68aa6d60a2a88357ee2709610f0d902ae96a01c364c8ecda2",
+        "stamp": "560fea2de4494556f67f8f7e21902b67cfcc4ed4e2fa26d9bc7dc290074fa96a"
+      },
+      "output": "758f5247609e810d7190b3501f1f4222428da2e28fc1e5c6de1e5c574dac21b7"
+    },
     "graz": {
       "country": "AT",
       "style": 8,
@@ -463,6 +562,17 @@
         "far": "898c5f6cacfeb4a3182a7ff5596f7c13bef28b654e1b2cf594b2ee4da5ad63bc"
       },
       "output": "551d67121d016317c0ae9a756eeafb83469b3ca600165eddd915ce96cd50d207"
+    },
+    "hajnowka": {
+      "country": "PL",
+      "style": 8,
+      "sources": {
+        "panorama": "1d7cb7cf65ea55944cfe057b026de05c3d9256298bffbd517dd10ec5fd77037e",
+        "sky": "0fc685ec8883c711158cea505f4d1d38c587fcae2077e720fee63cf937bce4da",
+        "far": "0d1f4ba4fe96e1b68aa6d60a2a88357ee2709610f0d902ae96a01c364c8ecda2",
+        "stamp": "560fea2de4494556f67f8f7e21902b67cfcc4ed4e2fa26d9bc7dc290074fa96a"
+      },
+      "output": "ff518302882587942872bd6dbc878c8dc44636ab95fb69b966d55013e3c4342e"
     },
     "hamburg": {
       "country": "DE",
@@ -507,6 +617,17 @@
       },
       "output": "e3851d6fb339b5e96e48b124dd1a8c6276698f73c4e49201b22905a6c7648adf"
     },
+    "jaslo": {
+      "country": "PL",
+      "style": 8,
+      "sources": {
+        "panorama": "405248823651437ae270404503fd7c9527faa29fa18723abfcffc4d11c269bf4",
+        "sky": "0fc685ec8883c711158cea505f4d1d38c587fcae2077e720fee63cf937bce4da",
+        "far": "0d1f4ba4fe96e1b68aa6d60a2a88357ee2709610f0d902ae96a01c364c8ecda2",
+        "stamp": "560fea2de4494556f67f8f7e21902b67cfcc4ed4e2fa26d9bc7dc290074fa96a"
+      },
+      "output": "b2d40c65b63fcc99e3157df32443e437d8ca551d485b3ef8754bc2b3b007c5bf"
+    },
     "jena": {
       "country": "DE",
       "style": 8,
@@ -540,6 +661,17 @@
       },
       "output": "3c7f49f9f318ceda131d08dca326df70997219377ba8307fbe195f702a640367"
     },
+    "kartuzy": {
+      "country": "PL",
+      "style": 8,
+      "sources": {
+        "panorama": "95bf149f0bb259ab7c454b9b049361f2c3796052e6b06e5ed89bf2d6086f1271",
+        "sky": "0fc685ec8883c711158cea505f4d1d38c587fcae2077e720fee63cf937bce4da",
+        "far": "0d1f4ba4fe96e1b68aa6d60a2a88357ee2709610f0d902ae96a01c364c8ecda2",
+        "stamp": "560fea2de4494556f67f8f7e21902b67cfcc4ed4e2fa26d9bc7dc290074fa96a"
+      },
+      "output": "74d6a1b38699b8dd9ebd493b51c6660a00304b66da6bcd78e90f05f7451c3ddc"
+    },
     "katowice": {
       "country": "PL",
       "style": 8,
@@ -551,6 +683,39 @@
       },
       "output": "84c863fcd108ac8489c6fd6abe3d0331ed5f90236af5d6dd32abcb76178c935e"
     },
+    "kedzierzyn-kozle": {
+      "country": "PL",
+      "style": 8,
+      "sources": {
+        "panorama": "b2b6da7d8bd57552f72b8c9b0e9ccef000b3bc764a816d382d176c2b3209209c",
+        "sky": "0fc685ec8883c711158cea505f4d1d38c587fcae2077e720fee63cf937bce4da",
+        "far": "0d1f4ba4fe96e1b68aa6d60a2a88357ee2709610f0d902ae96a01c364c8ecda2",
+        "stamp": "560fea2de4494556f67f8f7e21902b67cfcc4ed4e2fa26d9bc7dc290074fa96a"
+      },
+      "output": "ca5fe79bd14478017a79599508cbedafdc02ef4afba1f5c625ac9857824644ca"
+    },
+    "ketrzyn": {
+      "country": "PL",
+      "style": 8,
+      "sources": {
+        "panorama": "33c60cbdc82f74965144e9c37e80cb90e96cf9974a908211bb45173de8136c46",
+        "sky": "0fc685ec8883c711158cea505f4d1d38c587fcae2077e720fee63cf937bce4da",
+        "far": "0d1f4ba4fe96e1b68aa6d60a2a88357ee2709610f0d902ae96a01c364c8ecda2",
+        "stamp": "560fea2de4494556f67f8f7e21902b67cfcc4ed4e2fa26d9bc7dc290074fa96a"
+      },
+      "output": "f696b55dd3cade57fcc0a0c23ee1f06a9d950f4acb84d6a6eef35ed47a5f4cd3"
+    },
+    "kielce": {
+      "country": "PL",
+      "style": 8,
+      "sources": {
+        "panorama": "4d727117f2561114a7a8c66071f7f0d080a2387b689d9bdd3b148a87f144333a",
+        "sky": "0fc685ec8883c711158cea505f4d1d38c587fcae2077e720fee63cf937bce4da",
+        "far": "0d1f4ba4fe96e1b68aa6d60a2a88357ee2709610f0d902ae96a01c364c8ecda2",
+        "stamp": "560fea2de4494556f67f8f7e21902b67cfcc4ed4e2fa26d9bc7dc290074fa96a"
+      },
+      "output": "ab675fb4fd05d625276bac9270cc57b829482ddf3cd2d6ded3c56fe917ae7576"
+    },
     "koblenz": {
       "country": "DE",
       "style": 8,
@@ -561,6 +726,17 @@
         "stamp": "26ae75e767207d479be4ebe2769f8624966788c72afd148f98b26ade2824edcc"
       },
       "output": "b527825190534171e7577b3ff18f3e252a3dcb01c472a92ddd84969b56185555"
+    },
+    "kolno": {
+      "country": "PL",
+      "style": 8,
+      "sources": {
+        "panorama": "45d6639687e79a1af4021285698a9e1ffadecd7e684e2b8128483eb992252b12",
+        "sky": "0fc685ec8883c711158cea505f4d1d38c587fcae2077e720fee63cf937bce4da",
+        "far": "0d1f4ba4fe96e1b68aa6d60a2a88357ee2709610f0d902ae96a01c364c8ecda2",
+        "stamp": "560fea2de4494556f67f8f7e21902b67cfcc4ed4e2fa26d9bc7dc290074fa96a"
+      },
+      "output": "b614117d3f15710012a6d0cd4b23de98b6d05602df6f51a3502f31308066533c"
     },
     "kolonia": {
       "country": "DE",
@@ -604,6 +780,17 @@
         "stamp": "560fea2de4494556f67f8f7e21902b67cfcc4ed4e2fa26d9bc7dc290074fa96a"
       },
       "output": "6a85c3478277f9b70af0e0dc4a448088548634e05eedb3807e12091df80b9682"
+    },
+    "krapkowice": {
+      "country": "PL",
+      "style": 8,
+      "sources": {
+        "panorama": "dff65100a2ec7981dd4d177a50f807a25611f3a6def1e60c9b44fed7bdbe2ece",
+        "sky": "0fc685ec8883c711158cea505f4d1d38c587fcae2077e720fee63cf937bce4da",
+        "far": "0d1f4ba4fe96e1b68aa6d60a2a88357ee2709610f0d902ae96a01c364c8ecda2",
+        "stamp": "560fea2de4494556f67f8f7e21902b67cfcc4ed4e2fa26d9bc7dc290074fa96a"
+      },
+      "output": "ef81a03369f4cf559c7fb8c10235dafc111e5a2bc94dfb6174fbaaf7263eb52e"
     },
     "legnica": {
       "country": "PL",
@@ -702,6 +889,17 @@
       },
       "output": "b40e52b7e8f6e72c724c99b0363fe9e3ebaa09599156d4f462efa979c9e299da"
     },
+    "lubaczow": {
+      "country": "PL",
+      "style": 8,
+      "sources": {
+        "panorama": "e75024fe174a988d6d9d943af6adfc9f2b3d5c37553db3bc5496824303239c5b",
+        "sky": "0fc685ec8883c711158cea505f4d1d38c587fcae2077e720fee63cf937bce4da",
+        "far": "0d1f4ba4fe96e1b68aa6d60a2a88357ee2709610f0d902ae96a01c364c8ecda2",
+        "stamp": "560fea2de4494556f67f8f7e21902b67cfcc4ed4e2fa26d9bc7dc290074fa96a"
+      },
+      "output": "dc7117fbfcd1839df0f1590a36750b3c2dba10ffff16c0222b8584ecb85b6f79"
+    },
     "lubeka": {
       "country": "DE",
       "style": 8,
@@ -712,6 +910,17 @@
         "stamp": "26ae75e767207d479be4ebe2769f8624966788c72afd148f98b26ade2824edcc"
       },
       "output": "a41afb3ffa1e310effcfc4ab244f99f452ffe74cebddaa2305780dddd6b08020"
+    },
+    "lublin": {
+      "country": "PL",
+      "style": 8,
+      "sources": {
+        "panorama": "4b35f0c7700c47a703d43a7cbd9a3047d79e6d1f62198a044f7371799dde4a41",
+        "sky": "0fc685ec8883c711158cea505f4d1d38c587fcae2077e720fee63cf937bce4da",
+        "far": "0d1f4ba4fe96e1b68aa6d60a2a88357ee2709610f0d902ae96a01c364c8ecda2",
+        "stamp": "560fea2de4494556f67f8f7e21902b67cfcc4ed4e2fa26d9bc7dc290074fa96a"
+      },
+      "output": "65b7d3c9c68a2f58dbb33d9e47ecd153e36602a2fc871ed7ed8385d7daae6ad1"
     },
     "luksemburg": {
       "country": "LU",
@@ -829,6 +1038,17 @@
       },
       "output": "ff707449282e44754229609e22482693150d309ef8585acb70ce7322de33d5f6"
     },
+    "mielec": {
+      "country": "PL",
+      "style": 8,
+      "sources": {
+        "panorama": "0df5a4fd9b030ea965f6a6f7eee14739007ea6e8589482ce1011afb2a53cf487",
+        "sky": "0fc685ec8883c711158cea505f4d1d38c587fcae2077e720fee63cf937bce4da",
+        "far": "0d1f4ba4fe96e1b68aa6d60a2a88357ee2709610f0d902ae96a01c364c8ecda2",
+        "stamp": "560fea2de4494556f67f8f7e21902b67cfcc4ed4e2fa26d9bc7dc290074fa96a"
+      },
+      "output": "11aaa7fc05aec552ecb1a3a0e2838806bfb806991e57f1b487d6b6bd0ec54fd7"
+    },
     "monachium": {
       "country": "DE",
       "style": 8,
@@ -839,6 +1059,17 @@
         "stamp": "26ae75e767207d479be4ebe2769f8624966788c72afd148f98b26ade2824edcc"
       },
       "output": "4c05c19bd07cc99cadedf920d15597cbb7fbc3278cdbcf9dce415143e354c51c"
+    },
+    "monki": {
+      "country": "PL",
+      "style": 8,
+      "sources": {
+        "panorama": "8a364b6cec674a0117d884b53479defcc88cb8cd78a144fa12bad846f79c4e98",
+        "sky": "0fc685ec8883c711158cea505f4d1d38c587fcae2077e720fee63cf937bce4da",
+        "far": "0d1f4ba4fe96e1b68aa6d60a2a88357ee2709610f0d902ae96a01c364c8ecda2",
+        "stamp": "560fea2de4494556f67f8f7e21902b67cfcc4ed4e2fa26d9bc7dc290074fa96a"
+      },
+      "output": "e74ed84a94efeff5c670f4ac8fd700ab2fb395927e54d010f3c653f6befe6495"
     },
     "montpellier": {
       "country": "FR",
@@ -895,6 +1126,17 @@
       },
       "output": "2c8d216483811a5f2df1139a2e6631a49fa838f45a0f69e05277e5f726fc4690"
     },
+    "nowy-targ": {
+      "country": "PL",
+      "style": 8,
+      "sources": {
+        "panorama": "e096f67a04357422e85021f03b184dd85d8e34ecc06a65a64d7c63b894585139",
+        "sky": "0fc685ec8883c711158cea505f4d1d38c587fcae2077e720fee63cf937bce4da",
+        "far": "0d1f4ba4fe96e1b68aa6d60a2a88357ee2709610f0d902ae96a01c364c8ecda2",
+        "stamp": "560fea2de4494556f67f8f7e21902b67cfcc4ed4e2fa26d9bc7dc290074fa96a"
+      },
+      "output": "e4e59320b260f7e7b9ffbf272f7f3ba18edc34ea423a3628c2b54c4a87766e64"
+    },
     "nykoping": {
       "country": "SE",
       "style": 8,
@@ -917,6 +1159,28 @@
       },
       "output": "b24c8462a057aae980c8cb8232af2302fbfabc301c206bc31beeab3fcd04553c"
     },
+    "olecko": {
+      "country": "PL",
+      "style": 8,
+      "sources": {
+        "panorama": "7a2f8a35c040d0116f0245ac01442fff8cc929e95a294cd469263e8c2ed31dd1",
+        "sky": "0fc685ec8883c711158cea505f4d1d38c587fcae2077e720fee63cf937bce4da",
+        "far": "0d1f4ba4fe96e1b68aa6d60a2a88357ee2709610f0d902ae96a01c364c8ecda2",
+        "stamp": "560fea2de4494556f67f8f7e21902b67cfcc4ed4e2fa26d9bc7dc290074fa96a"
+      },
+      "output": "07016285db3aba5aa4ccc0546d666654a0845de8049bdf7b719bf3f2faf4206b"
+    },
+    "olesno": {
+      "country": "PL",
+      "style": 8,
+      "sources": {
+        "panorama": "f233caa3ff86221b2198f7f1d1285c7020a21168a2895e3238ffdecfa030fce3",
+        "sky": "0fc685ec8883c711158cea505f4d1d38c587fcae2077e720fee63cf937bce4da",
+        "far": "0d1f4ba4fe96e1b68aa6d60a2a88357ee2709610f0d902ae96a01c364c8ecda2",
+        "stamp": "560fea2de4494556f67f8f7e21902b67cfcc4ed4e2fa26d9bc7dc290074fa96a"
+      },
+      "output": "970618fe0f4dc540025d164e98fc9a6292ff2a99d7e0941c7152f72a365fc6eb"
+    },
     "olomouc": {
       "country": "CZ",
       "style": 8,
@@ -938,6 +1202,17 @@
       },
       "output": "16b468363b1c0e91e182f6d5f46505b35228971dbe9e0163a3aee6c857131825"
     },
+    "opole": {
+      "country": "PL",
+      "style": 8,
+      "sources": {
+        "panorama": "613efe6fd15481fddb057c14fc9db78eb0a59344d441ecd0d6fef2054de24219",
+        "sky": "0fc685ec8883c711158cea505f4d1d38c587fcae2077e720fee63cf937bce4da",
+        "far": "0d1f4ba4fe96e1b68aa6d60a2a88357ee2709610f0d902ae96a01c364c8ecda2",
+        "stamp": "560fea2de4494556f67f8f7e21902b67cfcc4ed4e2fa26d9bc7dc290074fa96a"
+      },
+      "output": "3b8cbfc15ecf81968157ded9722ca40f6a5673ce693c6f0c443a9b6a6abfa4e8"
+    },
     "oslo": {
       "country": "NO",
       "style": 8,
@@ -958,6 +1233,17 @@
         "far": "59c68dbd97e66e72abbf9adc51bfd7519b51fd6447e88806aa657ce146edc0a3"
       },
       "output": "93b889b7a4978f6349f3340238987fd795202b2a989e345b62b78a4becb42b14"
+    },
+    "ostrowiec-swietokrzyski": {
+      "country": "PL",
+      "style": 8,
+      "sources": {
+        "panorama": "b8d86d34a1ecebbcd8111d82532c12ad1c2a224e5eb2156da6be4e27635598ef",
+        "sky": "0fc685ec8883c711158cea505f4d1d38c587fcae2077e720fee63cf937bce4da",
+        "far": "0d1f4ba4fe96e1b68aa6d60a2a88357ee2709610f0d902ae96a01c364c8ecda2",
+        "stamp": "560fea2de4494556f67f8f7e21902b67cfcc4ed4e2fa26d9bc7dc290074fa96a"
+      },
+      "output": "eccfc613f488ce91ae220f611b825952af36ebf29acdfe377c707fea226952dc"
     },
     "padwa": {
       "country": "IT",
@@ -1022,6 +1308,39 @@
       },
       "output": "ad3ca78b6ed2086447b4e34b61a988cc8e65698cb09b761a90e72981b496321b"
     },
+    "prudnik": {
+      "country": "PL",
+      "style": 8,
+      "sources": {
+        "panorama": "eb713ee687eb955edb60726c3d14ae0668aa075b55c52a78d78ef900f3103d05",
+        "sky": "0fc685ec8883c711158cea505f4d1d38c587fcae2077e720fee63cf937bce4da",
+        "far": "0d1f4ba4fe96e1b68aa6d60a2a88357ee2709610f0d902ae96a01c364c8ecda2",
+        "stamp": "560fea2de4494556f67f8f7e21902b67cfcc4ed4e2fa26d9bc7dc290074fa96a"
+      },
+      "output": "c2de842b90d4b9a9f9674e9434dfe7226cf5af2be86a484cdda6cb7a80809a00"
+    },
+    "przemysl": {
+      "country": "PL",
+      "style": 8,
+      "sources": {
+        "panorama": "59ce36b80406d0c59449b6097e79e63d0a18ec9ec28df53d3625b9d623d9c865",
+        "sky": "0fc685ec8883c711158cea505f4d1d38c587fcae2077e720fee63cf937bce4da",
+        "far": "0d1f4ba4fe96e1b68aa6d60a2a88357ee2709610f0d902ae96a01c364c8ecda2",
+        "stamp": "560fea2de4494556f67f8f7e21902b67cfcc4ed4e2fa26d9bc7dc290074fa96a"
+      },
+      "output": "b5a75bb88007235b18cc6d19807bfe6ad0369a3056560aa8beb3b8ea836ae52e"
+    },
+    "raciborz": {
+      "country": "PL",
+      "style": 8,
+      "sources": {
+        "panorama": "324732fa5abbdd9621ed3ec2a043f05a27047085f1cfac79310c48107369b897",
+        "sky": "0fc685ec8883c711158cea505f4d1d38c587fcae2077e720fee63cf937bce4da",
+        "far": "0d1f4ba4fe96e1b68aa6d60a2a88357ee2709610f0d902ae96a01c364c8ecda2",
+        "stamp": "560fea2de4494556f67f8f7e21902b67cfcc4ed4e2fa26d9bc7dc290074fa96a"
+      },
+      "output": "443eba71a3425a4540ecd887c8d16b15588df523981feeb9e18401a6111e967c"
+    },
     "reims": {
       "country": "FR",
       "style": 8,
@@ -1076,6 +1395,17 @@
       },
       "output": "3b578f0ca7e4c76d2a72576c7441ba0a086ccbcb55313b7c29343ff7ad9400a1"
     },
+    "rzeszow": {
+      "country": "PL",
+      "style": 8,
+      "sources": {
+        "panorama": "84811ec9f5e35869b417db381a1aed5f88a07919e755493aac1f53c129ac042f",
+        "sky": "0fc685ec8883c711158cea505f4d1d38c587fcae2077e720fee63cf937bce4da",
+        "far": "0d1f4ba4fe96e1b68aa6d60a2a88357ee2709610f0d902ae96a01c364c8ecda2",
+        "stamp": "560fea2de4494556f67f8f7e21902b67cfcc4ed4e2fa26d9bc7dc290074fa96a"
+      },
+      "output": "154b3af5d3aab4475901b538f56be5d13aa9ba13da2c310cf49b96a650d115f0"
+    },
     "rzym": {
       "country": "IT",
       "style": 8,
@@ -1107,6 +1437,39 @@
       },
       "output": "30378042df49def44d1e57c9335c0fa30903697455794291c3f36c3a5e9ab686"
     },
+    "sanok": {
+      "country": "PL",
+      "style": 8,
+      "sources": {
+        "panorama": "df305fc36db1e52f32c50eb4c07ca5a647409ea8a4cd8f0caa8c0164780824d4",
+        "sky": "0fc685ec8883c711158cea505f4d1d38c587fcae2077e720fee63cf937bce4da",
+        "far": "0d1f4ba4fe96e1b68aa6d60a2a88357ee2709610f0d902ae96a01c364c8ecda2",
+        "stamp": "560fea2de4494556f67f8f7e21902b67cfcc4ed4e2fa26d9bc7dc290074fa96a"
+      },
+      "output": "fa58423c374dd21869ee8bda4bcecbaa5196e1a8952331e0524842900e5c93ca"
+    },
+    "siemiatycze": {
+      "country": "PL",
+      "style": 8,
+      "sources": {
+        "panorama": "6670a12995a5e58716277c9fba7053632a2eb1304a55b544f6b3db6e6986f155",
+        "sky": "0fc685ec8883c711158cea505f4d1d38c587fcae2077e720fee63cf937bce4da",
+        "far": "0d1f4ba4fe96e1b68aa6d60a2a88357ee2709610f0d902ae96a01c364c8ecda2",
+        "stamp": "560fea2de4494556f67f8f7e21902b67cfcc4ed4e2fa26d9bc7dc290074fa96a"
+      },
+      "output": "dd7a334de60d4ee047c3a833ccfd14418d717c826ee8719233f5ea5d7dbdaaf3"
+    },
+    "skarzysko-kamienna": {
+      "country": "PL",
+      "style": 8,
+      "sources": {
+        "panorama": "e2810394fd6f53049e566a1ce8f2677ab10b7e720dbf235ed4529a3a115ce024",
+        "sky": "0fc685ec8883c711158cea505f4d1d38c587fcae2077e720fee63cf937bce4da",
+        "far": "0d1f4ba4fe96e1b68aa6d60a2a88357ee2709610f0d902ae96a01c364c8ecda2",
+        "stamp": "560fea2de4494556f67f8f7e21902b67cfcc4ed4e2fa26d9bc7dc290074fa96a"
+      },
+      "output": "7210788f081df5e1debc1a89a641cbc313e1ed66bb771e34f112398d425f8fdb"
+    },
     "slupsk": {
       "country": "PL",
       "style": 8,
@@ -1118,6 +1481,28 @@
       },
       "output": "96758608e0558bb5899d62f80b673eb903dc691e2928306e97a1ce60bececf8b"
     },
+    "sokolka": {
+      "country": "PL",
+      "style": 8,
+      "sources": {
+        "panorama": "8f4a717c73aed9a42cf3a95842bb49c8d292d5143f37c787f5bd91784743bb59",
+        "sky": "0fc685ec8883c711158cea505f4d1d38c587fcae2077e720fee63cf937bce4da",
+        "far": "0d1f4ba4fe96e1b68aa6d60a2a88357ee2709610f0d902ae96a01c364c8ecda2",
+        "stamp": "560fea2de4494556f67f8f7e21902b67cfcc4ed4e2fa26d9bc7dc290074fa96a"
+      },
+      "output": "da572c8f4883b456c237638843052217864cd31cac84c9bf6a0d24aaf504b274"
+    },
+    "stalowa-wola": {
+      "country": "PL",
+      "style": 8,
+      "sources": {
+        "panorama": "9911f10d1fd71b96c8bb2d8e708224ceb6950d1fdc2afba6d8efc66c17a4b8a0",
+        "sky": "0fc685ec8883c711158cea505f4d1d38c587fcae2077e720fee63cf937bce4da",
+        "far": "0d1f4ba4fe96e1b68aa6d60a2a88357ee2709610f0d902ae96a01c364c8ecda2",
+        "stamp": "560fea2de4494556f67f8f7e21902b67cfcc4ed4e2fa26d9bc7dc290074fa96a"
+      },
+      "output": "7b2d202d2932b6d8c0134cf88ee890456735460225280c88f6d55360fa4fac92"
+    },
     "stavanger": {
       "country": "NO",
       "style": 8,
@@ -1128,6 +1513,17 @@
         "stamp": "861ccca27cf59f30f16e929e0804e113d45a84151d509c3f4a212d634ac8b162"
       },
       "output": "5ef746d00532e6649aa79bc87bdcf00166a790564d5c6672061294a48bc78ab7"
+    },
+    "strzelce-opolskie": {
+      "country": "PL",
+      "style": 8,
+      "sources": {
+        "panorama": "0f3d14bc445c50727f1504e76871c447b0ade5e39c85716504b45fd5dc764862",
+        "sky": "0fc685ec8883c711158cea505f4d1d38c587fcae2077e720fee63cf937bce4da",
+        "far": "0d1f4ba4fe96e1b68aa6d60a2a88357ee2709610f0d902ae96a01c364c8ecda2",
+        "stamp": "560fea2de4494556f67f8f7e21902b67cfcc4ed4e2fa26d9bc7dc290074fa96a"
+      },
+      "output": "57b6fa17fa15c9d451bc469a7d6c8fa51574a83f006bf986b68a4d0f964ff8e1"
     },
     "stuttgart": {
       "country": "DE",
@@ -1181,6 +1577,17 @@
         "far": "a856bd5d33b3bdc5944e9a93e30637244fe2cff8213209a1eb920ad6142e494e"
       },
       "output": "2f07428b5d766b15e119df00622acc994496530b6832bdab6c1278465de438c8"
+    },
+    "tomaszow-lubelski": {
+      "country": "PL",
+      "style": 8,
+      "sources": {
+        "panorama": "56ea7a766f2d39fe91930845539bf15dcc3af55f01945bfafab1e241dee208d2",
+        "sky": "0fc685ec8883c711158cea505f4d1d38c587fcae2077e720fee63cf937bce4da",
+        "far": "0d1f4ba4fe96e1b68aa6d60a2a88357ee2709610f0d902ae96a01c364c8ecda2",
+        "stamp": "560fea2de4494556f67f8f7e21902b67cfcc4ed4e2fa26d9bc7dc290074fa96a"
+      },
+      "output": "f1de4c239e0a2ecb6ed4c17a726deac841e68b01ea633a3064a18d41d79c19b1"
     },
     "trier": {
       "country": "DE",
@@ -1245,6 +1652,17 @@
       },
       "output": "689e9b28b4705bad644318a49d67f92fe380e8e7d579f2a268e24bae24fde9bd"
     },
+    "walbrzych": {
+      "country": "PL",
+      "style": 8,
+      "sources": {
+        "panorama": "4dcbd5ac90ad3bc64e47dce145a4a4d00117a94b2131cfe62b3002bb6f1ff320",
+        "sky": "0fc685ec8883c711158cea505f4d1d38c587fcae2077e720fee63cf937bce4da",
+        "far": "0d1f4ba4fe96e1b68aa6d60a2a88357ee2709610f0d902ae96a01c364c8ecda2",
+        "stamp": "560fea2de4494556f67f8f7e21902b67cfcc4ed4e2fa26d9bc7dc290074fa96a"
+      },
+      "output": "06ab998a096a1ab0e3c3f13763d8b8587b573b32c875c501c33d64c092844cc6"
+    },
     "walencja": {
       "country": "ES",
       "style": 8,
@@ -1306,6 +1724,61 @@
         "stamp": "560fea2de4494556f67f8f7e21902b67cfcc4ed4e2fa26d9bc7dc290074fa96a"
       },
       "output": "b6ea36c48710672e4cddc42e5bb8f8779a8db97984c8590cb898373bd41775a1"
+    },
+    "wysokie-mazowieckie": {
+      "country": "PL",
+      "style": 8,
+      "sources": {
+        "panorama": "4855ac2baa198c5bdd1bbf00094fc8b394df96f1df08233207626abc644ba0e0",
+        "sky": "0fc685ec8883c711158cea505f4d1d38c587fcae2077e720fee63cf937bce4da",
+        "far": "0d1f4ba4fe96e1b68aa6d60a2a88357ee2709610f0d902ae96a01c364c8ecda2",
+        "stamp": "560fea2de4494556f67f8f7e21902b67cfcc4ed4e2fa26d9bc7dc290074fa96a"
+      },
+      "output": "0f4f93c64504d1e7cd5297194454588135e8a35e66dec6ace77234f81af879e6"
+    },
+    "zakopane": {
+      "country": "PL",
+      "style": 8,
+      "sources": {
+        "panorama": "4af7b7be6ae3326054c714c45774057e94e801e55936b0387252fc306a967453",
+        "sky": "0fc685ec8883c711158cea505f4d1d38c587fcae2077e720fee63cf937bce4da",
+        "far": "0d1f4ba4fe96e1b68aa6d60a2a88357ee2709610f0d902ae96a01c364c8ecda2",
+        "stamp": "560fea2de4494556f67f8f7e21902b67cfcc4ed4e2fa26d9bc7dc290074fa96a"
+      },
+      "output": "6a7e85e5eca10935c726b6a1b06262e01ae05cd2f23706035af49d9360280040"
+    },
+    "zambrow": {
+      "country": "PL",
+      "style": 8,
+      "sources": {
+        "panorama": "2ed913bd1cce6fc864da29066977b7cf8790599a1af3ea5b4f5b858ae6363e8a",
+        "sky": "0fc685ec8883c711158cea505f4d1d38c587fcae2077e720fee63cf937bce4da",
+        "far": "0d1f4ba4fe96e1b68aa6d60a2a88357ee2709610f0d902ae96a01c364c8ecda2",
+        "stamp": "560fea2de4494556f67f8f7e21902b67cfcc4ed4e2fa26d9bc7dc290074fa96a"
+      },
+      "output": "b508ffd38d7ef1901d2b7e875499b5805562cb8c0c0e01366ebacdbcda5c4367"
+    },
+    "zamosc": {
+      "country": "PL",
+      "style": 8,
+      "sources": {
+        "panorama": "615f786608ed99cabf490f7e116b6bef9875d8c84ba99949254da6f021806df0",
+        "sky": "0fc685ec8883c711158cea505f4d1d38c587fcae2077e720fee63cf937bce4da",
+        "far": "0d1f4ba4fe96e1b68aa6d60a2a88357ee2709610f0d902ae96a01c364c8ecda2",
+        "stamp": "560fea2de4494556f67f8f7e21902b67cfcc4ed4e2fa26d9bc7dc290074fa96a"
+      },
+      "output": "7396dc064b5fdebc05fe999d9c29b78f85eec5bb0529e019c3b0a4c5b1cad4a0"
+    },
+    "zielona-gora": {
+      "country": "PL",
+      "style": 8,
+      "sources": {
+        "panorama": "2969d63ebda67e3b2f1d7ecca0a26f1a23b23f3ba53b8608b64b66a152597f1f",
+        "sky": "0fc685ec8883c711158cea505f4d1d38c587fcae2077e720fee63cf937bce4da",
+        "far": "0d1f4ba4fe96e1b68aa6d60a2a88357ee2709610f0d902ae96a01c364c8ecda2",
+        "stamp": "560fea2de4494556f67f8f7e21902b67cfcc4ed4e2fa26d9bc7dc290074fa96a"
+      },
+      "output": "b93baf92683e8e678db3c7f6b8ab3b649ec4461310537c449bdc5640eabdec99"
     },
     "zurych": {
       "country": "CH",
