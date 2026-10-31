@@ -210,7 +210,8 @@ test.describe('pierwsze uruchomienie', () => {
       await route.continue();
     });
     const loaded = page.waitForResponse(/onboarding-[\w-]+\.js$/);
-    await page.goto(FRESH);
+    // WebKit wstrzymuje zdarzenie load do wczytania dynamicznych importów — nie czekamy na nie.
+    await page.goto(FRESH, { waitUntil: 'domcontentloaded' });
     await expect(page.locator('#sel-home option')).toHaveCount(15);
     await page.locator('#btn-start').click();
     await expect(page.locator('#hud')).toBeVisible();
