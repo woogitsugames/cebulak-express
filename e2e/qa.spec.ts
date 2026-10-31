@@ -47,11 +47,19 @@ test.describe('toasty po przejeździe', () => {
   });
 
   test('zaległe toasty z poprzedniego końca nie wchodzą do nowego przejazdu ani do menu', async ({ page }, testInfo) => {
+    // Chunki tekstów toastów wstrzymane do restartu: medal na pewno przychodzi już po nim
+    // (wcześniej na wolnym WebKit w CI medal zdążał się pokazać jeszcze na ekranie końca).
+    let release!: () => void;
+    const gate = new Promise<void>((resolve) => { release = resolve; });
+    await page.route(/\/assets\/(collection|unlocks)-[\w-]+\.js$/, async (route: PwRoute) => {
+      await gate;
+      await route.continue();
+    });
     await openMenu(page);
     await crash(page, testInfo.project.name);
     await recordToasts(page);
-    // Natychmiastowy restart, zanim medal zdąży się pojawić (700 ms).
     await page.locator('#btn-again').click();
+    release();
     await expect(page.locator('#hud')).toBeVisible();
     await page.waitForTimeout(2600);
     expect((await toasts(page)).filter((text) => text.startsWith('Medal:') || text.startsWith('Nowa pocztówka'))).toEqual([]);
