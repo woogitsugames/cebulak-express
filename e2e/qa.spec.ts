@@ -172,6 +172,15 @@ baseTest('koniec przejazdu bez sieci: postęp się liczy, brak nieobsłużonych 
   expect(pageErrors).toEqual([]);
 });
 
+test('przejazd kończy się także wtedy, gdy przeglądarka wstrzyma requestAnimationFrame', async ({ page }, testInfo) => {
+  // Tak wyglądały zawieszenia w CI: JS żyje, ale klatki przestają przychodzić. Strażnik pętli liczy grę z timera.
+  await openMenu(page);
+  await startRun(page);
+  await page.evaluate(() => { window.requestAnimationFrame = () => 0; });
+  await tapCanvas(page, testInfo.project.name);
+  await expect(page.locator('#over')).toBeVisible({ timeout: 15_000 });
+});
+
 test.describe('pierwsze uruchomienie', () => {
   const FRESH = '/?lang=pl';
 

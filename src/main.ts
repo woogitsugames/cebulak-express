@@ -869,6 +869,24 @@ let last = performance.now();
 let acc = 0;
 
 function frame(now: number): void {
+  step(now);
+  requestAnimationFrame(frame);
+}
+
+/**
+ * Strażnik pętli: gdy przeglądarka wstrzyma requestAnimationFrame przy widocznej stronie
+ * (zawieszony kompozytor, część WebView na Androidzie, headless Chromium w CI), logika gry
+ * idzie dalej z timera — przejazd się kończy, ekran końca się pokazuje. Po powrocie klatek
+ * strażnik milknie sam. Ukryta karta: nic nie liczymy (gra ma stać w tle).
+ */
+const FRAME_STALL_MS = 400;
+window.setInterval(() => {
+  if (document.visibilityState !== 'visible') return;
+  const now = performance.now();
+  if (now - last > FRAME_STALL_MS) step(now);
+}, FRAME_STALL_MS / 2);
+
+function step(now: number): void {
   const dt = Math.min(0.1, (now - last) / 1000);
   last = now;
   if (game) {
@@ -894,7 +912,6 @@ function frame(now: number): void {
   } else {
     renderer.draw(previewGame, now / 1000);
   }
-  requestAnimationFrame(frame);
 }
 
 let signJoke: SignJokeBubble | null = null;
