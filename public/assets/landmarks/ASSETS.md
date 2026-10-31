@@ -902,3 +902,68 @@ Retusz: wycinek wygenerowanej sceny, korekta geometrii płótna i konturów, usu
 - [ ] Ostateczna akceptacja autentyczności kompozycji Mestre i Udine przez koordynatora.
 - [ ] Weryfikacja panoram w kadrze gry przez koordynatora.
 - [ ] Testy repo (`npm ci`, `typecheck`, `test`, `build`) — brak dostępu Git z kontenera wykonawczego; nie zmieniano kodu.
+
+
+<!-- Zlecenie 87 (runda 7) z ZIP-a GPT; PNG skwantyzowane do 256 kolorów przez koordynatora. -->
+
+# Zlecenie 87 — panoramy A+ (Austria)
+
+**Data przygotowania:** 2026-10-31  
+**Projekt:** Cebulak Express — Kierunek Polska  
+**Format plików:** PNG RGBA, 1620 × 900 px, przezroczyste tło (bez nieba), dolna linia gruntu lub wody.  
+**Narzędzia:** natywny generator obrazów ChatGPT (GPT Image / DALL·E) + korekta końcowa w Pythonie (Pillow, OpenCV): wyodrębnienie pojedynczych panoram z generacji, skalowanie, oczyszczenie kanału alfa, usunięcie napisów i artefaktów, dodanie linii dolnej.  
+**Licencja i przeznaczenie:** grafiki wygenerowane na zamówienie projektu; prawa do uzyskanych wyników przysługują właścicielowi projektu w zakresie przewidzianym warunkami usługi OpenAI i obowiązującym prawem. Brak wklejonych zdjęć stron trzecich, logotypów, flag i znaków towarowych. Materiały referencyjne posłużyły wyłącznie do sprawdzenia rozpoznawalności zabytków, nie były kopiowane piksel po pikselu.
+
+## Inwentarz
+
+| Plik (id) | Miasto | Motywy w ilustracji | Umowny punkt widzenia / założenie | Narzędzie | Data | Prawa/licencja |
+|---|---|---|---|---|---|---|
+| `villach.png` (`villach`) | Villach, Austria | Wieża kościoła St. Jakob, historyczna zabudowa nabrzeża Drawy, most, alpejski horyzont | Północna strona Drawy, patrząc na stare miasto | ChatGPT GPT Image + Pillow/OpenCV | 2026-10-31 | wygenerowane AI; prawa do wyniku po stronie właściciela projektu według warunków usługi i prawa |
+| `graz.png` (`graz`) | Graz, Austria | Uhrturm na zalesionym Schlossbergu, czerwone dachy starówki, historyczne wieże i kopuły kościołów | Z zachodniej części śródmieścia w kierunku Schlossbergu | ChatGPT GPT Image + Pillow/OpenCV | 2026-10-31 | jw. |
+| `wieden.png` (`wieden`) | Wiedeń, Austria | Historyczna kopułowa fasada w stylistyce Hofburga, gotycka sylwetka Stephansdomu, czerwono-biały tramwaj | **Kolaż ikon historycznego Wiednia**, nawiązujący do Ringstraße; nie jest odwzorowaniem jednego ścisłego geograficznie kadru | ChatGPT GPT Image + Pillow/OpenCV | 2026-10-31 | jw. |
+| `linz.png` (`linz`) | Linz, Austria | Linzer Schloss na wzgórzu, wieża Mariendom, zabudowa starego miasta, most na Dunaju | Z północnego nabrzeża Dunaju (Urfahr), ku staremu miastu | ChatGPT GPT Image + Pillow/OpenCV | 2026-10-31 | jw. |
+| `salzburg.png` (`salzburg`) | Salzburg, Austria | Twierdza Hohensalzburg, barokowe wieże i kopuły w rejonie katedry, kolorowe domy, nabrzeże Salzach | Z prawego (wschodniego) brzegu Salzach ku staremu miastu i Festungsberg | ChatGPT GPT Image + Pillow/OpenCV | 2026-10-31 | jw. |
+
+## Prompty dokumentacyjne (odtwarzalne)
+
+Poniższe teksty opisują zamówioną kompozycję i mogą być użyte do ponownego wygenerowania zasobów. **Nie są dosłownym zapisem wewnętrznych promptów generatora** — narzędzie nie udostępniło ich tekstu w metadanych. W trakcie generacji powstały także plansze wielomiejska; cztery pojedyncze panoramy zostały z nich wyodrębnione i poprawione ręcznie/skryptowo.
+
+**Wspólna instrukcja A+:**
+
+> Independent 16:9 panoramic game background on transparent RGBA canvas; flat, warm, playful vector illustration, no photography, no sky and no clouds, no gradients; simplified large architectural silhouettes with thick dark navy #1d2f3b outline around 9–10 pixels at final 1620 × 900 resolution, flat shapes, sunlight from upper-left. Emphasize two to four recognizable historical landmarks, together occupying about 70–80% of image height; low historic townhouses as a simple base. Ground, river or grass along bottom 0–40 pixels. No signs, names, logos, text, flags, coats of arms, close-up people or copyrighted contemporary architecture.
+
+**`villach.png`:**
+
+> Villach, Carinthia, Austria, viewed across the Drau river toward the historic centre. Dominant tall free-standing neo-Gothic spire of St Jakob parish church, red-roofed old-town façades, a broad river bridge in front, distant Alpine foothills and mountains. Keep the relative scale of the church tower impressive, simplify building windows and use clear warm pastel colors. Single standalone panorama only.
+
+**`graz.png`:**
+
+> Graz, Styria, Austria: city centre as seen toward the wooded Schlossberg with the iconic square Uhrturm clock tower and its steep dark roof, low red-tiled rooftops and historic church towers below. The hill and clock tower dominate; three or fewer other landmarks, no modern Kunsthaus or Murinsel. Large simplified silhouettes and navy outlines. Single standalone panorama only.
+
+**`wieden.png`:**
+
+> Vienna, Austria: warm, flat-vector stylization of the historic Ringstraße skyline, a monumental imperial palace façade with a copper-green cupola evoking Hofburg, distinctive Gothic Stephansdom silhouette, a generic red-and-white vintage Viennese tram in front, leafy roadside trees. No signs or vehicle logos. This is a symbolic city montage, not a single-lens view; replace with a geographically strict Karlsplatz/Karlskirche composition if required. Single standalone panorama only.
+
+**`linz.png`:**
+
+> Linz, Austria: view from across the Danube toward the old town. The historic Linzer Schloss palace on a green slope to the left, the tall **single** Gothic spire of Mariendom to the right, flat pastel houses along the bank, the river and a simple bridge. No Lentos or Ars Electronica building. Reduced details, bold outlines. Single standalone panorama only.
+
+**`salzburg.png`:**
+
+> Salzburg, Austria: view from the east bank of the Salzach across the UNESCO old town. The large, cream-coloured medieval Hohensalzburg Fortress sits on a wooded Festungsberg above the monumental baroque Salzburg Cathedral with its green dome and two towers, plus a few other old church towers and riverside houses. No sky, no text, thick navy outlines. Single standalone panorama only.
+
+## Referencje dotyczące zabytków i widoków
+
+- **Villach:** oficjalne informacje o St. Jakob i wieży: <https://www.visitvillach.at/en/villach-stadt/info/stadtpfarrkirche-st-jakob.html>, <https://villach.at/getmedia/0da6ed25-6fcf-492b-9947-5a94a1727db7/Folder_Stadtpfarrturm_2024.pdf.aspx>.
+- **Graz:** oficjalna charakterystyka i widoki Uhrturmu: <https://www.graztourismus.at/en/sightseeing-culture/sights/clock-tower_shg_1488>, <https://www.graz-schlossberg.at/uhrturm-graz/>.
+- **Wiedeń:** kopuła Hofburga i historyczna Ringstraße: <https://www.wien.info/en/art-culture/imperial-sights/imperial-palace-348842>; dla ewentualnej wersji spójnej z jednego punktu — Karlskirche i Musikverein: <https://www.wien.info/en/see-do/sights-from-a-to-z/st-charles-church-359636>, <https://www.wien.info/en/art-culture/music-stage-shows/classic/musikverein-353398>.
+- **Linz:** Schloss na wzgórzu i Mariendom: <https://www.linztourismus.at/en/leisure/discover-linz/worth-seeing/top10/linz-castle-and-old-town>, <https://www.linztourismus.at/freizeit/linz-entdecken/sehenswertes/historische-bauten-und-plaetze/kirchen/mariendom>; nabrzeże przy Urfahr: <https://www.linztourismus.at/freizeit/linz-entdecken/aktivitaeten/for-free/natur/wandern>.
+- **Salzburg:** Hohensalzburg, katedra i punkt widokowy: <https://www.salzburg.info/en/hohensalzburg-fortress_az_7955>, <https://www.salzburg.info/en/sights/churches-cemeteries/salzburger-cathedral>, <https://webserver.salzburg.info/en/hotels-offers/guided-tours/city-walks/instagrammable-salzburg>.
+
+## QA i ograniczenia
+
+- Wszystkie pięć plików: PNG RGBA 1620 × 900, przezroczysty lewy górny narożnik i przezroczyste niebo, sylwetki wyciągnięte do dolnej krawędzi.
+- Arkusz porównawczy: `docs/art/podglady/panoramy-87.png` (2040 × 1020, jasnoniebieskie tło, podpisy **wyłącznie na arkuszu**).
+- Wygenerowane ilustracje **nie są pomiarowymi rekonstrukcjami** fasad i kadru. Zwłaszcza `wieden.png` zestawia w jednej ilustracji Hofburg i Stephansdom, które nie tworzą takiej sceny z jednego rzeczywistego punktu; ten wariant wymaga decyzji koordynatora i ewentualnej wymiany przed ostateczną akceptacją kryterium geograficznego.
+- Brak dostępu sieciowego z kontenera do GitHub: nie zweryfikowano stylu z `docs/art/probki-panoram/`, nie wykonano `git pull`, nie powstała gałąź ani draft PR; pliki dostarczono do ręcznej integracji przez ZIP.
+- Nie uruchomiono skryptów npm/CI ani testu w klatce gry; nie było źródłowego repozytorium w środowisku.
