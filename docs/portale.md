@@ -14,10 +14,10 @@ Stan researchu: **30.10.2026**. Adresy WWW pochodzą z rzeczywistych stron i z l
 | CH | https://popolsku.ch/ | działa | strona główna i CMS |
 | IT | https://popolsku.it/ | działa | strona główna i CMS |
 | DK | https://popolsku.dk/ | działa | strona główna i CMS |
-| NO | https://popolsku.no/ | **do potwierdzenia publicznie** | adres zgłoszony jako „dostępny” przez CMS; pobieranie WWW nieudane |
-| AT | https://popolsku.at/ | **do potwierdzenia publicznie** | adres zgłoszony jako „dostępny” przez CMS; pobieranie WWW nieudane |
-| FI | https://popolsku.fi/ | **do potwierdzenia publicznie** | adres zgłoszony jako „dostępny” przez CMS; pobieranie WWW nieudane |
-| LU | https://popolsku.lu/ | **do potwierdzenia publicznie** | adres zgłoszony jako „dostępny” przez CMS; pobieranie WWW nieudane |
+| NO | https://popolsku.no/ | działa (31.10.2026) | strona główna i CMS |
+| AT | https://popolsku.at/ | działa (31.10.2026) | strona główna i CMS |
+| FI | https://popolsku.fi/ | działa (31.10.2026) | strona główna i CMS |
+| LU | https://popolsku.lu/ | działa (31.10.2026) | strona główna i CMS |
 
 ## TuWiesz (poradniki)
 
@@ -36,6 +36,7 @@ Stan researchu: **30.10.2026**. Adresy WWW pochodzą z rzeczywistych stron i z l
 | DE | https://aktualnosci.de/ | działa | strona główna |
 | FR | https://aktualnosci.fr/ | działa | strona główna |
 | UK | https://aktualnosci.uk/ | działa | strona główna |
+| NO | https://aktualnosci.no/ | 31.10.2026 „under maintenance”; podpięty w grze z decyzji właściciela (start portalu przed startem gry) | strona główna |
 
 ## Facebook — status kont powiązanych z portalami
 
@@ -48,7 +49,7 @@ Stan researchu: **30.10.2026**. Adresy WWW pochodzą z rzeczywistych stron i z l
 
 Źródła pomocnicze: [Social Blade — Aktualnosci.be](https://socialblade.com/facebook/user/aktualnosci.be), [artykuł redakcyjny z odsyłaczem do posta na Facebooku](https://aktualnosci.be/2025/11/04/konkurs-co-kryje-sie-w-torbie-polaka-w-belgii/), [CMS PoPolsku/TuWiesz — list_portals](https://popolsku.be/) (wewnętrzne źródło instancji, bez publicznego endpointu listy).
 
-**Decyzja implementacyjna:** `src/content/portals.ts` nie zawiera niezweryfikowanych linków Facebook. Kod rozróżnia linki news, guides i facebook; dla nieznanego profilu `portalLink(..., 'facebook')` zwraca `undefined`. Po weryfikacji przez właściciela wpisujemy pełny URL w mapie. `HomeCountry` obejmuje 15 krajów (BE, NL, DE, UK, FR, CH, NO, DK, IE, ES, IT, AT, SE, FI, LU); adresy IE/AT/FI/LU pozostają nieaktywne do publicznej weryfikacji.
+**Decyzja implementacyjna:** `src/content/portals.ts` nie zawiera niezweryfikowanych linków Facebook. Kod rozróżnia linki news, guides i facebook; dla nieznanego profilu `portalLink(..., 'facebook')` zwraca `undefined`. Po weryfikacji przez właściciela wpisujemy pełny URL w mapie. `HomeCountry` obejmuje 15 krajów (BE, NL, DE, UK, FR, CH, NO, DK, IE, ES, IT, AT, SE, FI, LU); AT/FI/LU podpięte do PoPolsku po weryfikacji 31.10.2026; IE bez portalu.
 
 ## Metoda sprawdzenia
 

@@ -12,7 +12,8 @@ export interface PortalInfo {
 
 /** Wyłącznie adresy przypisane do krajów obsługiwanych przez rdzeń gry.
  * Niepotwierdzonych kont Facebook nie dodajemy na podstawie samego sluga.
- * Brak publicznej weryfikacji (IE/AT/FI/LU) oznacza samą etykietę, bez URL.
+ * Brak publicznej weryfikacji (IE) oznacza samą etykietę, bez URL. AT/FI/LU sprawdzone 31.10.2026;
+ * aktualnosci.no — decyzja właściciela 31.10 (portal rusza przed startem gry).
  * Źródła i status weryfikacji: docs/portale.md i docs/trasy-nowe-kraje.md.
  */
 export const PORTALS: Readonly<Record<HomeCountry, Readonly<PortalInfo>>> = {
@@ -22,15 +23,15 @@ export const PORTALS: Readonly<Record<HomeCountry, Readonly<PortalInfo>>> = {
   UK: { label: 'Wielka Brytania', news: 'https://aktualnosci.uk/', guides: 'https://popolsku.uk/' },
   FR: { label: 'Francja', news: 'https://aktualnosci.fr/', guides: 'https://popolsku.fr/' },
   CH: { label: 'Szwajcaria', guides: 'https://popolsku.ch/' },
-  NO: { label: 'Norwegia', guides: 'https://popolsku.no/' },
+  NO: { label: 'Norwegia', news: 'https://aktualnosci.no/', guides: 'https://popolsku.no/' },
   DK: { label: 'Dania', guides: 'https://popolsku.dk/' },
   IE: { label: 'Irlandia' },
   ES: { label: 'Hiszpania', guides: 'https://popolsku.es/' },
   IT: { label: 'Włochy', guides: 'https://popolsku.it/' },
-  AT: { label: 'Austria' },
+  AT: { label: 'Austria', guides: 'https://popolsku.at/' },
   SE: { label: 'Szwecja', guides: 'https://popolsku.se/' },
-  FI: { label: 'Finlandia' },
-  LU: { label: 'Luksemburg' },
+  FI: { label: 'Finlandia', guides: 'https://popolsku.fi/' },
+  LU: { label: 'Luksemburg', guides: 'https://popolsku.lu/' },
 };
 
 export type PortalChannel = 'news' | 'guides' | 'facebook';
