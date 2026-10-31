@@ -1233,3 +1233,70 @@ Wszystkie pięć panoram to oryginalne kompozycje graficzne wytworzone natywnym 
 - Metz: https://templeneufmetz.org/edifice/ ; https://commons.wikimedia.org/wiki/File:Metz_-_View_of_Temple_Neuf,_Moselle_river_and_Cath%C3%A9drale_Saint_Etienne_from_Moyen_Pont_(Q22690).jpg
 - Cherbourg: https://www.cherbourg.fr/culture-et-loisirs/patrimoine/les-monuments-incontournables/la-digue-et-ses-forts/ ; https://pop.culture.gouv.fr/notice/merimee/IA50000603
 - Caen: https://caen.fr/annuaire-equipement/eglise-saint-etienne ; https://en.normandie-tourisme.fr/beautiful-panoramas/
+
+
+<!-- Zlecenie 93 (runda 7) z ZIP-a GPT; PNG skwantyzowane do 256 kolorów przez koordynatora. -->
+
+# Zlecenie 93 — Panoramy miast francuskich, styl A+
+
+**Data wytworzenia:** 2026-10-31  
+**Repozytorium:** `woogitsugames/cebulak-express`  
+**Przeznaczenie:** panoramy w grze „Cebulak Express — Kierunek Polska”  
+**Autor / narzędzie:** grafiki wygenerowane natywnym generatorem obrazu ChatGPT (GPT Image); obróbka techniczna: Python/Pillow + OpenCV.  
+**Licencja / dysponowanie:** oryginalne wyniki generowania AI przekazane do wykorzystania i dalszej modyfikacji przez właściciela projektu, zgodnie z warunkami usługi ChatGPT i prawem właściwym. Nie użyto cudzych zdjęć ani logotypów w plikach wynikowych. Wizerunki historycznych budynków użyto jako źródła inspiracji, nie jako kopii fotografii.
+
+## Pliki
+
+| Plik (`public/assets/landmarks/`) | ID | Miasto | Motywy | Punkt widzenia i układ kompozycji | Źródło / licencja |
+|---|---|---|---|---|---|
+| `rouen.png` | `rouen` | Rouen | Katedra Notre-Dame z wysoką iglicą, kościół opactwa Saint-Ouen, historyczna zabudowa nad Sekwaną | Orientacyjny widok od lewego brzegu Sekwany ku zabytkowemu prawemu brzegowi; wysoka iglica katedry w centralnej części, Saint-Ouen po prawej, nabrzeże na dole | ChatGPT GPT Image, wynik AI do użycia przez właściciela projektu |
+| `perpignan.png` | `perpignan` | Perpignan | Le Castillet (ceglana brama obronna), wieża kościelna inspirowana katedrą Saint-Jean-Baptiste, palmy i zabudowa katalońska | Plac przed Castillet, widok w kierunku starego miasta od północno-zachodniej strony; Castillet w centrum/lewej części, tło sakralne po prawej | ChatGPT GPT Image, wynik AI do użycia przez właściciela projektu |
+| `narbonne.png` | `narbonne` | Narbonne | Canal de la Robine, zabudowany Pont des Marchands, Palais des Archevêques, katedra Saint-Just-et-Saint-Pasteur | Widok wzdłuż kanału w kierunku zabudowanego mostu i zespołu zabytków starówki; kanał i barka na pierwszym planie, wieże za mostem | ChatGPT GPT Image, wynik AI do użycia przez właściciela projektu |
+| `montpellier.png` | `montpellier` | Montpellier | Opéra Comédie, fontanna Trzech Gracji, XIX-wieczne jasne fasady, generyczny nieoznakowany tramwaj | Plac de la Comédie w stronę zabytkowej opery; opera w środku, fontanna przed fasadami, tramwaj z prawej | ChatGPT GPT Image, wynik AI do użycia przez właściciela projektu |
+| `besancon.png` | `besancon` | Besançon | Cytadela Vaubana na zalesionym wzgórzu, stara zabudowa nad Doubs, kamienny most i zakole rzeki | Orientacyjny widok z przeciwległego brzegu Doubs ku cytadeli i ułożonym pod nią czerwonym dachom, most po lewej | ChatGPT GPT Image, wynik AI do użycia przez właściciela projektu |
+
+**Wspólny format:** PNG, **1620 × 900 px**, RGBA, przezroczyste niebo/tło, wartości sRGB z osadzonym profilem ICC, bez napisów, logotypów, flag i postaci na pierwszym planie. Światło z lewej góry, ciepła paleta kolorów i kontur granatowy `#1d2f3b` (ok. 9–10 px na głównej sylwetce po obróbce). Styl A+: uproszczona, komiksowa interpretacja zabudowy, nie fotorealistyczna wizualizacja geodezyjna.
+
+**Arkusz kontrolny:** `docs/art/podglady/panoramy-93.png` — wszystkie pięć grafik na jasnoniebieskim tle, podpisy wyłącznie w arkuszu, nie w zasobach gry.
+
+## Prompty użyte do wygenerowania
+
+### `rouen.png`
+
+> Wide, sticker-style vector panorama of a Rouen-inspired Gothic riverside city on a transparent background, featuring bold outlines, flat cel shading, and no people, clouds, or text. A calm blue river and block-lined stone quay with steps sit before tree-lined rows of colorful timber-framed townhouses, while towering cream-and-tan cathedrals rise behind them with pointed arches, rose windows, deep-blue lancets, ornate spires, pinnacles, slate roofs, and a central needle-like tower topped by a cross.
+
+### `perpignan.png`
+
+> Wide, flat-shaded vector illustration on a transparent checkerboard background: a detailed red-brick medieval fortress gate dominates the center-left, flanked by palm trees and backed by warm Mediterranean buildings and a pale cathedral bell tower. Thick dark outlines, bold comic-style colors, crenellated towers, arched entry with a shadowy gridded gate, tiled plaza, low stone railings, greenery, and richly layered architectural details create a crisp cutout PNG look with no sky, text, people, vehicles, or signage.
+
+### `narbonne.png`
+
+> Panoramic cartoon-style vector scene of a European canal town on a transparent background, featuring a calm teal canal, a central stone arch bridge, colorful tightly packed waterfront houses, leafy quay-side trees, boats, and classic street lamps. Behind the bridge, a towering Gothic cathedral and a crenellated fortress dominate the skyline, all rendered with bold dark outlines, flat colors, simplified shading, and no people, text, or sky.
+
+### `montpellier.png`
+
+> Panoramic sticker-style vector illustration of a European city square inspired by Montpellier’s Place de la Comédie, isolated on a transparent checkerboard background with no sky, people, text, or extra scenery. In bold cel-shaded colors with thick navy outlines, a grand cream-and-gold Beaux-Arts opera house anchors the scene, flanked by ornate Haussmann buildings, balconies, domed slate roofs, a classical Three Graces fountain, and a sleek multicolored blue tram crossing the paved plaza at the right.
+
+### `besancon.png`
+
+> Panoramic vector-style cutout of a riverside European town, rendered in clean flat colors with bold dark outlines and a transparent checkerboard sky. A stone bridge, calm teal river, tree-lined embankment, colorful historic buildings, and a central church tower lead up to a large angular fortress crowning a green, rocky hill, all in a simplified poster-like style with no people.
+
+## Obróbka techniczna
+
+1. Wybrano wygenerowaną, przezroczystą panoramę danego miasta i dopasowano do 1620×900 (Pillow/Lanczos).
+2. Znormalizowano kanał alfa: tło pozostało przezroczyste, bryły budynków i terenu mają nieprzezroczyste wnętrze.
+3. Nałożono kontur `#1d2f3b` wokół sylwetek (poszerzenie ok. 8 px na zewnątrz + istniejąca krawędź) oraz nieznacznie pogrubiono ciemne linie wewnętrzne (OpenCV).
+4. W Montpellier odcięto niepożądany pas na dolnej krawędzi surowego obrazu, a w Besançon część pustego obszaru u góry, aby powiększyć sylwetkę wzgórza.
+5. Zapisano RGB w interpretacji sRGB i PNG/RGBA. Arkusz podglądu utworzono programowo, a podpisów nie wtopiono w grafiki gry.
+
+## Dokumentacyjne punkty odniesienia
+
+- Rouen: panorama miasta z lewego brzegu Sekwany: https://www.memoirenormande.fr/medias-vue-sur-la-ville-de-rouen-depuis-la-rive-gauche-614-5218-2-0.html; punkt widokowy i najważniejsze monumenty: https://vallee.seine-eure.fr/
+- Perpignan: oficjalny opis Le Castillet: https://mairie.perpignan.fr/culture-patrimoine/patrimoine/monuments/le-castillet
+- Narbonne: kanał de la Robine: https://www.narbonne.fr/canal-robine; most Pont des Marchands: https://www.narbonne.fr/pont-marchands
+- Montpellier: oficjalny opis Place de la Comédie, opery i fontanny: https://www.montpellier-tourisme.fr/decouvrir/millenaire/les-incontournables/place-de-la-comedie/
+- Besançon: oficjalny opis cytadeli Vaubana górującej nad zakolem Doubs: https://www.citadelle.com/a-voir-a-faire/la-citadelle-de-besancon/citadelle-de-besancon/
+
+## Ograniczenia i uwagi do kontroli
+
+Wyniki generatora są **stylizowanymi interpretacjami** budowli. Zachowują rozpoznawalne formy głównych zabytków i geograficzny charakter miast, ale nie są odrysami konkretnych ujęć aparatu ani dokładnym odwzorowaniem każdej elewacji; szczególnie liczby wieżyczek, detale fasad i odległości między zabytkami mogą różnić się od realnych. Zalecane sprawdzenie czytelności i zbieżności motywów w docelowej kamerze gry (skala ok. 1:5). Nie dołączono żadnej fotografii referencyjnej ani fontów do zasobów gry.
