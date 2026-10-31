@@ -1034,3 +1034,47 @@ Zalecany wspólny prefiks dla **każdego** promptu:
 - Göteborg: [Göteborg, Älvsborgsbron](https://www.goteborg.com/en/guides/10-instagram-places-in-gothenburg), [Göteborg, punkty widokowe i symboliczne miejsca](https://www.goteborg.com/en/attractions/viewpoints).
 - Helsingborg: [Helsingborg.se, Kärnan](https://helsingborg.se/uppleva-och-gora/kultur-och-museer/the-keep-of-helsingborg/).
 - Budynki mogą być swobodnie przedstawiane na mocy fińskiego [§25a ustawy o prawie autorskim](https://www.finlex.fi/en/legislation/1961/404/amendment-history/20230263) i szwedzkiego [§24 ustawy o prawie autorskim](https://www.riksdagen.se/sv/dokument-och-lagar/dokument/svensk-forfattningssamling/lag-1960729-om-upphovsratt-till-litterara-och_sfs-1960-729/). Nie dotyczy odrębnych praw do zdjęć; żadne cudze zdjęcie nie jest składnikiem finalnych PNG.
+
+
+<!-- Zlecenie 89 (runda 7) z ZIP-a GPT; PNG skwantyzowane do 256 kolorów przez koordynatora. -->
+
+> **Koordynator:** odrzucono nykoping (styl niezgodny z A+); zostaje poprzednia wersja, do ponowienia.
+
+# ASSETS-89 — Panoramy A+ (Szwecja)
+
+**Projekt:** Cebulak Express — Kierunek Polska  
+**Data:** 2026-10-31  
+**Narzędzia:** wbudowany generator obrazów ChatGPT (GPT Image), Pillow, CairoSVG (ręczna korekta/konstrukcja wektorowa).  
+**Status:** ilustracje i arkusz podglądu do zatwierdzenia przez koordynatora w rzeczywistym kadrze gry.
+
+Każdy obraz ma **1620 × 900 px, PNG RGBA z przezroczystym niebem, profil sRGB**. Kompozycje przedstawiają duże, wyraźne sylwetki historycznych budowli i charakterystyczne brzegi rzek lub jezior. Kontury ciemnogranatowe, przybliżony kolor `#1d2f3b`. Nie użyto cudzych zdjęć jako warstw wynikowych, logotypów, flag, napisów ani symboli heraldycznych. Współczesne obiekty o potencjalnych ograniczeniach reprodukcji celowo pominięto.
+
+| Plik (ID) | Miasto i motywy | Punkt widzenia / układ | Narzędzie i korekty | Licencja / prawa |
+|---|---|---|---|---|
+| `malmo.png` (`malmo`) | Malmö: zamek **Malmöhus**, okrągłe ceglane baszty, **Slottsmöllan** (wiatrak z 1851 r.), fosa i kładka | Stylizowana perspektywa z otoczenia zamkowej fosy, wiatrak po lewej, zamek po prawej | GPT Image — osobna scena; przycięcie i dopasowanie do wymiaru docelowego w Pillow | Wygenerowana dla projektu; prawa do wykorzystania wyniku po stronie właściciela projektu zgodnie z warunkami OpenAI |
+| `sztokholm.png` (`sztokholm`) | Sztokholm: **Stadshuset**, iglica **Riddarholmskyrkan**, kolorowa zabudowa Gamla Stan, łodzie, most | Interpretacja szerokiego widoku znad Riddarfjärden z rejonu **Monteliusvägen**: ratusz po lewej, stara zabudowa na prawo | GPT Image — panel wygenerowanej panoramy zbiorczej, kadrowanie, odbicie poziome i skalowanie, usunięcie podpisu | Jak wyżej |
+| `nykoping.png` (`nykoping`) | Nyköping: **Nyköpingshus**, charakterystyczna **biała kwadratowa wieża Kungstornet**, mury forteczne, czerwony budynek zespołu zamkowego, nabrzeże Nyköpingsån | Uproszczona perspektywa z brzegu **Nyköpingsån**, bez udawania dokładnego odwzorowania fotograficznego | Szkic koncepcyjny GPT Image; główne bryły skorygowano ręcznie w oryginalnej ilustracji wektorowej przez CairoSVG, weryfikując kształt wieży i fosy | Jak wyżej; własne opracowanie wektorowe |
+| `norrkoping.png` (`norrkoping`) | Norrköping: dawne czerwone ceglane młyny **Industrilandskapet**, prosta wieża przemysłowa, kaskada na **Motala ström**, most | Stylizowany brzeg Motala ström, orientacyjny widok na historyczne przemysłowe nabrzeże, nie mapa fotogrametryczna | GPT Image — panel wygenerowanej panoramy zbiorczej; precyzyjny kadr bez podpisów, skalowanie i korekta alfa | Jak wyżej |
+| `jonkoping.png` (`jonkoping`) | Jönköping: dominanta **Sofiakyrkan**, niska zabudowa, **Vättern**, przystań i żaglówki, zielone wzgórza | Stylizowana panorama południowego brzegu Vättern, w stronę miasta, z przystani | GPT Image — panel wygenerowanej panoramy zbiorczej; kadrowanie, usunięcie podpisów z sąsiedniego panelu, skalowanie | Jak wyżej |
+
+## Użyte polecenia wizualne (prompty / briefy)
+
+1. **Malmö:** `Flat warm-colour city skyline on TRANSPARENT background, thick navy outline (#1d2f3b), landmark-sized Malmöhus red-brick castle round bastions and adjacent Slottsmöllan 1851 windmill, castle moat and stone bank, no sky, no people or text, simple flat shading, horizontal 16:9.`
+2. **Sztokholm:** `Bold flat-vector Swedish historic waterfront from Monteliusvägen, Stockholm Stadshuset left, Riddarholmskyrkan spire centre, colorful Gamla Stan right, island bridges, small boats, thick dark contours, transparent sky, no words or logos.`
+3. **Nyköping:** `Flat vector river panorama of Nyköpingshus, white SQUARE Kungstornet tower with simple dark hipped roof, low ruined stone castle walls, Nyköpingsån, tree-lined embankment, historic red residence, dark thick outlines, transparent sky and no text.`
+4. **Norrköping:** `Cartoon vector panorama of Norrköping Industrilandskapet by the Motala ström, old red brick mills, waterfall and bridge, 2–4 large building masses, navy bold strokes, transparent sky and flat warm shadows, no people or text.`
+5. **Jönköping:** `Cartoon vector Jönköping seen from the shore of Vättern, Sofiakyrkan high spire, old warm-colour waterfront houses, a few small sailing boats, wooded hill, dark 10px outline, transparent sky, no people or text.`
+
+**Uwaga o promptach:** Generator podczas partii tworzył również kolaże pięciu panoram. Dla czterech miast wykorzystano i poprawiono wydzielone fragmenty, a dla Nyköping zastąpiono błędną stylizację zamku ilustracją opartą na udokumentowanej kwadratowej wieży. Powyższe briefy opisują motywy docelowe; nie stanowią dokładnych dzienników wewnętrznych poleceń generatora.
+
+## Źródła weryfikacji architektury (wyłącznie referencje, nie kopiowane fotografie)
+
+- Malmö — oficjalna historia Slottsmöllan: https://malmo.se/Uppleva-och-gora/Arkitektur-och-kulturarv/Malmos-historia/Platser-och-byggnader/Byggnader-A-O/Slottsmollan-och-Mollarebostaden.html
+- Sztokholm — oficjalny punkt widokowy Monteliusvägen: https://www.visitstockholm.com/o/monteliusvagen/
+- Nyköping — muzeum w Kungstornet: https://sormlandsmuseum.se/besoksinfo/nykopingshus ; https://www.sfv.se/vara-fastigheter/sverige/sodermanlands-lan/nykopingshus
+- Norrköping — oficjalny przewodnik po Industrilandskapet: https://visit.norrkoping.se/se-och-gora/sevardheter/sevardheter/industrilandskapet/om-industrilandskapet
+- Jönköping — lokalny opis charakterystycznego widoku na Sofiakyrkan, miasto i Vättern: https://www.jonkoping.se/fritid-kultur--natur/friluftsliv-natur-och-parker/parker/stadsparken-jonkoping/sinnenas-promenad
+
+## Podgląd i integracja
+
+Arkusz: `docs/art/podglady/panoramy-89.png` — pięć panoram na błękitnym tle z podpisami **wyłącznie w arkuszu**. W plikach produkcyjnych brak podpisów. Zastąpić odpowiednie istniejące PNG w `public/assets/landmarks/`, bez zmian w kodzie silnika. Koordynator powinien sprawdzić skalowanie do 20–30% w realnym kadrze Canvas 2D oraz rozpoznawalność przed zatwierdzeniem PR. Nie wykonywano uruchomienia gry ani testów npm w tym środowisku.
