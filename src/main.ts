@@ -654,14 +654,22 @@ function toast(text: string): void {
 
 function handleEvents(g: Game): void {
   for (const e of g.drainEvents()) {
-    feedback(e);
+    // drainEvents oddaje zdarzenie raz: wyjątek w dźwięku/wibracji/muzyce nie może zjeść końca przejazdu.
+    try { feedback(e); } catch (error) { console.error('[feedback]', e.type, error); }
     if (e.type === 'pickup') {
       toast(fill(pick(PICKUP_TEXTS[e.kind]), { km: e.bonusKm }));
       track('pickup', { kind: e.kind, mode: g.mode });
     }
     else if (e.type === 'border') toast(pick(BORDER_TEXTS[e.country]) ?? fill(UI.welcome, { where: COUNTRY_LOCATIVE[e.country] }));
     else if (e.type === 'waypoint') toast(waypointText(e.waypoint));
-    else if (e.type === 'over' || e.type === 'arrived') showOver(g);
+    else if (e.type === 'over' || e.type === 'arrived') {
+      try { showOver(g); } catch (error) {
+        // Ekran końca musi się pokazać nawet przy błędzie dodatków (opis, duch, link do portalu).
+        console.error('[showOver]', error);
+        ui.hud.hidden = true;
+        ui.over.hidden = false;
+      }
+    }
   }
   const milestone = Math.floor(g.km / 100) * 100;
   if (g.phase === 'playing' && milestone > lastMilestone && milestone > 0) {
@@ -869,8 +877,9 @@ let last = performance.now();
 let acc = 0;
 
 function frame(now: number): void {
-  step(now);
+  // Następna klatka zawsze — jeden wyjątek nie może zatrzymać całej gry.
   requestAnimationFrame(frame);
+  step(now);
 }
 
 /**
