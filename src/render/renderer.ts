@@ -1,4 +1,4 @@
-import { OBSTACLE, PICKUPS, PLAYER, TICK, WORLD } from '../core/config';
+import { KM_PER_PX, OBSTACLE, PICKUPS, PLAYER, TICK, WORLD } from '../core/config';
 import type { Game } from '../core/game';
 import { effectiveGapH, isPowerupKind, type BottomKind, type Obstacle, type Pickup, type TopKind } from '../core/obstacles';
 import { POWERUP_NAME } from '../content/i18n';
@@ -24,6 +24,10 @@ export class Renderer {
   winter = false;
   private readonly snow = createSnow(2026);
   private lastSnowT = 0;
+  /** Premia km pokazywana w tle: dochodzi do prawdziwej płynnie, zamiast skakać panoramą. */
+  private shownBonusKm = 0;
+  private lastBonusT = 0;
+  private lastGame: Game | null = null;
   /** Tablice z zabawnymi nazwami (zlecenia 70–71) i żart do dymka w HUD. */
   private signs: SignsRenderer | null = null;
   signJoke: string | null = null;
@@ -53,6 +57,23 @@ export class Renderer {
     this.offsetY = (this.canvas.height - WORLD.height * this.scale) / 2;
   }
 
+  /**
+   * Pozycja tła w km bez zaokrąglenia: game.km to Math.floor (wynik gracza), a 1 km to 20 px świata,
+   * więc panoramy i tablice skakałyby o 5–20 px. Premia za znajdźkę dochodzi płynnie w ok. 0,5 s.
+   */
+  private smoothProgressKm(game: Game, timeSec: number): number {
+    const dt = Math.min(0.1, Math.max(0, timeSec - this.lastBonusT));
+    this.lastBonusT = timeSec;
+    if (game !== this.lastGame || game.bonusKm < this.shownBonusKm) {
+      this.lastGame = game;
+      this.shownBonusKm = game.bonusKm;
+    } else {
+      this.shownBonusKm += (game.bonusKm - this.shownBonusKm) * Math.min(1, dt * 6);
+      if (game.bonusKm - this.shownBonusKm < 0.01) this.shownBonusKm = game.bonusKm;
+    }
+    return Math.min(game.route.totalKm, game.distancePx * KM_PER_PX + this.shownBonusKm);
+  }
+
   draw(game: Game, timeSec: number): void {
     const { ctx } = this;
     // Pasy poza światem 9:16 (wysokie telefony, desktop) wypełniamy niebem i asfaltem.
@@ -78,10 +99,11 @@ export class Renderer {
     );
 
     const worldX = game.distancePx;
+    const progressKm = this.smoothProgressKm(game, timeSec);
     const bg: BackgroundState = {
       country: game.country,
       distancePx: worldX,
-      progressKm: game.km,
+      progressKm,
       waypoints: game.route.waypoints,
       timeSec,
       includeRoad: false,
@@ -90,7 +112,7 @@ export class Renderer {
     // Tło i droga idą na całą szerokość ekranu (rozłożony składak, tablet, poziom),
     // ale przeszkody i bonusy tylko w kolumnie 360 — szerszy ekran nie daje przewagi w rankingu.
     this.background.drawBackground(this.ctx, bg);
-    this.signJoke = this.signs?.draw(ctx, { progressKm: game.km, timeSec, waypoints: game.route.waypoints }).joke ?? null;
+    this.signJoke = this.signs?.draw(ctx, { progressKm, timeSec, waypoints: game.route.waypoints }).joke ?? null;
     ctx.save();
     ctx.beginPath();
     ctx.rect(0, viewTop, WORLD.width, viewHeight);
