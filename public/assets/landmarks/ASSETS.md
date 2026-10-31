@@ -1300,3 +1300,58 @@ Wszystkie pięć panoram to oryginalne kompozycje graficzne wytworzone natywnym 
 ## Ograniczenia i uwagi do kontroli
 
 Wyniki generatora są **stylizowanymi interpretacjami** budowli. Zachowują rozpoznawalne formy głównych zabytków i geograficzny charakter miast, ale nie są odrysami konkretnych ujęć aparatu ani dokładnym odwzorowaniem każdej elewacji; szczególnie liczby wieżyczek, detale fasad i odległości między zabytkami mogą różnić się od realnych. Zalecane sprawdzenie czytelności i zbieżności motywów w docelowej kamerze gry (skala ok. 1:5). Nie dołączono żadnej fotografii referencyjnej ani fontów do zasobów gry.
+
+
+<!-- Zlecenie 94 (runda 7) z ZIP-a GPT; PNG skwantyzowane do 256 kolorów przez koordynatora. -->
+
+# ASSETS-94 — panoramy A+: Mulhouse, Akwizgran, Düsseldorf, Cottbus, Forst
+
+**Data:** 31.10.2026  
+**Projekt:** Cebulak Express — Kierunek Polska  
+**Wymiary:** każda panorama **1620 × 900 px**, format PNG RGBA z osadzonym profilem sRGB i przezroczystym niebem. Linia gruntu w ostatnich 11 px.  
+**Styl:** ilustracja 2D, ciepła paleta, uproszczona architektura, pogrubione ciemnogranatowe kontury `#1d2f3b`, bez napisów, logotypów, flag, ludzi na pierwszym planie i obcych materiałów graficznych.
+
+## Zestawienie
+
+| ID / plik | Miasto | Rozpoznawalne obiekty | Punkt widzenia / kolejność | Narzędzie i poprawki | Licencja / wykorzystanie |
+|---|---|---|---|---|---|
+| `mulhouse.png` | Mulhouse, FR | Dawny Hôtel de Ville (różowa fasada), Temple Saint-Étienne (neogotycka wieża), pastelowe kamienice Place de la Réunion | Umowny widok przez plac, od południowego zachodu; ratusz po lewej, świątynia w centrum/prawej części, kamienice w pasie tła | ChatGPT GPT Image — pojedynczy wygenerowany obraz; Pillow/OpenCV: skalowanie, czyszczenie alfy, pogrubienie konturu | Obraz wygenerowany na potrzeby właściciela projektu; wykorzystanie zgodne z warunkami OpenAI |
+| `akwizgran.png` | Aachen (Akwizgran), DE | Katedra z ośmioboczną częścią kopułową i wieżą; historyczna brama miejska inspirowana Ponttor; historyczna zabudowa centrum | **Umowna, skompresowana panorama** historycznego centrum: katedra po lewej, sylwetka bramy po prawej; nie udaje jednego fotograficznego kadru z Katschhof | ChatGPT GPT Image — wyodrębnione z wygenerowanej kompozycji; Pillow/OpenCV: kadrowanie, powiększenie, pogrubienie konturu | Jak wyżej |
+| `dusseldorf.png` | Düsseldorf, DE | Rheinturm, historyczne zabudowania nadreńskie z wieżą kościelną, sylwetka Rheinkniebrücke, Rheinuferpromenade | Stylizowana panorama od strony Oberkassel ku wschodniemu brzegowi; Altstadt po lewej, Rheinturm pośrodku, most po prawej | ChatGPT GPT Image — wyodrębnione z wygenerowanej kompozycji; Pillow/OpenCV: kadrowanie, powiększenie, pogrubienie konturu | Jak wyżej; konturowa ilustracja budowli widocznych z przestrzeni publicznej, bez zapożyczonych fotografii |
+| `cottbus.png` | Cottbus, DE | Okrągły ceglany Spremberger Turm z zegarem, sylwetka Oberkirche St. Nikolai, historyczna zabudowa, zieleń przy Szprewie | Stylizowana oś widokowa z południowej strony starego miasta: Spremberger Turm po lewej, wieża świątyni dalej po prawej | ChatGPT GPT Image — wyodrębnione z wygenerowanej kompozycji; Pillow/OpenCV: kadrowanie, powiększenie, pogrubienie konturu | Jak wyżej |
+| `forst.png` | Forst (Lausitz), DE | Wieża kościoła St. Nikolai, Forster Wasserturm (1901–1903), stylizowany most nad Nysą Łużycką, nadrzeczna zieleń | **Umowna panorama** od nadrzecznej strony, z kompozycyjnym przybliżeniem oddalonych punktów: kościół po lewej, most z przodu, wieża ciśnień po prawej | ChatGPT GPT Image — wyodrębnione z wygenerowanej kompozycji; ręczny wektorowy rysunek Wasserturm; Pillow/OpenCV: montaż, kadrowanie, alfa, kontur | Jak wyżej; ręczny dodatek wektorowy wykonany na potrzeby projektu |
+
+**Arkusz podglądu:** `docs/art/podglady/panoramy-94.png` — pięć plików na jasnoniebieskim tle z podpisami (podpisy nie występują w plikach produkcyjnych). Narzędzie: Pillow.
+
+## Prompt i metoda generowania
+
+**Wspólna instrukcja artystyczna (kontekst generatora):**
+
+> Wide 16:9 transparent-background game skyline, five named European cities as separate deliverables. Bold, warm-colored flat 2D vector-cartoon aesthetics; simplified landmark silhouettes, heavy dark-navy #1d2f3b contours, a few large recognisable buildings taking most of the visible height, sunlight from upper left, minimal square windows, low streetscape, a baseline near the bottom, no sky, clouds, text, logos, flags or people. Architecture and the left-to-right order should follow verified local landmarks, not replicate reference photographs.
+
+**Konkrety miast / motywy opisane generatorowi w kontekście zlecenia:**
+
+- **Mulhouse:** dawny różowy ratusz z Place de la Réunion, wysoka neogotycka wieża Temple Saint-Étienne, historyczne kolorowe kamienice. Kominy przemysłowe pominięte: nie tworzą wiarygodnego jednego widoku z placu.
+- **Akwizgran:** ośmioboczna część katedry Karola Wielkiego, gotyckie skrzydła i wieża, umowna brama Ponttor i kamienice centrum.
+- **Düsseldorf:** Rheinturm nad Renem, nabrzeżna zabudowa Altstadt z wieżą kościelną, Rheinkniebrücke i pas promenady.
+- **Cottbus:** Spremberger Turm z zegarem, kościół św. Mikołaja, historyczne kamienice i nadrzeczna zieleń.
+- **Forst:** wieża kościoła St. Nikolai, zabytkowa okrągła wieża ciśnień, most nad Nysą Łużycką, łużyckie drzewa nadrzeczne.
+
+Generator obrazu zastosował kontekst rozmowy i zlecenia (techniczne pole `prompt` w metadanych generacji jest puste). Powstały jeden pełnoekranowy obraz Mulhouse oraz dwie wielomiejskie plansze koncepcyjne. Pozostałe cztery obrazy wycięto i dopasowano z planszy, bez osadzania napisów. Uzupełnienie Forst jest autorskim rysunkiem złożonym z płaskich figur wektorowych. Jest to dokumentacja rzeczywistego procesu, a nie twierdzenie o pięciu osobnych pełnorozdzielczych generacjach.
+
+## Źródła do weryfikacji budowli (nie wykorzystano ich zdjęć jako tekstur)
+
+- **Mulhouse:** [Centre historique — Mulhouse Tourisme](https://www.tourisme-mulhouse.com/experiences/centre-historique/); [Temple Saint-Étienne](https://www.tourisme-mulhouse.com/offres/temple-saint-etienne-mulhouse-fr-3839613/).
+- **Akwizgran:** [Katschhof — Aachen Tourist Service](https://charlie.aachen-tourismus.de/en/poi/katschhof); [Ponttor — Aachen Tourist Service](https://www.aachen-tourismus.de/aachen-entdecken/details/poi/ponttor/).
+- **Düsseldorf:** [Rheinturm — miasto Düsseldorf](https://www.duesseldorf.de/int/tourism/discover/rheinturm); [Old Town i Rheinpromenade — miasto Düsseldorf](https://www.duesseldorf.de/int/tourism/discover/old-town).
+- **Cottbus:** [Cottbus von oben](https://cottbus-tourismus.de/de/sommer/cottbus-entdecken/cottbus-von-oben.html); [Oberkirche St. Nikolai](https://cottbus-tourismus.de/de/winter/cottbus-besonders/winter-in-cottbus/sehenswuerdigkeiten-in-cottbus/artikel-oberkirche-st-nikolai-cottbus.html).
+- **Forst:** [Forster Wasserturm — miasto Forst](https://www.forst-lausitz.de/forster-wasserturm.128510.htm); [Stadtkirche St. Nikolai](https://forst-stadtentwicklung.de/stadtkirche-st-nikolai/); [trasa nad Nysą i mosty — miasto Forst](https://secure.forst-lausitz.de/portal/eine-forster-weltreise-von-den-alpen-ueber-mexiko-und-jerusalem-in-den-urwald.154402.htm).
+
+## Ograniczenia i pytania do koordynatora
+
+1. Wspólny brief wymaga zarówno najważniejszych symboli, jak i jednego realnego punktu obserwacyjnego. **Nie da się bez uczciwych kompromisów** tak pokazać obok siebie katedry Akwizgranu i Ponttor ani mostu, kościoła i wieży ciśnień Forst w jednym bliskim kadrze. Dlatego te dwa obrazy są świadomie kompresją panoramy, wymagającą decyzji właściciela o dopuszczeniu stylizacji.
+2. Ilustracje z plansz zostały powiększone do 1620 × 900 px; kontrola w rozmiarze gry (~324 × 180 px) jest zadowalająca, jednak nie są to źródłowe grafiki wektorowe ani pięć osobnych ilustracji wygenerowanych w tej rozdzielczości.
+3. **Düsseldorf:** Rheinturm jest współczesną budowlą, ale przedstawiono go jedynie jako uproszczoną sylwetkę w widoku z publicznej przestrzeni. Przed komercyjną publikacją należy potwierdzić zastosowanie lokalnej swobody panoramy.
+4. Ilustracja wygenerowana przez AI jest materiałem do wykorzystania zgodnie z warunkami dostawcy; nie ma gwarancji prawnoautorskiej wyłączności ani identycznej grafiki dla innych użytkowników. Fotografie referencyjne nie zostały skopiowane 1:1.
+
+**Integracja:** nadpisać odpowiednie pięć plików w `public/assets/landmarks/`, niczego nie zmieniać w `src/core/` ani rendererze. Koordynator powinien ocenić sylwetki w rzeczywistym kadrze gry oraz ewentualnie zamówić precyzyjną korektę architektoniczną przed akceptacją.
