@@ -28,7 +28,7 @@ Gra: TypeScript + Canvas 2D, Vite, PWA, Capacitor Android/iOS, Firebase (functio
 - Budżet pierwszej klatki (e2e Slow 4G + CPU 4x < 2 s): główny plik ~59 kB gzip, wynik ~1,87–1,93 s. **Uwaga:** każdy nowy import w `src/main.ts` może przekroczyć budżet — ładuj nowe moduły dynamicznie.
 
 ## 4. W toku / do zrobienia (kolejka)
-1. **Polowanie na błędy (agent przerwany limitem wydatków o ~00:40 UTC).** Niedokończona praca zapisana jako łatka: `docs/handover/wip-polowanie-na-bledy.patch` (zmiany w `src/main.ts`, `src/meta/progress.ts`, `index.html`, `src/style.css`, nowe `src/core/return-trip.ts`, `src/ui/mini-league.ts`, `e2e/qa.spec.ts`, `tests/return-flight.test.ts`, przeniesione testy `tests/platform.test.ts`, `tests/progress.test.ts`). **Nieprzetestowana i niedokończona** — zastosuj `git apply`, przejrzyj, dokończ albo uruchom agenta od nowa z tym samym zadaniem.
+1. ~~Polowanie na błędy~~ — zrobione 31.10 rano (10 błędów naprawionych, e2e/qa.spec.ts), PR po scaleniu.
 2. **Mniejsze APK** (debug ~34 MB): kwantyzacja PNG, usunięcie grafik sklepowych z aplikacji, sprawdzenie precache PWA.
 3. **Gotowość wdrożenia:** `docs/START-WDROZENIA.md` krok po kroku dla właściciela (Firebase, Play Console, sekrety GitHub), workflow `deploy-firebase.yml` (workflow_dispatch, pomija bez sekretów), `scripts/check-launch.mjs`, aktualizacja polityki prywatności.
 4. **Runda 7 dla GPT** (gotowa, wysłana właścicielowi w ZIP, `docs/zlecenia/runda7/`): 18 paczek panoram A+ (pozostałe 86 miast + poprawki Oslo/Kraków/Katowice) + tła EE/LV/LT. Gdy wrócą ZIP-y: wgrać do `public/assets/landmarks/` (kwantyzacja), dopisać ASSETS, `npm run art:postcards`, testy, PR.
