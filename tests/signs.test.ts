@@ -4,7 +4,7 @@ import type { Waypoint } from '../src/content/waypoints';
 import type { FunnyPlace } from '../src/content/funny-places';
 import { PARALLAX, waypointScreenX } from '../src/render/background';
 import {
-  SIGN_HEIGHT, SIGN_JOKE_SECONDS, ausfahrtSigns, SIGN_TOP_Y, SignsRenderer, drawRoadSign,
+  SIGN_HEIGHT, SIGN_JOKE_SECONDS, ausfahrtSigns, signJokeTop, SIGN_TOP_Y, SignsRenderer, drawRoadSign,
   overlapsWaypointPanorama, selectNearestSign, signColors, signPanelWidth,
   signScreenX, signsForWaypoints,
 } from '../src/render/signs';
@@ -159,3 +159,17 @@ describe('tablice: wyglad i czas dymka', () => {
     expect(draw(route, 45, 3).joke).toBeNull();
   });
 });
+
+describe('dymek żartu na asfalcie', () => {
+  it('stoi tuż pod linią drogi, także na wysokich ekranach i z przesunięciem kanwy', () => {
+    // 360×640: skala 1, linia drogi na 580 px.
+    expect(signJokeTop({ left: 0, top: 0, width: 360, height: 640 }, 0)).toBe(592);
+    // Pixel 7 (412×915): świat wyśrodkowany w pionie, droga niżej niż połowa wolnego miejsca.
+    const scale = 412 / 360;
+    const offset = (915 - 640 * scale) / 2;
+    expect(signJokeTop({ left: 0, top: 0, width: 412, height: 915 }, 0)).toBe(Math.round(offset + 580 * scale + 12));
+    // Kanwa niżej niż #hud o 10 px.
+    expect(signJokeTop({ left: 0, top: 10, width: 360, height: 640 }, 0)).toBe(602);
+  });
+});
+

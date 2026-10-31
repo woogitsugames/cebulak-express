@@ -334,26 +334,37 @@ export class SignsRenderer {
   }
 }
 
+/**
+ * Górna krawędź dymka (px względem #hud): tuż pod linią drogi, na pasie asfaltu, gdzie auto
+ * nie lata — dymek nie zasłania przeszkód (zgłoszenie właściciela 31.10).
+ * canvas i hud to prostokąty w CSS px; świat 9:16 jest wpisany w kanwę jak w Renderer.resize.
+ */
+export function signJokeTop(canvas: { left: number; top: number; width: number; height: number }, hudTop: number): number {
+  const scale = Math.min(canvas.width / WORLD.width, canvas.height / WORLD.height);
+  const offsetY = (canvas.height - WORLD.height * scale) / 2;
+  return Math.round(canvas.top - hudTop + offsetY + WORLD.groundY * scale + 12);
+}
+
 /** Dymek w #hud: stale >=13 CSS px, bez przechwytywania tapow i HTML z danych. */
 export interface SignJokeBubble {
   show(text: string | null): void;
   destroy(): void;
 }
 
-export function mountSignJoke(hud: HTMLElement): SignJokeBubble {
+export function mountSignJoke(hud: HTMLElement, canvas?: HTMLElement | null): SignJokeBubble {
   const bubble = document.createElement('div');
   bubble.className = 'ce-sign-joke';
   bubble.setAttribute('role', 'status');
   bubble.setAttribute('aria-live', 'polite');
   Object.assign(bubble.style, {
     position: 'absolute',
-    top: 'clamp(78px, 14vh, 125px)',
+    top: 'clamp(78px, 14vh, 125px)', // zapas, gdy nie znamy kanwy
     left: '50%',
     transform: 'translateX(-50%)',
     width: 'max-content',
     maxWidth: 'min(88vw, 340px)',
     boxSizing: 'border-box',
-    padding: '9px 13px',
+    padding: '7px 12px',
     background: '#fff2d5',
     color: NAVY,
     border: `3px solid ${NAVY}`,
@@ -361,7 +372,7 @@ export function mountSignJoke(hud: HTMLElement): SignJokeBubble {
     boxShadow: '3px 5px 0 #16323d55',
     textAlign: 'center',
     fontFamily: 'system-ui, -apple-system, "Segoe UI", sans-serif',
-    fontSize: 'clamp(13px, 3.8vw, 17px)',
+    fontSize: 'clamp(13px, 3.6vw, 16px)',
     fontWeight: '800',
     lineHeight: '1.25',
     overflowWrap: 'anywhere',
@@ -373,13 +384,13 @@ export function mountSignJoke(hud: HTMLElement): SignJokeBubble {
   tail.setAttribute('aria-hidden', 'true');
   Object.assign(tail.style, {
     position: 'absolute',
-    bottom: '-10px',
+    top: '-10px',
     left: '50%',
     width: '14px',
     height: '14px',
     background: '#fff2d5',
-    borderRight: `3px solid ${NAVY}`,
-    borderBottom: `3px solid ${NAVY}`,
+    borderLeft: `3px solid ${NAVY}`,
+    borderTop: `3px solid ${NAVY}`,
     transform: 'translateX(-50%) rotate(45deg)',
   });
   bubble.append(label, tail);
@@ -391,7 +402,19 @@ export function mountSignJoke(hud: HTMLElement): SignJokeBubble {
         bubble.hidden = true;
         return;
       }
-      if (label.textContent !== text) label.textContent = text;
+      if (label.textContent !== text) {
+        label.textContent = text;
+        // Pozycję liczymy tylko przy nowym tekście (raz na tablicę), nie w każdej klatce.
+        if (canvas) {
+          const c = canvas.getBoundingClientRect();
+          if (c.width > 0 && c.height > 0) {
+            bubble.hidden = false;
+            // Niski ekran (pas asfaltu węższy niż dymek): dosuwamy w górę, by nie wyjść poza ekran.
+            const top = Math.min(signJokeTop(c, hud.getBoundingClientRect().top), hud.clientHeight - bubble.offsetHeight - 6);
+            bubble.style.top = Math.max(0, top) + 'px';
+          }
+        }
+      }
       bubble.hidden = false;
     },
     destroy() { bubble.remove(); },
