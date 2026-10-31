@@ -519,6 +519,19 @@ export class BackgroundRenderer {
     point: Waypoint, alpha: number,
   ): void {
     if (alpha <= 0) return;
+    // Meta: panorama miasta docelowego na dalekim planie, a domek z mamą w oknie
+    // przy drodze (bliski plan). Bez panoramy miasta — sam domek na dalekim planie, jak dawniej.
+    if (point.id.startsWith('dom-')) {
+      const city = this.assets.getHomeCity(point);
+      if (city) {
+        if (layer === 'far') this.drawImageAt(ctx, state, city, point, alpha, false);
+        else {
+          const house = this.assets.getLandmark(point, state.season ?? 'summer');
+          if (house) this.drawImageAt(ctx, state, house, point, alpha, true);
+        }
+        return;
+      }
+    }
     const onNear = point.kind === 'border' || point.kind === 'rest';
     if (onNear !== (layer === 'near')) return;
     const width = onNear ? LANDMARK_NEAR_WIDTH : LANDMARK_FAR_WIDTH;
@@ -540,6 +553,21 @@ export class BackgroundRenderer {
     else if (point.kind === 'border') drawFallbackBorder(ctx, x);
     else if (point.kind === 'crossing') drawFallbackFerry(ctx, x);
     else drawFallbackSkyline(ctx, point.id, x);
+    ctx.restore();
+  }
+
+  /** Jeden obraz punktu trasy na wskazanym planie (meta: miasto daleko, domek blisko). */
+  private drawImageAt(
+    ctx: CanvasRenderingContext2D, state: BackgroundState, image: DrawableAsset,
+    point: Waypoint, alpha: number, onNear: boolean,
+  ): void {
+    const width = onNear ? LANDMARK_NEAR_WIDTH : LANDMARK_FAR_WIDTH;
+    const height = onNear ? LANDMARK_NEAR_HEIGHT : LANDMARK_FAR_HEIGHT;
+    const x = waypointScreenX(point.km, state.progressKm, onNear ? PARALLAX.near : PARALLAX.far);
+    if (x < this.viewLeft - width / 2 || x > this.viewRight + width / 2) return;
+    ctx.save();
+    ctx.globalAlpha *= alpha;
+    ctx.drawImage(image, x - width / 2, (onNear ? WORLD.groundY : FAR_BASE_Y) - height, width, height);
     ctx.restore();
   }
 }

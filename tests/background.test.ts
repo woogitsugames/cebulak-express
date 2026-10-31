@@ -41,14 +41,16 @@ function mockAssets() {
     road: { naturalWidth: 1080, naturalHeight: 330 },
   };
   const landmarks = new Map<string, { naturalWidth: number; naturalHeight: number }>();
+  const homeCities = new Map<string, { naturalWidth: number; naturalHeight: number }>();
   for (const point of nearby) landmarks.set(point.id, { naturalWidth: 1620, naturalHeight: 900 });
   const assets = {
     prime: vi.fn(),
     getCountryLayer: vi.fn((_country: string, layer: BackgroundLayer) => layers[layer]),
     getLandmark: vi.fn((point: Waypoint) => landmarks.get(point.id)),
     getBorderNear: vi.fn(() => undefined),
+    getHomeCity: vi.fn((point: Waypoint) => homeCities.get(point.id)),
   };
-  return { layers, assets, loader: assets as unknown as AssetLoader, landmarks };
+  return { layers, assets, loader: assets as unknown as AssetLoader, landmarks, homeCities };
 }
 
 describe('tło: matematyka i polityka panoram', () => {
@@ -303,3 +305,37 @@ describe('panorama miasta (D14): rozmiar i wygaszanie warstwy far', () => {
     expect(count('always')).toBeGreaterThan(0);
   });
 });
+
+describe('meta: panorama miasta docelowego', () => {
+  const home: Waypoint = { id: 'dom-warszawa', name: 'Warszawa', km: 500, country: 'PL', kind: 'city', motifs: [], text: '' };
+  const draw = (withCity: boolean) => {
+    const { loader, landmarks, homeCities } = mockAssets();
+    const house = { naturalWidth: 1620, naturalHeight: 900 };
+    const city = { naturalWidth: 1620, naturalHeight: 900 };
+    landmarks.set('dom-warszawa', house);
+    if (withCity) homeCities.set('dom-warszawa', city);
+    const c = fakeCanvas();
+    const renderer = new BackgroundRenderer(loader);
+    const state: BackgroundState = { country: 'PL', distancePx: 0, progressKm: 500, waypoints: [home], timeSec: 5, includeRoad: false };
+    renderer.drawBackground(c as unknown as CanvasRenderingContext2D, state);
+    renderer.drawBackground(c as unknown as CanvasRenderingContext2D, { ...state, timeSec: 6 });
+    const calls = (img: object) => c.drawImage.mock.calls.filter((args) => args[0] === img);
+    return { houseCalls: calls(house), cityCalls: calls(city) };
+  };
+
+  it('z panoramą miasta: miasto na dalekim planie, domek mniejszy przy drodze', () => {
+    const { houseCalls, cityCalls } = draw(true);
+    expect(cityCalls.length).toBeGreaterThan(0);
+    expect(cityCalls.at(-1)?.[3]).toBe(LANDMARK_FAR_WIDTH);
+    expect(houseCalls.length).toBeGreaterThan(0);
+    expect(houseCalls.at(-1)?.[3]).toBeLessThan(LANDMARK_FAR_WIDTH);
+    expect((houseCalls.at(-1)?.[2] as number) + (houseCalls.at(-1)?.[4] as number)).toBe(WORLD.groundY);
+  });
+
+  it('bez panoramy miasta: sam domek na dalekim planie, jak dawniej', () => {
+    const { houseCalls, cityCalls } = draw(false);
+    expect(cityCalls).toHaveLength(0);
+    expect(houseCalls.at(-1)?.[3]).toBe(LANDMARK_FAR_WIDTH);
+  });
+});
+
