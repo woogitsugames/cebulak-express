@@ -137,11 +137,32 @@ const SPECIAL_MONTH_DAYS: Readonly<Record<string, string>> = {
   '12-31': 'Ostatni kurs w roku!',
 };
 
-/** Powtarzalny tytuł konkretnego dnia, niezależny od zegara i strefy gracza. */
-export function dailyTitle(key: string): string {
+/** Polskie tytuły w jednym obiekcie — obce słowniki mają tę samą strukturę (DAILY_TITLES). */
+export const DAILY_TITLE_TEXTS = {
+  regular: DAILY_TITLES,
+  friday: FRIDAY_TITLES,
+  dates: SPECIAL_DATES as Readonly<Record<'2027-03-27' | '2027-03-28' | '2027-03-29' | '2027-04-30', string>>,
+  monthDays: SPECIAL_MONTH_DAYS as Readonly<Record<'05-01' | '05-02' | '05-03' | '12-24' | '12-31', string>>,
+} as const;
+
+export interface DailyTitleTexts {
+  readonly regular: readonly string[];
+  readonly friday: readonly string[];
+  readonly dates: Readonly<Record<string, string>>;
+  readonly monthDays: Readonly<Record<string, string>>;
+}
+
+/**
+ * Powtarzalny tytuł konkretnego dnia, niezależny od zegara i strefy gracza.
+ * Wybór (indeks w puli) nie zależy od języka; `texts` podaje tylko brzmienie.
+ */
+export function dailyTitle(key: string, texts: DailyTitleTexts = DAILY_TITLE_TEXTS): string {
   const day = dayNumber(key);
-  const special = SPECIAL_DATES[key] ?? SPECIAL_MONTH_DAYS[key.slice(5)];
+  const special = SPECIAL_DATES[key] !== undefined ? texts.dates[key]
+    : SPECIAL_MONTH_DAYS[key.slice(5)] !== undefined ? texts.monthDays[key.slice(5)] : undefined;
   if (special) return special;
   const friday = new Date(day * MS_PER_DAY).getUTCDay() === 5;
-  return new Rng(dailySeed(key)).pick(friday ? FRIDAY_TITLES : DAILY_TITLES);
+  const pool = friday ? FRIDAY_TITLES : DAILY_TITLES;
+  const index = Math.floor(new Rng(dailySeed(key)).next() * pool.length);
+  return (friday ? texts.friday : texts.regular)[index] ?? pool[index];
 }

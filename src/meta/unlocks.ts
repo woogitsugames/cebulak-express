@@ -1,3 +1,4 @@
+import { fill, localized } from '../content/i18n';
 import type { HeroSkinId } from '../render/sprites';
 
 /** Samochody zdobywane za sumę kilometrów ze wszystkich trybów gry. */
@@ -70,9 +71,20 @@ export function applyRunKm(state: UnlockState, km: number): {
   };
 }
 
+/** Polskie szablony; EN/NL/DE/FR w słownikach (UNLOCK, CARS). */
+export const UNLOCK_TEXT = {
+  announcement: 'Nowe auto w garażu: {name}!',
+  hint: 'Odblokujesz po {required} km łącznie (brakuje {missing} km)',
+} as const;
+
+/** Nazwa auta w bieżącym języku (polska z UNLOCKABLE_CARS, gdy brak tłumaczenia). */
+export function carName(id: UnlockableSkinId): string {
+  return localized('CARS')?.[id] ?? UNLOCKABLE_CARS.find((item) => item.id === id)?.name ?? '';
+}
+
 export function unlockAnnouncement(id: UnlockableSkinId): string {
   const car = UNLOCKABLE_CARS.find((item) => item.id === id);
-  return car ? `Nowe auto w garażu: ${car.name}!` : '';
+  return car ? fill((localized('UNLOCK') ?? UNLOCK_TEXT).announcement, { name: carName(car.id) }) : '';
 }
 
 /** Format używany w podpowiedziach zablokowanych aut w garażu. */
@@ -80,7 +92,9 @@ export function unlockHint(id: UnlockableSkinId, totalKm: number): string {
   const car = UNLOCKABLE_CARS.find((item) => item.id === id);
   if (!car) return '';
   const format = (value: number): string => String(value).replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
-  return `Odblokujesz po ${format(car.requiredKm)} km łącznie (brakuje ${format(Math.max(0, car.requiredKm - safeKm(totalKm)))} km)`;
+  return fill((localized('UNLOCK') ?? UNLOCK_TEXT).hint, {
+    required: format(car.requiredKm), missing: format(Math.max(0, car.requiredKm - safeKm(totalKm))),
+  });
 }
 
 /** Uszkodzony lub starszy zapis nie wyłącza gry. */

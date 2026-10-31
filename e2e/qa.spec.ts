@@ -115,13 +115,14 @@ test('zmiana trasy przed zdekodowaniem wyzwania ?g= nie przywraca ducha', async 
   while (sender.phase === 'playing') sender.tick();
   const { code } = encodeGhost(sender);
   await delayChunk(page, 'ghost-session', 2500);
+  const decoded = page.waitForResponse(/ghost-session-[\w-]+\.js$/);
   await page.goto(`/?test=1&lang=pl&g=${code}`);
   await expect(page.locator('#sel-home option')).toHaveCount(15);
   await page.locator('#route-toggle').click();
   await page.locator('#sel-home').selectOption('DE');
   await expect(page.locator('#ghost-info')).toBeHidden();
   // Dekodowanie kończy się po zmianie trasy.
-  await page.waitForResponse(/ghost-session-[\w-]+\.js$/);
+  await decoded;
   await page.waitForTimeout(300);
   await expect(page.locator('#ghost-info')).toBeHidden();
   await crash(page, testInfo.project.name);
@@ -136,14 +137,16 @@ test('zapisany niepoprawny nick jest zastępowany (wynik offline trafia do kolej
     localStorage.setItem('ce.settings', JSON.stringify({ home: 'BE', from: 'antwerpia', to: 'rzeszow', mode: 'ranked', nickId: 'zly-nick' }));
   });
   await openMenu(page);
-  const nick = await page.evaluate(() => JSON.parse(localStorage.getItem('ce.settings') ?? '{}').nickId as string);
-  expect(nick).not.toBe('zly-nick');
   await startRun(page);
   // Brak sieci tylko dla kolejki rankingu (chunki zostają dostępne).
   await page.evaluate(() => Object.defineProperty(Navigator.prototype, 'onLine', { configurable: true, get: () => false }));
   await tapCanvas(page, testInfo.project.name);
   await expect(page.locator('#over')).toBeVisible({ timeout: 15_000 });
   await expect.poll(() => page.evaluate(() => JSON.parse(localStorage.getItem('ce.ranking.pending.v1') ?? '[]').length)).toBe(1);
+  const queued = await page.evaluate(() => JSON.parse(localStorage.getItem('ce.ranking.pending.v1') ?? '[]')[0].nickId as string);
+  const saved = await page.evaluate(() => JSON.parse(localStorage.getItem('ce.settings') ?? '{}').nickId as string);
+  expect(queued).not.toBe('zly-nick');
+  expect(saved).toBe(queued);
 });
 
 baseTest('koniec przejazdu bez sieci: postęp się liczy, brak nieobsłużonych wyjątków z leniwych chunków', async ({ page, context }, testInfo) => {
@@ -200,11 +203,12 @@ test.describe('pierwsze uruchomienie', () => {
 
   test('onboarding nie wyskakuje nad przejazdem, gdy gracz wystartował przed jego wczytaniem', async ({ page }) => {
     await delayChunk(page, 'onboarding', 2500);
+    const loaded = page.waitForResponse(/onboarding-[\w-]+\.js$/);
     await page.goto(FRESH);
     await expect(page.locator('#sel-home option')).toHaveCount(15);
     await page.locator('#btn-start').click();
     await expect(page.locator('#hud')).toBeVisible();
-    await page.waitForResponse(/onboarding-[\w-]+\.js$/);
+    await loaded;
     await page.waitForTimeout(500);
     await expect(page.locator('.ce-onboarding')).toHaveCount(0);
   });

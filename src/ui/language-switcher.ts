@@ -1,5 +1,5 @@
 import {
-  LANGUAGE_NAMES, LANGUAGES, getLanguage, initializeLanguage, onLanguageChange,
+  GHOST_TEXTS, LANGUAGE_NAMES, LANGUAGES, getLanguage, initializeLanguage, onLanguageChange,
   setLanguage, t, type Language,
 } from '../content/i18n';
 import { localizedCityName } from '../content/lang/cities';
@@ -48,6 +48,21 @@ export function localizeStaticScreens(root: ParentNode = document): void {
   text('#btn-again', t('again'));
   text('#btn-share', t('share'));
   text('#btn-menu', t('menu.backToMenu'));
+  text('#route-toggle strong', t('menu.backToMenu'));
+  text('#btn-album', t('menu.albumButton'));
+  text('#btn-return-flight', t('returnFlight'));
+  text('#btn-challenge', GHOST_TEXTS.challengeButton);
+  text('#over .over-eyebrow', t('menu.distanceLabel'));
+  const aria = (selector: string, value: string): void => root.querySelector(selector)?.setAttribute('aria-label', value);
+  aria('#menu', t('menu.mainMenu'));
+  aria('#league', t('league'));
+  aria('#garage', t('garage'));
+  aria('#album', t('menu.albumButton'));
+  aria('#over-mini-league', t('menu.miniLeague'));
+  // Nagłówek mini-ligi ma ikonę i znacznik TOP 3 — podmieniamy tylko węzeł tekstowy.
+  const miniTitle = [...(root.querySelector('#over-mini-league h3')?.childNodes ?? [])]
+    .find((node) => node.nodeType === 3 && node.textContent?.trim());
+  if (miniTitle) miniTitle.textContent = ' ' + t('league') + ' ';
   if (root.querySelector<HTMLElement>('#over')?.hidden) {
     text('#over-title', t('over'));
   }

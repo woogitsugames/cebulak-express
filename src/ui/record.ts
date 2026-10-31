@@ -1,4 +1,4 @@
-import { UI, fill } from '../content/pl';
+import { UI, fill } from '../content/i18n';
 import { saveRecordedVideo } from '../record/recorder';
 import { RecordingState, isEditorialMode } from './record-state';
 import {

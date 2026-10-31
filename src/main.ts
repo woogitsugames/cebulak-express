@@ -8,13 +8,13 @@ import { seasonAt } from './core/season';
 import type { Progress } from './meta/progress';
 import type { CountryCueCode } from './audio/country-cues';
 import {
-  ARRIVAL_TEXTS, BORDER_TEXTS, COUNTRY_LOCATIVE, COUNTRY_NAME, FAIL_JOKES, MILESTONE_TEXTS,
-  OBSTACLE_NAME, PICKUP_TEXTS, UI, WIGILIA_TEXTS, fill, onLanguageChange,
+  ARRIVAL_TEXTS, BORDER_TEXTS, COUNTRY_LOCATIVE, COUNTRY_NAME, FAIL_JOKES, GHOST_TEXTS, MILESTONE_TEXTS,
+  OBSTACLE_NAME, PICKUP_TEXTS, RETURN_ARRIVAL_TEXTS, RETURN_DEPARTURE_TEXTS, UI, WIGILIA_TEXTS, fill,
+  getLanguage, initializeLanguage, loadLanguage, localized, onLanguageChange,
 } from './content/i18n';
 import { localizedCityName } from './content/lang/cities';
-import { RETURN_ARRIVAL_TEXTS, RETURN_CITY_LOCATIVE, RETURN_DEPARTURE_TEXTS } from './content/pl';
-import { GHOST_TEXTS } from './content/lang/pl';
-import { isValidNickId, randomNickChoices } from './content/nicks';
+import { RETURN_CITY_LOCATIVE } from './content/lang/pl';
+import { waypointText } from './content/waypoint-text';
 import { portalLink } from './content/portals';
 import { Renderer } from './render/renderer';
 import type { SignJokeBubble } from './render/signs';
@@ -27,7 +27,7 @@ import type { CardData } from './share/card';
 import type { GhostChallenge, GhostRunner } from './share/ghost-session';
 import { parseGameParams } from './net/params';
 import type { RankingApi } from './net/api';
-import { configureAnalytics, track, type AnalyticsHome } from './analytics/track';
+import type { AnalyticsHome, track as TrackFn } from './analytics/track';
 import { registerPwa } from './pwa/register';
 import { prefetchPwaAssetsAfterRun } from './pwa/offline';
 import { platform } from './platform';
@@ -110,6 +110,8 @@ const ui = {
   btnSettings: $<HTMLButtonElement>('btn-settings'),
 };
 ui.btnChallenge.textContent = GHOST_TEXTS.challengeButton;
+/** Tytuł wyzwania dnia w bieżącym języku (logika sezonu porównuje polski dailyTitle). */
+const dailyTitleText = (key: string): string => dailyTitle(key, localized('DAILY_TITLES'));
 
 const params = new URLSearchParams(location.search);
 /**
@@ -123,11 +125,19 @@ let settings = load<Settings>('ce.settings', DEFAULTS);
 // Link z karty wyniku lub osadzenia w portalu ustawia kraj i miasto startu.
 const prefill = parseGameParams(params);
 if (prefill) settings = { ...settings, home: prefill.home, from: prefill.from };
-// Nick spoza zamkniętej listy (stary zapis, ręczna edycja) serwer odrzuca, a kolejka offline rzuca wyjątkiem.
-if (!settings.nickId || !isValidNickId(settings.nickId)) {
-  settings.nickId = randomNickChoices(Math.random, 1, settings.home)[0];
-  save('ce.settings', settings);
+// Nick z listy losujemy w tle (moduł nicków nie jest potrzebny do pierwszej klatki).
+// Nick spoza zamkniętej listy (stary zapis, ręczna edycja) serwer odrzuca, a kolejka offline rzuca wyjątkiem —
+// dlatego przed zgłoszeniem wyniku zawsze czekamy na sprawdzony nick (ensureNick), a nie na settings.nickId.
+function ensureNick(): Promise<string> {
+  return import('./content/nicks').then(({ isValidNickId, randomNickChoices }) => {
+    if (!settings.nickId || !isValidNickId(settings.nickId)) {
+      settings = { ...settings, nickId: randomNickChoices(Math.random, 1, settings.home)[0] };
+      save('ce.settings', settings);
+    }
+    return settings.nickId as string;
+  });
 }
+if (!settings.nickId) void ensureNick().catch(quiet);
 
 let route: Route = safeRoute(settings);
 let game: Game | null = null;
@@ -252,7 +262,19 @@ const net = Promise.all([import('./net/api'), import('./net/queue')]).then(([api
 });
 
 // --- Analityka (wyłączona, gdy brak adresu) ---
-configureAnalytics({ endpoint: String(import.meta.env.VITE_ANALYTICS_ENDPOINT ?? '') });
+// Analityka ładuje się po pierwszej klatce (budżet startu); zdarzenia sprzed tego czekają w kolejce.
+type TrackArgs = Parameters<typeof TrackFn>;
+const pendingTrack: TrackArgs[] = [];
+let realTrack: typeof TrackFn | null = null;
+const track = ((...args: TrackArgs) => {
+  if (realTrack) realTrack(...args);
+  else pendingTrack.push(args);
+}) as typeof TrackFn;
+requestAnimationFrame(() => void import('./analytics/track').then((m) => {
+  m.configureAnalytics({ endpoint: String(import.meta.env.VITE_ANALYTICS_ENDPOINT ?? '') });
+  realTrack = m.track;
+  for (const args of pendingTrack.splice(0)) m.track(...args);
+}).catch(() => undefined));
 track('app_open');
 
 // --- Menu ---
@@ -299,7 +321,8 @@ function fillMenu(): void {
   ui.routeSummary.textContent = routeText;
   ui.routeFlag.src = import.meta.env.BASE_URL + 'assets/ui/flag-' + settings.home.toLowerCase() + '.png';
   ui.routeFlag.alt = COUNTRY_NAME[settings.home];
-  ui.dailyInfo.textContent = fill(UI.dailyHint, { title: dailyTitle(dailyKey(new Date())) });
+  ui.dailyInfo.textContent = fill(UI.dailyHint, { title: dailyTitleText(dailyKey(new Date())) });
+  ui.btnChallenge.textContent = GHOST_TEXTS.challengeButton;
   ui.btnSettings.setAttribute('aria-label', UI.settingsOpen);
   ui.btnSettings.title = UI.settingsTitle;
 }
@@ -527,7 +550,7 @@ async function newRun(reverse = false): Promise<void> {
   ui.album.hidden = true;
   ui.hud.hidden = false;
   ui.hint.hidden = false;
-  ui.hint.textContent = returnTrip ? pick(RETURN_DEPARTURE_TEXTS) : daily ? dailyTitle(daily) : UI.tapToStart;
+  ui.hint.textContent = returnTrip ? pick(RETURN_DEPARTURE_TEXTS) : daily ? dailyTitleText(daily) : UI.tapToStart;
   hideSettings();
   tutorial?.resetRun();
   syncTutorialHint();
@@ -619,7 +642,7 @@ function updateHud(): void {
   ui.remaining.textContent = fill(UI.remaining, { km: game.remainingKm });
   ui.lives.hidden = game.mode !== 'cozy';
   ui.lives.textContent = '🫙'.repeat(Math.max(0, game.lives));
-  ui.lives.setAttribute('aria-label', 'Pozostało żyć: ' + Math.max(0, game.lives));
+  ui.lives.setAttribute('aria-label', fill(UI.lives, { n: Math.max(0, game.lives) }));
 }
 
 function toast(text: string): void {
@@ -637,7 +660,7 @@ function handleEvents(g: Game): void {
       track('pickup', { kind: e.kind, mode: g.mode });
     }
     else if (e.type === 'border') toast(pick(BORDER_TEXTS[e.country]) ?? fill(UI.welcome, { where: COUNTRY_LOCATIVE[e.country] }));
-    else if (e.type === 'waypoint') toast(e.waypoint.text);
+    else if (e.type === 'waypoint') toast(waypointText(e.waypoint));
     else if (e.type === 'over' || e.type === 'arrived') showOver(g);
   }
   const milestone = Math.floor(g.km / 100) * 100;
@@ -671,7 +694,7 @@ function cardData(g: Game, joke: string): CardData {
     to: g.route.to,
     home: g.route.home,
     causeText: joke,
-    ...(daily ? { daily: dailyTitle(daily) } : {}),
+    ...(daily ? { daily: dailyTitleText(daily) } : {}),
   };
 }
 
@@ -691,7 +714,7 @@ function showOver(g: Game): void {
   ui.over.classList.toggle('is-arrived', arrived);
   ui.overTitle.textContent = arrived ? UI.arrived : UI.over;
   ui.overKm.textContent = fill(UI.distance, { km: g.km });
-  ui.overRoute.textContent = g.route.from.name + ' → ' + g.route.to.name;
+  ui.overRoute.textContent = localizedCityName(g.route.from) + ' → ' + localizedCityName(g.route.to);
   const cause = g.cause ?? 'ground';
   const causeIcon = arrived ? 'assets/ui/icon-jar.png'
     : cause === 'ground' ? 'assets/ui/icon-map.png' : 'assets/obstacles/' + cause + '-end.png';
@@ -700,7 +723,10 @@ function showOver(g: Game): void {
   let joke: string;
   if (arrived) {
     joke = g.baseWeight > 0
-      ? fill(pick(RETURN_ARRIVAL_TEXTS), { city: RETURN_CITY_LOCATIVE[g.route.to.id] ?? g.route.to.name })
+      ? fill(pick(RETURN_ARRIVAL_TEXTS), {
+        // Polski: miejscownik; inne języki mają zdania bez odmiany, więc wystarczy nazwa miasta.
+        city: getLanguage() === 'pl' ? RETURN_CITY_LOCATIVE[g.route.to.id] ?? g.route.to.name : localizedCityName(g.route.to),
+      })
       : pick(ARRIVAL_TEXTS);
     ui.overCause.textContent = joke;
     ui.overJoke.textContent = seconds + ' s';
@@ -773,11 +799,12 @@ function showOver(g: Game): void {
   track('run_end', {
     km: g.km, seconds, cause: arrived ? 'arrived' : g.cause ?? 'ground', mode: g.mode, home: g.route.home as AnalyticsHome,
   });
-  if (runId && settings.nickId) {
-    const run = {
-      runId, flapTicks: [...g.flapTicks], ticks: g.ticks, km: g.km, nickId: settings.nickId, rulesVersion: RULES_VERSION,
-    };
-    void net.then(({ api, queue, submitOrQueue }) => submitOrQueue(api, queue, run));
+  // Nick ładuje się leniwie: wynik zgłaszamy po jego sprawdzeniu, zamiast pomijać, gdy jeszcze go nie ma.
+  if (runId) {
+    const run = { runId, flapTicks: [...g.flapTicks], ticks: g.ticks, km: g.km, rulesVersion: RULES_VERSION };
+    void Promise.all([net, ensureNick()])
+      .then(([{ api, queue, submitOrQueue }, nickId]) => submitOrQueue(api, queue, { ...run, nickId }))
+      .catch(quiet);
     runId = null;
   }
 }
@@ -893,7 +920,7 @@ window.setTimeout(() => void import('./ui/record').then(({ createRecordControl }
   recordControl = createRecordControl({
     canvas,
     getAudio: () => (audioCtx && audioMix ? { context: audioCtx, source: audioMix } : undefined),
-    overlay: () => ({ km: game?.km ?? 0, route: `${(game?.route ?? route).from.name} → ${(game?.route ?? route).to.name}` }),
+    overlay: () => ({ km: game?.km ?? 0, route: `${localizedCityName((game?.route ?? route).from)} → ${localizedCityName((game?.route ?? route).to)}` }),
     portalUrl: () => portalLink(settings.home, 'video'),
     shareVideo: (file, text, url) => platform.share(file, text, url),
   });
@@ -949,6 +976,9 @@ if (tutorialAllowed) {
 // Pierwsze uruchomienie: wybór kraju i miasta. Kto już grał (ma zapisane ustawienia), nie widzi go wcześniej.
 void import('./ui/onboarding').then(async ({ ONBOARDING_STORAGE_KEY, mountOnboarding, shouldShowOnboarding }) => {
   if (!(await shouldShowOnboarding(params))) return;
+  // Onboarding w języku z ?lang= lub zapisu, a nie po polsku z chwilowym dociąganiem słownika.
+  await initializeLanguage();
+  await loadLanguage(getLanguage());
   if (returningPlayer) {
     void platform.storage.set(ONBOARDING_STORAGE_KEY, '1');
     return;
