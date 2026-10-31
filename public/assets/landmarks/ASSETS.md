@@ -2856,3 +2856,737 @@ Umieścić pliki bezpośrednio pod ścieżkami `public/assets/landmarks/<id>.png
 Tekst promptu podany dla każdego pliku stanowi wierny opis użytej instrukcji wizualnej i elementów sceny, a nie nieudostępniony, wewnętrzny prompt systemu generowania obrazów.
 
 > **Koordynator (31.10):** przyjęto — styl A+ z grubym konturem; PNG skwantyzowany do 256 kolorów (Pillow FASTOCTREE + oxipng).
+
+# Zlecenie 122 — zimowe panoramy miast
+
+**Data opracowania:** 2026-10-31
+**Format:** PNG, 1620 × 900, RGBA (przezroczystość zachowana).
+**Dane źródłowe:** pięć letnich grafik dostarczonych w paczce `zlecenie-122-paczka.zip`.
+**Narzędzie:** ChatGPT — edycja obrazów z użyciem Python 3, Pillow i OpenCV; ręczne dopasowanie konturów dachów, koloryzacja roślin, retusz okien, wody i dekoracji.
+**Licencja / prawa:** każda zimowa grafika jest pracą pochodną na bazie letniej grafiki projektu. Grafika przygotowana dla projektu; prawa wynikające z praw właściciela do oryginałów, bez materiałów zewnętrznych.
+
+## Zasoby
+
+| Plik wynikowy | ID | Co przedstawia | Narzędzie | Data | Licencja |
+|---|---|---|---|---|---|
+| `warszawa-zima.png` | `warszawa` | Warszawa: Stare Miasto, Zamek Królewski i panorama centrum | ChatGPT / Python / Pillow / OpenCV; źródło: `warszawa.png` | 2026-10-31 | Właściciel projektu — opracowanie zimowe z jego grafiki letniej |
+| `krakow-zima.png` | `krakow` | Kraków: Wawel, Sukiennice i zabytkowe wieże | ChatGPT / Python / Pillow / OpenCV; źródło: `krakow.png` | 2026-10-31 | Właściciel projektu — opracowanie zimowe z jego grafiki letniej |
+| `wroclaw-zima.png` | `wroclaw` | Wrocław: Ostrów Tumski, domy nad Odrą i most | ChatGPT / Python / Pillow / OpenCV; źródło: `wroclaw.png` | 2026-10-31 | Właściciel projektu — opracowanie zimowe z jego grafiki letniej |
+| `poznan-zima.png` | `poznan` | Poznań: Stary Rynek i renesansowy ratusz | ChatGPT / Python / Pillow / OpenCV; źródło: `poznan.png` | 2026-10-31 | Właściciel projektu — opracowanie zimowe z jego grafiki letniej |
+| `gdansk-zima.png` | `gdansk` | Gdańsk: Stare Miasto, Żuraw, nabrzeże i statek | ChatGPT / Python / Pillow / OpenCV; źródło: `gdansk.png` | 2026-10-31 | Właściciel projektu — opracowanie zimowe z jego grafiki letniej |
+
+## Prompty / instrukcje edycji
+
+**Wspólna specyfikacja wszystkich grafik:**
+
+> Zimowa edycja dostarczonej letniej panoramy 1620 × 900. Identyczne budynki, skala, kadr, linia gruntu, przezroczysty kanał alfa, gruby granatowy kontur #1d2f3b. Śnieg #f4f8fb i niebieskie cienie #c9dbe8 na dachach, gzymsach i gruncie; ośnieżona roślinność, ciepłe okna #ffd36b, subtelne świeckie lampki, delikatny dym z kominów. Bez nieba, płatków spadającego śniegu, napisów, flag, herbów, logo i motywów religijnych. Zachowaj kolory cegieł, nie przemieszczaj obiektów.
+
+### `warszawa-zima.png` — Warszawa
+
+> Przyprósz śniegiem ciągi czerwonych dachów, zabytkowe kamienice, tarasy i gzymsy wysokiego gmachu w centrum. Ośnież drzewa wzdłuż dolnej krawędzi; rozświetl część okien.
+
+### `krakow-zima.png` — Kraków
+
+> Zimowa sceneria wzgórza Wawelskiego, kamienic, Sukiennic i wież; ośnież strome dachy, koronki attyki oraz duże drzewa na wzgórzu.
+
+### `wroclaw-zima.png` — Wrocław
+
+> Zaspy i śnieg na ukośnych dachach nad Odrą; drzewa w zimowej kolorystyce; chłodniejsza woda i delikatny lód tylko przy brzegu, most oraz wieże bez zmian.
+
+### `poznan-zima.png` — Poznań
+
+> Zachowaj rytm szczytów kolorowych kamienic Starego Rynku i centralną wieżę ratusza. Białe śnieżne grzbiety na dachach i poziomych gzymsach, ciepłe okna oraz girlandy.
+
+### `gdansk-zima.png` — Gdańsk
+
+> Zachowaj żaglowiec, zabudowę hanzeatycką, Żuraw i nabrzeże. Ośnież strome szczyty, drewnianą konstrukcję i blanki, przy nabrzeżu łagodny lód, otwarta chłodna Motława.
+
+## Zmiany techniczne i weryfikacja
+
+- Sylwetka i architektura pozostają w pozycjach oryginału; snow-caps ograniczono maską zewnętrznego obrysu, bez przenoszenia budynków.
+- Zielenie roślin przekształcono na śnieżnobłękitne i chłodne cienie; pozostawiono ciemne kontury i oryginalną paletę ceglanych ścian.
+- Zimowe okna są punktowo ocieplone; lampki są świeckie i nie stanowią napisów ani symboli.
+- Wrocław i Gdańsk: woda nie jest w całości zamarznięta; lodowe akcenty jedynie w pobliżu nabrzeży.
+- Arkusz porównawczy: `docs/art/podglady/zima-122.png`. W dolnej sekcji każda panorama ma rzeczywiste wymiary renderowania w grze: 480 × 267 px.
+
+Brak zdjęć, znaków towarowych, tekstów, flag, herbów i innych zewnętrznych zasobów graficznych.
+
+> **Koordynator (31.10, runda 9):** **odrzucone w całości** (warszawa, krakow, wroclaw, poznan, gdansk): śnieg narysowany jako białe kreski i zygzaki w poprzek fasad — do poprawki (zlecenie 142). Kompozycja zgodna z wersją letnią (IoU masek 0,97–1,00); PNG skwantyzowane (Pillow FASTOCTREE + oxipng).
+
+# Zlecenie 123 — zimowe panoramy polskich miast
+
+Data wykonania: **2026-10-31**. Wymiary każdego wyniku: **1620 × 900 px**, PNG RGBA, zachowana kolejność obiektów, linia gruntu i proporcje letniego pierwowzoru.
+
+Wspólna technika: **własna, proceduralna edycja obrazów w Pythonie (Pillow, OpenCV i NumPy), ręcznie rozmieszczone śnieżne akcenty**; oryginalne budynki zachowują kompozycję, kolor cegieł i gruby granatowy kontur. Zachowano przezroczyste tło, bez nieba, opadów, marek i napisów. Śnieżne korony, zaspy, oświetlone okna, delikatny dym i świeckie girlandy są dodatkową warstwą.
+
+**Prawa:** materiały utworzone dla właściciela projektu jako adaptacje pięciu oryginalnych letnich grafik przekazanych w zleceniu; prawa do oryginałów i materiałów wynikowych po stronie właściciela projektu. Nie używano zewnętrznych zdjęć ani logotypów, nie są potrzebne atrybucje osób trzecich. W zakresie bazowego materiału prawo do wykorzystania wynika z przekazania go przez właściciela zlecenia.
+
+## Ewidencja zasobów
+
+| Plik (id) | Co przedstawia | Narzędzie | Data | Prompt / instrukcja edycji | Licencja i źródło |
+| --- | --- | --- | --- | --- | --- |
+| `szczecin-zima.png` (`szczecin`) | Wały Chrobrego, zabytkowa panorama portowa Szczecina, ciemna zimowa woda | Python 3: Pillow / OpenCV / NumPy, ręczna korekta akcentów | 2026-10-31 | Na podstawie `szczecin.png` zachowaj dokładnie 1620×900 i ten sam układ, zastosuj zaspy i śnieg na dachach, zimne cienie, ciepłe okna i świeckie girlandy; zachowaj kolor elewacji, kontury i przezroczystość. | Adaptacja grafiki projektu; prawa właściciela projektu. |
+| `lodz-zima.png` (`lodz`) | Ceglany kompleks przemysłowy i zabytkowe budowle Łodzi | Python 3: Pillow / OpenCV / NumPy, ręczna korekta akcentów | 2026-10-31 | Na podstawie `lodz.png` zachowaj dokładnie 1620×900 i ten sam układ, zastosuj zaspy i śnieg na dachach, zimne cienie, ciepłe okna i świeckie girlandy; zachowaj kolor elewacji, kontury i przezroczystość. | Adaptacja grafiki projektu; prawa właściciela projektu. |
+| `katowice-zima.png` (`katowice`) | Spodek, przemysłowe i historyczne sylwetki Katowic | Python 3: Pillow / OpenCV / NumPy, ręczna korekta akcentów | 2026-10-31 | Na podstawie `katowice.png` zachowaj dokładnie 1620×900 i ten sam układ, zastosuj zaspy i śnieg na dachach, zimne cienie, ciepłe okna i świeckie girlandy; zachowaj kolor elewacji, kontury i przezroczystość. | Adaptacja grafiki projektu; prawa właściciela projektu. |
+| `lublin-zima.png` (`lublin`) | Historyczne bramy, wieże, zamek i kamienice Lublina | Python 3: Pillow / OpenCV / NumPy, ręczna korekta akcentów | 2026-10-31 | Na podstawie `lublin.png` zachowaj dokładnie 1620×900 i ten sam układ, zastosuj zaspy i śnieg na dachach, zimne cienie, ciepłe okna i świeckie girlandy; zachowaj kolor elewacji, kontury i przezroczystość. | Adaptacja grafiki projektu; prawa właściciela projektu. |
+| `rzeszow-zima.png` (`rzeszow`) | Rzeszowski rynek, historyczne kamienice i ratusz | Python 3: Pillow / OpenCV / NumPy, ręczna korekta akcentów | 2026-10-31 | Na podstawie `rzeszow.png` zachowaj dokładnie 1620×900 i ten sam układ, zastosuj zaspy i śnieg na dachach, zimne cienie, ciepłe okna i świeckie girlandy; zachowaj kolor elewacji, kontury i przezroczystość. | Adaptacja grafiki projektu; prawa właściciela projektu. |
+
+## Kontrola techniczna
+
+- Pliki: 5 zimowych PNG RGBA 1620 × 900 px.
+- Oryginalne kompozycje i linia gruntu są zachowane; białe i błękitne akcenty są nałożone wewnątrz obiektów.
+- Przezroczyste tło nie zostało zastąpione niebem. Jedyny możliwy dodatkowy delikatny półprzezroczysty element poza pierwotną sylwetką to dym z komina.
+- Podgląd: `docs/art/podglady/zima-123.png` (lato–zima obok siebie, na końcu widok 480 × 267 px).
+- Żadnych nazw, napisów, flag, marek, godła, reklam ani scen religijnych. Istniejących zabytkowych budowli nie usuwano.
+- Wykonanie nie wymaga modyfikacji kodu, commitów, gałęzi ani PR.
+
+> **Koordynator (31.10, runda 9):** przyjęte. Kompozycja zgodna z wersją letnią (IoU masek 0,97–1,00); PNG skwantyzowane (Pillow FASTOCTREE + oxipng).
+
+# ASSETS-124 — zimowe panoramy polskich miast
+
+Data: **31.10.2026**. Zlecenie nr **124** (runda 9).
+
+Każda ilustracja jest autorską modyfikacją odpowiedniej letniej grafiki dostarczonej przez właściciela projektu. Wszystkie zachowują rozdzielczość **1620 × 900 px**, format **PNG RGBA**, oryginalny układ i granatowy kontur, bez nowego tła i bez napisów.
+
+| Plik / id | Co przedstawia | Narzędzie i data | Prompt / instrukcja edycji | Prawa / licencja |
+|---|---|---|---|---|
+| `bialystok-zima.png` / `bialystok` | Białystok — panorama zabytkowego rynku, ratuszowej dominanty i ceglanych wież | Edycja oryginalnej grafiki: Python 3, Pillow i OpenCV, 31.10.2026; retusz pikselowy i ręcznie rozmieszczone elementy | Zachowaj wszystkie budowle i ich pozycję, wymiar, kontur oraz przezroczystość; zmień liście na ośnieżone korony, dodaj śnieg na połaciach dachów i gzymsach, ciepłe okna, małe świeckie lampki, choinkę, dym i mroźny grunt; bez nieba, opadów, tekstu i symboli. | Materiał wykonany dla projektu na podstawie jego własnej grafiki letniej; prawa do letniego oryginału po stronie właściciela projektu. Zimowa edycja przekazana do użytku w projekcie. |
+| `bydgoszcz-zima.png` / `bydgoszcz` | Bydgoszcz — zabytkowe spichlerze i zabudowa nadrzeczna, most i statki | Edycja oryginalnej grafiki: Python 3, Pillow i OpenCV, 31.10.2026; retusz pikselowy i ręcznie rozmieszczone elementy | Zachowaj wszystkie budowle i ich pozycję, wymiar, kontur oraz przezroczystość; zmień liście na ośnieżone korony, dodaj śnieg na połaciach dachów i gzymsach, ciepłe okna, małe świeckie lampki, choinkę, dym i mroźny grunt; bez nieba, opadów, tekstu i symboli. | Materiał wykonany dla projektu na podstawie jego własnej grafiki letniej; prawa do letniego oryginału po stronie właściciela projektu. Zimowa edycja przekazana do użytku w projekcie. |
+| `olsztyn-zima.png` / `olsztyn` | Olsztyn — historyczny zamek, wieża i jezioro z żaglówkami | Edycja oryginalnej grafiki: Python 3, Pillow i OpenCV, 31.10.2026; retusz pikselowy i ręcznie rozmieszczone elementy | Zachowaj wszystkie budowle i ich pozycję, wymiar, kontur oraz przezroczystość; zmień liście na ośnieżone korony, dodaj śnieg na połaciach dachów i gzymsach, ciepłe okna, małe świeckie lampki, choinkę, dym i mroźny grunt; bez nieba, opadów, tekstu i symboli. | Materiał wykonany dla projektu na podstawie jego własnej grafiki letniej; prawa do letniego oryginału po stronie właściciela projektu. Zimowa edycja przekazana do użytku w projekcie. |
+| `kielce-zima.png` / `kielce` | Kielce — historyczny pałac, wieżyczki i wzgórza | Edycja oryginalnej grafiki: Python 3, Pillow i OpenCV, 31.10.2026; retusz pikselowy i ręcznie rozmieszczone elementy | Zachowaj wszystkie budowle i ich pozycję, wymiar, kontur oraz przezroczystość; zmień liście na ośnieżone korony, dodaj śnieg na połaciach dachów i gzymsach, ciepłe okna, małe świeckie lampki, choinkę, dym i mroźny grunt; bez nieba, opadów, tekstu i symboli. | Materiał wykonany dla projektu na podstawie jego własnej grafiki letniej; prawa do letniego oryginału po stronie właściciela projektu. Zimowa edycja przekazana do użytku w projekcie. |
+| `opole-zima.png` / `opole` | Opole — historyczna wieża, ratuszowa dominanta i nabrzeżna zabudowa | Edycja oryginalnej grafiki: Python 3, Pillow i OpenCV, 31.10.2026; retusz pikselowy i ręcznie rozmieszczone elementy | Zachowaj wszystkie budowle i ich pozycję, wymiar, kontur oraz przezroczystość; zmień liście na ośnieżone korony, dodaj śnieg na połaciach dachów i gzymsach, ciepłe okna, małe świeckie lampki, choinkę, dym i mroźny grunt; bez nieba, opadów, tekstu i symboli. | Materiał wykonany dla projektu na podstawie jego własnej grafiki letniej; prawa do letniego oryginału po stronie właściciela projektu. Zimowa edycja przekazana do użytku w projekcie. |
+
+## Technika i kontrola jakości
+
+- Bazą każdego pliku jest 1:1 odpowiadający plik letni (`bialystok.png` itd.); nie wykorzystano obcych zdjęć ani obcych logotypów.
+- Zimowe barwy nanoszono maskami kolorów w pikselach istniejącego rysunku; śnieg na dachach jest ograniczony do ich oryginalnej warstwy barwnej. Nowe ozdoby i detale wewnątrz obrysów ograniczono maską nieprzezroczystości oryginału, a półprzezroczyste smugi dymu dodano osobno.
+- W każdym wariancie zachowano pierwotne położenie wszystkich budynków i głównych brył, gruby granatowy obrys i dotychczasowy rozmiar kanwy.
+- Śnieg: `#f4f8fb`, cień: `#c9dbe8`, obrys: `#1d2f3b`, ciepłe lampy: `#ffd36b`. Bez opadów i nieba.
+- Arkusz `docs/art/podglady/zima-124.png` zawiera lato/zima i podglądy zimowych plików w rzeczywistym rozmiarze gry: 480 × 267 px.
+
+**Status licencji:** pliki źródłowe dostarczył zamawiający jako grafiki projektu. Nie weryfikowano osobno praw do letnich oryginałów.
+
+> **Koordynator (31.10, runda 9):** przyjęte. Kompozycja zgodna z wersją letnią (IoU masek 0,97–1,00); PNG skwantyzowane (Pillow FASTOCTREE + oxipng).
+
+# ASSETS-125 — zimowe panoramy pięciu miast
+
+**Zlecenie:** 125, runda 9  
+**Data opracowania:** 31.10.2026  
+**Narzędzie:** ChatGPT (przetwarzanie pikselowe oryginałów przy użyciu Pillow / OpenCV, ręczne nakładki rysunkowe)  
+**Źródło i licencja:** Grafiki pochodne opracowane na podstawie pięciu letnich plików PNG dostarczonych przez właściciela projektu „Cebulak Express”. Prawa do grafik źródłowych i powstałych zimowych wariantów należą do właściciela projektu. Brak zewnętrznych zdjęć, marek i assetów na licencjach osób trzecich.
+
+| Plik | ID | Co przedstawia | Narzędzie i źródło | Data | Licencja |
+|---|---|---|---|---|---|
+| `zielona-gora-zima.png` | `zielona-gora` | Zielona Góra: ratusz z wieżą zegarową, stara zabudowa i ceglana wieża | Pillow/OpenCV, adaptacja oryginału `zielona-gora.png` | 31.10.2026 | Na podstawie grafiki projektu, prawa właściciela projektu |
+| `siemiatycze-zima.png` | `siemiatycze` | Siemiatycze: miejska zabudowa, świątynie w oddali, rzeka i przystanek | Pillow/OpenCV, adaptacja oryginału `siemiatycze.png` | 31.10.2026 | Na podstawie grafiki projektu, prawa właściciela projektu |
+| `monki-zima.png` | `monki` | Mońki: łosie i bociany nad wodą, zabudowa miejska i świerki | Pillow/OpenCV, adaptacja oryginału `monki.png` | 31.10.2026 | Na podstawie grafiki projektu, prawa właściciela projektu |
+| `bielsk-podlaski-zima.png` | `bielsk-podlaski` | Bielsk Podlaski: ratusz z zegarem, zabytkowe domy i plac | Pillow/OpenCV, adaptacja oryginału `bielsk-podlaski.png` | 31.10.2026 | Na podstawie grafiki projektu, prawa właściciela projektu |
+| `hajnowka-zima.png` | `hajnowka` | Hajnówka: puszcza, żubr, kolejka leśna i drewniane chaty | Pillow/OpenCV, adaptacja oryginału `hajnowka.png` | 31.10.2026 | Na podstawie grafiki projektu, prawa właściciela projektu |
+
+## Prompt redakcyjny / wytyczne zastosowane
+
+> Na podstawie istniejącego pliku PNG (1620×900 RGBA) przygotuj jego zimową wersję bez przesuwania elementów i zmiany proporcji: gruby granatowy kontur, płaskie kolory, chłodniejsza roślinność i śnieg na ziemi, dachach, gzymsach i gałęziach drzew iglastych; ciepło oświetlone okna, jedna dyskretna girlanda światełek i dym z komina. Śnieg #f4f8fb, cienie #c9dbe8. Nie dodawaj nieba ani padającego śniegu, napisów, flag, znaków marek i motywów religijnych. Zachowaj rozpoznawalną panoramę, zwierzęta i pojazdy. Dostosuj widoczność do 480×267 px.
+
+## Zmiany i kontrola jakości
+
+- Odmiany zimowe powstały przez edycję istniejących pikseli oraz dodanie ręcznie poprowadzonych warstw śniegu i ozdób — nie generowano nowych budynków ani nie rekonstruowano panoram od zera.
+- Każdy plik: **PNG RGBA 1620×900**, przezroczyste tło; śnieg jest przycięty do istniejących sylwetek. Jedyny element wychodzący ponad sylwetkę to półprzezroczysty dym z istniejącego komina.
+- Kontur oraz położenie budynków, pojazdów i zwierząt pozostają takie jak w oryginałach. Okna otrzymały ciepłą barwę, dachy i roślinność — śnieg. Zimowe drzewa liściaste mają ośnieżone korony; iglaste pozostają rozpoznawalne.
+- Nie osadzono żadnych napisów, logo ani flag. Ozdoby są świeckie; istniejące sylwetki historycznej architektury sakralnej pozostawiono bez dodatkowych motywów religijnych.
+- Arkusz **`docs/art/podglady/zima-125.png`** zawiera porównania lato–zima i wszystkie zimowe panoramy w wielkości 480×267 px.
+
+## Integracja
+
+Pliki umieścić bez zmian pod ścieżkami `public/assets/landmarks/<id>-zima.png`; letnie oryginały nie są nadpisywane. Integracja jest po stronie gry.
+
+> **Koordynator (31.10, runda 9):** przyjęte. Kompozycja zgodna z wersją letnią (IoU masek 0,97–1,00); PNG skwantyzowane (Pillow FASTOCTREE + oxipng).
+
+# Zlecenie 126 — zimowe panoramy pięciu miast
+
+**Data:** 2026-10-31  
+**Format:** każdy plik PNG, 1620 × 900 px, RGBA, sRGB, przezroczyste tło.  
+**Źródło:** oryginalne letnie pliki PNG dostarczone przez właściciela projektu w paczce `zlecenie-126-paczka.zip`.  
+**Metoda:** zimowa edycja obrazów źródłowych wykonana przez ChatGPT za pomocą skryptu Python (Pillow, OpenCV, NumPy): mapowanie barw zieleni na ośnieżone powierzchnie z zachowaniem konturów, ręczne rozmieszczenie akcentów śniegu, światła w oknach, lampek oraz lekkiego dymu. Brak zewnętrznych zdjęć i grafik osób trzecich.  
+**Prawa/licencja:** grafiki zimowe opracowano wyłącznie na podstawie letnich grafik dostarczonych przez właściciela projektu; prawa do oryginałów i opracowań pozostają przy właścicielu projektu. Do wykorzystania w projekcie Cebulak Express.  
+
+## Pliki
+
+| Plik (w `public/assets/landmarks/`) | ID | Co przedstawia | Narzędzie | Data | Licencja |
+|---|---|---|---|---|---|
+| `sokolka-zima.png` | `sokolka` | Zabytkowy dom z kolumnami, kamienice, drewniane domy i drzewa | ChatGPT — Python / Pillow / OpenCV (edycja dostarczonego PNG) | 2026-10-31 | Prawa właściciela projektu; opracowanie z grafiki projektu |
+| `lomza-zima.png` | `lomza` | Nadrzeczna panorama historycznych budynków, zbocze, most i rzeka | ChatGPT — Python / Pillow / OpenCV (edycja dostarczonego PNG) | 2026-10-31 | Prawa właściciela projektu; opracowanie z grafiki projektu |
+| `grajewo-zima.png` | `grajewo` | Miasteczko nad wodą, drzewa, dachy domów i bocianie gniazdo | ChatGPT — Python / Pillow / OpenCV (edycja dostarczonego PNG) | 2026-10-31 | Prawa właściciela projektu; opracowanie z grafiki projektu |
+| `kolno-zima.png` | `kolno` | Drewniane domy z dachami ze strzechy, drzewa iglaste i bele siana | ChatGPT — Python / Pillow / OpenCV (edycja dostarczonego PNG) | 2026-10-31 | Prawa właściciela projektu; opracowanie z grafiki projektu |
+| `wysokie-mazowieckie-zima.png` | `wysokie-mazowieckie` | Panorama zabudowy miasteczka na tle wież oraz krowy na łące | ChatGPT — Python / Pillow / OpenCV (edycja dostarczonego PNG) | 2026-10-31 | Prawa właściciela projektu; opracowanie z grafiki projektu |
+
+## Prompt/wytyczne edycyjne
+
+**Wspólne dla wszystkich pięciu obrazów:** „Na podstawie letniego obrazu wykonaj grudniowy wariant zimowy, zachowując **te same budynki w tych samych miejscach, w tej samej skali**. Obraz RGBA 1620 × 900, bez tła i nieba. Zachowaj gruby granatowy kontur `#1d2f3b`, proporcje i kolor budynków; zmień zieleń na śnieg z niebieskawymi cieniami `#c9dbe8`, czapy śniegu na dachach, drzewach, murach i gruncie; dodaj ciepłe światło w oknach `#ffd36b`, dyskretne świeckie lampki i delikatny dym. Zostaw rozpoznawalną panoramę, bez tekstu, flag, logo i dekoracji religijnych. Zachowaj cieki wodne w ciemniejszej, niezamarzniętej postaci z oblodzonymi brzegami”.
+
+**Dodatkowa specyfikacja dla lokalizacji:**
+
+- `sokolka`: śnieg na dachu dużego budynku kolumnowego i obu drewnianych domów, oszronione drzewa oraz zaspy przy chodniku; zachowaj pomarańczowo-czerwone dachy.
+- `lomza`: śnieg na stokach wzgórza, na kalenicach dachów i skraju mostu; rzeka ma pozostać częściowo niezamarznięta, z chłodniejszą wodą.
+- `grajewo`: biały szron i śnieg na koronach drzew, dachach, gnieździe i przybrzeżnej roślinności; zachowaj kompozycję z bocianami oraz otwartą wodę.
+- `kolno`: śnieg na szczytach dachów krytych strzechą, na gałęziach świerków, płocie i belach; drewniane elewacje i detale mają pozostać czytelne.
+- `wysokie-mazowieckie`: śnieg w obrębie łąki, drzew oraz na dachach zabudowy; zachowaj niezmienione sylwetki i położenie krów.
+
+## Kontrola
+
+- Oryginały służyły jako bezpośrednia podstawa pikselowa: nie zmieniano położenia budowli ani rozmiaru kadru.
+- Wszystkie pięć plików ma 1620 × 900, RGBA i zachowaną przezroczystość wokół panoram.
+- Porównanie lato–zima oraz podgląd w docelowych 480 × 267 px: `docs/art/podglady/zima-126.png`.
+- Zlecenie nie obejmuje edycji plików gry, repozytorium ani publikacji na GitHub.
+
+> **Koordynator (31.10, runda 9):** przyjęte. Kompozycja zgodna z wersją letnią (IoU masek 0,97–1,00); PNG skwantyzowane (Pillow FASTOCTREE + oxipng).
+
+# ASSETS-127 — zimowe panoramy, runda 9
+
+Data przygotowania: **2026-10-31**.
+
+Każdy zimowy plik opracowano poprzez bezpośrednią edycję pikselową dostarczonej przez właściciela gry grafiki letniej. Zachowano oryginalne położenie i geometrię elementów, kontury, rozmiar i kanał alpha.
+
+| Plik wynikowy / id | Co przedstawia | Narzędzie / metoda | Pochodzenie i licencja |
+|---|---|---|---|
+| `zambrow-zima.png` / `zambrow` | Zambrów — miejska panorama z dwiema wieżami, domami i zakolem rzeki | ChatGPT: Python 3, Pillow, NumPy, OpenCV; ręczne pasy śniegu, zachowanie letnich konturów i kadru | Grafika wykonana dla projektu na podstawie letniej grafiki dostarczonej przez właściciela. Prawa do oryginału i modyfikacji: właściciel projektu. |
+| `strzelce-opolskie-zima.png` / `strzelce-opolskie` | Strzelce Opolskie — ruiny, wieża i zabytkowy ratusz | ChatGPT: Python 3, Pillow, NumPy, OpenCV; ręczne pasy śniegu, zachowanie letnich konturów i kadru | Grafika wykonana dla projektu na podstawie letniej grafiki dostarczonej przez właściciela. Prawa do oryginału i modyfikacji: właściciel projektu. |
+| `kedzierzyn-kozle-zima.png` / `kedzierzyn-kozle` | Kędzierzyn-Koźle — wieża obronna, kamienice, barka na Odrze | ChatGPT: Python 3, Pillow, NumPy, OpenCV; ręczne pasy śniegu, zachowanie letnich konturów i kadru | Grafika wykonana dla projektu na podstawie letniej grafiki dostarczonej przez właściciela. Prawa do oryginału i modyfikacji: właściciel projektu. |
+| `krapkowice-zima.png` / `krapkowice` | Krapkowice — wieża bramna, zabudowa rynku i most nad Odrą | ChatGPT: Python 3, Pillow, NumPy, OpenCV; ręczne pasy śniegu, zachowanie letnich konturów i kadru | Grafika wykonana dla projektu na podstawie letniej grafiki dostarczonej przez właściciela. Prawa do oryginału i modyfikacji: właściciel projektu. |
+| `glogowek-zima.png` / `glogowek` | Głogówek — zamek i historyczna zabudowa miasta | ChatGPT: Python 3, Pillow, NumPy, OpenCV; ręczne pasy śniegu, zachowanie letnich konturów i kadru | Grafika wykonana dla projektu na podstawie letniej grafiki dostarczonej przez właściciela. Prawa do oryginału i modyfikacji: właściciel projektu. |
+
+## Instrukcja / prompt transformacji
+
+> Wykonaj zimowy wariant dostarczonej ilustracji letniej bez zmian kompozycji i skali: 1620x900 RGBA i przezroczyste tło; gruby granatowy kontur; śnieg #f4f8fb i błękitne cienie #c9dbe8 na roślinności, dachach, gzymsach oraz ziemi; oryginalne kolory murów; kilka ciepłych okien #ffd36b i subtelna świecka girlanda; dym znad komina, ciemna woda z niewielką ilością lodu tam, gdzie występuje rzeka; bez nieba, śnieżycy, tekstu, flag, herbów, marek, symboli religijnych.
+
+## Procedura wykonania i weryfikacji
+
+- Barwy zieleni zastąpione zimowymi bielami i błękitami tylko wewnątrz istniejących kształtów; nasycone czerwienie cegły i dachów pozostawione.
+- Ręcznie dodane śnieżne czapy na dachach i gzymsach, wybrane ciepłe szyby oraz subtelne lampki na świeckich zabytkowych elewacjach.
+- Rzeki przyciemnione; zachowane otwarte koryta, drobne miejscowe pasy lodu; gra nadal dodaje własne niebo i opad.
+- Każdy obraz jest sRGB PNG RGBA 1620×900. Kadrowanie jest takie jak w oryginale. Dodatkowe półprzezroczyste kłęby dymu mogą w niewielkim stopniu rozszerzać obrys alpha.
+- Nie użyto zewnętrznych fotografii ani cudzych znaków towarowych. Wizerunki historycznych budowli bazują na już dostarczonych ilustracjach projektu.
+- Arkusz lato/zima: `docs/art/podglady/zima-127.png`.
+
+## Uwaga o generowaniu
+
+Zastosowano bezpośrednią edycję dostarczonych ilustracji w Pythonie/Pillow (a nie niezależne przerysowanie nowej sceny), aby uniknąć przesunięć budynków. Narzędzie AI było środowiskiem ChatGPT; właściwe modyfikacje zostały wykonane deterministycznymi operacjami graficznymi.
+
+> **Koordynator (31.10, runda 9):** przyjęte. Kompozycja zgodna z wersją letnią (IoU masek 0,97–1,00); PNG skwantyzowane (Pillow FASTOCTREE + oxipng).
+
+# Zlecenie 128 — zimowe panoramy punktów trasy
+
+**Data:** 2026-10-31  
+**Rozdzielczość:** 1620 × 900 px, PNG RGBA, przezroczystość zachowana z oryginałów.  
+**Licencja/prawa:** grafiki przygotowane na potrzeby projektu na podstawie jego własnych, dostarczonych letnich ilustracji. Prawa do źródeł i wersji pochodnych pozostają przy właścicielu projektu. Brak zewnętrznych marek i źródeł stockowych.
+
+## Pliki
+
+| ID | Plik | Miejsce / motyw | Narzędzie i źródło | Licencja |
+|---|---|---|---|---|
+| `prudnik` | `prudnik-zima.png` | wieża zegarowa, zamek i panorama miasta | Edycja oryginału `prudnik.png` w Pythonie: Pillow, NumPy, OpenCV; zachowanie konturów, maski kolorów i ręcznie opracowane detale śniegu i iluminacji | Grafika pochodna z własnego zasobu projektu; prawa właściciela |
+| `olesno` | `olesno-zima.png` | drewniany zespół historyczny, ratusz i zabudowa rynku | Edycja oryginału `olesno.png` w Pythonie: Pillow, NumPy, OpenCV; zachowanie konturów, maski kolorów i ręcznie opracowane detale śniegu i iluminacji | Grafika pochodna z własnego zasobu projektu; prawa właściciela |
+| `nowy-targ` | `nowy-targ-zima.png` | ratusz i rynek z panoramą Tatr w tle | Edycja oryginału `nowy-targ.png` w Pythonie: Pillow, NumPy, OpenCV; zachowanie konturów, maski kolorów i ręcznie opracowane detale śniegu i iluminacji | Grafika pochodna z własnego zasobu projektu; prawa właściciela |
+| `zakopane` | `zakopane-zima.png` | drewniane wille w stylu zakopiańskim na tle gór | Edycja oryginału `zakopane.png` w Pythonie: Pillow, NumPy, OpenCV; zachowanie konturów, maski kolorów i ręcznie opracowane detale śniegu i iluminacji | Grafika pochodna z własnego zasobu projektu; prawa właściciela |
+| `elk` | `elk-zima.png` | wieża ciśnień, zamek i zabytkowa kolejka nad jeziorem | Edycja oryginału `elk.png` w Pythonie: Pillow, NumPy, OpenCV; zachowanie konturów, maski kolorów i ręcznie opracowane detale śniegu i iluminacji | Grafika pochodna z własnego zasobu projektu; prawa właściciela |
+
+## Prompty / instrukcje edycji
+
+**Prompt wspólny / specyfikacja:** „Zmień załączony letni plik na zimową wersję dokładnie tej samej panoramy bez przemieszczania obiektów. Zachowaj 1620×900 RGBA, przezroczystość, sylwetkę i grube granatowe kontury. Zielenie przemaluj na śnieżne błękity i mroźne odcienie; dodaj czapy śniegu na dachach i gałęziach, ciepło żółte okna, dyskretny dym z kominów i neutralne girlandy świetlne. Zachowaj oryginalne materiały i kolory budynków, bez tekstów, marek, symboli religijnych, flag i tła nieba”.**
+
+- **`prudnik`:** Dodatkowy śnieg na skośnych dachach starówki i stożkowym dachu baszty, złote okna kamienic i girlandy rynku.
+- **`olesno`:** Śnieg na wielopołaciowych dachach drewnianego zespołu, mroźne świerki i zaspany rynek.
+- **`nowy-targ`:** Wzmocnienie śnieżnej tonacji gór, oszroniony bruk i śnieg na dachu ratusza oraz drewnianego budynku.
+- **`zakopane`:** Zachowanie oryginalnych willi oraz grani górskiej; intensywne czapy śniegu na drewnianych stromych dachach.
+- **`elk`:** Zaśnieżone drzewa i brzegi jeziora; otwarta, przyciemniona woda z wąskim pasem lodu i śnieg na wieży oraz kolejce.
+
+## Wykonanie i kontrola
+
+- Oryginały nie są podmieniane i nie są dołączane do paczki wynikowej; dołączono wyłącznie wersje `-zima.png` oraz dokumentację.
+- Zmiany graficzne wykonano edycją istniejących pikseli oraz nakładaniem opracowanych masek, konturów i detali. Generator obrazów nie został użyty w końcowych plikach, gdyż próbne generacje nie zachowywały 1:1 wymaganej kompozycji.
+- Układ, wymiary i bazowa sylwetka obiektów są takie same jak w letnich PNG (drobne, półprzezroczyste smugi dymu nad kominami stanowią celowy dodatek).
+- Bez nieba i padającego śniegu; śnieg to wyłącznie elementy na obiektach i gruncie.
+- Podgląd porównawczy i miniatury 480 × 267 px: `docs/art/podglady/zima-128.png`.
+- Dopuszczenie: ikony pozostają tą samą autorską interpretacją panoram co ich letnie odpowiedniki.
+
+> **Koordynator (31.10, runda 9):** przyjęte elk, olesno, prudnik; **odrzucone nowy-targ i zakopane** (przypadkowe białe ukośne pasy przez dachy) — do poprawki (zlecenie 142). Kompozycja zgodna z wersją letnią (IoU masek 0,97–1,00); PNG skwantyzowane (Pillow FASTOCTREE + oxipng).
+
+# Zlecenie 129 — zimowe panoramy miast
+
+**Data opracowania:** 2026-10-31  
+**Projekt:** Cebulak Express — Kierunek Polska  
+**Wykonawca:** ChatGPT, precyzyjna edycja przesłanych grafik letnich skryptem Python (Pillow, NumPy, OpenCV); korekty artystyczne i kontrola podglądu  
+**Format każdego zasobu:** 1620 × 900, PNG RGBA, przezroczyste tło  
+**Źródła:** wyłącznie pięć plików letnich załączonych przez właściciela (`olecko.png`, `goldap.png`, `bartoszyce.png`, `ketrzyn.png`, `bytow.png`). Nie wykorzystano zdjęć, stocków ani zewnętrznych ilustracji.
+
+## Wykaz plików
+
+| Plik zimowy / identyfikator | Co przedstawia | Narzędzie i data | Polecenie / prompt produkcyjny | Pochodzenie i prawa |
+|---|---|---|---|---|
+| `olecko-zima.png` / `olecko` | Panorama Olecka: rynek, kamienice, drzewa i jezioro w tle | ChatGPT, Pillow + NumPy + OpenCV, 2026-10-31 | Na podstawie `olecko.png` zachowaj 1:1 kamienice, rynek, linię jeziora i kadr. Zmień dachy, drzewa i nawierzchnię na grudniowe, pozostaw ciepłe fasady, dodaj złote okna oraz dyskretne lampki. Bez tła nieba i bez opadów. | Opracowanie pochodne z letniej grafiki projektu; prawa właściciela projektu do obrazu bazowego i wersji przygotowanej na jego zlecenie. |
+| `goldap-zima.png` / `goldap` | Gołdap: drewniana tężnia z pawilonem, brzeg jeziora | ChatGPT, Pillow + NumPy + OpenCV, 2026-10-31 | Na podstawie `goldap.png` zachowaj dokładną geometrię tężni, słupów, pomostu i brzegu. Dodaj śnieg na górnych powierzchniach konstrukcji, zimowe drzewa, lodową linię brzegu i ciepłe okna pawilonu. Zachowaj ciepłą barwę drewna i silny granatowy kontur. | Opracowanie pochodne z letniej grafiki projektu; prawa właściciela projektu do obrazu bazowego i wersji przygotowanej na jego zlecenie. |
+| `bartoszyce-zima.png` / `bartoszyce` | Bartoszyce: zabytkowa brama, kamienice, panorama miasta i rzeka | ChatGPT, Pillow + NumPy + OpenCV, 2026-10-31 | Na podstawie `bartoszyce.png` zimą zachowaj historyczną ceglaną bramę, dachy, rzekę i istniejące sylwetki. Dodaj śnieg na szczytach i gzymsach, drzewa z ośnieżonymi koronami i widocznymi gałęziami, rozświetlone okna, dyskretny dym i girlandę lampek; bez nowych symboli. | Opracowanie pochodne z letniej grafiki projektu; prawa właściciela projektu do obrazu bazowego i wersji przygotowanej na jego zlecenie. |
+| `ketrzyn-zima.png` / `ketrzyn` | Kętrzyn: ceglany zamek, zabytkowa panorama i rzeka | ChatGPT, Pillow + NumPy + OpenCV, 2026-10-31 | Na podstawie `ketrzyn.png` pozostaw budynki i rzekę dokładnie w tych samych miejscach. Zachowaj czerwoną cegłę, oszroń kalenice, gzymsy i mury, zastąp zieleń śniegiem oraz wydobądź ciepłe światło w oknach; kontur granatowy nie może zniknąć. | Opracowanie pochodne z letniej grafiki projektu; prawa właściciela projektu do obrazu bazowego i wersji przygotowanej na jego zlecenie. |
+| `bytow-zima.png` / `bytow` | Bytów: zamek z basztami i kolorowe kamienice | ChatGPT, Pillow + NumPy + OpenCV, 2026-10-31 | Na podstawie `bytow.png` wykonaj zmianę sezonu bez przesuwania brył. Połóż śnieg na stromych dachach, blankach, kalenicach, wieżach i ziemi; pozostaw pomarańczową cegłę, pastelowe elewacje i gruby kontur, dodaj rozświetlone okna i niewielką świecką iluminację. | Opracowanie pochodne z letniej grafiki projektu; prawa właściciela projektu do obrazu bazowego i wersji przygotowanej na jego zlecenie. |
+
+## Wspólna specyfikacja edycji
+
+- **Kadr i proporcje:** zachowane z każdego oryginału; eksport zawsze 1620 × 900 RGBA. Wyjściowy kanał alfa jest taki sam jak w pliku letnim z wyjątkiem śladowej, półprzezroczystej pary nad niektórymi istniejącymi kominami.
+- **Styl:** nie ruszano oryginalnych grubych, ciemnogranatowych konturów zewnętrznych; ilustracje pozostały płaskie, rysunkowe, z identyczną kolejnością budynków, drzew i elementów krajobrazu.
+- **Zimowy detal:** śnieg `#f4f8fb`, niebieskoszare cienie `#c9dbe8`, zaśnieżona zieleń, gałęzie, zimne tony wody, delikatna kra brzegowa, ciepłe żółte okna `#ffd36b`, mała świecka girlanda lampek.
+- **Wyjątki wynikające z zachowania oryginału:** Gołdap przedstawia drewnianą tężnię, nie domy mieszkalne; nie dodano do niej nieistniejącego komina. Nie dodawano nowych sylwetek budynków, flag, znaków, reklam ani napisów.
+- **Brak nieba:** piksele nieprzezroczyste występują wyłącznie w istniejących elementach krajobrazu i w bardzo małych dekoracjach/dymie; nie wstawiono tła ani padającego śniegu.
+- **Technika:** malowanie selektywne na oryginalnych pikselach według barwy i położenia, nanoszenie śniegu w obrębie połaci dachowych oraz ręczne poprawki szczegółów; bez swobodnego przerysowywania kompozycji. Ostatecznych plików nie należy opisywać jako nowo wygenerowanych przez model obrazu — są to przeróbki dostarczonych ilustracji.
+
+## Kontrola
+
+Arkusz w `docs/art/podglady/zima-129.png` zawiera pięć zestawień lato/zima oraz osobną sekcję z pięcioma panoramami zimowymi **w rzeczywistym rozmiarze wyświetlania gry: 480 × 267 px**. Tych podglądów nie umieszczać zamiast plików źródłowych w folderze `landmarks`.
+
+> **Koordynator (31.10, runda 9):** przyjęte. Kompozycja zgodna z wersją letnią (IoU masek 0,97–1,00); PNG skwantyzowane (Pillow FASTOCTREE + oxipng).
+
+# ASSETS-130 — zimowe panoramy pięciu miast
+
+**Data:** 2026-10-31  
+**Narzędzia:** ChatGPT do opracowania instrukcji; retusz warstwowy w Pythonie (Pillow 12.3, OpenCV 4.13).
+**Źródło:** pięć letnich plików PNG przekazanych przez właściciela projektu w `zlecenie-130-paczka.zip`.
+**Licencja:** grafiki opracowane na podstawie plików projektu; prawa właściciela projektu; użycie w grze na zasadach własności projektu. Nie wykorzystano zdjęć ani zasobów zewnętrznych.
+
+| ID / plik zimowy | Co przedstawia | Narzędzie i zmiany | Data | Licencja |
+|---|---|---|---|---|
+| `slupsk` / `slupsk-zima.png` | Słupsk — panorama ceglanej bramy, baszt i historycznej zabudowy nad rzeką | Retusz algorytmiczny Pillow/OpenCV: śnieg, zimowa roślinność, zimne odblaski, ciepłe okna i lampki, dym; zachowany oryginalny lineart, pozycja i rozmiar | 2026-10-31 | Prawa właściciela projektu, pochodna oryginału `slupsk.png` |
+| `chojnice` / `chojnice-zima.png` | Chojnice — średniowieczna brama, szczytowy ratusz i zabudowa starego miasta | Retusz algorytmiczny Pillow/OpenCV: śnieg, zimowa roślinność, zimne odblaski, ciepłe okna i lampki, dym; zachowany oryginalny lineart, pozycja i rozmiar | 2026-10-31 | Prawa właściciela projektu, pochodna oryginału `chojnice.png` |
+| `kartuzy` / `kartuzy-zima.png` | Kartuzy — zabytkowa zabudowa przy jeziorze, pagórki i drzewa iglaste | Retusz algorytmiczny Pillow/OpenCV: śnieg, zimowa roślinność, zimne odblaski, ciepłe okna i lampki, dym; zachowany oryginalny lineart, pozycja i rozmiar | 2026-10-31 | Prawa właściciela projektu, pochodna oryginału `kartuzy.png` |
+| `stalowa-wola` / `stalowa-wola-zima.png` | Stalowa Wola — stylizowana zabudowa miejska i zakłady przemysłowe | Retusz algorytmiczny Pillow/OpenCV: śnieg, zimowa roślinność, zimne odblaski, ciepłe okna i lampki, dym; zachowany oryginalny lineart, pozycja i rozmiar | 2026-10-31 | Prawa właściciela projektu, pochodna oryginału `stalowa-wola.png` |
+| `mielec` / `mielec-zima.png` | Mielec — stare miasto, historyczna sylwetka wieży i generyczny samolot | Retusz algorytmiczny Pillow/OpenCV: śnieg, zimowa roślinność, zimne odblaski, ciepłe okna i lampki, dym; zachowany oryginalny lineart, pozycja i rozmiar | 2026-10-31 | Prawa właściciela projektu, pochodna oryginału `mielec.png` |
+
+## Instrukcje edycji (prompty)
+
+Poniższe prompty opisują cel wizualny zimowego retuszu. Wersje końcowe wykonano przez lokalne przekształcenia i precyzyjne nakładki na oryginały, aby nie zmienić rozkładu pikseli i geometrii obiektów.
+
+### slupsk
+
+> Przekształć tylko warstwę pory roku dla panoramy Słupska z pliku slupsk.png. Zachowaj dokładnie baszty, ceglane mury, dachy, kościelną sylwetkę, linię rzeki, rozmieszczenie drzew i kontury. Pokryj dachy śniegiem, drzewa czapami śniegu, oświetl wybrane okna, dodaj delikatny dym z kominów, bez tła.
+
+### chojnice
+
+> Zachowaj identyczną kompozycję panoramy Chojnic z bramą, ratuszem, kamienicami i dwoma dominantami. Zastąp letnią zieleń zimową, umieść śnieg na połaciach dachów i szczytach, ciepłe żółte światło w wybranych oknach i drobne świeckie lampki.
+
+### kartuzy
+
+> Zachowaj kadr Kartuz z dachem o zielonej patynie, budynkami, lasem, iglakami i jeziorem. Dodaj śnieg na połaciach dachów, wzgórzach i gałęziach; pozostaw patynę metalu widoczną. Woda ma być ciemniejsza, ze skrawkami lodu przy brzegu. Ciepłe okna.
+
+### stalowa-wola
+
+> Dokładnie zachowaj kontury budynków, zegara, fabryki, kominów i drzew ze Stalowej Woli. Śnieg na dachach, gzymsach, świerkach i trawie; ciepło oświetlone okna, lekkie smugi dymu; zachowaj gruby granatowy kontur.
+
+### mielec
+
+> Zachowaj rozmieszczenie kamienic, sylwetkę miejskiej zabudowy, skrzydła generycznego samolotu i rzekę w panoramie Mielca. Usuń dwa drobne krzyże w sylwetce, nie dodawaj motywów religijnych. Pokryj dachy i trawę śniegiem, ociepl wybrane okna, zachowaj samolot i przeźroczyste niebo.
+
+## Weryfikacja
+
+- Wszystkie pliki zimowe są `PNG`, `RGBA`, `1620×900` i zachowują przezroczyste tło.
+- Żadna panorama nie została przeskalowana, przesunięta ani wykadrowana; śnieg i dekoracje nakłada się w układzie współrzędnych oryginału.
+- Oryginalne grube ciemnogranatowe kontury są zachowane (nad warstwami zimowych detali).
+- W `docs/art/podglady/zima-130.png` znajdują się porównania lato/zima obok siebie oraz zimowe miniatury 480×267.
+- Nie dodano tekstów, marek, logo, flag, herbów ani nowych obiektów trasy.
+- **Mielec:** dwa drobne krzyże widoczne w dostarczonym letnim oryginale zostały usunięte w zimowym wariancie zgodnie z zakazem motywów religijnych. Sylwetka budowli poza tym nie została przemodelowana.
+
+> **Koordynator (31.10, runda 9):** przyjęte. Kompozycja zgodna z wersją letnią (IoU masek 0,97–1,00); PNG skwantyzowane (Pillow FASTOCTREE + oxipng).
+
+# ASSETS-131 — zimowe wersje panoram
+
+Data wykonania: **2026-10-31**. Rozdzielczość każdego obrazu: **1620 × 900**, PNG RGBA (sRGB).
+
+## Pliki i pochodzenie
+
+| Plik / ID | Co przedstawia | Narzędzie | Data | Prompt (korekta) | Licencja / prawa |
+|---|---|---|---|---|---|
+| `jaslo-zima.png` / `jaslo` | Panorama Jasła — zabytkowa zabudowa, wieża i rzeka | Python, Pillow i NumPy; ręczne maski i nakładki na istniejącej ilustracji | 2026-10-31 | Ośnież dachy starego miasta, drzewa i brzeg rzeki; rozświetl część okien, dodaj lampki przy kamienicy. | Grafika pochodna przygotowana dla projektu na podstawie letniej grafiki projektu; prawa do materiału źródłowego deklaruje właściciel projektu. |
+| `przemysl-zima.png` / `przemysl` | Panorama Przemyśla — most, starówka, zabytkowe wieże i zamek | Python, Pillow i NumPy; ręczne maski i nakładki na istniejącej ilustracji | 2026-10-31 | Ośnież starówkę i zamek, zachowaj most, dorzecze i ciemną otwartą rzekę; rozświetl kilka okien. | Grafika pochodna przygotowana dla projektu na podstawie letniej grafiki projektu; prawa do materiału źródłowego deklaruje właściciel projektu. |
+| `sanok-zima.png` / `sanok` | Panorama Sanoka — zamek, skansen i pogórze | Python, Pillow i NumPy; ręczne maski i nakładki na istniejącej ilustracji | 2026-10-31 | Ośnież zamek, domy drewniane, drzewa i pasma wzgórz; pozostaw rzekę częściowo wolną od lodu. | Grafika pochodna przygotowana dla projektu na podstawie letniej grafiki projektu; prawa do materiału źródłowego deklaruje właściciel projektu. |
+| `lubaczow-zima.png` / `lubaczow` | Panorama Lubaczowa — ratusz z zegarem i rynek | Python, Pillow i NumPy; ręczne maski i nakładki na istniejącej ilustracji | 2026-10-31 | Ośnież ratusz z zegarem i rynek; dodaj ciepłe okna, świecką girlandę i małą choinkę pod altaną. | Grafika pochodna przygotowana dla projektu na podstawie letniej grafiki projektu; prawa do materiału źródłowego deklaruje właściciel projektu. |
+| `biala-podlaska-zima.png` / `biala-podlaska` | Panorama Białej Podlaskiej — historyczna brama, zabudowa i drzewa | Python, Pillow i NumPy; ręczne maski i nakładki na istniejącej ilustracji | 2026-10-31 | Ośnież bramę, stare kamienice i duże korony drzew; dodaj lampki na elewacji i ciepłe okna. | Grafika pochodna przygotowana dla projektu na podstawie letniej grafiki projektu; prawa do materiału źródłowego deklaruje właściciel projektu. |
+
+## Instrukcja artystyczna zastosowana do wszystkich wersji
+
+> Zimowa wersja letniej panoramy, bez zmiany kadrów i położenia architektury: śnieżne czapy na dachach i koronie drzew, ośnieżony grunt, lodowe brzegi wody, ciepłe oświetlenie części okien, świeckie lampki, subtelny dym z komina; transparentne tło, gruby granatowy kontur, bez tekstu/flag/logo.
+
+## Szczegóły techniczne i korekty
+
+- **Bazowe pliki:** oryginalne `jaslo.png`, `przemysl.png`, `sanok.png`, `lubaczow.png`, `biala-podlaska.png` otrzymane w paczce zlecenia.
+- **Metoda:** proceduralna sezonowa adaptacja pikseli z oryginalnych PNG i ręcznie ustawione śnieżne linie dachów, zaspy, lampki oraz punkty okien; oryginalne granatowe kontury i rozplanowanie zabudowy zachowane.
+- **Nie wykorzystano zewnętrznych zdjęć ani generatora obrazu do samych 5 plików wynikowych.** Pochodzenie bazowych letnich ilustracji nie było w paczce osobno udokumentowane.
+- **Przezroczystość:** oryginalna maska alfa pozostawiona we wszystkich punktach, poza dyskretnym półprzezroczystym dymem ponad wybranymi kominami.
+- **Kolory i klimat:** śnieg `#f4f8fb`, cień `#c9dbe8`, ciepłe okna `#ffd36b`, ciemne oryginalne kontury `#1d2f3b`; bez nieba, padającego śniegu, napisów, logotypów, flag i motywów religijnych.
+- **Prawa:** grafiki pochodne od ilustracji dostarczonych przez właściciela projektu, przeznaczone do użytku w tym projekcie; brak zewnętrznych składników o osobnych licencjach.
+
+## Kontrola jakości
+
+- Każdy plik sprawdzono pod kątem trybu RGBA, wymiarów, przezroczystych narożników, zgodności linii gruntu i spójności kompozycji z oryginałem.
+- `docs/art/podglady/zima-131.png` zawiera pary lato/zima i pięć wersji zimowych w docelowej skali wyświetlania 480 × 267.
+- Nie modyfikowano repozytorium ani nie wykonywano push, branch czy PR.
+
+> **Koordynator (31.10, runda 9):** przyjęte. Kompozycja zgodna z wersją letnią (IoU masek 0,97–1,00); PNG skwantyzowane (Pillow FASTOCTREE + oxipng).
+
+# ASSETS 132 — panoramy zimowe
+
+**Data:** 2026-10-31  
+**Przeznaczenie:** Cebulak Express — Kierunek Polska; pięć grafik punktów trasy na grudzień.  
+**Rozdzielczość:** każdy plik 1620 × 900 px, PNG RGBA (przezroczyste niebo); plan daleki 480 × 267 px.  
+**Narzędzia:** Python 3, Pillow, NumPy, OpenCV; ręcznie określone maski i ścieżki śniegu/gałęzi na podstawie udostępnionych oryginałów. Bez kopiowania zdjęć i bez korzystania z cudzych znaków graficznych.  
+
+| ID | Plik | Przedstawia | Narzędzie | Data | Licencja / prawa |
+|---|---|---|---|---|---|
+| `zamosc` | `zamosc-zima.png` | Panorama zamojskiego ratusza z wieżą i kolorowych kamienic rynku | Python / Pillow / NumPy / OpenCV, edycja grafiki projektu | 2026-10-31 | Wersja opracowana dla projektu na podstawie dostarczonej letniej grafiki projektu; prawa do oryginału według oświadczenia zleceniodawcy pozostają przy właścicielu projektu. |
+| `tomaszow-lubelski` | `tomaszow-lubelski-zima.png` | Panorama zabudowy Tomaszowa Lubelskiego z drewnianą świątynią i wzgórzami | Python / Pillow / NumPy / OpenCV, edycja grafiki projektu | 2026-10-31 | Wersja opracowana dla projektu na podstawie dostarczonej letniej grafiki projektu; prawa do oryginału według oświadczenia zleceniodawcy pozostają przy właścicielu projektu. |
+| `ostrowiec-swietokrzyski` | `ostrowiec-swietokrzyski-zima.png` | Panorama Ostrowca Świętokrzyskiego z kamienicami, mostem, rzeką i ceglaną zabudową przemysłową | Python / Pillow / NumPy / OpenCV, edycja grafiki projektu | 2026-10-31 | Wersja opracowana dla projektu na podstawie dostarczonej letniej grafiki projektu; prawa do oryginału według oświadczenia zleceniodawcy pozostają przy właścicielu projektu. |
+| `skarzysko-kamienna` | `skarzysko-kamienna-zima.png` | Panorama dworca kolejowego w Skarżysku-Kamiennej z pociągiem, drzewami i zabudową | Python / Pillow / NumPy / OpenCV, edycja grafiki projektu | 2026-10-31 | Wersja opracowana dla projektu na podstawie dostarczonej letniej grafiki projektu; prawa do oryginału według oświadczenia zleceniodawcy pozostają przy właścicielu projektu. |
+| `raciborz` | `raciborz-zima.png` | Panorama Raciborza z historyczną zabudową, wieżami, zielenią i rzeką | Python / Pillow / NumPy / OpenCV, edycja grafiki projektu | 2026-10-31 | Wersja opracowana dla projektu na podstawie dostarczonej letniej grafiki projektu; prawa do oryginału według oświadczenia zleceniodawcy pozostają przy właścicielu projektu. |
+
+## Instrukcje artystyczne / prompty dla poszczególnych plików
+
+### `zamosc-zima.png`
+
+Wykonać wariant grudniowy na podstawie zamosc.png: śnieg na parapetach ratusza, barokowych szczytach kamienic, schodach i brukowanej płycie rynku; ciepłe okna, subtelna girlanda, mała ozdobiona choinka i dym z komina. Zachować historyczną architekturę i kolory elewacji, proporcje, grubą granatową kreskę, położenie gruntu i przezroczystość. Nie dodawać nieba, opadów, napisów, znaków i religijnych ozdób.
+
+### `tomaszow-lubelski-zima.png`
+
+Na podstawie tomaszow-lubelski.png zamienić zielone wzgórza i trawę w pokryte śniegiem, pobielić konary iglaków, nadać drzewom liściastym bezlistne gałęzie, pozostawić drewnianą architekturę i czerwone dachy z warstwą śniegu. Ciepłe okna, niewielka ozdobiona choinka i delikatny dym. Dokładnie ten sam kadr, gruby granatowy kontur, przezroczyste tło. Bez nieba, opadów, napisów i symboli religijnych.
+
+### `ostrowiec-swietokrzyski-zima.png`
+
+Na podstawie ostrowiec-swietokrzyski.png zimowe dachy kamienic, fabrycznych hal, mostu i ulicy; śnieżne wzgórza, pozbawione liści drzewa, brzeg rzeki z cienkim lodem i ciemniejszą wodą. Ciepłe szyby, delikatne grudniowe ozdoby. Zachować czerwony kolor cegły, układ budynków, rzekę, kadr i gruby kontur, RGBA bez nieba, padającego śniegu i napisów.
+
+### `skarzysko-kamienna-zima.png`
+
+Na podstawie skarzysko-kamienna.png wiernie zachować dworzec i pociąg; dodać śnieg na dachu dworca, daszku peronowym, dachu pociągu i świerkach. Zieleń w tle zamienić na zimowe lasy, szron na krzewach, delikatny dym, ciepłe okna stacji i małą choinkę na peronie. Zachować zielony lakier pociągu, wszystkie proporcje i gruby granatowy obrys, przezroczystość oraz brak nieba, napisów i marek.
+
+### `raciborz-zima.png`
+
+Na podstawie raciborz.png zachować zamek, historyczną bryłę miasta, czerwone dachy i rzekę, a dodać białe pokrywy śnieżne na dachach, krenelażach i parapetach. Ulistnione drzewa zastąpić ośnieżonymi koronami z widocznymi gałęziami, przy brzegach rzeki dodać lód, a w oknach ciepłe światło i subtelną girlandę. Usunąć wyraźne krzyże z wież; bez nieba, opadów, nowych szyldów czy symboli. Zachować format i styl.
+
+## Szczegóły techniczne
+
+- **Kompozycja:** edycja bez zmiany położenia, skali i kolejności oryginalnych budynków, torów, drzew i rzek; raster źródłowy zachowany jako podstawa.
+- **Kolorystyka:** śnieg `#f4f8fb`, cień `#c9dbe8`, granatowy kontur `#1d2f3b`, ciepłe okna `#ffd36b`. Cegła i elewacje pozostają w kolorach pierwowzoru.
+- **Przezroczystość:** oryginalna maska sylwetki zachowana dla śniegu i zdobień; wyjątkami są lekko transparentne smugi dymu oraz usunięte krzyże w panoramie Raciborza.
+- **Teksty i znaki:** brak napisów, szyldów, logo, flag, godeł, tablic rejestracyjnych i ozdób religijnych.
+- **Podgląd:** `docs/art/podglady/zima-132.png` pokazuje 5 par lato/zima oraz 5 zimowych grafik 480 × 267.
+- **Źródła:** wyłącznie pięć letnich plików PNG przekazanych przez właściciela zlecenia; żadnych źródeł zewnętrznych.
+
+## Sprawdzenie
+
+Weryfikacja skryptowa: wszystkie pliki istnieją, dekodują się jako RGBA 1620 × 900, mają przezroczyste niebo i zachowują pozycję budynków. Wykonano arkusz porównawczy i podgląd w skali gry.
+
+> **Koordynator (31.10, runda 9):** przyjęte ostrowiec-swietokrzyski, raciborz, skarzysko-kamienna, zamosc; **odrzucony tomaszow-lubelski** (prostokątny szew zielonego tła po lewej) — do poprawki (zlecenie 142). Kompozycja zgodna z wersją letnią (IoU masek 0,97–1,00); PNG skwantyzowane (Pillow FASTOCTREE + oxipng).
+
+# ASSETS-133 — Zima: Wałbrzych, Legnica, Berlin, Drezno i granica (Cieszyn)
+
+Data wykonania: **2026-10-31** · Zlecenie: **133** · Runda: **9**
+
+## Zasoby graficzne
+
+Wszystkie grafiki zimowe są **autorską edycją przekazanych przez właściciela projektu plików letnich**, nie są adaptacją zewnętrznych zdjęć. Stylizację wykonano przez zachowujące geometrię przemalowanie wypełnień, nanoszenie śnieżnych czap na istniejące dachy i drzewa oraz dodanie niewielkich świeckich dekoracji grudniowych. Nie zawierają marek, czytelnych napisów, flag ani herbów.
+
+| ID / plik | Co przedstawia | Narzędzie | Data | Prompt / zakres redakcyjny | Licencja / prawa |
+|---|---|---|---|---|---|
+| `walbrzych-zima.png` | Panorama Zamku Książ w Wałbrzychu, meta trasy | Python 3, Pillow, OpenCV (edycja na podstawie `walbrzych.png`) | 2026-10-31 | „Przekształć **wyłącznie** otoczenie i pogodę letniego zamku w grudzień: śnieg na czerwonych dachach, ośnieżony las i skały, ciepłe okna, dwa delikatne dymy z istniejących kominów, dyskretne lampki; zachowaj zamek, kadr i obrys.” | Zasób przygotowany dla projektu na podstawie oryginalnej grafiki projektu; prawa do grafiki źródłowej i jej zamówionej adaptacji po stronie właściciela projektu. |
+| `legnica-zima.png` | Panorama Legnicy z dwuwieżową dominantą i kamienicami, meta trasy | Python 3, Pillow, OpenCV (edycja na podstawie `legnica.png`) | 2026-10-31 | „Zachowaj dokładne bryły, okna i ustawienie wszystkich budynków; zmień zielony grunt na śnieg, dodaj czapy śnieżne na spadzistych dachach, ciepłe światło w części okien i girlandę świetlną między wieżami.” | Zasób przygotowany dla projektu na podstawie oryginalnej grafiki projektu; prawa właściciela projektu. |
+| `berlin-zima.png` | Panorama Berlina: Brama Brandenburska, Reichstag i wieża telewizyjna | Python 3, Pillow, OpenCV (edycja na podstawie `berlin.png`) | 2026-10-31 | „Utrzymaj historyczne dominanty i ich pozycje; ośnież drzewa, dachy i gzymsy, ozdób świecką girlandą górną belkę Bramy Brandenburskiej, dodaj kilka ciepłych okien, zachowaj granatowy kontur.” | Zasób przygotowany dla projektu na podstawie oryginalnej grafiki projektu; prawa właściciela projektu. |
+| `drezno-zima.png` | Panorama Drezna z mostem, historyczną zabudową i Łabą | Python 3, Pillow, OpenCV (edycja na podstawie `drezno.png`) | 2026-10-31 | „Nie przesuwaj panoramy ani mostu: oszroń gzymsy i dachy, zasyp śniegiem drzewa przy rzece, przyciemnij wodę bez jej całkowitego zamarzania, dodaj ciepłe okna i nienachalne lampki na budynku.” | Zasób przygotowany dla projektu na podstawie oryginalnej grafiki projektu; prawa właściciela projektu. |
+| `granica-cieszyn-zima.png` | Przejście drogowe w Cieszynie: szlaban, budka, most, rzeka, góry i pusta tablica | Python 3, Pillow, OpenCV (edycja na podstawie `granica-cieszyn.png`) | 2026-10-31 | „Utrzymaj identyczną drogę, szlaban, budkę i pustą niebieską tablicę; zaśnież zbocza, drzewa, daszki, balustrady i pobocze, pozostaw ciemną niezamarzniętą rzekę, rozświetl okno budki i girlandę na jej dachu.” | Zasób przygotowany dla projektu na podstawie oryginalnej grafiki projektu; prawa właściciela projektu. |
+
+## Technika i zakres modyfikacji
+
+- Wszystkie pliki wynikowe to **PNG / RGBA / 1620 × 900 px** z zachowaniem pierwotnego kadru, rozmieszczenia brył, krawędzi gruntu i przezroczystego tła; cień i gruby granatowy kontur z oryginału są zachowane.
+- Kolory śniegu i cieni: `#f4f8fb`, `#c9dbe8`; ciepłe oświetlenie: paleta bursztynowa wokół `#ffd36b`. Kolory cegieł i fasad nie zostały przemalowane na biało.
+- Brak nowego nieba i opadów: śnieg jest wyłącznie na istniejących powierzchniach. Przy Wałbrzychu dodano dwa drobne półprzezroczyste obłoki dymu ponad istniejącymi kominami.
+- Arkusz: `docs/art/podglady/zima-133.png` — pięć par lato/zima na tle `#bfe3f5`, a pod spodem miniatury w rozmiarach logicznych gry (dla czterech panoram 480 × 267; dla Cieszyna 180 × 100).
+- **Sposób przygotowania:** deterministyczna edycja i ręcznie wskazane miejsca akcentów zimowych na źródłowych ilustracjach z paczki. Nie kopiowano fotografii ani cudzych assetów, nie korzystano z zewnętrznych zasobów graficznych.
+
+## Kontrola techniczna
+
+Każdy plik sprawdzono pod kątem rozmiaru, kanału alfa, ścieżki docelowej oraz poprawnego otwierania. Pliki letnie nie są zmieniane ani duplikowane, ponieważ zlecenie dotyczy wyłącznie pięciu zimowych wariantów istniejących punktów.
+
+> **Koordynator (31.10, runda 9):** przyjęte. Kompozycja zgodna z wersją letnią (IoU masek 0,97–1,00); PNG skwantyzowane (Pillow FASTOCTREE + oxipng).
+
+# ASSETS — zlecenie 134 (31 października 2026)
+
+**Prawa:** grafiki przygotowane specjalnie dla projektu „Cebulak Express — Kierunek Polska” na podstawie dostarczonych przez właściciela projektu plików letnich. Prawa do udostępnionych materiałów wejściowych pozostają przy właścicielu projektu; rezultaty przeznaczone do wykorzystania w tym projekcie. Brak zewnętrznych fotografii, nazw firm, fontów osadzonych w ilustracjach i materiałów stockowych.
+
+**Narzędzia:** ChatGPT (kompozycja, stylizacja, autorski opis grafiki), ręcznie przygotowane instrukcje graficzne SVG, CairoSVG (render), Pillow / NumPy / OpenCV (sezonowa korekta barw i dokładne nakładki), ręczna kontrola na podglądzie 180×100. Raster RGBA, 1620×900 px. Grafiki nowych par rysowane według wspólnej geometrii; wszystkie zimowe detale dołożone bez przemieszczania architektury.
+
+| Plik / ID | Co przedstawia | Prompt i założenia | Narzędzie | Licencja i uwagi |
+|---|---|---|---|---|
+| `granica-jedrzychowice.png` | Jędrzychowice/Zgorzelec: dawne przejście drogowe i most nad Nysą Łużycką, wzgórza Dolnego Śląska, podniesiony szlaban, pusty niebieski znak | „Nowa letnia ilustracja A+ przydrożnego przejścia, gruby kontur #1d2f3b, 2 wiaty odpraw, architektoniczny most, rzeka, wzgórza, brak nieba, znak bez napisu, kadr 1620×900 z przezroczystością” | SVG / CairoSVG / ChatGPT | Oryginalna grafika dla właściciela projektu, oparta na układzie letniego wzorca |
+| `granica-jedrzychowice-zima.png` | To samo przejście zimą, ośnieżone dachy i wzgórza, ciepłe okna | „Zachować każdy budynek, most, szlaban i znak na tym samym miejscu i w tej samej skali; dodać zaspy, czapy śniegu, bare gałęzie, lód przy wodzie, ciepłe światło, świecką girlandę; bez opadów i nieba” | SVG / CairoSVG / ChatGPT | Oryginalna grafika zimowa na bazie nowego lata; prawa właściciela projektu |
+| `stacja-jedrzychowice.png` | Generyczna stacja paliw A4 przy granicy, kiosk z kawą i przekąskami, busy z bagażem, Pogórze Izerskie | „Nowa letnia ilustracja A+: biało-czerwona bezmarkowa stacja z 2 pompami, biało-czerwony daszek, kiosk z pasiastą markizą, busy z walizkami, wzgórza, pusty znak, gruby granatowy kontur, bez nazw” | SVG / CairoSVG / ChatGPT | Oryginalna grafika dla właściciela projektu, oparta na układzie letniego wzorca |
+| `stacja-jedrzychowice-zima.png` | Ta sama stacja paliw A4 z zaśnieżonymi dachami i pojazdami | „Identyczna kompozycja co latem, wyraźna biel i błękit śniegu na wiacie, kiosku, polach i dachach busów, ciepły kiosk i delikatne lampki; zero napisów i marek” | SVG / CairoSVG / ChatGPT | Oryginalna grafika zimowa na bazie nowego lata; prawa właściciela projektu |
+| `stacja-cieszyn-zima.png` | Ośnieżona stacja z drewnianym domem, kioskiem i beskidzkimi wzgórzami | „Zachować dostarczony letni raster 1:1: stacja, busy, kiosk, dom i wzgórza nie zmieniają miejsc ani proporcji; przygasić zieleń, dać śnieg na dachu głównej wiaty, chacie, markizach, świerkach i ziemi, ciepłe okna, bez nieba i padającego śniegu” | Python / Pillow / OpenCV, oryginał + ręczna nakładka SVG / CairoSVG / ChatGPT | Modyfikacja dostarczonej grafiki projektu; prawa właściciela projektu |
+
+Arkusz kontrolny: `docs/art/podglady/zima-134.png` pokazuje wszystkie trzy pary lato/zima oraz trzy miniatury zimowe w skali 180×100 px.
+
+**Kontrola techniczna:** wszystkie pięć plików PNG to RGBA, dokładnie 1620×900, z alfa=0 w górnych partiach obrazu; nie zawierają wpisanych nazw, logo, rejestracji, flag ani motywów religijnych. Ciepłe lampki to dekoracje świeckie.
+
+> **Koordynator (31.10, runda 9):** przyjęte. Nowe letnie grafiki punktów przy drodze zastępują stare płaskie: gruby kontur i więcej detalu, choć prostsze niż panoramy A+ z rundy 8 — ewentualne dopracowanie później. Kompozycja zgodna z wersją letnią (IoU masek 0,97–1,00); PNG skwantyzowane (Pillow FASTOCTREE + oxipng).
+
+# ASSETS-135 - zimowe punkty trasy
+
+**Data wykonania:** 31 października 2026 r.  
+**Projekt:** Cebulak Express - Kierunek Polska  
+**Technika:** autorskie rysunki wektorowe oraz rasterowa edycja oryginału dostarczonego przez właściciela projektu.  
+**Parametry:** PNG RGBA, 1620 × 900 px, przezroczyste tło, gruby kontur #1d2f3b.
+
+| Plik | ID | Co przedstawia | Narzędzie / źródło | Data | Licencja i prawa |
+|---|---|---|---|---|---|
+| `granica-swiecko.png` | `granica-swiecko` | Przejście graniczne w Świecku, lato | Rysunek wektorowy SVG, render CairoSVG, Pillow | 2026-10-31 | Grafika na potrzeby projektu, na podstawie dostarczonych grafik; prawa do zasobów projektu przysługują właścicielowi projektu |
+| `granica-swiecko-zima.png` | `granica-swiecko` | Przejście graniczne w Świecku, zima | Rysunek SVG z identyczną geometrią i warstwami śniegu, CairoSVG | 2026-10-31 | Grafika na potrzeby projektu, na podstawie dostarczonych grafik; prawa do zasobów projektu przysługują właścicielowi projektu |
+| `stacja-swiecko.png` | `stacja-swiecko` | Stacja za granicą (okolice Świecka), lato | Rysunek wektorowy SVG, render CairoSVG, Pillow | 2026-10-31 | Grafika na potrzeby projektu, na podstawie dostarczonych grafik; prawa do zasobów projektu przysługują właścicielowi projektu |
+| `stacja-swiecko-zima.png` | `stacja-swiecko` | Stacja za granicą (okolice Świecka), zima | Rysunek SVG z identyczną geometrią i warstwami śniegu, CairoSVG | 2026-10-31 | Grafika na potrzeby projektu, na podstawie dostarczonych grafik; prawa do zasobów projektu przysługują właścicielowi projektu |
+| `granica-olszyna-zima.png` | `granica-olszyna` | Przejście graniczne w Olszynie, zima | Edycja oryginalnego PNG, Pillow i NumPy + nakładka SVG/CairoSVG | 2026-10-31 | Grafika na potrzeby projektu, na podstawie dostarczonych grafik; prawa do zasobów projektu przysługują właścicielowi projektu |
+
+## Prompty / założenia artystyczne
+
+### `granica-swiecko`
+
+Na podstawie letniego pierwowzoru zachowaj układ i skalę: dawne wiaty odpraw, sosny lubuskie, graniczny szlaban podniesiony w górę, pusta tablica oraz rzeka Odra. Pomaluj w ciepłym stylu kreskówkowym z mocnym granatowym konturem. Do wariantu zimowego dodaj gruby śnieg na dachach, choinkach i poboczu, lód przy brzegu, ciepłe światła. Niebo i padający śnieg pomiń.
+
+### `stacja-swiecko`
+
+Na podstawie letniego pierwowzoru zachowaj układ: czerwona wiata stacji, dwa dystrybutory, budka z kawą i hot dogami, pusta tablica, generyczne busy i sosnowy las. Czysty styl kreskówkowy, kontur #1d2f3b, pełna przezroczystość wokół obiektów. Do zimowej wersji dodaj czapy śniegu, zaspy i żółte ciepłe okno, bez zmiany położenia obiektów.
+
+### `granica-olszyna`
+
+Zimowa edycja istniejącej ilustracji, bez przesuwania oryginalnych obiektów i zmiany ich kształtu: białe czapy na zadaszeniu, drzewach i niebieskiej tablicy; wyciszona zieleń, śnieg na krzewach i poboczu, ciepłe okna budek i nieliczne świeckie lampki. Bez napisów i marek.
+
+## Przebieg prac
+
+Nowe pary lato i zima narysowano tą samą geometrią SVG, dobierając sezonowo kolory oraz warstwy śniegu. Nie przeskalowywano żadnego elementu między tymi wersjami. Zimowy wariant Olszyny opracowano na tej samej warstwie letniego oryginału, a dodatki naniesiono jako przezroczystą nakładkę. Każda ilustracja ma przezroczystą przestrzeń ponad zabudową i nie ma opadów na niebie.
+
+## Licencja i źródła
+
+Rysunki są opracowaniem przygotowanym na potrzeby projektu. Materiałem referencyjnym były trzy letnie grafiki dołączone do zlecenia. Nie użyto cudzych zdjęć, marek, logotypów, znaków drogowych z tekstem, symboli politycznych, religijnych ani flag. Rzeczywista metoda wykonania: rysunek i raster programowy, nie import obrazu z zewnętrznego generatora.
+
+## Kontrola jakości
+
+- Pięć plików PNG ma wymiary 1620 × 900 i format RGBA.
+- Oba warianty nowych punktów używają tych samych współrzędnych obiektów.
+- Kontury są granatowe, a tło powyżej panoramy pozostaje przezroczyste.
+- W arkuszu `docs/art/podglady/zima-135.png` pokazano 3 pary obrazów oraz wszystkie wersje zimowe w skali gry 180 × 100 px.
+
+> **Koordynator (31.10, runda 9):** przyjęte. Nowe letnie grafiki punktów przy drodze zastępują stare płaskie: gruby kontur i więcej detalu, choć prostsze niż panoramy A+ z rundy 8 — ewentualne dopracowanie później. Kompozycja zgodna z wersją letnią (IoU masek 0,97–1,00); PNG skwantyzowane (Pillow FASTOCTREE + oxipng).
+
+# ASSETS 136 - lato i zima: Ystad, prom baltycki, stacja A18
+
+- Data: **2026-10-31**.
+- Format produkcyjny: **PNG RGBA 1620 x 900**, warstwa przezroczysta.
+- Barwa konturu: **`#1d2f3b`**. Bez znaków, napisów, flag i logotypów.
+- Technika: oryginalna **ilustracja wektorowa projektowana i rysowana programowo (Python + SVG/CairoSVG/Pillow)** w oparciu o kompozycję materiałów letnich projektu. Nie użyto fotografii zewnętrznych, gotowych marek ani cudzych ilustracji.
+- Licencja: **grafiki przygotowane na zlecenie właściciela projektu na bazie oryginalnych grafik projektu; prawa do używania i dalszej modyfikacji przekazane właścicielowi projektu**. Autor wykonania: ChatGPT/OpenAI, kompozycja pierwotna: właściciel projektu.
+- Arkusz kontroli: `docs/art/podglady/zima-136.png`.
+
+| Plik / ID | Co przedstawia | Narzędzie / źródło | Prompt / instrukcja wykonania | Licencja |
+|---|---|---|---|---|
+| `ystad.png` / `ystad` | Port promowy w Ystad latem: cztery pastelowe domy z muru pruskiego, terminal i nienazwany prom, mewy. | Python SVG + CairoSVG; układ z letniego `ystad.png` w załączniku. | "Przerysuj port Ystad na jasną, ciepłą komiksową panoramę. Duże, kolorowe budynki szachulcowe po lewej, terminal i uniwersalny biały prom po prawej, morze, mewy; gęsty granatowy kontur, zero tekstu, transparentne niebo". | Właściciel projektu |
+| `ystad-zima.png` / `ystad` | Ten sam port w grudniu: śnieżne dachy i nabrzeże, chłodne morze, oświetlone okna, lampki. | Ta sama geometria wektorowa + warstwa sezonowa SVG. | "Zachowaj identyczne sylwetki i położenia, dodaj czapy śniegu i lodowe cienie, ciepłe okna, świeckie lampki oraz morski chłód, bez padającego śniegu i tła nieba". | Właściciel projektu |
+| `prom-baltyk.png` / `prom-baltyk` | Duży neutralny prom samochodowy na otwartym Bałtyku latem; mewy, fale i daleka latarnia. | Python SVG + CairoSVG; kadr i skala ze źródłowego `prom-baltyk.png`. | "Duży prom pasażersko-samochodowy bez nazwy i barw operatora, wielowarstwowe pokłady, szalupy i duże niebieskie fale, daleki pas lądu, mewy; kontur granatowy i przezroczyste niebo". | Właściciel projektu |
+| `prom-baltyk-zima.png` / `prom-baltyk` | Ten sam prom na zimnym Bałtyku; śnieg na pokładach, zimna woda i ciepłe okna. | Ta sama geometria wektorowa + zimowa paleta SVG. | "Zachowaj kadr promu i lądu 1:1, zlodowaciałe krawędzie i śnieg na pokładach, grube turkusowo-niebieskie fale, ciepłe okna, przejrzyste niebo, bez opadów". | Właściciel projektu |
+| `stacja-olszyna-zima.png` / `stacja-olszyna` | Śnieżna stacja paliw z dwiema załadowanymi autami i kioskiem przy A18 w Polsce. | Python NumPy/Pillow + ręczne nałożenie wektorowej warstwy śniegu; źródło oryginalne `stacja-olszyna.png`. | "Zachowaj oryginalną sylwetkę i kompozycję bez przesuwania. Zmień las, liście i grunt na zimowe, dodaj szerokie czapy śniegu na wiacie, kiosku i pojazdach, ciepłe światło w kiosku i delikatne świeckie lampki". | Właściciel projektu |
+
+## Kontrola jakości
+
+- Pliki PNG: 1620 × 900, RGBA, przezroczyste niebo, bez obcego tła.
+- Ystad i prom: lato/zima mają wspólną geometrię głównych brył, nabrzeży i kadru; sezon wymienia kolory i nakłada lokalny śnieg.
+- Stacja: zachowano oryginalne obiekty i lokalizacje, zmodyfikowano tylko barwy oraz dodano zimowe nakładki.
+- Gotowość: arkusz porównania sezonów i małe rozmiary z gry.
+- Testy typu `npm ci`, kompilacja Android i test w aplikacji: **nie wykonywano**, bo to dostawa zasobów graficznych, nie kodu gry.
+
+> **Koordynator (31.10, runda 9):** przyjęte. Nowe letnie grafiki punktów przy drodze zastępują stare płaskie: gruby kontur i więcej detalu, choć prostsze niż panoramy A+ z rundy 8 — ewentualne dopracowanie później. Kompozycja zgodna z wersją letnią (IoU masek 0,97–1,00); PNG skwantyzowane (Pillow FASTOCTREE + oxipng).
+
+# ASSETS-137 — zimowe landmarki, runda 9
+
+**Data:** 2026-10-31  
+**Projekt:** Cebulak Express — Kierunek Polska  
+**Zestaw:** 3 miejsca, 5 plików PNG RGBA (1620 × 900), transparentne tło.  
+**Autor/narzędzie:** ilustracje stworzone programowo jako autorskie grafiki wektorowe SVG za pomocą Python, wyrenderowane przez CairoSVG; przetwarzanie sezonowe i korekty w Pillow/NumPy. Materiały zostały przygotowane na podstawie letnich PNG otrzymanych w zleceniu nr 137. **Żadnych zewnętrznych zdjęć, logotypów ani gotowych grafik stockowych.**
+
+| Plik / identyfikator | Co przedstawia | Narzędzie i sposób wykonania | Data | Licencja / uwagi |
+|---|---|---|---|---|
+| `swinoujscie.png` — `swinoujscie` | Nowa ilustracja letnia A+: portowe przejście w Świnoujściu, latarnia, prom, budynek terminala, podniesiony szlaban, Stawa Młyny, pusty niebieski znak, wydmy | Python + ręczny rysunek SVG → CairoSVG → PNG; nowa kompozycja oparta na orientacyjnym układzie letniego pliku referencyjnego | 2026-10-31 | Grafika wykonana dla właściciela projektu na bazie jego materiałów; prawa do użycia w projekcie właściciela |
+| `swinoujscie-zima.png` — `swinoujscie` | Zimowy odpowiednik: identyczny układ budowli, śnieg na latarni, terminalu, beaconie i nabrzeżu, chłodniejsza woda, ciepłe światła i lampki | Python + SVG generowane z tych samych współrzędnych co letnie → CairoSVG → PNG | 2026-10-31 | Jak wyżej; sezonowa adaptacja własnej wersji letniej |
+| `stacja-swinoujscie.png` — `stacja-swinoujscie` | Nowa ilustracja letnia A+: stacja przy S3, wydmy, sosny, zadaszone dystrybutory, budka kawy i gofrów, busy z bagażem, pusty znak | Python + ręczny rysunek SVG → CairoSVG → PNG; nowa grafika oparta na orientacyjnym układzie oryginału | 2026-10-31 | Grafika wykonana dla właściciela projektu na bazie jego materiałów; prawa do użycia w projekcie właściciela |
+| `stacja-swinoujscie-zima.png` — `stacja-swinoujscie` | Zimowa stacja przy S3: ten sam kadr, śnieżne sosny i dachy, zaspy, ciepłe wnętrze budki i lampki | Python + SVG z tego samego układu co letnia grafika → CairoSVG → PNG | 2026-10-31 | Jak wyżej; sezonowa adaptacja własnej wersji letniej |
+| `mikulov-zima.png` — `mikulov` | Zimowy Mikulov: istniejący zamek na skale, miasteczko, drzewo, droga, auto i pusty znak — bez przestawiania obiektów | NumPy/Pillow: sezonowe przemalowanie kolorów oryginalnego `mikulov.png`; ręczny wektorowy malunek śniegu, lodowych cieni i świateł (SVG/CairoSVG) | 2026-10-31 | Opracowanie zimowe na bazie letniej grafiki właściciela projektu; prawa do materiałów zgodnie z prawami właściciela do oryginału |
+
+## Prompty / opis wykonania
+
+- **`swinoujscie.png`:** „Wesoła ilustracja gry 2D w bliskim planie, port Świnoujście: wysoka ośmioboczna latarnia z cegły na lewo, prom i portowy terminal pośrodku, podniesiony biało-czerwony szlaban, biała Stawa Młyny z czterema skrzydłami po prawej, odległe dźwigi portowe, wydmy i morze. Gruby granatowy kontur #1d2f3b 14–16 px, duże płaskie plamy, transparentne niebo, bez napisów, flag i marek.”
+- **`swinoujscie-zima.png`:** „Zachowaj dokładnie pozycje i rozmiary wszystkich budowli letniej grafiki portu; dodaj czytelny śnieg na dachach, latarni, nabrzeżu i nawigacyjnej Stawie Młyny, zimną wodę z przybrzeżnym lodem, żółte ciepłe okna i skromne lampki przy terminalu; bez padającego śniegu i bez tła nieba.”
+- **`stacja-swinoujscie.png`:** „Wesoła stacja przy drodze S3 za Świnoujściem, bliski plan: duża czerwonawa wiata nad dwoma generycznymi dystrybutorami, pastelowa budka kawy i gofrów, dwa rodzinnie przeładowane busy bez marek i tablic, sosny, wydmy, pusta niebieska tablica. Masywne kontury #1d2f3b 14–16 px, przezroczyste niebo, 1620×900 RGBA.”
+- **`stacja-swinoujscie-zima.png`:** „Ten sam obrys wiaty, budki, sosny, pojazdów i pobocza; dachy i gałęzie pokryte śniegiem, biały grunt, bursztynowe światło dystrybutorów i okna budki, delikatne świeckie lampki pod wiatą; nie dodawaj napisów, nieba ani opadów.”
+- **`mikulov-zima.png`:** „Zachowaj 1:1 kadr oryginalnego `mikulov.png`, zamek na wysokiej skale, układ dachów, serpentynę drogi, biały samochód i niebieską pustą tablicę. Przemaluj zieleń na zaspy, biel i błękitne cienie, dołóż śnieg na historycznych dachach i skalnych tarasach, obsypane śniegiem korony drzew, ciepłe światła pojedynczych okien i dyskretne lampki.”
+
+## Ustawienia i ograniczenia
+
+- Wszystkie PNG są 1620 × 900, tryb RGBA, z rzeczywistą przezroczystością i pustym niebem.
+- Dwa nowe zestawy lato/zima korzystają z identycznych współrzędnych głównych obiektów i tej samej linii gruntu.
+- `mikulov-zima.png` zachowuje rozmieszczenie budowli i drogi w otrzymanym letnim `mikulov.png` (letniego Mikulova nie zastępowano, nie dodawano go ponownie do ZIP).
+- Brak napisów w grafikach, flag, herbów, marek, emblematów, motywów politycznych i religijnych oraz zewnętrznych licencjonowanych zdjęć.
+- Arkusz `docs/art/podglady/zima-137.png` zawiera 3 porównania lato–zima na tle `#bfe3f5` i wszystkie zimowe w natywnej wielkości wyświetlanej w grze: 180 × 100 px.
+
+> **Koordynator (31.10, runda 9):** przyjęte. Nowe letnie grafiki punktów przy drodze zastępują stare płaskie: gruby kontur i więcej detalu, choć prostsze niż panoramy A+ z rundy 8 — ewentualne dopracowanie później. Kompozycja zgodna z wersją letnią (IoU masek 0,97–1,00); PNG skwantyzowane (Pillow FASTOCTREE + oxipng).
+
+# Zlecenie 138 — ewidencja grafik zimowych
+
+**Data:** 2026-10-31  
+**Projekt:** Cebulak Express — Kierunek Polska  
+**Licencja / prawa:** grafiki narysowane i przetworzone na potrzeby projektu, na podstawie grafik letnich dostarczonych przez właściciela projektu; prawa do efektów prac przysługują właścicielowi projektu. Nie korzystano z fotografii, znaków towarowych, ikon ani fontów umieszczonych w plikach gry pochodzących od osób trzecich.  
+**Technika:** autorski rysunek wektorowy wygenerowany programowo w Pythonie (SVG / CairoSVG), ręczne opracowanie geometrii i zimowych nakładek; Pillow / NumPy do kontrolowanej zmiany kolorystyki istniejącej grafiki; konsultacja układu z grafiką załączoną do zlecenia. Bez użycia gotowych stocków i zdjęć.  
+**Format wszystkich pięciu plików:** 1620 × 900 px, PNG, RGBA, przezroczyste tło.
+
+| Plik | Id | Co przedstawia | Narzędzie i autorstwo | Licencja |
+|---|---|---|---|---|
+| `prom-kanal.png` | `prom-kanal` | Duży bezimienny prom przez kanał La Manche, białe klify i mewy; nowa grafika letnia | Wektor SVG/Python (ChatGPT), własny rysunek na podstawie układu grafiki źródłowej projektu | Własność projektu |
+| `prom-kanal-zima.png` | `prom-kanal` | Identyczna sylwetka promu, zimowe klify, śnieg i ciepłe okna | Wspólny szablon SVG/Python, zmiana pory roku (ChatGPT) | Własność projektu |
+| `svinesund.png` | `svinesund` | Stary kamienny most łukowy nad fiordem, las iglasty, łoś, pusty znak | Wektor SVG/Python (ChatGPT), własny rysunek na podstawie układu grafiki źródłowej projektu | Własność projektu |
+| `svinesund-zima.png` | `svinesund` | Identyczna scena historycznego mostu z zimową szatą i śniegiem na świerkach | Wspólny szablon SVG/Python, zmiana pory roku (ChatGPT) | Własność projektu |
+| `granica-kolbaskowo-zima.png` | `granica-kolbaskowo` | Zimowa adaptacja oryginalnej ilustracji przejścia granicznego | Pillow/NumPy + nakładki SVG (ChatGPT), oryginał właściciela projektu | Własność projektu |
+
+## Opisy poleceń ilustracyjnych (prompty)
+
+**prom-kanal (lato i zima)**  
+Ilustracja 2D w stylu kolorowej gry mobilnej: duży prom samochodowy bez marek i napisów na kanale La Manche, białe klify za rufą, cztery mewy, czytelna sylwetka, transparentne tło, wyrazisty granatowy kontur #1d2f3b, płaskie nasycone kolory, stały kadr 1620x900. Wersja zimowa: dokładnie ta sama geometria, śnieg na nadbudówkach i klifach, ciemne morze z lodem tylko przy brzegu, ciepłe okna, dyskretna girlanda świateł; bez nieba i opadów.
+
+**svinesund (lato i zima)**  
+Ilustracja 2D w stylu kolorowej gry mobilnej: historyczny kamienny most łukowy nad fiordem Svinesund, skaliste brzegi, świerkowy las, łosie (jeden łoś na lewym brzegu), pusty niebieski znak, transparentne tło, gruby granatowy kontur #1d2f3b, uproszczone bryły, stały kadr 1620x900. Wersja zimowa: dokładnie ta sama geometria, zimne ciemniejsze wody, śnieg na drzewach, skałach i balustradach, lampy ciepło świecą; bez nieba, napisów i flag; nie odwzorowywać nowego mostu.
+
+**granica-kolbaskowo-zima**  
+Z zachowanego oryginalnego pliku granica-kolbaskowo.png, bez zmiany kompozycji ani proporcji, zrobić wariant zimowy: przemapować zielone krzewy i żółte pola na białe i błękitne zaspy, śnieżne czapy na dachu zadaszenia i budkach, ciepłe okna i dyskretne świeckie światełka; zachować drogi, szlaban, znak oraz gruby granatowy kontur, przejrzyste tło, bez nieba, padającego śniegu i napisów.
+
+## Kompozycja, integralność i uwagi
+
+- Lato i zima promu oraz Svinesund są rysowane z **jednego szablonu sceny z identycznymi współrzędnymi** głównych obiektów. Zmieniają się kolory sezonowe, światła i pokrywy śnieżne.
+- Dla Kołbaskowa użyto bezpośrednio oryginału: cała baza geometryczna oraz kanał alpha pozostały zachowane, a zima jest nałożona jako lokalna korekta barw i rysowane pokrywy śnieżne.
+- Most w Svinesund jest **ogólną, ilustracyjną interpretacją historycznego łukowego mostu**, nie odwzorowaniem współczesnego mostu z 2005 r.
+- Puste znaki nie zawierają symboli, nazw ani flag. Grafiki nie zawierają brandingu, napisów ani motywów religijnych.
+- Arkusz porównawczy: `docs/art/podglady/zima-138.png`.
+
+> **Koordynator (31.10, runda 9):** przyjęte. Nowe letnie grafiki punktów przy drodze zastępują stare płaskie: gruby kontur i więcej detalu, choć prostsze niż panoramy A+ z rundy 8 — ewentualne dopracowanie później. Kompozycja zgodna z wersją letnią (IoU masek 0,97–1,00); PNG skwantyzowane (Pillow FASTOCTREE + oxipng).
+
+# ASSETS — Zlecenie 139 (31.10.2026)
+
+**Projekt:** Cebulak Express — Kierunek Polska  
+**Zakres:** 5 grafik PNG RGBA 1620×900; 2 pary lato/zima promów i zimowa stacja przy A6.  
+**Licencja / prawa:** grafiki przygotowane specjalnie dla projektu, na podstawie letnich plików dostarczonych przez właściciela; prawa do wykorzystania i modyfikacji w projekcie zachowuje właściciel projektu. Grafiki własne bez zewnętrznych znaków towarowych.  
+**Narzędzie wykonawcze:** rysunek wektorowy SVG tworzony programowo (Python / CairoSVG) i kompozycja PNG (Pillow); stacja — edycja oryginalnego PNG i wektorowe nakładki śniegu. Źródłowe grafiki promów służyły do ustalenia kadru i skali; nowe promy są narysowane od nowa.  
+**Podgląd:** `docs/art/podglady/zima-139.png`.  
+
+| Plik | ID i opis | Narzędzie | Data | Prompt / wytyczne | Licencja / autor / uwagi |
+|---|---|---|---|---|---|
+| `prom-irlandia-francja.png` | prom-irlandia-francja — letni prom Rosslare–Cherbourg na otwartym morzu, zielone klify, mała latarnia, mewy | Python, SVG, CairoSVG | 2026-10-31 | „Nowa letnia ilustracja A+; kadr oryginału, centralny prom, kontur #1d2f3b, płaskie nasycone kolory, bez nieba, napisów i oznaczeń armatora; PNG przezroczyste.” | Własna grafika na podstawie oryginalnej grafiki projektu; prawa właściciela projektu. |
+| `prom-irlandia-francja-zima.png` | prom-irlandia-francja — identyczny prom i kadr zimą, śnieg, mróz przy brzegu, ciepłe okna | Python, SVG, CairoSVG | 2026-10-31 | „Ten sam układ i geometria statku; śnieg na górnych pokładach, dachu latarni, domach i drzewach, ciemna niezamarznięta woda, przy brzegu kra; okna #ffd36b; bez nieba i opadów.” | Własna zimowa wersja letniej grafiki projektu; prawa właściciela projektu. |
+| `prom-zatoka-finska.png` | prom-zatoka-finska — letni prom Helsinki–Tallinn, wieże historycznego Tallinna, portowe dźwigi, mewy | Python, SVG, CairoSVG | 2026-10-31 | „Nowa letnia ilustracja A+ w układzie starego promu; historyczna sylwetka miasta w tle i nabrzeże, grube granatowe kontury, bez współczesnych chronionych budynków, marek, flag, napisów i nieba.” | Własna grafika na podstawie grafiki projektu; prawa właściciela projektu. |
+| `prom-zatoka-finska-zima.png` | prom-zatoka-finska — identyczna kompozycja w grudniu; ośnieżone spiczaste dachy, śnieg na promie i porcie | Python, SVG, CairoSVG | 2026-10-31 | „Geometria i skala promu oraz panoramy bez zmian; zimny Bałtyk bez pełnego zamarznięcia, przy nabrzeżu kra, śnieg #f4f8fb, cień #c9dbe8, świecące okna.” | Własna zimowa wersja letniej grafiki projektu; prawa właściciela projektu. |
+| `stacja-kolbaskowo-zima.png` | stacja-kolbaskowo — zimowa stacja przy A6, identyczny układ wiaty, dwóch aut, kiosku, trzech turbin i drzew | Python, Pillow, CairoSVG (edycja oryginalnego PNG) | 2026-10-31 | „Zachowaj każdy obiekt i kadr oryginału; zazielenienia zastąp zimnymi szaroniebieskimi, dodaj widoczne białe zaspy, śnieg na wiacie, budynku, drzewach i autach; ciepłe światło kiosku; bez nowych napisów i logo.” | Edycja obrazu dostarczonego przez właściciela projektu; prawa właściciela projektu. |
+
+**Kontrola:** każdy plik to PNG RGBA 1620×900. Grafiki promów mają dokładnie wspólną geometrię głównych brył lato/zima (kolory i śnieg to odrębne warstwy). Stacja jest zimową modyfikacją oryginału, bez przemieszczania budynków, aut lub turbin. Kontury głównych obiektów zachowują grubość odpowiednią do zmniejszenia 480×267 lub 180×100 px. Dookoła obiektów nie ma narysowanego nieba ani padającego śniegu.
+
+> **Koordynator (31.10, runda 9):** przyjęte. Nowe letnie grafiki punktów przy drodze zastępują stare płaskie: gruby kontur i więcej detalu, choć prostsze niż panoramy A+ z rundy 8 — ewentualne dopracowanie później. Kompozycja zgodna z wersją letnią (IoU masek 0,97–1,00); PNG skwantyzowane (Pillow FASTOCTREE + oxipng).
+
+# Zlecenie 140 — metryka ilustracji
+
+Data: **2026-10-31**. Format: **PNG, RGBA 1620 × 900, sRGB**. Generator / narzędzie produkcyjne: **ChatGPT + Python (Pillow, NumPy, OpenCV, CairoSVG), ręczna kompozycja wektorowa i retusz pikselowy**. Grafiki służą wyłącznie projektowi gry.
+
+| Plik / ID | Co przedstawia | Narzędzie, przekształcenie i prompt produkcyjny | Licencja / prawa |
+|---|---|---|---|
+| `prom-fehmarn.png` | Prom przez Fehmarn Bełt, dwa wiatraki, mewy — wersja letnia A+ | ChatGPT + autorska ilustracja SVG renderowana w CairoSVG i Pillow. Prompt: „Przerysuj oryginalny prom w tym samym kadrze z wyraźnym granatowym obrysem, ciepłym kolorem burty, portem, turbinami wiatrowymi i mewami; bez marki, flag, nieba, tekstu; alpha.” | Grafika wygenerowana/opracowana dla projektu na podstawie dostarczonego letniego pliku; prawa do oryginału po stronie właściciela projektu. |
+| `prom-fehmarn-zima.png` | Ten sam prom i nabrzeża, zimowe pokłady, śnieg, oświetlenie | ChatGPT + identyczna wektorowa kompozycja SVG z zimową paletą i dodatkowymi czapami śniegu, cienkim lodem, lampkami i dymem. Prompt: „Zachowaj geometrię A+ 1:1, zimowy prom w ciemniejszej wodzie, śnieg na pokładzie, przytulne okna, przejrzyste tło.” | Jak wyżej. |
+| `rosslare-zima.png` | Irlandzki port, prom, przystań i miasteczko za wodą | ChatGPT + Pillow/NumPy/OpenCV (odbarwienie zieleni / korekcja morza) oraz rysunek SVG (dachy, lód, ciepłe okna, lampki). Prompt: „Zachowaj pikselowe pozycje oryginalnego promu i portu, zamień zielone pagórki na śnieżne, pokryj dachy śniegiem, przyciemnij morze, zaznacz lód przy brzegu.” | Grafika generowana dla projektu na podstawie oryginalnej letniej grafiki właściciela projektu. |
+| `la-jonquera-zima.png` | Graniczne przejście drogowe na tle wiaduktu i kamiennych zabudowań | ChatGPT + Pillow/NumPy/OpenCV i ręcznie narysowana warstwa SVG. Prompt: „Ta sama panorama z identyczną drogą, mostem, domkami i pustą tablicą; biały śnieg na dachach, górach i drzewie; grudniowe światło; zimowe pobocze, bez napisów.” | Jak wyżej. |
+| `tarvisio-zima.png` | Alpejskie przejście drogowe, domy, tunel, las i góry | ChatGPT + Pillow/NumPy/OpenCV i ręcznie narysowana warstwa SVG. Prompt: „Zachowaj alpejskie domki, tunel, drogę, puste oznakowanie; ośnież szczyty, gałęzie świerków i dachy, dodaj ciepłe okna i zaspy, bez nieba.” | Jak wyżej. |
+
+## Uwagi kontrolne
+
+- Pięć plików wynikowych jest 1620 × 900 px RGBA, z kanałem alfa i bez warstwy nieba / padającego śniegu.
+- Dla `prom-fehmarn` letnia i zimowa grafika pochodzą z tej samej geometrii SVG; dla pozostałych punktów zimę zbudowano na oryginalnym rastrze bez przemieszczania konturów budynków i głównych obiektów.
+- Sztuczne elementy kompozycji (dachy, mosty, przejścia) nie powielają zdjęć ani nowoczesnej architektury chronionej; ilustracje pozostają stylizowane.
+- Brak logo, marek, nazw, numerów rejestracyjnych, flag i scen religijnych w obrazach.
+- Akceptacja wizualna wymaga dodatkowo sprawdzenia w rzeczywistej scenie gry po integracji.
+
+> **Koordynator (31.10, runda 9):** przyjęte. Nowe letnie grafiki punktów przy drodze zastępują stare płaskie: gruby kontur i więcej detalu, choć prostsze niż panoramy A+ z rundy 8 — ewentualne dopracowanie później. Kompozycja zgodna z wersją letnią (IoU masek 0,97–1,00); PNG skwantyzowane (Pillow FASTOCTREE + oxipng).
+
+# ASSETS-141 — zimowe punkty trasy
+
+**Zlecenie:** 141 — zima. **Data opracowania:** 31.10.2026.
+**Technika:** edycja oryginalnych PNG w środowisku ChatGPT: skrypt Python, Pillow, NumPy i OpenCV; autorskie nakładki ilustracyjne oraz punktowy retusz. Nie wykorzystano zewnętrznych zdjęć ani grafik.
+**Wynik:** 5 plików PNG RGBA 1620 × 900 px z przezroczystym tłem, przeznaczonych do podmiany w grze.
+
+## Rejestr grafik
+
+| Plik | Id | Co przedstawia | Narzędzie | Data | Licencja |
+|---|---|---|---|---|---|
+| `port-helsinki-zima.png` | `port-helsinki` | Port w Helsinkach — nabrzeże, żuraw i prom | ChatGPT + Python (Pillow, NumPy, OpenCV), retusz cyfrowy załączonego PNG | 2026-10-31 | Grafika na podstawie letniego pliku projektu; prawa właściciela projektu |
+| `granica-ee-lv-zima.png` | `granica-ee-lv` | Granica Estonii i Łotwy — domek przy drodze | ChatGPT + Python (Pillow, NumPy, OpenCV), retusz cyfrowy załączonego PNG | 2026-10-31 | Grafika na podstawie letniego pliku projektu; prawa właściciela projektu |
+| `granica-lv-lt-zima.png` | `granica-lv-lt` | Granica Łotwy i Litwy — drewniana stodoła i bocianie gniazdo | ChatGPT + Python (Pillow, NumPy, OpenCV), retusz cyfrowy załączonego PNG | 2026-10-31 | Grafika na podstawie letniego pliku projektu; prawa właściciela projektu |
+| `granica-budzisko-zima.png` | `granica-budzisko` | Granica w Budzisku — szlaban, budka i dwie sylwetki bocianów | ChatGPT + Python (Pillow, NumPy, OpenCV), retusz cyfrowy załączonego PNG | 2026-10-31 | Grafika na podstawie letniego pliku projektu; prawa właściciela projektu |
+| `stacja-budzisko-zima.png` | `stacja-budzisko` | Stacja za granicą w Budzisku — dystrybutory, budka i samochody | ChatGPT + Python (Pillow, NumPy, OpenCV), retusz cyfrowy załączonego PNG | 2026-10-31 | Grafika na podstawie letniego pliku projektu; prawa właściciela projektu |
+
+## Instrukcje graficzne (prompty i zakres edycji)
+
+**Wspólna instrukcja dla wszystkich pozycji:** „Na podstawie otrzymanej letniej ilustracji przygotuj zimową wersję, zachowując ten sam kadr, skalę i rozmieszczenie obiektów. Zachowaj duży, ciemnogranatowy kontur #1d2f3b i płaską rysunkową stylistykę. Zieleń zamień na zaśnieżony, błękitno-biały pejzaż, dołóż białe #f4f8fb czapy śniegu z błękitnym cieniem #c9dbe8 na dachach i konarach oraz ciepłe światło #ffd36b w oknach; niebo i opady pozostaw dla silnika gry, więc nie dodawaj tła. Woda pozostaje otwarta, lód tylko przy brzegu. Nie dodawaj napisów, logo, flag, herbów ani motywów religijnych. Wynik: PNG RGBA 1620×900”.**
+
+### `port-helsinki-zima.png`
+- **Id:** `port-helsinki`
+- **Przedstawia:** Port w Helsinkach — nabrzeże, żuraw i prom
+- **Plan:** daleki
+- **Narzędzie:** ChatGPT (opracowanie edycji) oraz Python/Pillow/NumPy/OpenCV (retusz oryginału i ręczne, wektorowe nakładki śniegu).
+- **Data:** 31.10.2026
+- **Prompt szczegółowy:** Zachowaj panoramę miasta, nabrzeże, dźwig i prom; pokryj historyczne dachy, kopuły i skały śniegiem, pogłęb kolor morza, dodaj lód tylko przy brzegu i ciepłe światła.
+- **Licencja i pochodzenie:** Grafika opracowana na podstawie letniej grafiki projektu przekazanej przez właściciela; prawa do materiału bazowego i wykorzystania w projekcie należą do właściciela projektu.
+
+### `granica-ee-lv-zima.png`
+- **Id:** `granica-ee-lv`
+- **Przedstawia:** Granica Estonii i Łotwy — domek przy drodze
+- **Plan:** bliski
+- **Narzędzie:** ChatGPT (opracowanie edycji) oraz Python/Pillow/NumPy/OpenCV (retusz oryginału i ręczne, wektorowe nakładki śniegu).
+- **Data:** 31.10.2026
+- **Prompt szczegółowy:** Zachowaj auto, drogę, dom, bory i jezioro; zamień trawę na śnieg, pokryj dach i sosnowe gałęzie czapami śniegu, podświetl okna, pozostaw jezioro otwarte.
+- **Licencja i pochodzenie:** Grafika opracowana na podstawie letniej grafiki projektu przekazanej przez właściciela; prawa do materiału bazowego i wykorzystania w projekcie należą do właściciela projektu.
+
+### `granica-lv-lt-zima.png`
+- **Id:** `granica-lv-lt`
+- **Przedstawia:** Granica Łotwy i Litwy — drewniana stodoła i bocianie gniazdo
+- **Plan:** bliski
+- **Narzędzie:** ChatGPT (opracowanie edycji) oraz Python/Pillow/NumPy/OpenCV (retusz oryginału i ręczne, wektorowe nakładki śniegu).
+- **Data:** 31.10.2026
+- **Prompt szczegółowy:** Zachowaj drogę, samochód, brzozy, drewniany budynek, bociana, gniazdo i belę siana; pokryj krajobraz śniegiem. Wyjątkowo przenieś anonimową niebieską tablicę lekko w lewo tak, by mieściła się w całości.
+- **Licencja i pochodzenie:** Grafika opracowana na podstawie letniej grafiki projektu przekazanej przez właściciela; prawa do materiału bazowego i wykorzystania w projekcie należą do właściciela projektu.
+
+### `granica-budzisko-zima.png`
+- **Id:** `granica-budzisko`
+- **Przedstawia:** Granica w Budzisku — szlaban, budka i dwie sylwetki bocianów
+- **Plan:** bliski
+- **Narzędzie:** ChatGPT (opracowanie edycji) oraz Python/Pillow/NumPy/OpenCV (retusz oryginału i ręczne, wektorowe nakładki śniegu).
+- **Data:** 31.10.2026
+- **Prompt szczegółowy:** Zachowaj szlaban, budkę, pustą niebieską tablicę, jezioro, dom, drogę i bociany; pokryj dachy, łąki i drzewa śniegiem, rozświetl okna, dodaj lód tylko na obrzeżu jeziora.
+- **Licencja i pochodzenie:** Grafika opracowana na podstawie letniej grafiki projektu przekazanej przez właściciela; prawa do materiału bazowego i wykorzystania w projekcie należą do właściciela projektu.
+
+### `stacja-budzisko-zima.png`
+- **Id:** `stacja-budzisko`
+- **Przedstawia:** Stacja za granicą w Budzisku — dystrybutory, budka i samochody
+- **Plan:** bliski
+- **Narzędzie:** ChatGPT (opracowanie edycji) oraz Python/Pillow/NumPy/OpenCV (retusz oryginału i ręczne, wektorowe nakładki śniegu).
+- **Data:** 31.10.2026
+- **Prompt szczegółowy:** Zachowaj konstrukcję zadaszenia, pompy, samochody, kiosk i stolik; dodaj czytelne szerokie czapy śniegu na dachach i parasolu, zaspy, zaśnieżone świerki oraz ciepłe światełka na stoisku.
+- **Licencja i pochodzenie:** Grafika opracowana na podstawie letniej grafiki projektu przekazanej przez właściciela; prawa do materiału bazowego i wykorzystania w projekcie należą do właściciela projektu.
+
+## Kontrola jakości
+
+- Bez tekstu i oznaczeń marek na dodanych elementach; nie dodawano flag ani symboli religijnych.
+- Zachowano oryginalne rozmiary, przezroczystość, przebieg terenu i kluczowe budowle.
+- Dla `granica-lv-lt` naprawiono kadr pustej tablicy przez umieszczenie całej tablicy nieco bardziej na lewo.
+- Nie dodano nieba ani padającego śniegu; zima jest pokryciem terenu i budynków.
+- Arkusz porównawczy znajduje się w `docs/art/podglady/zima-141.png`.
+- Grafiki wyjściowe z ZIP-a bazowego pozostają bez zmian i nie są ponownie dystrybuowane w tej paczce.
+
+> **Koordynator (31.10, runda 9):** przyjęte; w granica-lv-lt tablica nadal ucięta prawą krawędzią (drobne). Kompozycja zgodna z wersją letnią (IoU masek 0,97–1,00); PNG skwantyzowane (Pillow FASTOCTREE + oxipng).
