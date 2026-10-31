@@ -31,7 +31,7 @@ Gra: TypeScript + Canvas 2D, Vite, PWA, Capacitor Android/iOS, Firebase (functio
 1. ~~Polowanie na błędy~~: zrobione 31.10 rano. Naprawiono 10 błędów, dodano `e2e/qa.spec.ts`. Zmiany są w PR #89 (patrz sekcja 6).
 2. **Mniejsze APK** (debug ~34 MB): kwantyzacja PNG, usunięcie grafik sklepowych z aplikacji, sprawdzenie precache PWA.
 3. **Gotowość wdrożenia:** `docs/START-WDROZENIA.md` krok po kroku dla właściciela (Firebase, Play Console, sekrety GitHub), workflow `deploy-firebase.yml` (workflow_dispatch, pomija bez sekretów), `scripts/check-launch.mjs`, aktualizacja polityki prywatności.
-4. **Runda 7: wszystkie 19 paczek wróciło 31.10 i są wgrane** (gałąź `claude/wizardly-curie-prxr7z`, PR po #108). Odrzucone: Nyköping (89) i Czeski Cieszyn (98), bo mają płaski styl. Powtórka to zlecenie `docs/zlecenia/runda7/103-panoramy-poprawki.md`, do wysłania GPT.
+4. **Runda 7: wszystkie 19 paczek wróciło 31.10 i są wgrane** (PR #108). Odrzucone: Nyköping (89) i Czeski Cieszyn (98), bo mają płaski styl. Powtórka to zlecenie `docs/zlecenia/runda7/103-panoramy-poprawki.md`, do wysłania GPT.
    - **Procedura wgrywania ZIP-a** (skrypt z tej sesji: kwantyzacja `quantize(256, FASTOCTREE)` na RGBA, alfa < 16 → 0, dopisanie `ASSETS-NN.md` na koniec `public/assets/landmarks/ASSETS.md`):
      1. Rozpakuj do osobnego katalogu tymczasowego.
      2. Sprawdź PNG i arkusz podglądu: 1620×900, przezroczystość, gruby kontur A+, brak napisów, logo i flag. Sprawdź, czy id pliku istnieje w `src/content/waypoints.ts` albo `src/core/route.ts`.
@@ -53,7 +53,7 @@ for i in 1 2 3; do npx playwright test --project="Slow 4G + CPU 4x (Chromium)"; 
 
 ## 6. Otwarte PR-y / obserwacje
 - **PR #108** (`claude/wizardly-curie-prxr7z`): zawartość #89 plus naprawy CI. Naprawione: leniwy import nagrywania offline, `registration.update()` na WebKit, gdy `register()` zwraca undefined, oraz dwa testy WebKit. Po zielonym CI: ready i scalenie (merge commit), potem zamknąć #89 jako zastąpiony.
-- **Panoramy rundy 7:** commity są lokalnie na gałęzi `panoramy-r7` w kontenerze sesji z 31.10, a po scaleniu #108 trafią na `claude/wizardly-curie-prxr7z` jako nowy PR. Jeśli kontener zniknął, ZIP-y są w czacie właściciela i trzeba je wgrać ponownie (sekcja 4, pkt 4).
+- **Panoramy rundy 7** są w tym samym PR #108 (wypchnięte, żeby nie zginęły z kontenerem).
 - Szkice PR GPT #78–#85, #90, #91 zawierają tylko pliki ASSETS bez PNG. Po scaleniu panoram zamknąć je jako zastąpione.
 - Garaż na Foldzie: poprawka na main, **czeka na potwierdzenie właściciela na telefonie**.
 - Lokalne Playwright: projekt wymaga przeglądarki z buildu 1194. W kontenerze jest 1243, więc podlinkuj `chromium_headless_shell-1243/chrome-headless-shell-linux64/chrome-headless-shell` jako `/opt/pw-browsers/chromium_headless_shell-1194/chrome-linux/headless_shell`.

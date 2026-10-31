@@ -29,22 +29,22 @@ Wszystkie 19 paczek wróciło i zostało wgranych (PNG skwantyzowane do 256 kolo
 
 | Zlecenie | Wróciło? | Wgrane w PR |
 |---|---|---|
-| 84 | tak | gałąź `claude/wizardly-curie-prxr7z` (PR po #108) |
-| 85 | tak | gałąź `claude/wizardly-curie-prxr7z` (PR po #108) |
-| 86 | tak | gałąź `claude/wizardly-curie-prxr7z` (PR po #108) |
-| 87 | tak | gałąź `claude/wizardly-curie-prxr7z` (PR po #108) |
-| 88 | tak | gałąź `claude/wizardly-curie-prxr7z` (PR po #108) |
-| 89 | tak; **Nyköping odrzucony** (płaski styl, nie A+) — do ponowienia | gałąź `claude/wizardly-curie-prxr7z` (PR po #108) |
-| 90 | tak | gałąź `claude/wizardly-curie-prxr7z` (PR po #108) |
-| 91 | tak | gałąź `claude/wizardly-curie-prxr7z` (PR po #108) |
-| 92 | tak | gałąź `claude/wizardly-curie-prxr7z` (PR po #108) |
-| 93 | tak | gałąź `claude/wizardly-curie-prxr7z` (PR po #108) |
-| 94 | tak | gałąź `claude/wizardly-curie-prxr7z` (PR po #108) |
-| 95 | tak | gałąź `claude/wizardly-curie-prxr7z` (PR po #108) |
-| 96 | tak | gałąź `claude/wizardly-curie-prxr7z` (PR po #108) |
-| 97 | tak | gałąź `claude/wizardly-curie-prxr7z` (PR po #108) |
-| 98 | tak; **Czeski Cieszyn odrzucony** (płaski styl, nie A+) — do ponowienia | gałąź `claude/wizardly-curie-prxr7z` (PR po #108) |
-| 99 | tak | gałąź `claude/wizardly-curie-prxr7z` (PR po #108) |
-| 100 | tak | gałąź `claude/wizardly-curie-prxr7z` (PR po #108) |
-| 101 | tak | gałąź `claude/wizardly-curie-prxr7z` (PR po #108) |
-| 102 | tak; krawędź asfaltu poprawiona na wiersz 152 | gałąź `claude/wizardly-curie-prxr7z` (PR po #108) |
+| 84 | tak | #108 |
+| 85 | tak | #108 |
+| 86 | tak | #108 |
+| 87 | tak | #108 |
+| 88 | tak | #108 |
+| 89 | tak; **Nyköping odrzucony** (płaski styl, nie A+) — do ponowienia | #108 |
+| 90 | tak | #108 |
+| 91 | tak | #108 |
+| 92 | tak | #108 |
+| 93 | tak | #108 |
+| 94 | tak | #108 |
+| 95 | tak | #108 |
+| 96 | tak | #108 |
+| 97 | tak | #108 |
+| 98 | tak; **Czeski Cieszyn odrzucony** (płaski styl, nie A+) — do ponowienia | #108 |
+| 99 | tak | #108 |
+| 100 | tak | #108 |
+| 101 | tak | #108 |
+| 102 | tak; krawędź asfaltu poprawiona na wiersz 152 | #108 |
