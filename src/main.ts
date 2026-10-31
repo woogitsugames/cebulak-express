@@ -916,7 +916,15 @@ preloadSprites();
 // Nagrywanie rolki 15 s (przycisk widoczny poza samym lotem; ?redakcja=1 — tryb redakcji).
 let recordControl: { element: HTMLElement } | null = null;
 // Moduł rolek ładujemy po pierwszej klatce — nie spowalnia startu na słabym internecie.
-window.setTimeout(() => void import('./ui/record').then(({ createRecordControl }) => {
+// Bez sieci import się nie uda — próbujemy ponownie po powrocie połączenia (bez nieobsłużonego wyjątku).
+function loadRecordControl(): void {
+  void import('./ui/record').then(mountRecordControl).catch(() => {
+    window.addEventListener('online', loadRecordControl, { once: true });
+  });
+}
+window.setTimeout(loadRecordControl, 800);
+function mountRecordControl({ createRecordControl }: typeof import('./ui/record')): void {
+  if (recordControl) return;
   recordControl = createRecordControl({
     canvas,
     getAudio: () => (audioCtx && audioMix ? { context: audioCtx, source: audioMix } : undefined),
@@ -926,7 +934,7 @@ window.setTimeout(() => void import('./ui/record').then(({ createRecordControl }
   });
   $('stage').appendChild(recordControl.element);
   syncRecordVisibility();
-}), 800);
+}
 function syncRecordVisibility(): void {
   if (!recordControl) return;
   const playing = game?.phase === 'playing';

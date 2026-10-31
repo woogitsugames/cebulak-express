@@ -202,12 +202,19 @@ test.describe('pierwsze uruchomienie', () => {
   });
 
   test('onboarding nie wyskakuje nad przejazdem, gdy gracz wystartował przed jego wczytaniem', async ({ page }) => {
-    await delayChunk(page, 'onboarding', 2500);
+    // Chunk onboardingu wstrzymany do chwili startu (stałe opóźnienie bywało za krótkie na wolnym WebKit w CI).
+    let release!: () => void;
+    const gate = new Promise<void>((resolve) => { release = resolve; });
+    await page.route(/\/assets\/onboarding-[\w-]+\.js$/, async (route: PwRoute) => {
+      await gate;
+      await route.continue();
+    });
     const loaded = page.waitForResponse(/onboarding-[\w-]+\.js$/);
     await page.goto(FRESH);
     await expect(page.locator('#sel-home option')).toHaveCount(15);
     await page.locator('#btn-start').click();
     await expect(page.locator('#hud')).toBeVisible();
+    release();
     await loaded;
     await page.waitForTimeout(500);
     await expect(page.locator('.ce-onboarding')).toHaveCount(0);
