@@ -1078,3 +1078,58 @@ Każdy obraz ma **1620 × 900 px, PNG RGBA z przezroczystym niebem, profil sRGB*
 ## Podgląd i integracja
 
 Arkusz: `docs/art/podglady/panoramy-89.png` — pięć panoram na błękitnym tle z podpisami **wyłącznie w arkuszu**. W plikach produkcyjnych brak podpisów. Zastąpić odpowiednie istniejące PNG w `public/assets/landmarks/`, bez zmian w kodzie silnika. Koordynator powinien sprawdzić skalowanie do 20–30% w realnym kadrze Canvas 2D oraz rozpoznawalność przed zatwierdzeniem PR. Nie wykonywano uruchomienia gry ani testów npm w tym środowisku.
+
+
+<!-- Zlecenie 90 (runda 7) z ZIP-a GPT; PNG skwantyzowane do 256 kolorów przez koordynatora. -->
+
+# ASSETS-90 — panoramy A+ (Luksemburg, Esch-sur-Alzette, Differdange, Leuven, Liège)
+
+**Data:** 31.10.2026  
+**Projekt:** Cebulak Express — Kierunek Polska  
+**Format:** każdy PNG 1620 × 900 px, RGBA, przezroczystość, barwy sRGB  
+**Kolor konturu:** przybliżenie `#1d2f3b`, po korekcie 4-pikselowym dodatkowym obrysem sylwetek  
+**Narzędzia:** natywny generator obrazów ChatGPT (GPT Image), Python 3 / Pillow / OpenCV (kadrowanie, alpha, kontury, rowery, arkusz)  
+**Prawa użytkowania:** grafiki wygenerowane na zlecenie właściciela projektu, do wykorzystania w projekcie zgodnie z obowiązującymi warunkami usługi. AI nie gwarantuje powstania wyłącznych praw autorskich w każdym systemie prawnym. Nie skopiowano żadnej fotografii ani ilustracji referencyjnej.
+
+## Pliki
+
+| ID / plik | Miasto | Rozpoznawalne budowle i przyjęty punkt widzenia | Źródło / poprawki | Prawa użytkowania |
+|---|---|---|---|---|
+| `luksemburg.png` | Luksemburg, LU | Widok stylizowany z doliny Pétrusse na łuki mostu Adolphe'a, historyczną zabudowę górnego miasta, wieżę BCEE (State Savings Bank), iglice katedry Notre-Dame i kamienne mury na zboczu; widok syntetyczny, nie fotogrametryczny | GPT Image: samodzielna panorama; przeskalowanie, obrys i oczyszczenie alfy w Pillow/OpenCV | Do projektu właściciela |
+| `esch-sur-alzette.png` | Esch-sur-Alzette, LU | Przemysłowy widok Belval, dwie sylwetki wielkopiecowe i rusztowania hutnicze, kominy, niska historyczna hala zakładowa i silosy; ujęcie z poziomu terenów dawnej huty | GPT Image: osobny kadr z arkusza koncepcyjnego; usunięto etykietę przez kadrowanie, przeskalowano i oczyszczono alfa | Do projektu właściciela |
+| `differdange.png` | Differdange, LU | Stylizowana fasada zabudowy centrum (motyw dawnego ratusza/Aalt Stadhaus) oraz przemysłowa wieża po prawej; kadr syntetyczny z głównej ulicy, **nie jest to wierny widok zamku ani pięciu chłodni przemysłowych** | GPT Image: wycinek arkusza; kadrowanie, powiększenie, oczyszczenie alfy | Do projektu właściciela |
+| `leuven.png` | Leuven, BE | Grote Markt: gotycki ratusz Leuven, zabudowa z ceglanymi szczytami i stylizowany kościół Sint-Pieterskerk; widok z placu w kierunku fasad. Dwa rowery przy linii gruntu | GPT Image: wycinek arkusza; kadrowanie; dodano ręcznie 2 uproszczone rowery za pomocą Pillow; oczyszczenie alfy | Do projektu właściciela |
+| `liege.png` | Liège, BE | Stylizowany widok od strony Mozy: historyczne kamienice, kościół w centrum, most, barka i wzgórze z długim ciągiem schodów Montagne de Bueren | GPT Image: wycinek arkusza; usunięto fragment etykiety sąsiedniego kadru, oczyszczono alfa | Do projektu właściciela |
+| `docs/art/podglady/panoramy-90.png` | Wszystkie | Arkusz z 5 panoramami na jasnoniebieskim tle i podpisami, w tym miniatury w skali ~1:5 | Pillow | Do projektu właściciela |
+
+## Prompty do regeneracji i punkt widzenia
+
+Wspólny prompt stylu: *A single independently generated panoramic landscape artwork for a 2D mobile game, flat warm-color vector cartoon illustration, strong dark-navy outlines #1d2f3b around 9–10 pixels, simplified windows, no gradients or photographic textures, flat shadows, three large prominent city landmarks occupying roughly 70–80% of the height, ground or quay at the very bottom, exact 16:9 composition, transparent alpha background, no sky, no clouds, no words, no signs, no logos, no flags, no coats of arms and no people in the foreground. Light from upper left. Do not copy a reference photograph.*
+
+Prompty tematyczne (opisy kierujące kompozycją):
+
+1. **Luksemburg** — *Luxembourg City from the Pétrusse valley, broad Adolphe Bridge stone arches in foreground, green copper clock tower of the State Savings Bank, historic Notre-Dame Cathedral spires, stepped stone fortress walls along steep wooded slopes; recognizable Luxembourg old town skyline.*
+2. **Esch-sur-Alzette** — *Esch-Belval heritage industrial panorama with the two preserved blast furnaces A and B, dark iron frame towers and diagonal pipes, Möllerei historic ore storage hall, old silos, rust-red brickworks, low buildings and a continuous ground line.*
+3. **Differdange** — *Differdange Luxembourg historic old town center with the old town hall Aalt Stadhaus, historic slate-roofed stone and brick buildings, recognizable old steelworks industrial elements beyond the trees, warm green valley slopes; no copying of copyrighted murals on the cooling towers.*
+4. **Leuven** — *Leuven Grote Markt with an accurate large elaborate Gothic town hall, adjacent St Peter's Church without a high completed spire, warm brick stepped-gable houses of the Tafelrond vicinity, two simple city bicycles; view from the square.*
+5. **Liège** — *Liège historic riverside seen across the Meuse, barges on the river in the immediate foreground, stone riverbank bridge, rows of houses, Saint-Barthélemy church near the center, long unmistakable Montagne de Bueren stairway rising on green hillside behind the old quarter.*
+
+**Uwaga o replikowalności:** generator zinterpretował pełne polecenie również jako arkusze wielomiejskie. Pliki `esch-sur-alzette.png`, `differdange.png`, `leuven.png` i `liege.png` wyodrębniono z wygenerowanych oryginalnych arkuszy, a nie z pobranych zdjęć. Powyższe prompty tematyczne dokumentują intencję i służą do ewentualnej ponownej generacji; nie są dosłownym logiem komunikacji z generatorem.
+
+## Weryfikacja architektury (31.10.2026)
+
+- Luxembourg City Tourist Office: https://www.luxembourg-city.com/en/tours-activities/sights/map — most Adolphe'a, fortyfikacje Bock, katedra i punkt widokowy Pétrusse.
+- Visit Luxembourg: https://www.visitluxembourg.com/tour/minett-trail-belval-universite-esch-sur-alzette-gare — potwierdzone dwa historyczne piece Belval.
+- Visit Luxembourg: https://www.visitluxembourg.com/place/five-cooling-towers i https://www.visitluxembourg.com/place/differdange — chłodnie, stary ratusz, zamek i dziedzictwo stalowe Differdange.
+- Visit Leuven: https://www.visitleuven.be/en/town-hall ; Visit Vlaams-Brabant: https://www.visitvlaamsbrabant.be/zien-en-doen/vind-iets-om-te-doen/sint-pieterskerk-leuven — gotycki ratusz i niedokończone wieże Sint-Pieterskerk.
+- Visit Liège: https://www.visitezliege.be/fr/offre/montagne-de-bueren/ — schody Montagne de Bueren mają 374 stopnie.
+
+## Ograniczenia do sprawdzenia w kadrze gry
+
+- **Differdange:** kompozycja jest bardziej syntetyczna niż wierna konkretnej ulicy; przemysłowa wieża nie odwzorowuje pięciu faktycznych chłodni. Zalecana akceptacja rozpoznawalności przez mieszkańca lub ponowna regeneracja przed finalną publikacją.
+- **Leuven:** generator zilustrował kościół z nadmiernie wysoką iglicą; rzeczywisty projekt wysokich wież nigdy nie został zrealizowany. Ten detal wymaga sprawdzenia/korekty przy zatwierdzeniu wersji finalnej.
+- **Luksemburg/Liège:** celowo połączono rozpoznawalne motywy w jedną ilustracyjną perspektywę; nie potwierdzono idealnej jednoczesnej widoczności każdego obiektu z pojedynczego punktu obserwacji.
+- **Testy:** wykonano kontrolę 5× PNG 1620×900, RGBA, pełnej alfy i przezroczystego górnego tła. Nie uruchomiono `npm ci`, `npm run typecheck`, `npm test`, `npm run build`, ponieważ nie można było sklonować repozytorium w środowisku plikowym (brak dostępu sieciowego Git).
+- Brak chronionych napisów i znanych logotypów. Nie wykorzystano rysunku pięciu murali Differdange autorstwa Alaina Weltera.
+
+**Integracja:** podmienić pliki w `public/assets/landmarks/` na zasoby z ZIP, bez zmian w rendererze. Podgląd w `docs/art/podglady/` nie jest używany przez grę.
