@@ -967,7 +967,7 @@ function step(now: number): void {
 }
 
 let signJoke: SignJokeBubble | null = null;
-void import('./render/signs').then(({ mountSignJoke }) => { signJoke = mountSignJoke(ui.hud); });
+void import('./render/signs').then(({ mountSignJoke }) => { signJoke = mountSignJoke(ui.hud, document.getElementById('game')); });
 // Haki tylko dla ?test=1 (zrzuty do sklepu, e2e) — w zwykłej sesji nic nie robią.
 void net.then(({ api }) => installStoreShotHooks(() => game, api, () => renderer.renderedPose));
 

@@ -216,6 +216,15 @@ export class AssetLoader {
     return undefined;
   }
 
+  /**
+   * Panorama miasta docelowego dla mety `dom-<id>` (te same pliki co miasta na trasie).
+   * Brak pliku = undefined; meta rysuje wtedy sam domek `dom-meta` jak dawniej.
+   */
+  getHomeCity(point: Pick<Waypoint, 'id'>): DrawableAsset | undefined {
+    if (!point.id.startsWith('dom-')) return undefined;
+    return this.request('assets/landmarks/' + point.id.slice(4) + '.png', 1).image;
+  }
+
   /** Bohater ma osobny renderer; tu zwracamy również oryginalną bitmapę bez downscale. */
   getHero(path: string): DrawableAsset | undefined {
     return this.request(path, 0).image;

@@ -29,6 +29,9 @@ Oznaczenia: **✅ zweryfikowane** = sprawdzone w sieci 30.10.2026, ze źródłem
 | D13 | **Składaki i tablety** (30.10.2026) | Na szerokich ekranach tło na całą szerokość, pole gry zostaje w kolumnie 9:16 (uczciwy ranking). |
 | D14 | **Panoramy miast w stylu A+** (30.10.2026) | Rysunkowe, rozpoznawalne, z grubszym konturem i mniejszą liczbą detali, 2–4 duże budowle. Najpierw ~40 najważniejszych miast (zlecenia 75–82), reszta później. Pocztówki albumu będą generowane z tych panoram. |
 | D15 | **Auta: poprawki sylwetek** (30.10.2026) | „Mała Japonka” ma być miejską trzydrzwiówką, „Dieselek po dziadku” długim kombi z lat 2000 (zlecenie 83). |
+| D16 | **Tablice miejscowości jak prawdziwe znaki krajów + „Ausfahrt” w Niemczech** (31.10.2026) | Barwy i ramki wg kraju (PL zielona, DE żółta, FR biała z czerwoną ramką…); co jakiś czas niebieska strzałka „Ausfahrt — największe miasto w Niemczech”. |
+| D17 | **Dymek z żartem tablicy na pasie asfaltu pod drogą** (31.10.2026) | Nie może zasłaniać pola lotu. |
+| D18 | **Firebase zakładany w tym tygodniu (do ok. 7.11.2026)**; **Google Play: konto organizacji** (D-U-N-S zamówić od razu); **start 10–15.12.2026** z sezonem zimowym (31.10.2026) | Potwierdza D4, D6, D7. Instrukcja: `docs/START-WDROZENIA.md`. |
 
 Wpływ na §5: limit „< 1 MB” zniesiony, ale **czysty Canvas + TypeScript** zostaje — głównym powodem jest testowalna logika `src/core/` współdzielona z serwerem do weryfikacji rankingu, nie sama waga.
 
