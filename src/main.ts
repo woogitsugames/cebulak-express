@@ -934,13 +934,18 @@ function step(now: number): void {
     acc += dt;
     let steps = 0;
     while (acc >= TICK && steps < 24) {
+      // Stan sprzed ticku: render rysuje pozycję pośrednią (równy ruch przy 90/120/144 Hz).
+      renderer.beforeTick(game);
       game.tick();
       // Duch musi dostać każdy tick gracza; rozjechanie się wyłącza go po cichu.
       if (ghostRunner && ghostMod) ghostRunner = ghostMod.syncGhost(ghostRunner, game);
       acc -= TICK;
       steps++;
     }
-    if (steps === 24) acc = 0;
+    if (steps === 24) {
+      acc = 0;
+      renderer.beforeTick(game);
+    }
     handleEvents(game);
     const traceFrame = postOverFrames > 0;
     if (traceFrame) { postOverFrames--; breadcrumb('frame:events-done'); }
@@ -948,7 +953,8 @@ function step(now: number): void {
     const drawGhost = !ghostDrawFailed && ghostRunner && ghostMod?.isGhostVisible(ghostRunner, game) ? ghostRunner : null;
     renderer.ghost = drawGhost;
     if (traceFrame) breadcrumb('frame:draw-start');
-    renderer.draw(game, now / 1000);
+    // Ułamek ticku, który już upłynął — bez zaokrąglania pozycji do pełnych ticków.
+    renderer.draw(game, now / 1000, Math.min(1, Math.max(0, acc / TICK)));
     if (traceFrame) breadcrumb('frame:draw-done');
     // Renderer zeruje ducha po błędzie rysowania — wtedy nie próbujemy ponownie w tym przejeździe.
     if (drawGhost && !renderer.ghost) ghostDrawFailed = true;
@@ -963,7 +969,7 @@ function step(now: number): void {
 let signJoke: SignJokeBubble | null = null;
 void import('./render/signs').then(({ mountSignJoke }) => { signJoke = mountSignJoke(ui.hud); });
 // Haki tylko dla ?test=1 (zrzuty do sklepu, e2e) — w zwykłej sesji nic nie robią.
-void net.then(({ api }) => installStoreShotHooks(() => game, api));
+void net.then(({ api }) => installStoreShotHooks(() => game, api, () => renderer.renderedPose));
 
 /** Gra w tle menu (stoi w miejscu). */
 const previewGame = new Game({ seed: 1, mode: 'ranked', route });

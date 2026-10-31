@@ -105,6 +105,22 @@ describe('adaptacja FPS', () => {
     expect(quality.reduced).toBe(false);
   });
 
+  it('po drugim spadku FPS zostaje w trybie oszczędnym (bez cyklicznego mrugania jakości)', () => {
+    const quality = new AdaptiveQuality();
+    let ms = 0;
+    const run = (until: number, step: number): void => { for (; ms <= until; ms += step) quality.sample(ms); };
+    run(3_000, 50);
+    expect(quality.reduced).toBe(true);
+    run(14_000, 16);
+    expect(quality.reduced).toBe(false);
+    run(18_500, 50);
+    expect(quality.reduced).toBe(true);
+    run(40_000, 16);
+    expect(quality.reduced).toBe(true);
+    quality.setMode('auto');
+    expect(quality.reduced).toBe(false);
+  });
+
   it('ignoruje pauzę i nie uruchamia oszczędzania po powrocie z tła', () => {
     const quality = new AdaptiveQuality();
     quality.sample(0);

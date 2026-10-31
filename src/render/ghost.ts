@@ -4,6 +4,7 @@ import { renderNick } from '../content/nicks';
 import { GHOST_TEXTS, fill } from '../content/i18n';
 import type { GhostChallenge } from '../share/ghost';
 import { drawHeroSprite } from './sprites';
+import { PoseHistory, type RenderPose } from './interpolation';
 
 export interface GhostOutcome {
   readonly playerKm: number;
@@ -22,6 +23,8 @@ export class GhostRunner {
   private nextFlap = 0;
   private lastPlayerTick = -1;
   private playerKmAtLimit: number | null = null;
+  /** Stan ducha sprzed ostatniego ticku — rysowany płynnie, tak jak gracz. */
+  private readonly history = new PoseHistory<Game>();
 
   constructor(challenge: GhostChallenge) {
     this.challenge = challenge;
@@ -48,6 +51,7 @@ export class GhostRunner {
         this.game.flap();
         this.nextFlap++;
       }
+      this.history.beforeTick(this.game);
       this.game.tick();
     }
     // Odbiorca przejeżdża tyle samo sekund co nadawca (w uciętym linku),
@@ -73,18 +77,19 @@ export class GhostRunner {
   }
 
   /** Canvas musi być już w logicznym układzie 360×640 (przed bohaterem gracza). */
-  draw(ctx: CanvasRenderingContext2D, timeSec: number): void {
+  draw(ctx: CanvasRenderingContext2D, timeSec: number, alpha = 1): void {
+    const pose = this.history.pose(this.game, alpha);
     // Duch pozostaje widoczny po zakończeniu zapisu, ale nie zyskuje dodatkowych km.
     ctx.save();
     ctx.translate(25, 0);
     ctx.globalAlpha *= 0.45;
-    if (!drawHeroSprite(ctx, this.game, timeSec)) drawGhostFallback(ctx, this.game);
+    if (!drawHeroSprite(ctx, this.game, timeSec, pose)) drawGhostFallback(ctx, pose);
     ctx.restore();
 
     const measure = Math.min(314, measureLabel(ctx, this.label));
     const labelWidth = Math.max(85, measure + 16);
     const left = Math.max(5, Math.min(WORLD.width - 5 - labelWidth, PLAYER.x + 25 - labelWidth / 2));
-    const top = Math.max(8, this.game.y - 59);
+    const top = Math.max(8, pose.y - 59);
     ctx.save();
     ctx.fillStyle = 'rgba(19, 58, 60, 0.79)';
     ctx.beginPath();
@@ -107,7 +112,7 @@ function measureLabel(ctx: CanvasRenderingContext2D, label: string): number {
 }
 
 /** Awaryjne kombi wektorowe, gdy sprite nie został jeszcze wczytany. */
-function drawGhostFallback(ctx: CanvasRenderingContext2D, game: Game): void {
+function drawGhostFallback(ctx: CanvasRenderingContext2D, game: RenderPose): void {
   ctx.save();
   ctx.translate(PLAYER.x, game.y);
   ctx.rotate(Math.max(-0.35, Math.min(0.5, game.vy / 900)));

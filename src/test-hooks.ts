@@ -18,7 +18,12 @@ export interface StoreShotSnapshot {
 
 declare global {
   interface Window {
-    __ceTest?: { snapshot(): StoreShotSnapshot | null; rankingMode(): RankingApi['kind'] };
+    __ceTest?: {
+      snapshot(): StoreShotSnapshot | null;
+      rankingMode(): RankingApi['kind'];
+      /** Pozycja narysowana w ostatniej klatce (interpolowana między tickami) — pomiar płynności. */
+      renderPose?(): { distancePx: number; y: number } | null;
+    };
   }
 }
 
@@ -27,7 +32,11 @@ declare global {
  * nicków ani tokenów; nie zmienia pozycji, wyniku ani reguł gry.
  * Koordynator integruje moduł w src/main.ts po utworzeniu game i api.
  */
-export function installStoreShotHooks(getGame: () => Game | null, api: RankingApi): void {
+export function installStoreShotHooks(
+  getGame: () => Game | null,
+  api: RankingApi,
+  getRenderPose: () => { readonly distancePx: number; readonly y: number } | null = () => null,
+): void {
   if (new URLSearchParams(location.search).get('test') !== '1') return;
   window.__ceTest = {
     snapshot: () => {
@@ -42,5 +51,9 @@ export function installStoreShotHooks(getGame: () => Game | null, api: RankingAp
       };
     },
     rankingMode: () => api.kind,
+    renderPose: () => {
+      const pose = getRenderPose();
+      return pose ? { distancePx: pose.distancePx, y: pose.y } : null;
+    },
   };
 }
