@@ -19,7 +19,7 @@ Cześć! Przejmujesz rolę **koordynatora** projektu gry **„Cebulak Express �
    npm ci
    ```
    Do APK: `ANDROID_HOME=/opt/android-sdk`, plik `android/local.properties` z `sdk.dir=/opt/android-sdk`. Lokalny build APK zwykle pada na Maven 429, więc APK bierz z artefaktu CI.
-3. **Przeczytaj w całości `docs/HANDOVER.md`**, zwłaszcza sekcje 6 i 7. Jest tam opis nierozwiązanego zawieszenia Pixel 7 w CI, sposób odtworzenia go na Chrome 141 i łatki z niedokończoną pracą agentów w `docs/handover/`. Potem przeczytaj „Decyzje właściciela” w `docs/GDD.md` i `docs/zlecenia/runda7/README.md`.
+3. **Przeczytaj w całości `docs/HANDOVER.md` z gałęzi `claude/wizardly-curie-prxr7z`** (`git show origin/claude/wizardly-curie-prxr7z:docs/HANDOVER.md`; na `main` jest starsza wersja), zwłaszcza sekcje 6 i 7. Jest tam opis nierozwiązanego zawieszenia Pixel 7 w CI, sposób odtworzenia go na Chrome 141 i łatki z niedokończoną pracą agentów w `docs/handover/`. Potem przeczytaj „Decyzje właściciela” w `docs/GDD.md` i `docs/zlecenia/runda7/README.md`.
 4. Napisz mi krótko (3–5 zdań), co zastałeś i od czego zaczynasz. Potem pracuj według sekcji 7 handovera:
    1. Zawieszenie Pixel 7, potem scalenie #110 i APK.
    2. Łatka płynności tła: zgłosiłem, że tło klatkuje i bolą oczy.
