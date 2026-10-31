@@ -1,4 +1,5 @@
 import { expect, test as base, type Page, type TestInfo } from '@playwright/test';
+import type {} from '../src/test-hooks';
 
 /** Przechwytujemy zarówno console.error, jak i nieobsłużone wyjątki strony. */
 export const test = base.extend<{ runtimeErrors: string[] }>({
@@ -8,7 +9,34 @@ export const test = base.extend<{ runtimeErrors: string[] }>({
       if (message.type() === 'error') errors.push(`console: ${message.text()}`);
     });
     page.on('pageerror', (error) => errors.push(`pageerror: ${error.message}`));
+    // Diagnostyka zawieszeń w CI: długie zadania głównego wątku i zmiany widoczności strony.
+    await page.addInitScript(() => {
+      const w = window as unknown as { __ceDiag: { longTasks: number[][]; visibility: string[] } };
+      w.__ceDiag = { longTasks: [], visibility: [] };
+      try {
+        new PerformanceObserver((list) => {
+          for (const e of list.getEntries()) w.__ceDiag.longTasks.push([Math.round(e.startTime), Math.round(e.duration)]);
+        }).observe({ type: 'longtask', buffered: true });
+      } catch { /* brak API */ }
+      document.addEventListener('visibilitychange', () => {
+        w.__ceDiag.visibility.push(`${Math.round(performance.now())}:${document.visibilityState}`);
+      });
+    });
     await use(errors);
+    if (testInfo.status !== testInfo.expectedStatus && !page.isClosed()) {
+      const state = await Promise.race([
+        page.evaluate(() => JSON.stringify({
+          now: Math.round(performance.now()),
+          visibility: document.visibilityState,
+          diag: (window as unknown as { __ceDiag?: unknown }).__ceDiag,
+          game: (() => { const s = window.__ceTest?.snapshot(); return s ? { phase: s.phase, km: s.km, y: s.y, vy: s.vy } : null; })(),
+          overHidden: document.getElementById('over')?.hidden,
+        }, null, 1)).catch((e: Error) => `evaluate: ${e.message}`),
+        new Promise<string>((resolve) => setTimeout(() => resolve('evaluate: brak odpowiedzi strony w 10 s'), 10_000)),
+      ]);
+      await testInfo.attach('diagnostyka-strony', { body: Buffer.from(String(state), 'utf8'), contentType: 'application/json' });
+      console.log(`[diagnostyka] ${testInfo.title}: ${state}`);
+    }
     if (errors.length > 0) {
       await testInfo.attach('bledy-konsoli', {
         body: Buffer.from(errors.join('\n'), 'utf8'),

@@ -20,7 +20,6 @@
           <div class="pill" id="hud-lives" hidden></div>
         </div>
         <div class="hud-remaining" id="hud-remaining"></div>
-        <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
         <div class="hint" id="hint" role="status">Dotknij, aby wystartować</div>
       </div>
 
@@ -117,6 +116,8 @@
         <a class="portal" id="over-portal" target="_blank" rel="noopener noreferrer" hidden></a>
         <button type="button" class="btn btn--wood btn--return" id="btn-menu">Zmień trasę</button>
       </section>
+      <!-- Poza #hud: medale i nowe auta pokazujemy na ekranie końca, gdy HUD jest schowany. -->
+      <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
     </div>
     <script type="module" src="/src/main.ts"></script>
   </body>

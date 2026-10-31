@@ -1,5 +1,5 @@
 import { PL_TRANSIT, ROUTE_WAYPOINTS, type Waypoint } from '../content/waypoints';
-import { HOME_COUNTRIES, PL_CITIES, START_CITIES, type CountryCode, type Route } from '../core/route';
+import { HOME_COUNTRIES, PL_CITIES, START_CITIES, countryAt, type CountryCode, type Route } from '../core/route';
 import type { Game } from '../core/game';
 import { platform } from '../platform';
 
@@ -165,14 +165,18 @@ export async function saveProgress(progress: Progress, storage: ProgressStorage 
 
 /** Przygotowuje podsumowanie z aktualnego rdzenia bez zmiany Game ani historii zdarzeń. */
 export function summarizeRun(
-  game: Pick<Game, 'route' | 'km' | 'jars' | 'parcels' | 'phase'>,
+  game: Pick<Game, 'route' | 'km' | 'jars' | 'parcels' | 'phase'> & { baseWeight?: number },
   winter = false,
 ): RunSummary {
   const route: Route = game.route;
   const km = Math.min(route.totalKm, count(game.km));
+  // Lot powrotny (dodatkowy ciężar) kończy się za granicą: to nie „dojazd do domu”,
+  // więc bez medali za dojazd, zimowego asa i pocztówki z mety.
+  const arrivedHome = game.phase === 'arrived' && !((game.baseWeight ?? 0) > 0);
   const reached: Waypoint[] = route.waypoints.filter((point) =>
-    point.km <= km && (game.phase === 'arrived' || point.km < route.totalKm));
-  const countrySequence: CountryCode[] = [route.home];
+    point.km <= km && (arrivedHome || point.km < route.totalKm));
+  // Start w kraju pierwszego punktu trasy (lot powrotny zaczyna się w Polsce, nie w kraju `home`).
+  const countrySequence: CountryCode[] = [countryAt(route, 0)];
   const cityIds: string[] = [];
   for (const waypoint of reached) {
     if (waypoint.country !== countrySequence[countrySequence.length - 1]) countrySequence.push(waypoint.country);
@@ -181,7 +185,7 @@ export function summarizeRun(
       cityIds.push(waypoint.id.startsWith('dom-') ? waypoint.id.slice(4) : waypoint.id);
     }
   }
-  return { km, arrived: game.phase === 'arrived', jars: game.jars, parcels: game.parcels,
+  return { km, arrived: arrivedHome, jars: game.jars, parcels: game.parcels,
     countrySequence, cityIds, winter };
 }
 

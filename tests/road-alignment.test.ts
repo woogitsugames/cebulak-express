@@ -19,7 +19,7 @@ interface Report {
   roads: RoadMeasurement[];
 }
 
-const COUNTRIES = ['at', 'be', 'ch', 'cz', 'de', 'dk', 'es', 'fi', 'fr', 'ie', 'it', 'lu', 'nl', 'no', 'pl', 'se', 'uk'];
+const COUNTRIES = ['at', 'be', 'ch', 'cz', 'de', 'dk', 'es', 'fi', 'fr', 'ie', 'it', 'lu', 'nl', 'no', 'pl', 'se', 'uk', 'ee', 'lv', 'lt'];
 const countryRoot = join(process.cwd(), 'public', 'assets', 'countries');
 
 function filesOnDisk(): string[] {

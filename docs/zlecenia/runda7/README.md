@@ -21,3 +21,30 @@ Panoramy A+ dla pozostałych miast (86) + poprawki Oslo, Krakowa i Katowic + tł
 - `100-panoramy-parnu-ryga.md` — Panoramy A+: Pärnu, Ryga, Bauska, Poniewież, Kowno
 - `101-panoramy-mariampol-oslo.md` — Panoramy A+: Mariampol, Oslo, Kraków, Katowice
 - `102-tla-baltyk.md` — Tła krajów tranzytowych: Estonia, Łotwa, Litwa
+- `103-panoramy-poprawki.md` — Poprawka: Nyköping, Czeski Cieszyn (dodane 31.10 po przeglądzie)
+
+## Stan (31.10.2026, 09:00 UTC)
+Wszystkie 19 paczek wróciło i zostało wgranych (PNG skwantyzowane do 256 kolorów, ASSETS dopisane, pocztówki odświeżone).
+**Do ponowienia u GPT:** Nyköping (89) i Czeski Cieszyn (98) — oba w płaskim stylu bez grubego konturu A+; w grze zostają stare panoramy.
+
+| Zlecenie | Wróciło? | Wgrane w PR |
+|---|---|---|
+| 84 | tak | #108 |
+| 85 | tak | #108 |
+| 86 | tak | #108 |
+| 87 | tak | #108 |
+| 88 | tak | #108 |
+| 89 | tak; **Nyköping odrzucony** (płaski styl, nie A+) — do ponowienia | #108 |
+| 90 | tak | #108 |
+| 91 | tak | #108 |
+| 92 | tak | #108 |
+| 93 | tak | #108 |
+| 94 | tak | #108 |
+| 95 | tak | #108 |
+| 96 | tak | #108 |
+| 97 | tak | #108 |
+| 98 | tak; **Czeski Cieszyn odrzucony** (płaski styl, nie A+) — do ponowienia | #108 |
+| 99 | tak | #108 |
+| 100 | tak | #108 |
+| 101 | tak | #108 |
+| 102 | tak; krawędź asfaltu poprawiona na wiersz 152 | #108 |

@@ -33,7 +33,9 @@ export async function registerPwa(onUpdateReady: (reload: () => void) => void = 
     const registration = await navigator.serviceWorker.register(workerUrl.href, {
       scope: new URL('.', workerUrl).pathname,
       updateViaCache: 'none',
-    });
+    }) as ServiceWorkerRegistration | undefined;
+    // WebKit z zablokowanymi service workerami (np. testy, tryb prywatny) potrafi zwrócić undefined.
+    if (!registration) return null;
 
     const checkForUpdate = (): void => {
       if (document.visibilityState === 'visible') {

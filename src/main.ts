@@ -2,6 +2,7 @@ import { TICK } from './core/config';
 import { dailyKey, dailyRoute, dailySeed, dailyTitle } from './core/daily';
 import { Game, type GameEvent, type Mode } from './core/game';
 import { RULES_VERSION, rankedGameOptions } from './core/rules';
+import { RETURN_WEIGHT, returnFlightRoute } from './core/return-trip';
 import { HOME_COUNTRIES, PL_CITIES, START_CITIES, makeRoute, reverseRoute, type HomeCountry, type Route } from './core/route';
 import { seasonAt } from './core/season';
 import type { Progress } from './meta/progress';
@@ -26,7 +27,6 @@ import type { CardData } from './share/card';
 import type { GhostChallenge, GhostRunner } from './share/ghost-session';
 import { parseGameParams } from './net/params';
 import type { RankingApi } from './net/api';
-import { warsawWeekKey } from './net/week';
 import type { AnalyticsHome, track as TrackFn } from './analytics/track';
 import { registerPwa } from './pwa/register';
 import { prefetchPwaAssetsAfterRun } from './pwa/offline';
@@ -66,6 +66,8 @@ function save(key: string, value: unknown): void {
   }
 }
 
+/** Leniwy chunk bez sieci: funkcja po prostu nie działa, bez nieobsłużonego wyjątku. */
+const quiet = (): void => undefined;
 const pick = <T>(items: readonly T[]): T => items[Math.floor(Math.random() * items.length)];
 const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
 
@@ -112,20 +114,30 @@ ui.btnChallenge.textContent = GHOST_TEXTS.challengeButton;
 const dailyTitleText = (key: string): string => dailyTitle(key, localized('DAILY_TITLES'));
 
 const params = new URLSearchParams(location.search);
-/** Gracz, który już kiedyś grał, nie dostaje ekranu pierwszego uruchomienia. */
-const returningPlayer = (() => { try { return localStorage.getItem('ce.settings') !== null; } catch { return false; } })();
+/**
+ * Gracz, który już kiedyś grał, nie dostaje ekranu pierwszego uruchomienia. Samo ce.settings tego nie
+ * dowodzi: zapisujemy je przy pierwszym starcie (nick), zanim gracz cokolwiek wybierze.
+ */
+const returningPlayer = (() => {
+  try { return ['ce.best.ranked', 'ce.best.cozy'].some((key) => localStorage.getItem(key) !== null); } catch { return false; }
+})();
 let settings = load<Settings>('ce.settings', DEFAULTS);
 // Link z karty wyniku lub osadzenia w portalu ustawia kraj i miasto startu.
 const prefill = parseGameParams(params);
 if (prefill) settings = { ...settings, home: prefill.home, from: prefill.from };
 // Nick z listy losujemy w tle (moduł nicków nie jest potrzebny do pierwszej klatki).
-if (!settings.nickId) {
-  void import('./content/nicks').then(({ randomNickChoices }) => {
-    if (settings.nickId) return;
-    settings = { ...settings, nickId: randomNickChoices(Math.random, 1, settings.home)[0] };
-    save('ce.settings', settings);
+// Nick spoza zamkniętej listy (stary zapis, ręczna edycja) serwer odrzuca, a kolejka offline rzuca wyjątkiem —
+// dlatego przed zgłoszeniem wyniku zawsze czekamy na sprawdzony nick (ensureNick), a nie na settings.nickId.
+function ensureNick(): Promise<string> {
+  return import('./content/nicks').then(({ isValidNickId, randomNickChoices }) => {
+    if (!settings.nickId || !isValidNickId(settings.nickId)) {
+      settings = { ...settings, nickId: randomNickChoices(Math.random, 1, settings.home)[0] };
+      save('ce.settings', settings);
+    }
+    return settings.nickId as string;
   });
 }
+if (!settings.nickId) void ensureNick().catch(quiet);
 
 let route: Route = safeRoute(settings);
 let game: Game | null = null;
@@ -140,9 +152,18 @@ let pendingReload: (() => void) | null = null;
 let closeLeague: (() => void) | null = null;
 let closeGarage: (() => void) | null = null;
 let overLeagueRequest = 0;
-/** Lot powrotny: auto cięższe od startu (słoiki od mamy); bez rankingu, dopóki serwer nie zna tych zasad. */
-const RETURN_WEIGHT = 0.25;
 let returnTrip = false;
+/** Trasa lotu powrotnego: proponowana po dojeździe i jeżdżona ponownie przy „Zagraj ponownie”. */
+let offeredReturn: Route | null = null;
+let returnRoute: Route | null = null;
+/** Każdy start przejazdu i powrót do menu unieważnia wcześniejszy, jeszcze czekający newRun(). */
+let runRequest = 0;
+/** newRun() czekający na ranking/ducha (menu jeszcze widoczne) — „wstecz” go anuluje. */
+let startingRun = 0;
+/** Otwarcie panelu menu (liga, garaż, album) i powrót do menu unieważniają czekający montaż. */
+let panelRequest = 0;
+/** Toasty po przejeździe (medale, auta) należą do tego jednego ekranu końca. */
+let overSerial = 0;
 let progress: Progress | null = null;
 let closeCollection: (() => void) | null = null;
 let closeSettings: (() => void) | null = null;
@@ -157,6 +178,8 @@ const ghostModule = (): Promise<GhostModule> => import('./share/ghost-session').
 let ghostChallenge: GhostChallenge | null = null;
 /** Ładowanie wyzwania z linku (null, gdy link go nie ma). */
 let ghostLoad: Promise<void> | null = null;
+/** Gracz zmienił trasę lub tryb — wyzwanie zdekodowane później już nie wraca. */
+let ghostDropped = false;
 /** Duch bieżącego przejazdu; null po rozjechaniu się z grą. */
 let ghostRunner: GhostRunner | null = null;
 let ghostDrawFailed = false;
@@ -165,10 +188,12 @@ let challengeLink: Promise<{ url: string; text: string } | null> | null = null;
 const winter = seasonAt(new Date(), location.search) === 'winter';
 renderer.winter = winter;
 const progressModule = () => import('./meta/progress');
-void progressModule().then((m) => m.loadProgress()).then((p) => {
+/** Postęp wczytujemy raz; potem źródłem prawdy jest pamięć RAM (zapis może się nie udać). */
+const progressReady = progressModule().then((m) => m.loadProgress()).then((p) => {
   progress = p;
   // Auta za kilometry (zlecenie 72): wybrane auto wraca dopiero, gdy wiadomo, ile przejechano.
   setHeroSkin(normalizeHeroSkin(settings.skin, totalKm()), totalKm());
+  return p;
 });
 /** Suma km ze wszystkich przejazdów (album/medale) — z niej odblokowujemy auta. */
 function totalKm(): number {
@@ -224,7 +249,7 @@ function unlockAudio(): void {
     music = createMusic(ctx, { destination: mix, volume: preferences.musicVolume, enabled: preferences.music });
     void music.unlock();
     if (game?.phase === 'playing') music.start();
-  });
+  }).catch(quiet);
 }
 
 // --- Ranking (bez konfiguracji Firebase działa na mocku) ---
@@ -306,6 +331,7 @@ function fillMenu(): void {
 onLanguageChange(() => fillMenu());
 
 function dropGhostChallenge(): void {
+  ghostDropped = true;
   ghostChallenge = null;
   ui.ghostInfo.hidden = true;
 }
@@ -350,20 +376,27 @@ $('btn-daily').addEventListener('click', () => {
   daily = dailyKey(new Date());
   void newRun();
 });
-$('btn-league').addEventListener('click', () => {
+/** Otwiera panel menu; zwraca sprawdzenie, czy ten panel jest nadal aktualny po leniwym imporcie. */
+function openPanel(panel: HTMLElement): () => boolean {
+  runRequest++;
+  const request = ++panelRequest;
   ui.menu.hidden = true;
-  ui.league.hidden = false;
+  panel.hidden = false;
+  return () => request === panelRequest && !panel.hidden;
+}
+$('btn-league').addEventListener('click', () => {
+  const current = openPanel(ui.league);
   void import('./ui/league').then(({ mountLeague }) => {
-    return net.then(({ api }) => { if (!ui.league.hidden) closeLeague = mountLeague(ui.leagueBody, api, settings.home); });
-  });
+    return net.then(({ api }) => { if (current()) closeLeague = mountLeague(ui.leagueBody, api, settings.home); });
+  }).catch(quiet);
   track('league_open');
 });
 $('btn-league-close').addEventListener('click', () => showMenu());
 $('btn-garage').addEventListener('click', () => {
-  ui.menu.hidden = true;
-  ui.garage.hidden = false;
-  void import('./ui/garage').then(({ mountGarage }) => {
-  if (ui.garage.hidden) return;
+  const current = openPanel(ui.garage);
+  // Zamki aut zależą od sumy km — bez wczytanego postępu garaż pokazałby same startery.
+  void Promise.all([import('./ui/garage'), progressReady]).then(([{ mountGarage }]) => {
+  if (!current()) return;
   closeGarage = mountGarage(ui.garage, {
     home: settings.home,
     skin: normalizeHeroSkin(settings.skin, totalKm()),
@@ -376,25 +409,25 @@ $('btn-garage').addEventListener('click', () => {
     },
     onClose: () => showMenu(),
   });
-  });
+  }).catch(quiet);
 });
 $('btn-album').addEventListener('click', () => {
-  ui.menu.hidden = true;
-  ui.album.hidden = false;
-  void progressModule().then((m) => m.loadProgress()).then((p) => {
-    progress = p;
-    return import('./ui/collection').then(({ mountCollection }) => {
-      if (ui.album.hidden) return;
-      closeCollection = mountCollection(ui.album, p, () => showMenu());
-    });
-  });
+  const current = openPanel(ui.album);
+  // Album pokazuje postęp z pamięci RAM: ponowny odczyt cofnąłby go, gdy zapis się nie udał.
+  void Promise.all([import('./ui/collection'), progressReady]).then(([{ mountCollection }, loaded]) => {
+    if (current()) closeCollection = mountCollection(ui.album, progress ?? loaded, () => showMenu());
+  }).catch(quiet);
 });
-ui.btnSettings.addEventListener('click', () => void openSettings());
+ui.btnSettings.addEventListener('click', () => void openSettings().catch(quiet));
 $('btn-again').addEventListener('click', () => void newRun(returnTrip));
-$('btn-return-flight').addEventListener('click', () => void newRun(true));
+$('btn-return-flight').addEventListener('click', () => {
+  if (!offeredReturn) return;
+  returnRoute = offeredReturn;
+  void newRun(true);
+});
 $('btn-menu').addEventListener('click', () => showMenu());
-$('btn-share').addEventListener('click', () => void share());
-ui.btnChallenge.addEventListener('click', () => void shareChallenge());
+$('btn-share').addEventListener('click', () => void share().catch(quiet));
+ui.btnChallenge.addEventListener('click', () => void shareChallenge().catch(quiet));
 ui.overPortal.addEventListener('click', () => track('portal_click', { placement: 'result', home: settings.home as AnalyticsHome }));
 
 /** Ekran ustawień: modalny panel nad menu, moduł ładowany dopiero po kliknięciu. */
@@ -429,6 +462,10 @@ function hideSettings(): void {
 function showMenu(): void {
   if (pendingReload) return pendingReload();
   const menuWasHidden = ui.menu.hidden;
+  runRequest++;
+  panelRequest++;
+  overSerial++;
+  ui.toast.hidden = true;
   game = null;
   ghostRunner = null;
   renderer.ghost = null;
@@ -456,14 +493,20 @@ function currentMode(): Mode {
 }
 
 async function newRun(reverse = false): Promise<void> {
-  returnTrip = reverse && !daily;
+  const request = ++runRequest;
+  startingRun = request;
+  const runDaily = daily;
+  const reverseTrip = reverse && !runDaily;
   // Wyzwanie z linku: czekamy na zdekodowanie (zwykle gotowe dużo wcześniej niż klik).
-  if (!returnTrip && !daily && ghostLoad) await ghostLoad;
+  if (!reverseTrip && !runDaily && ghostLoad) await ghostLoad;
+  // W trakcie czekania gracz mógł wrócić do menu, otworzyć panel albo kliknąć start drugi raz.
+  if (request !== runRequest) return;
+  returnTrip = reverseTrip;
   const challenge = !returnTrip && !daily ? ghostChallenge : null;
   ghostRunner = null;
   ghostDrawFailed = false;
   renderer.ghost = null;
-  const runRoute = challenge ? challenge.route : returnTrip ? reverseRoute(route) : daily ? dailyRoute(daily) : route;
+  const runRoute = challenge ? challenge.route : returnTrip ? returnRoute ?? reverseRoute(route) : daily ? dailyRoute(daily) : route;
   const mode = challenge ? challenge.mode : returnTrip ? 'cozy' : currentMode();
   let seed = (Math.random() * 2 ** 32) >>> 0;
   if (daily) seed = dailySeed(daily);
@@ -480,19 +523,23 @@ async function newRun(reverse = false): Promise<void> {
         mode: daily ? 'daily' : 'ranked', home: runRoute.home, from: runRoute.from.id, to: runRoute.to.id,
         ...(daily ? { daily } : {}), rulesVersion: RULES_VERSION,
       });
+      if (request !== runRequest) return;
       runId = start.runId;
       seed = start.seed;
     } catch {
       /* bez sieci gramy lokalnie, bez rankingu */
     }
+    if (request !== runRequest) return;
   }
 
   // Ranking: dokładnie te same opcje co replay na serwerze (bez baseWeight).
+  startingRun = 0;
   game = new Game(mode === 'ranked'
     ? rankedGameOptions(seed, runRoute)
     : { seed, mode, route: runRoute, ...(returnTrip ? { baseWeight: RETURN_WEIGHT } : {}) });
   if (challenge && ghostMod) ghostRunner = ghostMod.createGhostRunner(challenge);
   lastMilestone = 0;
+  overSerial++;
   cardImage = null;
   challengeLink = null;
   music?.setSeason(winter || (daily && dailyTitle(daily) === 'Na Wigilię!') ? 'holiday' : 'regular');
@@ -576,6 +623,11 @@ platform.onBack(() => {
     hideSettings();
     return true;
   }
+  if (startingRun && startingRun === runRequest) {
+    runRequest++;
+    startingRun = 0;
+    return true;
+  }
   if (ui.menu.hidden) {
     showMenu();
     return true;
@@ -602,14 +654,22 @@ function toast(text: string): void {
 
 function handleEvents(g: Game): void {
   for (const e of g.drainEvents()) {
-    feedback(e);
+    // drainEvents oddaje zdarzenie raz: wyjątek w dźwięku/wibracji/muzyce nie może zjeść końca przejazdu.
+    try { feedback(e); } catch (error) { console.error('[feedback]', e.type, error); }
     if (e.type === 'pickup') {
       toast(fill(pick(PICKUP_TEXTS[e.kind]), { km: e.bonusKm }));
       track('pickup', { kind: e.kind, mode: g.mode });
     }
     else if (e.type === 'border') toast(pick(BORDER_TEXTS[e.country]) ?? fill(UI.welcome, { where: COUNTRY_LOCATIVE[e.country] }));
     else if (e.type === 'waypoint') toast(waypointText(e.waypoint));
-    else if (e.type === 'over' || e.type === 'arrived') showOver(g);
+    else if (e.type === 'over' || e.type === 'arrived') {
+      try { showOver(g); } catch (error) {
+        // Ekran końca musi się pokazać nawet przy błędzie dodatków (opis, duch, link do portalu).
+        console.error('[showOver]', error);
+        ui.hud.hidden = true;
+        ui.over.hidden = false;
+      }
+    }
   }
   const milestone = Math.floor(g.km / 100) * 100;
   if (g.phase === 'playing' && milestone > lastMilestone && milestone > 0) {
@@ -697,32 +757,31 @@ function showOver(g: Game): void {
   ui.hud.hidden = true;
   ui.over.hidden = false;
   // Lot powrotny: po dojechaniu do Polski (nie po samym powrocie) można od razu ruszyć z powrotem.
-  const canReturn = arrived && g.baseWeight === 0 && !daily;
-  ui.btnReturnFlight.hidden = !canReturn;
-  if (canReturn) save('ce.returnUnlocked', true);
+  offeredReturn = returnFlightRoute(g, daily);
+  ui.btnReturnFlight.hidden = !offeredReturn;
+  if (offeredReturn) save('ce.returnUnlocked', true);
 
   // Medale i pocztówki: liczą się wszystkie przejazdy (także łagodne i powrotne).
-  if (progress) void progressModule().then(({ applyRun, saveProgress, summarizeRun }) => {
+  // Toasty tylko na tym ekranie końca: po „Zagraj ponownie” lub powrocie do menu przepadają.
+  const serial = overSerial;
+  void Promise.all([progressModule(), progressReady]).then(([{ applyRun, saveProgress, summarizeRun }]) => {
     if (!progress) return;
-    // Powrót za granicę to nie „dojazd do domu” — medale za dojazd liczymy tylko w stronę Polski.
-    const homeward = g.baseWeight === 0;
     const kmBefore = progress.stats.totalKm;
-    const change = applyRun(progress, summarizeRun({ route: g.route, km: g.km, jars: g.jars, parcels: g.parcels,
-      phase: homeward ? g.phase : 'over' }, winter && arrived && homeward));
+    // Powrót za granicę to nie „dojazd do domu” — summarizeRun rozpoznaje go po baseWeight.
+    const change = applyRun(progress, summarizeRun(g, winter));
     progress = change.progress;
     void saveProgress(progress);
     const kmAfter = progress.stats.totalKm;
-    void import('./meta/unlocks').then(({ applyRunKm, unlockAnnouncement }) => {
-      const cars = applyRunKm({ totalKm: kmBefore }, kmAfter - kmBefore).newlyUnlocked;
-      cars.forEach((id, i) => window.setTimeout(() => toast(unlockAnnouncement(id)), 400 + i * 1800));
+    // Teksty toastów z leniwych chunków: bez sieci przepadają, ale postęp jest już policzony.
+    return Promise.all([import('./meta/unlocks'), import('./ui/collection')]).then(([unlocks, { medalToast, postcardToast }]) => {
+      const cars = unlocks.applyRunKm({ totalKm: kmBefore }, kmAfter - kmBefore).newlyUnlocked;
+      // Jedna kolejka: nowe auto najpierw, medal nie może go przykryć po 300 ms.
+      const news = [...cars.map(unlocks.unlockAnnouncement), ...change.newMedals.map(medalToast), ...change.newPostcards.map(postcardToast)];
+      news.slice(0, 3).forEach((text, i) => window.setTimeout(() => {
+        if (serial === overSerial && !ui.over.hidden) toast(text);
+      }, 500 + i * 1800));
     });
-    if (change.newMedals.length || change.newPostcards.length) {
-      void import('./ui/collection').then(({ medalToast, postcardToast }) => {
-        const news = [...change.newMedals.map(medalToast), ...change.newPostcards.map(postcardToast)];
-        news.slice(0, 3).forEach((text, i) => window.setTimeout(() => toast(text), 700 + i * 1800));
-      });
-    }
-  });
+  }).catch(quiet);
 
   // Po pierwszym przejeździe dociągamy w tle grafiki wszystkich krajów (tryb offline).
   void prefetchPwaAssetsAfterRun();
@@ -731,31 +790,9 @@ function showOver(g: Game): void {
   ui.overMiniLeague.hidden = true;
   ui.overLeagueList.replaceChildren();
   // Bez skonfigurowanego Firebase ranking to atrapa z przykładowymi liczbami — nie pokazujemy jej graczom.
-  void net.then(({ api, isMock }) => (!isMock || params.get('test') === '1') ? api.getLeague(warsawWeekKey()) : Promise.reject(new Error('mock'))).then((data) => {
-    if (leagueRequest !== overLeagueRequest || ui.over.hidden) return;
-    const top = HOME_COUNTRIES
-      .map((home) => ({ home, km: data.countries[home]?.km ?? 0 }))
-      .filter((entry) => Number.isFinite(entry.km) && entry.km > 0)
-      .sort((a, b) => b.km - a.km)
-      .slice(0, 3);
-    if (!top.length) return;
-    const rows = top.map(({ home, km }, index) => {
-      const li = document.createElement('li');
-      if (home === g.route.home) li.classList.add('is-home');
-      const place = document.createElement('span');
-      place.className = 'mini-league__place';
-      place.textContent = String(index + 1) + '.';
-      const flag = document.createElement('img');
-      flag.src = import.meta.env.BASE_URL + 'assets/ui/flag-' + home.toLowerCase() + '.png';
-      flag.alt = '';
-      const name = document.createElement('span');
-      name.textContent = COUNTRY_NAME[home];
-      const score = document.createElement('strong');
-      score.className = 'mini-league__score';
-      score.textContent = new Intl.NumberFormat('pl-PL').format(km) + ' km';
-      li.append(place, flag, name, score);
-      return li;
-    });
+  void net.then(({ api, isMock }) => (!isMock || params.get('test') === '1')
+    ? import('./ui/mini-league').then(({ miniLeagueRows }) => miniLeagueRows(api, g.route.home)) : []).then((rows) => {
+    if (leagueRequest !== overLeagueRequest || ui.over.hidden || !rows.length) return;
     ui.overLeagueList.replaceChildren(...rows);
     ui.overMiniLeague.hidden = false;
   }).catch(() => { if (leagueRequest === overLeagueRequest) ui.overMiniLeague.hidden = true; });
@@ -764,17 +801,18 @@ function showOver(g: Game): void {
   lastCard = cardData(g, joke);
   const card = lastCard;
   cardImage = import('./share/card').then(({ renderCard }) => renderCard(card, 'story')).catch(() => null as unknown as Blob);
-  void import('./share/share');
+  void import('./share/share').catch(quiet);
   prepareChallenge(g, card);
 
   track('run_end', {
     km: g.km, seconds, cause: arrived ? 'arrived' : g.cause ?? 'ground', mode: g.mode, home: g.route.home as AnalyticsHome,
   });
-  if (runId && settings.nickId) {
-    const run = {
-      runId, flapTicks: [...g.flapTicks], ticks: g.ticks, km: g.km, nickId: settings.nickId, rulesVersion: RULES_VERSION,
-    };
-    void net.then(({ api, queue, submitOrQueue }) => submitOrQueue(api, queue, run));
+  // Nick ładuje się leniwie: wynik zgłaszamy po jego sprawdzeniu, zamiast pomijać, gdy jeszcze go nie ma.
+  if (runId) {
+    const run = { runId, flapTicks: [...g.flapTicks], ticks: g.ticks, km: g.km, rulesVersion: RULES_VERSION };
+    void Promise.all([net, ensureNick()])
+      .then(([{ api, queue, submitOrQueue }, nickId]) => submitOrQueue(api, queue, { ...run, nickId }))
+      .catch(quiet);
     runId = null;
   }
 }
@@ -839,6 +877,25 @@ let last = performance.now();
 let acc = 0;
 
 function frame(now: number): void {
+  // Następna klatka zawsze — jeden wyjątek nie może zatrzymać całej gry.
+  requestAnimationFrame(frame);
+  step(now);
+}
+
+/**
+ * Strażnik pętli: gdy przeglądarka wstrzyma requestAnimationFrame przy widocznej stronie
+ * (zawieszony kompozytor, część WebView na Androidzie, headless Chromium w CI), logika gry
+ * idzie dalej z timera — przejazd się kończy, ekran końca się pokazuje. Po powrocie klatek
+ * strażnik milknie sam. Ukryta karta: nic nie liczymy (gra ma stać w tle).
+ */
+const FRAME_STALL_MS = 400;
+window.setInterval(() => {
+  if (document.visibilityState !== 'visible') return;
+  const now = performance.now();
+  if (now - last > FRAME_STALL_MS) step(now);
+}, FRAME_STALL_MS / 2);
+
+function step(now: number): void {
   const dt = Math.min(0.1, (now - last) / 1000);
   last = now;
   if (game) {
@@ -864,7 +921,6 @@ function frame(now: number): void {
   } else {
     renderer.draw(previewGame, now / 1000);
   }
-  requestAnimationFrame(frame);
 }
 
 let signJoke: SignJokeBubble | null = null;
@@ -886,7 +942,15 @@ preloadSprites();
 // Nagrywanie rolki 15 s (przycisk widoczny poza samym lotem; ?redakcja=1 — tryb redakcji).
 let recordControl: { element: HTMLElement } | null = null;
 // Moduł rolek ładujemy po pierwszej klatce — nie spowalnia startu na słabym internecie.
-window.setTimeout(() => void import('./ui/record').then(({ createRecordControl }) => {
+// Bez sieci import się nie uda — próbujemy ponownie po powrocie połączenia (bez nieobsłużonego wyjątku).
+function loadRecordControl(): void {
+  void import('./ui/record').then(mountRecordControl).catch(() => {
+    window.addEventListener('online', loadRecordControl, { once: true });
+  });
+}
+window.setTimeout(loadRecordControl, 800);
+function mountRecordControl({ createRecordControl }: typeof import('./ui/record')): void {
+  if (recordControl) return;
   recordControl = createRecordControl({
     canvas,
     getAudio: () => (audioCtx && audioMix ? { context: audioCtx, source: audioMix } : undefined),
@@ -896,7 +960,7 @@ window.setTimeout(() => void import('./ui/record').then(({ createRecordControl }
   });
   $('stage').appendChild(recordControl.element);
   syncRecordVisibility();
-}), 800);
+}
 function syncRecordVisibility(): void {
   if (!recordControl) return;
   const playing = game?.phase === 'playing';
@@ -912,7 +976,7 @@ if (params.has('g')) {
     .then(() => ghostModule())
     .then((gm) => {
       const challenge = gm.loadGhostChallenge(params);
-      if (!challenge) return;
+      if (!challenge || ghostDropped) return;
       ghostChallenge = challenge;
       ui.ghostInfo.textContent = gm.ghostMenuInfo(challenge);
       ui.ghostInfo.hidden = false;
@@ -953,6 +1017,8 @@ void import('./ui/onboarding').then(async ({ ONBOARDING_STORAGE_KEY, mountOnboar
     void platform.storage.set(ONBOARDING_STORAGE_KEY, '1');
     return;
   }
+  // Na wolnej sieci gracz mógł już wystartować (albo otworzyć panel) — nie zasłaniamy gry.
+  if (ui.menu.hidden || startingRun) return;
   const close = mountOnboarding($('stage'), {
     onDone(home, from, to) {
       close();

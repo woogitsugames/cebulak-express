@@ -75,6 +75,7 @@ button:focus-visible, select:focus-visible, summary:focus-visible, a:focus-visib
 .toast {
   position: absolute;
   top: 22%;
+  pointer-events: none;
   left: 50%;
   transform: translateX(-50%);
   width: max-content;
@@ -88,6 +89,8 @@ button:focus-visible, select:focus-visible, summary:focus-visible, a:focus-visib
   font-weight: 900;
   text-align: center;
 }
+/* Na ekranie końca toast nad panelem, przy górnej krawędzi (nie zasłania wyniku). */
+.panel--over:not([hidden]) ~ .toast { top: max(8px, var(--safe-area-inset-top, env(safe-area-inset-top))); }
 .hint {
   position: absolute;
   bottom: max(14%, var(--safe-area-inset-bottom, env(safe-area-inset-bottom)));
