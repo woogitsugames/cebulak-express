@@ -24,7 +24,8 @@
     "test:league-report": "node --test tools/league-report/report.test.mjs",
     "build:site": "npm run build && node scripts/build-site.mjs && node scripts/site-check.mjs",
     "test:site": "node scripts/site-check.mjs",
-    "art:postcards": "python3 tools/art/postcards_from_panoramas.py"
+    "art:postcards": "python3 tools/art/postcards_from_panoramas.py",
+    "check:launch": "node scripts/check-launch.mjs"
   },
   "devDependencies": {
     "@capacitor/cli": "^8.5.3",
