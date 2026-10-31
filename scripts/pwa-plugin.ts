@@ -1,6 +1,6 @@
 import { createHash } from 'node:crypto';
-import { existsSync, readFileSync, readdirSync } from 'node:fs';
-import { join, relative, sep } from 'node:path';
+import { existsSync, readFileSync, readdirSync, rmSync, rmdirSync } from 'node:fs';
+import { join, relative, resolve, sep } from 'node:path';
 import type { Plugin } from 'vite';
 import { createPlaceholderIcon, resizePngIcon } from './png-icon';
 
@@ -13,15 +13,53 @@ const ICONS = [
 ] as const;
 
 const RUNTIME_EXTENSIONS = /\.(?:png|webp|jpe?g|svg|gif|json|ogg|mp3|m4a|wav|webm)$/i;
-const EXCLUDED_BRAND = /^assets\/brand\/(?:og-|play-feature|splash-2732\.png$|card-bg-)/;
+// Grafiki sklepowe, OG, splash i źródła ikony adaptacyjnej Androida (res/ ma własne kopie).
+const EXCLUDED_BRAND = /^assets\/brand\/(?:og-|play-feature|splash-2732\.png$|card-bg-|icon-(?:background|foreground|monochrome)\.png$|logo\.svg$)/;
 const CORE_PREFIXES = ['assets/hero/', 'assets/obstacles/', 'assets/ui/'];
 
 /** Tylko zasoby wykonywanej gry; bez dokumentacji, generatorów i grafik marketingowych. */
 export function isRuntimeAsset(path: string): boolean {
   return path.startsWith('assets/')
     && RUNTIME_EXTENSIONS.test(path)
+    // Gra czyta tylko skin.json; pozostałe JSON-y to manifesty generatorów grafik.
+    && (!path.endsWith('.json') || /^assets\/skins\/[^/]+\/skin\.json$/.test(path))
     && !/(?:^|\/)preview\.(?:png|webp|jpe?g)$/i.test(path)
     && !EXCLUDED_BRAND.test(path);
+}
+
+/**
+ * Zasoby, które zostają w dist/ (i w APK). Tło karty udostępniania nie jest w precache
+ * (pobierane dopiero przy udostępnianiu), ale czyta je src/share/card.ts, więc zostaje.
+ */
+export function isShippedAsset(path: string): boolean {
+  return isRuntimeAsset(path) || /^assets\/brand\/card-bg-[^/]+\.png$/.test(path);
+}
+
+/**
+ * Usuwa z katalogu wynikowego pliki skopiowane z public/assets, których gra nie używa
+ * (ASSETS.md, generatory, grafiki sklepowe). W repozytorium zostają; dist/ i APK są mniejsze.
+ */
+export function pruneNonRuntimeAssets(publicDir: string, outDir: string): string[] {
+  const removed: string[] = [];
+  for (const file of listFiles(join(publicDir, 'assets'))) {
+    const path = relative(publicDir, file).split(sep).join('/');
+    if (isShippedAsset(path)) continue;
+    const target = join(outDir, path);
+    if (existsSync(target)) {
+      rmSync(target);
+      removed.push(path);
+    }
+  }
+  removeEmptyDirs(join(outDir, 'assets'));
+  return removed;
+}
+
+function removeEmptyDirs(path: string): void {
+  if (!existsSync(path)) return;
+  for (const item of readdirSync(path, { withFileTypes: true })) {
+    if (item.isDirectory()) removeEmptyDirs(join(path, item.name));
+  }
+  if (readdirSync(path).length === 0) rmdirSync(path);
 }
 
 /** Dwa etapy: mały, transakcyjny start oraz komplet grafik krajów w tle. */
@@ -49,6 +87,7 @@ function listFiles(path: string): string[] {
 export function pwaPlugin(): Plugin {
   let projectRoot = process.cwd();
   let publicDir = join(projectRoot, 'public');
+  let outDir = join(projectRoot, 'dist');
 
   return {
     name: 'cebulak-pwa',
@@ -56,6 +95,13 @@ export function pwaPlugin(): Plugin {
     configResolved(config) {
       projectRoot = config.root;
       publicDir = config.publicDir;
+      outDir = resolve(config.root, config.build.outDir);
+    },
+    // Po skopiowaniu public/ przez Vite: dist/ (a więc i APK z Capacitora) bez plików spoza gry.
+    closeBundle() {
+      if (!publicDir) return;
+      const removed = pruneNonRuntimeAssets(publicDir, outDir);
+      if (removed.length) this.info?.(`Pominięto w dist ${removed.length} plików spoza gry (ASSETS.md, generatory, grafiki sklepowe).`);
     },
     // Manifest dodawany bez modyfikowania index.html, który należy do koordynatora.
     transformIndexHtml() {

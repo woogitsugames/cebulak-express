@@ -1,7 +1,9 @@
-import { readFileSync } from 'node:fs';
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { dirname, join } from 'node:path';
 import { runInNewContext } from 'node:vm';
 import { describe, expect, it } from 'vitest';
-import { createPlaceholderIcon, isRuntimeAsset, resizePngIcon, splitAssetPrecache } from '../scripts/pwa-plugin';
+import { createPlaceholderIcon, isRuntimeAsset, pruneNonRuntimeAssets, resizePngIcon, splitAssetPrecache } from '../scripts/pwa-plugin';
 
 const scope = 'https://game.example.test/play/';
 const source = readFileSync(new URL('../src/pwa/sw.js', import.meta.url), 'utf8');
@@ -114,6 +116,40 @@ describe('PWA: pliki i ikona', () => {
     expect([...core, ...deferred]).toHaveLength(8);
     expect(isRuntimeAsset('assets/landmarks/preview.png')).toBe(false);
     expect(isRuntimeAsset('assets/brand/og-1200x630.png')).toBe(false);
+  });
+
+  it('usuwa z dist dokumentację, generatory i grafiki sklepowe, zostawiając zasoby gry', () => {
+    const root = mkdtempSync(join(tmpdir(), 'ce-prune-'));
+    try {
+      const publicDir = join(root, 'public');
+      const outDir = join(root, 'dist');
+      const keep = [
+        'assets/countries/be/be-sky.png', 'assets/skins/pan-cebulek/skin.json',
+        'assets/brand/icon-1024.png', 'assets/brand/logo.png', 'assets/brand/logo-small.png',
+        'assets/brand/card-bg-1080x1920.png',
+      ];
+      const drop = [
+        'assets/countries/be/ASSETS.md', 'assets/countries/be/winter-builder.js',
+        'assets/countries/be/generate_be.py', 'assets/store/README.md',
+        'assets/brand/og-1200x630.png', 'assets/brand/play-feature-1024x500.png',
+        'assets/brand/icon-foreground.png', 'assets/postcards/generated.json',
+      ];
+      for (const path of [...keep, ...drop]) {
+        for (const base of [publicDir, outDir]) {
+          mkdirSync(dirname(join(base, path)), { recursive: true });
+          writeFileSync(join(base, path), 'x');
+        }
+      }
+      // Pliki zbudowane przez Vite w dist/assets nie pochodzą z public/ i zostają.
+      writeFileSync(join(outDir, 'assets/index-abc.js'), 'x');
+      expect(pruneNonRuntimeAssets(publicDir, outDir).sort()).toEqual([...drop].sort());
+      for (const path of keep) expect(existsSync(join(outDir, path))).toBe(true);
+      expect(existsSync(join(outDir, 'assets/index-abc.js'))).toBe(true);
+      expect(existsSync(join(outDir, 'assets/store'))).toBe(false);
+      expect(existsSync(join(publicDir, 'assets/store/README.md'))).toBe(true);
+    } finally {
+      rmSync(root, { recursive: true, force: true });
+    }
   });
 
   it('pomniejsza prawdziwą ikonę PNG zamiast zastępować ją grafika tymczasową', () => {

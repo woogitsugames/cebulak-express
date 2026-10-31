@@ -18,7 +18,7 @@ function spritePath(id: string, file: string): string {
   return join(process.cwd(), 'public', 'assets', 'skins', id, file);
 }
 
-function pngDimensions(data: Uint8Array): { width: number; height: number; colorType: number } {
+function pngDimensions(data: Uint8Array): { width: number; height: number; colorType: number; hasTrns: boolean } {
   const pngSignature = [137, 80, 78, 71, 13, 10, 26, 10];
   expect([...data.subarray(0, 8)]).toEqual(pngSignature);
   const buffer = Buffer.from(data);
@@ -27,6 +27,7 @@ function pngDimensions(data: Uint8Array): { width: number; height: number; color
     width: buffer.readUInt32BE(16),
     height: buffer.readUInt32BE(20),
     colorType: buffer[25],
+    hasTrns: buffer.includes(Buffer.from('tRNS', 'ascii')),
   };
 }
 
@@ -65,9 +66,10 @@ describe('zlecenie 74: trzy kompletne skorki samochodow', () => {
         const bytes = readFileSync(file);
         expect(statSync(file).size).toBeGreaterThan(200);
         const expected = layer === 'wheel' ? [36, 36] : layer === 'portrait' ? [384, 384] : [288, 168];
-        const { width, height, colorType } = pngDimensions(bytes);
+        const { width, height, colorType, hasTrns } = pngDimensions(bytes);
         expect([width, height]).toEqual(expected);
-        expect(colorType).toBe(6); // Truecolour + alpha, przezroczystosc warstw.
+        // Truecolour + alpha albo paleta z tRNS (kwantyzacja): przezroczystosc warstw.
+        expect(colorType === 6 || (colorType === 3 && hasTrns)).toBe(true);
       }
     });
   }
